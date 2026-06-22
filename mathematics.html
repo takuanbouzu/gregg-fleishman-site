@@ -2,56 +2,157 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B0B0B">
-<title>Gregg Fleishman — The Lost Triangle</title>
+<title>The Lost Triangle — Gregg Fleishman</title>
+<meta name="description" content="A scroll-driven study of Gregg Fleishman's Lost Triangle: one right triangle in the ratio 1 : √2 : √3 generates the whole cubic family of space-filling solids.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="The Lost Triangle — Infinite Architecture">
+<meta property="og:description" content="One right triangle in the ratio 1 : √2 : √3 — the edge, face-diagonal and space-diagonal of the cube — generates an entire family of space-filling solids. Scroll to see why.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/mathematics.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Lost Triangle — Infinite Architecture">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- site system fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- broadside fonts (the timeless layer) -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
+<script src="assets/lost-triangle-engine.js" defer></script>
 <style>
-  /* page-local helpers (tokens come from gf-tokens.css) */
-  .wrap{max-width:1180px;margin:0 auto;}
-  .sec{padding:120px 56px;border-bottom:1px solid var(--hairline);}
-  .eyebrow{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
-  .h2{font-family:var(--font-display);font-weight:800;font-size:44px;line-height:1.04;letter-spacing:-0.03em;margin:0 0 22px;}
-  .intro{font-family:var(--font-editorial);font-style:italic;font-weight:300;font-size:23px;line-height:1.6;color:var(--tx-dim);margin:0;}
-  .body{font-size:15px;line-height:1.85;color:var(--tx-dim);}
-  .plate{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
-  .plate.dark{background:#000;}
-  .plate img{display:block;width:100%;height:auto;}
-  .plate .cap{padding:16px 22px;border-top:1px solid var(--border);background:var(--bg-surface);}
-  .plate .cap .t{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--tx);}
-  .plate .cap .s{font-size:12px;color:var(--tx-dim);margin-top:5px;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;}
-  .split{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
-  @media(max-width:860px){.split,.grid2{grid-template-columns:1fr;gap:32px;}.sec{padding:80px 24px;}.h2{font-size:34px;}}
-  /* supplemental theory note — collapsed by default, subordinate to the work above it */
-  .theory{max-width:780px;margin:56px auto 0;border:1px solid var(--hairline);border-radius:var(--radius-lg);background:var(--bg-surface);transition:border-color .3s ease;}
-  .theory[open]{border-color:var(--border-strong);}
-  .theory>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:18px 24px;
-    font-family:var(--font-mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);}
-  .theory>summary::-webkit-details-marker{display:none;}
-  .theory .mk{display:inline-flex;width:15px;height:15px;align-items:center;justify-content:center;font-size:15px;line-height:1;transition:transform .25s ease;}
-  .theory[open] .mk{transform:rotate(45deg);}
-  .theory .note{padding:2px 24px 26px;}
-  .theory .lead{font-family:var(--font-editorial);font-style:italic;font-weight:300;font-size:18px;line-height:1.55;color:var(--tx-dim);margin:0 0 18px;max-width:62ch;}
-  .theory .srow{display:grid;grid-template-columns:118px 1fr;gap:20px;padding:14px 0;border-top:1px solid var(--hairline);align-items:baseline;}
-  .theory .sk{font-family:var(--font-mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--tx);}
-  .theory .sv{font-size:14px;line-height:1.7;color:var(--tx-dim);}
-  .theory .sv a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 38%,transparent);}
-  .theory .sv a:hover{border-bottom-color:var(--accent);}
-  .theory .sv .muted{color:var(--tx-faint);}
-  .theory .foot{margin:20px 0 0;font-size:11.5px;line-height:1.65;color:var(--tx-faint);}
-  @media(max-width:860px){.theory .srow{grid-template-columns:1fr;gap:5px;}}
+  /* ============================================================
+     THE LOST TRIANGLE · "Lightbox Broadside" hybrid
+     The warm-paper canvas (engine) is the timeless artifact; the
+     page is a dark/contemporary gallery that flips with the site
+     theme. Gold is the single futurist signal. Type fuses Archivo
+     (display) + Source Serif 4 (editorial) + IBM Plex Mono (technical).
+     ============================================================ */
+  :root{
+    --lt-display:'Archivo',var(--font-display),sans-serif;
+    --lt-serif:'Source Serif 4',Georgia,serif;
+    --lt-mono2:'IBM Plex Mono',var(--font-mono),monospace;
+    --lt-wall:radial-gradient(128% 100% at 50% -12%,#17140E 0%,#0B0B0B 64%);
+    --lt-artifact:0 50px 130px rgba(0,0,0,.62),0 0 70px rgba(200,169,110,.10),0 0 0 1px rgba(200,169,110,.14);
+    --lt-card:rgba(13,12,9,.70);
+    --lt-card-bd:rgba(240,237,232,.16);
+    --lt-body:rgba(240,237,232,.85);
+    --lt-track:rgba(240,237,232,.16);
+  }
+  :root[data-theme="light"]{
+    --lt-wall:radial-gradient(128% 100% at 50% -12%,#FBF7EE 0%,#E9E3D6 72%);
+    --lt-artifact:0 30px 80px rgba(40,28,8,.20),0 0 0 1px rgba(27,27,27,.16);
+    --lt-card:rgba(255,250,240,.90);
+    --lt-card-bd:rgba(27,27,27,.16);
+    --lt-body:rgba(27,27,27,.82);
+    --lt-track:rgba(27,27,27,.14);
+  }
+
+  html{scroll-behavior:auto;}
+  body{
+    margin:0; color:var(--tx);
+    background:var(--lt-wall); background-attachment:fixed;
+    font-family:var(--lt-serif);
+    transition:background .5s var(--ease), color .5s var(--ease);
+  }
+
+  /* reading-progress hairline — a single gold signal, above the nav */
+  .lt-progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--lt-track);z-index:80;}
+  .lt-progress>div{height:100%;width:0;background:var(--accent);transition:width .08s linear;}
+
+  /* the scrolly stage */
+  .scrolly{position:relative;}
+  .lt-graphic{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .lt-canvas{
+    aspect-ratio:16/9; width:min(90vw,156vh); height:auto; display:block;
+    background:#F6F4EE; box-shadow:var(--lt-artifact); touch-action:none;
+  }
+  .lt-hint{
+    position:absolute; left:50%; bottom:6vh; transform:translateX(-50%);
+    display:flex; align-items:center; gap:11px;
+    font-family:var(--lt-mono2); font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:rgba(28,26,22,.62); background:rgba(246,244,238,.82);
+    padding:8px 15px; border:1px solid rgba(28,26,22,.22);
+    transition:opacity .5s; pointer-events:none;
+  }
+  .lt-hint .ic{width:21px;height:21px;border:1.3px solid rgba(28,26,22,.5);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:12px;}
+
+  /* persistent instrument readout — ties chrome to the canvas */
+  .lt-readout{
+    position:fixed; left:0; right:0; bottom:0; z-index:45; pointer-events:none;
+    display:flex; justify-content:center; gap:14px; padding:14px 20px;
+    font-family:var(--lt-mono2); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--tx-dim); transition:opacity .4s;
+  }
+  .lt-readout .ix{color:var(--accent);}
+  .lt-readout .sep{opacity:.4;}
+
+  /* overlaid step cards */
+  .lt-steps{position:relative;margin-top:-100vh;z-index:20;pointer-events:none;}
+  .lt-step{display:flex;align-items:center;padding:0 7vw;transition:opacity .4s var(--ease);}
+  .lt-card{
+    max-width:520px; background:var(--lt-card);
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    padding:32px 36px; border:1px solid var(--lt-card-bd);
+    box-shadow:0 18px 50px rgba(0,0,0,.22);
+  }
+  .lt-eyebrow{font-family:var(--lt-mono2);font-size:12.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+  .lt-card h1{font-family:var(--lt-display);font-weight:900;font-size:clamp(48px,7vw,104px);line-height:.9;letter-spacing:-.028em;text-transform:uppercase;margin:0 0 22px;color:var(--tx);}
+  .lt-card h2{font-family:var(--lt-display);font-weight:800;font-size:clamp(30px,4.2vw,54px);line-height:1.0;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 18px;color:var(--tx);}
+  .lt-card p{font-family:var(--lt-serif);font-size:19px;line-height:1.55;color:var(--lt-body);margin:0;}
+  .lt-card p+p{margin-top:14px;}
+  .lt-card p b{color:var(--tx);font-weight:600;}
+  .lt-card .mono{font-family:var(--lt-mono2);font-weight:500;}
+  .lt-legend{font-family:var(--lt-mono2);font-size:13.5px;line-height:1.75;color:var(--tx-dim);margin:18px 0 0;pointer-events:auto;}
+  .lt-legend b{color:var(--accent);font-weight:500;}
+
+  /* scroll cue on the hero */
+  .lt-cue{
+    position:absolute; left:50%; bottom:3.4vh; transform:translateX(-50%);
+    font-family:var(--lt-mono2); font-size:11px; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--tx-dim); display:flex; flex-direction:column; align-items:center; gap:7px;
+    transition:opacity .4s; z-index:25; pointer-events:none;
+  }
+  .lt-cue .ch{width:1px;height:26px;background:linear-gradient(var(--tx-dim),transparent);}
+
+  /* outro + the sibling artifacts */
+  .lt-outro{position:relative;z-index:30;padding:20vh 7vw 18vh;border-top:1px solid var(--lt-card-bd);
+    background:linear-gradient(to bottom,transparent,rgba(0,0,0,.16));}
+  :root[data-theme="light"] .lt-outro{background:linear-gradient(to bottom,transparent,rgba(40,28,8,.05));}
+  .lt-outro .inner{max-width:820px;margin:0 auto;text-align:center;}
+  .lt-outro blockquote{font-family:var(--lt-serif);font-style:italic;font-size:clamp(25px,3.4vw,40px);line-height:1.4;color:var(--tx);margin:18px 0 10px;}
+  .lt-outro .sig{font-family:var(--lt-mono2);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-faint);}
+
+  .lt-more{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:48px;}
+  .lt-more a{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--lt-mono2);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--tx);text-decoration:none;padding:13px 20px;
+    border:1px solid var(--border-strong);transition:color .15s var(--ease),border-color .15s var(--ease),background .15s var(--ease);
+  }
+  .lt-more a:hover{color:var(--accent-text);background:var(--accent);border-color:var(--accent);}
+  .lt-more a .ar{color:var(--accent);transition:color .15s var(--ease);}
+  .lt-more a:hover .ar{color:var(--accent-text);}
+
+  @media(max-width:640px){
+    .lt-card{max-width:none;padding:24px 24px;}
+    .lt-step{padding:0 5vw;}
+    .lt-readout{font-size:11px;letter-spacing:.1em;gap:10px;}
+    .lt-cue,.lt-hint{display:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    body{transition:none;}
+  }
 </style>
 </head>
 <body>
-
-<!-- shared nav -->
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="explore.html">Explore</a>
@@ -72,111 +173,123 @@
   </button>
 </nav>
 
-<!-- HERO -->
-<header class="sec" style="padding-top:96px;">
-  <div class="wrap split">
-    <div data-reveal>
-      <div class="eyebrow">The Mathematics of Structure · What lies beneath</div>
-      <h1 style="font-family:var(--font-display);font-weight:800;font-size:84px;line-height:0.9;letter-spacing:-0.04em;margin:0 0 26px;">The Lost<br>Triangle</h1>
-      <p class="intro" style="max-width:520px;margin-bottom:18px;">A single right triangle — edges of one, the square root of two, and the square root of three — sits, unnamed, between the square and the equilateral triangle. From it, an entire geometry of structure unfolds.</p>
-      <p style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--tx-faint);margin-top:30px;">In Gregg Fleishman's own hand · 2016 — 2017</p>
-    </div>
-    <div data-reveal class="plate">
-      <img src="assets/drawings/fleishman-sequence-poster.png" alt="The Fleishman Sequence — original drawing by Gregg Fleishman">
-      <div class="cap"><div class="t">The Fleishman Sequence</div><div class="s">Original plate · 2017 · a new root-triangle sequence including the “Lost Triangle” of three dimensions</div></div>
-    </div>
-  </div>
-</header>
+<div class="lt-progress"><div id="ltProg"></div></div>
 
-<!-- ROOT SEQUENCE -->
-<section class="sec">
-  <div class="wrap split">
-    <div data-reveal class="plate">
-      <img src="assets/drawings/root-sequence.png" alt="Root sequence construction — 1, root 2, root 3">
-      <div class="cap"><div class="t">Root sequence · 1, √2, √3</div><div class="s">The square roots, built one from the next</div></div>
-    </div>
-    <div data-reveal>
-      <div class="eyebrow">One · The sequence</div>
-      <h2 class="h2">The Fleishman Sequence</h2>
-      <p class="intro" style="margin-bottom:26px;">A new root-triangle sequence — the spiral of square roots, carried into three dimensions.</p>
-      <p class="body" style="margin:0 0 18px;">Begin with a unit right triangle. Its hypotenuse is √2. Raise a unit leg from that hypotenuse and the new hypotenuse is √3 — and so on, winding outward forever.</p>
-      <p class="body" style="margin:0;">Each turn is a whole-number area, each edge an irrational length. The triangle with legs of <span style="color:var(--tx)">1</span> and <span style="color:var(--tx)">√2</span> and hypotenuse <span style="color:var(--geo-space);font-weight:500">√3</span> is the one that matters most.</p>
+<div class="scrolly" id="scrolly">
+  <div class="lt-graphic">
+    <canvas class="lt-canvas" id="ltCanvas"></canvas>
+    <div class="lt-hint" id="ltHint"><span class="ic">↻</span><span>Drag the solid to rotate</span></div>
+    <div class="lt-cue" id="ltCue"><span>Scroll</span><span class="ch"></span></div>
+  </div>
+
+  <div class="lt-steps">
+    <section class="lt-step" data-step="0" style="min-height:112vh">
+      <div class="lt-card" style="max-width:560px;padding:38px 42px">
+        <div class="lt-eyebrow" style="letter-spacing:.32em">The geometry of one root triangle</div>
+        <h1>The Lost<br>Triangle</h1>
+        <p style="max-width:440px">One right triangle whose sides run in the ratio <b class="mono">1 : √2 : √3</b>. Gregg Fleishman drew a lifetime of buildings, chairs, and playgrounds out of it. Scroll to see why it holds the whole system together.</p>
+      </div>
+    </section>
+
+    <section class="lt-step" data-step="1" style="min-height:150vh">
+      <div class="lt-card">
+        <div class="lt-eyebrow">01 — The proof</div>
+        <h2>It lives inside the cube</h2>
+        <p>Take any cube. Its <b>edge</b> is 1, its <b>face diagonal</b> is √2, its <b>space diagonal</b> is √3. Those three lengths <i>are</i> the triangle — it is simply the cube sliced corner to corner. The ratio isn't arbitrary; it's baked into the structure of 3D space.</p>
+      </div>
+    </section>
+
+    <section class="lt-step" data-step="2" style="min-height:122vh">
+      <div class="lt-card">
+        <div class="lt-eyebrow">02 — Two angles, one architecture</div>
+        <h2>Two angles do all the work</h2>
+        <p>The triangle's acute corners are <b class="mono">α ≈ 35.25°</b> and <b class="mono">β ≈ 54.75°</b> — exactly arctan(1/√2) and arctan √2 — and they add to a clean <b>90°</b>. Every joint, fold, and corner in the work is some whole-number sum of just these two angles.</p>
+      </div>
+    </section>
+
+    <section class="lt-step" data-step="3" style="min-height:380vh;align-items:flex-start;padding-top:15vh">
+      <div class="lt-card" style="max-width:540px;position:sticky;top:24vh">
+        <div class="lt-eyebrow">03 — The cubic family</div>
+        <h2>A whole family from α + β</h2>
+        <p>Tetrahedron, cube, octahedron, cuboctahedron, the truncations, the rhombicube — each one's dihedral angle is a tidy combination of α and β. The highlight on every solid splits its angle into those parts, so you can read the recipe straight off the geometry.</p>
+        <p class="lt-legend">70.5° = <b>2α</b> · 90° = <b>α+β</b> · 109.5° = <b>2β</b><br>125.25° = <b>2α+β</b> · 144.75° = <b>α+2β</b></p>
+      </div>
+    </section>
+
+    <section class="lt-step" data-step="4" style="min-height:150vh">
+      <div class="lt-card">
+        <div class="lt-eyebrow">04 — Infinitely buildable</div>
+        <h2>Outward without end</h2>
+        <p>Because the angles close perfectly, the solids stack with no gaps. The same triangle that fit inside one cube now fills all of space — the face-centred-cubic lattice, about <b>74%</b> dense, repeating outward without end.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="lt-outro">
+  <div class="inner">
+    <div class="lt-eyebrow" style="text-align:center;letter-spacing:.34em">One triangle · infinite architecture</div>
+    <blockquote>“Everything is built from the same small set of relationships — you just keep finding new places to put them.”</blockquote>
+    <div class="sig">Gregg Fleishman · 1 : √2 : √3</div>
+    <div class="lt-more">
+      <a href="lost-triangle-motion.html">Motion graphic <span class="ar">→</span></a>
+      <a href="lost-triangle-poster.html">The poster <span class="ar">→</span></a>
+      <a href="explore.html">Explore the model <span class="ar">→</span></a>
     </div>
   </div>
 </section>
 
-<!-- THE LOST TRIANGLE -->
-<section class="sec" style="background:var(--bg-surface);">
-  <div class="wrap">
-    <div data-reveal style="max-width:680px;margin-bottom:56px;">
-      <div class="eyebrow">Two · The triangle</div>
-      <h2 class="h2">It fits where nothing else does.</h2>
-      <p class="intro">Between the right angle of the square and the sixty degrees of the equilateral triangle there is a gap — and exactly one triangle that fills it. Its acute angle is 55°.</p>
-    </div>
-    <div class="grid2">
-      <div data-reveal class="plate dark">
-        <img src="assets/drawings/lost-triangle-color.png" alt="The Lost Triangle, in color — original drawing">
-        <div class="cap"><div class="t">The Lost Triangle · in color</div><div class="s">The square, the √2 fold, and the √3 hypotenuse</div></div>
-      </div>
-      <div data-reveal class="plate">
-        <img src="assets/drawings/lost-triangle-template.png" alt="Lost Triangle template with radii and angles">
-        <div class="cap"><div class="t">Lost Triangle template · 1 : √2 : √3</div><div class="s">Construction radii R=1, √2, √3 · angles 55° and 35°</div></div>
-      </div>
-    </div>
-    <p data-reveal class="body" style="max-width:760px;margin:34px auto 0;text-align:center;">Found inside a unit cube, the triangle is read straight off the solid: an <span style="color:var(--tx)">edge</span> is 1, a <span style="color:var(--geo-face)">face diagonal</span> is √2, and the <span style="color:var(--geo-space);font-weight:500">corner-to-corner space diagonal</span> is √3 — meeting at a single right angle.</p>
-    <p data-reveal style="max-width:680px;margin:16px auto 0;text-align:center;font-size:12px;line-height:1.6;color:var(--tx-faint);">A note on the angles: written here as <b style="color:var(--tx-dim)">35°</b> and <b style="color:var(--tx-dim)">55°</b>, they are exactly <b style="color:var(--tx-dim)">arctan(1/√2) ≈ 35.264°</b> and <b style="color:var(--tx-dim)">arctan √2 ≈ 54.736°</b> — irrational, because they fall straight out of the √2 : 1 ratio. Rounded in the prose; shown to full precision in the interactive lessons.</p>
-  </div>
-</section>
-
-<!-- THE WORK / ARTWORKS -->
-<section class="sec">
-  <div class="wrap">
-    <div data-reveal style="max-width:680px;margin-bottom:52px;">
-      <div class="eyebrow">Three · The work</div>
-      <h2 class="h2">From one triangle, everything.</h2>
-      <p class="intro">Reflected, the Lost Triangle builds the rhombic dodecahedron and defines the dihedral angles of every cubic polyhedron — and from there, the panels, pods and portals.</p>
-    </div>
-    <div class="grid2">
-      <div data-reveal class="plate dark">
-        <img src="assets/drawings/artwork-gold.png" alt="Gregg Fleishman geometric artwork, gold">
-        <div class="cap"><div class="t">Rhombic study · gold</div><div class="s">Original artwork</div></div>
-      </div>
-      <div data-reveal class="plate">
-        <img src="assets/drawings/artwork-bronze.png" alt="Gregg Fleishman geometric artwork, bronze">
-        <div class="cap"><div class="t">Reflection study · bronze</div><div class="s">Original artwork</div></div>
-      </div>
-    </div>
-    <details class="theory" data-reveal>
-      <summary><span class="mk" aria-hidden="true">+</span> Theory note · symmetry — a supporting lens</summary>
-      <div class="note">
-        <p class="lead">Stand back from the drawing and the Lost Triangle behaves less like a fixed figure than a generative seed: the same proportions, carried three ways.</p>
-        <div class="srow"><div class="sk">Reflection</div><div class="sv">Mirror it across an edge and the proportions hold — the move that folds the triangle into the <a href="rhombic-dodecahedron.html">rhombic dodecahedron</a>. <span class="muted">(the bronze plate above is a reflection study.)</span></div></div>
-        <div class="srow"><div class="sk">Rotation</div><div class="sv">Turn it about an axis and it finds new alignments under the same rule — the plan that <a href="fleishman-sequence.html">stands up into space</a>.</div></div>
-        <div class="srow"><div class="sk">Translation</div><div class="sv">Repeat it step by step and it propagates — one module becoming the <a href="cluster-structures.html">whole of space</a>.</div></div>
-        <p class="foot">Reflection, rotation and translation are standard terms from geometry; here they only name what Gregg's constructions already do.</p>
-      </div>
-    </details>
-    <div data-reveal style="margin-top:44px;text-align:center;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
-      <a href="index.html" style="display:inline-block;padding:15px 36px;background:var(--accent);color:var(--bg);font-size:12px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border-radius:var(--radius-sm);">Open the interactive lesson</a>
-      <a href="lost-triangle-construction.html" style="display:inline-block;padding:15px 28px;background:transparent;color:var(--tx);font-size:12px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border:1px solid var(--border-strong);border-radius:var(--radius-sm);">Animated construction</a>
-      <a href="lost-triangle-construction-3d.html" style="display:inline-block;padding:15px 28px;background:transparent;color:var(--tx);font-size:12px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;border:1px solid var(--border-strong);border-radius:var(--radius-sm);">Plan → space (3D)</a>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer style="background:var(--bg-surface);padding:30px 56px;">
-  <div class="wrap" style="display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:var(--font-display);font-weight:800;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;">Gregg Fleishman</div>
-    <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx-faint);">The Lost Triangle · Mathematics</div>
-  </div>
-</footer>
+<div class="lt-readout" id="ltReadout" aria-hidden="true">
+  <span class="ix" id="ltIx">—</span><span class="sep">·</span><span id="ltFormula">1 : √2 : √3</span>
+</div>
 
 <script>
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-  document.querySelectorAll('[data-reveal]').forEach(function(el){ io.observe(el); });
+(function () {
+  function boot() {
+    var canvas = document.getElementById('ltCanvas');
+    if (!canvas || typeof LostTriangle === 'undefined') { return setTimeout(boot, 40); }
+
+    var eng = new LostTriangle(canvas, { mode: 'scroll', interactive: true, captions: false, frame: true });
+    var scrolly  = document.getElementById('scrolly');
+    var progEl   = document.getElementById('ltProg');
+    var hint     = document.getElementById('ltHint');
+    var cue      = document.getElementById('ltCue');
+    var ixEl     = document.getElementById('ltIx');
+    var fxEl     = document.getElementById('ltFormula');
+    var steps    = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+
+    eng.onInteract = function () { hint.style.opacity = '0'; };
+    eng.start();
+
+    function onScroll() {
+      var r = scrolly.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var total = scrolly.offsetHeight - vh;
+      var p = total > 0 ? Math.max(0, Math.min(1, -r.top / total)) : 0;
+      eng.setProgress(p);
+      progEl.style.width = (p * 100).toFixed(2) + '%';
+
+      var cz = vh / 2;
+      for (var i = 0; i < steps.length; i++) {
+        var b = steps[i].getBoundingClientRect();
+        var c = b.top + b.height / 2;
+        var d = Math.abs(c - cz) / (vh * 0.75);
+        steps[i].style.opacity = Math.max(0.06, 1 - d).toFixed(3);
+      }
+
+      var sc = eng.getScene(eng.T);
+      ixEl.textContent = sc.i;
+      fxEl.textContent = sc.formula;
+      cue.style.opacity = p > 0.02 ? '0' : '1';
+      if (p > 0.5) hint.style.opacity = '0';
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
 </script>
 </body>
 </html>
