@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0B0B">
+<title>Research — Gregg Fleishman</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<style>
+  .wrap{max-width:780px;margin:0 auto;padding:0 40px;}
+  .sec{padding:80px 0;border-bottom:1px solid var(--hairline);}
+
+  /* research caveat */
+  .research-note{background:var(--bg-surface);border-bottom:1px solid var(--border);}
+  .research-note .inner{max-width:780px;margin:0 auto;padding:14px 40px;display:flex;align-items:baseline;gap:16px;}
+  .research-note .rlabel{font-family:var(--font-mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);white-space:nowrap;flex-shrink:0;}
+  .research-note p{font-size:13px;line-height:1.6;color:var(--tx-dim);margin:0;}
+
+  /* type */
+  .eyebrow{font-family:var(--font-mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+  h1{font-family:var(--font-display);font-weight:800;font-size:64px;line-height:0.95;letter-spacing:-0.04em;margin:0 0 28px;}
+  h2{font-family:var(--font-display);font-weight:800;font-size:30px;line-height:1.1;letter-spacing:-0.02em;margin:0 0 18px;}
+  h3{font-family:var(--font-display);font-weight:700;font-size:17px;margin:36px 0 10px;color:var(--tx);}
+  .intro{font-family:var(--font-editorial);font-style:italic;font-weight:300;font-size:22px;line-height:1.6;color:var(--tx-dim);margin:0 0 24px;}
+  p{font-size:15px;line-height:1.85;color:var(--tx-dim);margin:0 0 16px;}
+  em{font-style:italic;}
+  strong{color:var(--tx);font-weight:500;}
+
+  /* steps */
+  ol.steps{padding:0;list-style:none;counter-reset:step;margin:24px 0;}
+  ol.steps li{counter-increment:step;display:grid;grid-template-columns:28px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--hairline);font-size:14px;line-height:1.7;color:var(--tx-dim);align-items:baseline;}
+  ol.steps li::before{content:counter(step);font-family:var(--font-mono);font-size:11px;color:var(--accent);}
+
+  /* bullet list */
+  ul.dl{list-style:none;padding:0;display:grid;gap:10px;margin:24px 0;}
+  ul.dl li{display:grid;grid-template-columns:16px 1fr;gap:14px;font-size:14px;line-height:1.65;color:var(--tx-dim);}
+  ul.dl li::before{content:"—";color:var(--accent);font-family:var(--font-mono);}
+
+  /* blockquote */
+  blockquote{border-left:2px solid var(--accent);margin:28px 0;padding:2px 0 2px 24px;}
+  blockquote p{font-family:var(--font-editorial);font-style:italic;font-size:18px;line-height:1.65;color:var(--tx);margin:0;}
+
+  /* lineage thinkers */
+  .lineage{display:grid;gap:0;}
+  .lcard{padding:28px 0;border-top:1px solid var(--hairline);}
+  .lcard-head{display:flex;align-items:baseline;gap:14px;margin-bottom:12px;}
+  .lcard-date{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;color:var(--tx-faint);}
+  .lcard h3{margin:0;font-size:17px;color:var(--tx);}
+
+  /* gap callout */
+  .gap-box{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px 32px;margin:28px 0;}
+  .gap-box p:last-child{margin:0;}
+
+  /* references */
+  .refs{display:grid;gap:12px;margin-top:28px;}
+  .ref{padding:16px 20px;border:1px solid var(--hairline);border-radius:var(--radius-lg);background:var(--bg-surface);}
+  .ref .rt{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--tx);margin-bottom:4px;}
+  .ref .rm{font-family:var(--font-mono);font-size:11px;color:var(--tx-faint);letter-spacing:0.06em;}
+  .ref a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 38%,transparent);}
+  .ref a:hover{border-bottom-color:var(--accent);}
+
+  .attribution{font-family:var(--font-mono);font-size:11px;color:var(--tx-faint);letter-spacing:0.12em;margin-top:28px;}
+
+  @media(max-width:680px){
+    .wrap{padding:0 20px;}
+    .research-note .inner{padding:14px 20px;flex-direction:column;gap:6px;}
+    h1{font-size:44px;}
+    .sec{padding:56px 0;}
+  }
+</style>
+</head>
+<body>
+
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
+  <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
+  <a class="navlink" href="fleishman-sequence.html">Fleishman Sequence</a>
+  <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
+  <a class="navlink active" href="dorman-luke.html">Research</a>
+  <a class="navlink" href="rhombic-system.html">Rhombic System</a>
+  <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
+  <a class="navlink" href="fleishman-vector-system.html">Vector System</a>
+  <a class="navlink" href="poster/poster.html">Poster</a>
+  <a class="navlink" href="vertor-pod/index.html">Vertor Pod</a>
+  <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</nav>
+
+<div class="research-note">
+  <div class="inner">
+    <span class="rlabel">Research Note</span>
+    <p>This document emerged from the Gregg Fleishman Legacy Project research process (June 2026). It establishes theoretical context for Gregg's work and situates it within a broader intellectual lineage — it is not yet a finished interactive lesson. That is planned for a future phase.</p>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="sec" style="padding-top:80px;">
+  <div class="wrap">
+    <div class="eyebrow">Dual Polyhedra · Theoretical Context</div>
+    <h1>Dorman<br>Luke</h1>
+    <p class="intro">A geometric construction that formally explains what Gregg Fleishman's slot joint system is doing — and places his work in a lineage reaching from D'Arcy Thompson through Fuller, Pearce, and Wachsmann to contemporary computational research.</p>
+    <p class="attribution">Research · White Cube Society · June 2026</p>
+  </div>
+</header>
+
+<!-- §1 THE OBSERVATION -->
+<section class="sec">
+  <div class="wrap">
+    <div class="eyebrow">1 · The Observation</div>
+    <h2>One mathematical structure, expressed three ways</h2>
+    <p>Gregg Fleishman's work — the slot joint, the √2 system, the rhombic dodecahedron, the FCC lattice — can be formally understood through the lens of dual polyhedra theory and specifically the Dorman Luke construction. This is not a loose analogy; the mathematical structure maps precisely onto Gregg's physical and architectural practice.</p>
+    <p>The √2 system, the rhombic dodecahedron, and the FCC lattice are not three separate interests. They are the same mathematical fact expressed in three different registers.</p>
+  </div>
+</section>
+
+<!-- §2 THE CONSTRUCTION -->
+<section class="sec">
+  <div class="wrap">
+    <div class="eyebrow">2 · The Construction</div>
+    <h2>What the Dorman Luke construction is</h2>
+    <p>A geometric method for deriving the face shape of a <strong>dual polyhedron</strong> from the <strong>vertex figure</strong> of its primal. Formalized by Dorman Luke and detailed in Magnus Wenninger's <em>Dual Models</em> (Cambridge University Press, 1983).</p>
+
+    <ol class="steps">
+      <li>At vertex V of a uniform polyhedron, mark points A, B, C, D — the midpoints of each edge meeting at V, equidistant from V.</li>
+      <li>Connect A, B, C, D to form the <strong>vertex figure</strong> ABCD.</li>
+      <li>Draw the <strong>circumcircle</strong> of ABCD.</li>
+      <li>Draw the <strong>tangent line</strong> to the circumcircle at each corner (A, B, C, D).</li>
+      <li>Mark points E, F, G, H where adjacent tangent lines intersect. The polygon EFGH is the face of the dual polyhedron.</li>
+    </ol>
+
+    <h3>The critical condition: the midsphere</h3>
+    <p>The construction only works when the polyhedron has a <strong>midsphere</strong> (intersphere) — a sphere tangent to every edge at its midpoint, shared by both the primal and its dual. For uniform polyhedra, this condition is always met.</p>
+    <p>The midsphere is the geometric bridge between a structure and its dual. Every edge of both the primal and dual is tangent to the same sphere.</p>
+
+    <h3>The canonical example</h3>
+    <p>Wikipedia's illustration uses the cuboctahedron → rhombic dodecahedron. This is not incidental to Gregg's work — it is the exact transformation at the center of his geometric system.</p>
+    <ul class="dl">
+      <li>The cuboctahedron (vector equilibrium) is the vertex-transitive primal; its vertex figures are squares</li>
+      <li>The Dorman Luke construction applied to those square vertex figures produces <strong>rhombic faces</strong> with diagonal ratio <strong>√2 : 1</strong></li>
+      <li>The resulting dual is the rhombic dodecahedron — also the Voronoi cell of the FCC lattice</li>
+      <li>This is why the √2 proportioning appears throughout Gregg's system: it is a direct consequence of the duality geometry</li>
+    </ul>
+  </div>
+</section>
+
+<!-- §3 ARCHITECTURAL -->
+<section class="sec">
+  <div class="wrap">
+    <div class="eyebrow">3 · In Architectural Terms</div>
+    <h2>The slot joint as vertex figure</h2>
+    <blockquote>
+      <p>The geometry of connection — vertex figure and circumcircle tangency — fully determines the geometry of the resulting face, and therefore the geometry of the dual structure.</p>
+    </blockquote>
+    <p>In Gregg's physical work, the <strong>slot joint</strong> is the vertex figure. How pieces meet at a node — the angle, the slot width, the √2 proportioning — determines the planar geometry of each structural panel or face, which in turn determines the space-filling behavior of the whole system.</p>
+    <p>Gregg is not just working <em>with</em> rhombic dodecahedra. He is physically instantiating the process by which the rhombic dodecahedron is generated — building the Dorman Luke construction in plywood and aluminum at furniture and architectural scale.</p>
+  </div>
+</section>
+
+<!-- §4 LINEAGE -->
+<section class="sec">
+  <div class="wrap">
+    <div class="eyebrow">4 · The Lineage</div>
+    <h2>Thinkers who circled the same territory</h2>
+    <p>Every thinker below arrived at the vertex-figure-determines-structure principle. None named the Dorman Luke construction or the mathematical theory of dual uniform polyhedra as the underlying principle they were enacting.</p>
+
+    <div class="lineage">
+
+      <div class="lcard">
+        <div class="lcard-head">
+          <span class="lcard-date">1917</span>
+          <h3>D'Arcy Wentworth Thompson — <em>On Growth and Form</em></h3>
+        </div>
+        <p>The deep background. Thompson's argument — that biological forms arise from physical and geometric forces, not just evolution — established the paradigm within which Pearce, Fuller, and implicitly Gregg all work. His analysis of cell packing, soap bubble geometry, and skeletal structures is an early description of Voronoi tessellation and minimal-surface duality, predating the formal mathematics.</p>
+      </div>
+
+      <div class="lcard">
+        <div class="lcard-head">
+          <span class="lcard-date">1961</span>
+          <h3>Konrad Wachsmann — <em>The Turning Point of Building</em></h3>
+        </div>
+        <p>The universal joint as structural vertex figure. Wachsmann spent decades searching for the "universal knot" — a single connector geometry that could generate any space frame. His Mobilar Structure system (1944–45) for USAF aircraft hangars used one standardized tetrahedral connector for infinite structural extension. He understood that the node <em>is</em> the structure. His search is the architectural version of the Dorman Luke question: what vertex configuration generates the most powerful dual?</p>
+      </div>
+
+      <div class="lcard">
+        <div class="lcard-head">
+          <span class="lcard-date">1975</span>
+          <h3>Buckminster Fuller — <em>Synergetics</em> and the Vector Equilibrium</h3>
+        </div>
+        <p>Fuller's "vector equilibrium" is the cuboctahedron — the primal polyhedron whose dual, via Dorman Luke, is the rhombic dodecahedron. He understood this as the "zero state" of spatial structure from which all other forms derive. Geodesic domes are physically dual polyhedra: geodesic polyhedra are the duals of Goldberg polyhedra. Like Pearce and Wachsmann, Fuller arrived at the duality principle physically and intuitively without naming it in mathematical terms.</p>
+      </div>
+
+      <div class="lcard">
+        <div class="lcard-head">
+          <span class="lcard-date">1978</span>
+          <h3>Peter Pearce — <em>Structure in Nature is a Strategy for Design</em></h3>
+        </div>
+        <p>The closest direct precursor. Pearce worked with Eames and Fuller and founded Synestructics to produce physical kits embodying space-filling polyhedral systems. He argued that joint geometry determines structural typology — the same logic as polyhedral duality — and explicitly worked with the rhombic dodecahedron and FCC tessellation. He arrived there through structural intuition and biological analogy, not formal mathematical derivation. Notably absent: he does not cite Dorman Luke or dual polyhedra theory despite working in exactly that territory.</p>
+      </div>
+
+      <div class="lcard">
+        <div class="lcard-head">
+          <span class="lcard-date">2020–</span>
+          <h3>Contemporary Computational Research</h3>
+        </div>
+        <p>Recent work has formally connected Voronoi decomposition to interlocking structural assemblies. Yadav et al. (2020) generate interlocking vault modules by decomposing 3D space via Voronoi cells — the interface geometry between modules is the shared face of adjacent Voronoi cells, which determines structural interlocking. This is exactly the dual-face-from-vertex-figure relationship. Active topological interlocking assembly research (2020s) directly formalizes the Dorman Luke principle at architectural scale.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- §5 THE GAP -->
+<section class="sec">
+  <div class="wrap">
+    <div class="eyebrow">5 · The Gap</div>
+    <h2>What no one has explicitly named</h2>
+    <p>Every thinker in this lineage arrived at the vertex-figure-determines-structure principle through structural intuition, biological analogy, or computational discovery. None appear to have formally named the Dorman Luke construction or the mathematical theory of dual uniform polyhedra as the underlying principle.</p>
+
+    <div class="gap-box">
+      <p>Gregg's system encodes the Dorman Luke relationship physically: the <strong>slot joint is the vertex figure</strong>; the rhombic face is what the construction produces; the <strong>√2 proportioning</strong> is a direct consequence of that transformation's geometry; no-fastener construction emerges from the same face-interface interlocking logic that topological interlocking research formalizes computationally.</p>
+    </div>
+
+    <p>He is working at the intersection of the Pearce / Fuller / Wachsmann design-science tradition and the formal mathematical theory of polyhedral duality — but arrived there through independent material and geometric research, not through either tradition directly.</p>
+    <p>The Dorman Luke construction is the missing theoretical frame that formally describes what his slot joint system is doing.</p>
+  </div>
+</section>
+
+<!-- §6 REFERENCES -->
+<section class="sec" style="border-bottom:none;padding-bottom:120px;">
+  <div class="wrap">
+    <div class="eyebrow">6 · Key References</div>
+    <h2>Sources</h2>
+
+    <h3 style="margin-top:28px;">Primary Sources</h3>
+    <div class="refs">
+      <div class="ref">
+        <div class="rt">Dual Models</div>
+        <div class="rm">Magnus Wenninger · Cambridge University Press · 1983 · Formal treatment of the Dorman Luke construction</div>
+      </div>
+      <div class="ref">
+        <div class="rt">Structure in Nature is a Strategy for Design</div>
+        <div class="rm">Peter Pearce · MIT Press · 1978 · Closest direct theoretical ancestor</div>
+      </div>
+      <div class="ref">
+        <div class="rt">The Turning Point of Building: Structure and Design</div>
+        <div class="rm">Konrad Wachsmann · 1961 · Universal joint / space frame theory</div>
+      </div>
+      <div class="ref">
+        <div class="rt">Synergetics: Explorations in the Geometry of Thinking</div>
+        <div class="rm">R. Buckminster Fuller · Macmillan · 1975</div>
+      </div>
+      <div class="ref">
+        <div class="rt">On Growth and Form</div>
+        <div class="rm">D'Arcy Wentworth Thompson · Cambridge University Press · 1917</div>
+      </div>
+    </div>
+
+    <h3>Mathematical References</h3>
+    <div class="refs">
+      <div class="ref">
+        <div class="rt">Dual Uniform Polyhedron — Dorman Luke Construction</div>
+        <div class="rm"><a href="https://en.wikipedia.org/wiki/Dual_uniform_polyhedron#Dorman_Luke_construction" target="_blank" rel="noopener">Wikipedia</a></div>
+      </div>
+      <div class="ref">
+        <div class="rt">Dorman-Luke Construction</div>
+        <div class="rm"><a href="https://mathworld.wolfram.com/Dorman-LukeConstruction.html" target="_blank" rel="noopener">Wolfram MathWorld</a></div>
+      </div>
+      <div class="ref">
+        <div class="rt">Face Centered Cubic Constructions (Rhombic Dodecahedra)</div>
+        <div class="rm">George Hart · <a href="http://georgehart.com/rp/FCC.html" target="_blank" rel="noopener">georgehart.com</a></div>
+      </div>
+    </div>
+
+    <h3>Contemporary Research</h3>
+    <div class="refs">
+      <div class="ref">
+        <div class="rt">Interlocking Vaults by Voronoi Decomposition of 3D Space</div>
+        <div class="rm">Yadav et al. · Shape Modeling International · 2020 · <a href="https://www.researchgate.net/publication/341977545_Interlocking_Vaults_by_Voronoi_Decomposition_of_3D_Space" target="_blank" rel="noopener">ResearchGate</a></div>
+      </div>
+      <div class="ref">
+        <div class="rt">Advancing Topological Interlocking Structures</div>
+        <div class="rm">Springer Nature · 2024 · Recent developments, applications, and challenges in civil engineering</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

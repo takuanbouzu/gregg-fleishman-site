@@ -1,0 +1,4 @@
+# Generated design-system sync bundle — copies of the canonical assets/.
+# Regenerate with design-system/build.sh; never edit or commit these.
+design-system/gf-tokens.css
+design-system/gf-nav.js

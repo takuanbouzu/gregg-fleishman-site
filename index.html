@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#0B0B0B"/>
+<title>Gregg Fleishman — The Geometry Lesson</title>
+<meta name="description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, and the architecture that fills space.">
+<!-- Social link previews. Base URL assumes GitHub Pages default; update if a custom domain is used. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — The Lost Triangle">
+<meta property="og:title" content="Gregg Fleishman — The Lost Triangle">
+<meta property="og:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, and the architecture that fills space.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-geometry/">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-geometry/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gregg Fleishman — The Lost Triangle">
+<meta name="twitter:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle, the rhombic dodecahedron, and the architecture that fills space.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-geometry/assets/drawings/artwork-gold.png">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<style>
+:root{
+  /* Retargeted to the GF design system (gf-tokens.css). Variable names kept
+     so every component rule below inherits the brand values unchanged. */
+  --bg-top:#161616; --bg-mid:#0B0B0B; --bg-bot:#070707;
+  --panel:rgba(20,20,20,.74); --panel-bd:#252525;
+  --tx:#F0EDE8; --tx-dim:#8A8480; --tx-faint:#4A4643;
+  --chip:rgba(240,237,232,.06); --accent:#C8A96E;
+  --font:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --mono:'Space Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --font-display:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;color:var(--tx);}
+#bg{position:fixed;inset:0;z-index:-1;transition:background .6s ease;
+  background:radial-gradient(circle at 50% 32%,var(--bg-top) 0%,var(--bg-mid) 52%,var(--bg-bot) 100%);}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%;touch-action:none;}
+#infobox{position:fixed;z-index:50;display:none;max-width:250px;background:var(--panel);border:.5px solid var(--panel-bd);border-radius:8px;padding:11px 13px;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 12px 34px rgba(0,0,0,.34);pointer-events:auto;}
+#infobox .it{font-size:12.5px;font-weight:600;color:var(--tx);margin-bottom:5px;letter-spacing:-.01em;}
+#infobox .ib{font-size:12px;line-height:1.5;color:var(--tx-dim);}
+
+/* ---- shared site nav — base styling from gf-tokens.css #gfnav;
+       compact + fixed override here for the full-screen instrument ---- */
+/* nav: canonical #gfnav from gf-tokens.css */
+
+/* ---- top bar ---- */
+#top{position:fixed;top:56px;left:0;right:0;z-index:40;height:52px;display:flex;align-items:center;
+  gap:14px;padding:0 16px;background:linear-gradient(to bottom,rgba(0,0,0,.42),rgba(0,0,0,0));}
+#brand{font-size:12px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--tx-dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#brand b{color:var(--tx);font-weight:600;}
+#gear{margin-left:auto;display:flex;align-items:center;gap:7px;font:inherit;font-size:12px;font-weight:560;
+  color:var(--tx-dim);background:var(--chip);border:.5px solid var(--panel-bd);border-radius:18px;
+  padding:7px 13px;cursor:pointer;transition:all .2s;flex-shrink:0;}
+#gear:hover,#gear.open{color:var(--tx);background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);}
+#gear svg{display:block;}
+
+/* ---- settings dropdown ---- */
+#settings{position:fixed;top:106px;right:16px;z-index:45;width:236px;background:var(--panel);
+  border:.5px solid var(--panel-bd);border-radius:8px;padding:15px 16px;
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 14px 40px rgba(0,0,0,.32);
+  opacity:0;transform:translateY(-8px) scale(.98);transform-origin:top right;pointer-events:none;transition:all .2s ease;}
+#settings.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+#settings h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-faint);margin:0 0 9px;}
+#settings .grp+ .grp{margin-top:15px;padding-top:14px;border-top:.5px solid var(--panel-bd);}
+.opt{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;}
+.opt .rad{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--panel-bd);flex-shrink:0;position:relative;transition:all .18s;}
+.opt.on .rad{border-color:var(--accent);}
+.opt.on .rad:after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--accent);}
+.opt .txt{font-size:13px;color:var(--tx-dim);}
+.opt.on .txt{color:var(--tx);}
+.opt .sub{display:block;font-size:10.5px;color:var(--tx-faint);margin-top:1px;}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;}
+.srow label{font-size:12.5px;color:var(--tx-dim);}
+#sketchOp{width:108px;accent-color:var(--accent);}
+.sw{position:relative;width:38px;height:21px;border-radius:11px;background:var(--chip);border:.5px solid var(--panel-bd);cursor:pointer;transition:background .2s;flex-shrink:0;}
+.sw.on{background:var(--accent);border-color:var(--accent);}
+.sw .kn{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left .2s;}
+.sw.on .kn{left:20px;}
+
+/* ---- stage caption (center top) ---- */
+#cap{position:fixed;top:118px;left:50%;transform:translateX(-50%);z-index:25;text-align:center;
+  pointer-events:none;max-width:min(620px,86vw);transition:opacity .5s ease;}
+#capnum{font-family:var(--font-display);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:700;}
+#captitle{font-family:var(--font-display);font-size:clamp(18px,4.4vw,25px);font-weight:700;letter-spacing:-.02em;margin-top:5px;}
+#capbody{font-size:clamp(12px,3vw,13.5px);line-height:1.5;color:var(--tx-dim);margin-top:7px;}
+#capconf{display:inline-block;margin-top:9px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 10px;border-radius:8px;border:.5px solid var(--panel-bd);background:var(--chip);color:var(--tx-faint);}
+.conf-confirmed{color:#5fd39a!important;border-color:rgba(95,211,154,.4)!important;}
+.conf-interp{color:#ffc861!important;border-color:rgba(255,200,97,.4)!important;}
+.conf-hyp{color:#ff8aa8!important;border-color:rgba(255,138,168,.4)!important;}
+body.minimal #capbody,body.minimal #brand{display:none;}
+
+/* ---- left toggle panel ---- */
+#layers{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:25;width:188px;max-height:74vh;overflow-y:auto;
+  background:var(--panel);border:.5px solid var(--panel-bd);border-radius:8px;padding:13px 14px;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);transition:opacity .3s;}
+#layers h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-faint);margin-bottom:9px;}
+.lyr{display:flex;align-items:center;gap:9px;padding:5px 0;cursor:pointer;}
+.lyr .box{width:15px;height:15px;border-radius:4px;border:1px solid var(--panel-bd);background:var(--chip);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.lyr.on .box{background:var(--accent);border-color:var(--accent);}
+.lyr .box svg{opacity:0;transition:opacity .18s;}
+.lyr.on .box svg{opacity:1;}
+.lyr span{font-size:12.5px;color:var(--tx-dim);transition:color .18s;}
+.lyr.on span{color:var(--tx);}
+.lyr.disabled{opacity:.32;pointer-events:none;}
+
+/* ---- bottom stage rail ---- */
+#rail{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:25;display:flex;align-items:center;
+  gap:4px;background:var(--panel);border:.5px solid var(--panel-bd);border-radius:8px;padding:7px 9px;
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);max-width:94vw;}
+#rail button{font:inherit;width:34px;height:34px;border-radius:8px;border:.5px solid var(--panel-bd);
+  background:var(--chip);color:var(--tx-dim);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+#rail button:hover{color:var(--tx);}
+#dots{display:flex;align-items:center;flex-wrap:nowrap;}
+.dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--tx-faint);cursor:pointer;transition:all .2s;margin:0 2px;flex-shrink:0;}
+.dot.on{background:var(--accent);border-color:var(--accent);transform:scale(1.25);}
+#stagelabel{font-size:11px;color:var(--tx-dim);min-width:104px;text-align:center;letter-spacing:.02em;padding:0 6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ---- hint ---- */
+#hint{position:fixed;bottom:66px;left:50%;transform:translateX(-50%);z-index:20;font-size:11.5px;
+  color:var(--tx-faint);letter-spacing:.04em;transition:opacity .8s ease;pointer-events:none;text-align:center;}
+#hint.gone{opacity:0;}
+
+/* ---- responsive ---- */
+@media(max-width:720px){
+  #gfnav{gap:12px;padding:0 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #layers{width:150px;left:10px;padding:11px 11px;}
+  #cap{top:112px;}
+  #stagelabel{min-width:70px;font-size:10px;}
+  #brand{font-size:10px;letter-spacing:.08em;}
+  #rail{gap:3px;padding:6px 8px;bottom:calc(16px + env(safe-area-inset-bottom));}
+  #rail button{width:30px;height:30px;font-size:14px;}
+  .dot{width:8px;height:8px;margin:0 1px;}
+}
+@media(max-height:560px){
+  #cap{top:106px;}
+  #capbody{display:none;}
+  #layers{max-height:80vh;top:52%;}
+  #hint{display:none;}
+}
+@media(max-width:430px){
+  #cap{top:108px;max-width:92vw;}
+  #captitle{font-size:18px;}
+  #capbody{font-size:11.5px;line-height:1.45;margin-top:5px;}
+  #layers{top:auto;bottom:78px;transform:none;max-height:38vh;width:140px;padding:10px 11px;}
+  #layers h4{margin-bottom:6px;}
+  .lyr{padding:4px 0;}
+  #hint{bottom:60px;font-size:10.5px;}
+}
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
+  <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
+  <a class="navlink" href="fleishman-sequence.html">Fleishman Sequence</a>
+  <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+  <a class="navlink" href="rhombic-system.html">Rhombic System</a>
+  <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
+  <a class="navlink" href="fleishman-vector-system.html">Vector System</a>
+  <a class="navlink" href="poster/poster.html">Poster</a>
+  <a class="navlink" href="vertor-pod/index.html">Vertor Pod</a>
+  <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</nav>
+<div id="bg"></div>
+<canvas id="c"></canvas>
+<div id="infobox"><div class="it"></div><div class="ib"></div></div>
+
+<div id="top">
+  <div id="brand">The Geometry Lesson</div>
+  <button id="gear" aria-label="Settings">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Settings</span>
+  </button>
+</div>
+
+<div id="settings">
+  <div class="grp">
+    <h4>Display mode</h4>
+    <div id="modelist"></div>
+  </div>
+  <div class="grp">
+    <h4>Display</h4>
+    <div class="srow"><label>Sketch opacity</label><input id="sketchOp" type="range" min="0" max="100" value="62"/></div>
+    <div class="srow"><label>Auto-rotate</label><div id="autorot" class="sw on"><div class="kn"></div></div></div>
+  </div>
+</div>
+
+<div id="cap">
+  <div id="capnum">Stage 1</div>
+  <div id="captitle">Hand-Sketch Origin</div>
+  <div id="capbody"></div>
+  <div id="capconf" class="conf-confirmed">Confirmed geometry</div>
+</div>
+
+<div id="layers">
+  <h4>Layers</h4>
+  <div id="layerlist"></div>
+</div>
+
+<div id="hint">drag to orbit · scroll to zoom · hover for details</div>
+
+<div id="rail">
+  <button id="prev">‹</button>
+  <div id="dots"></div>
+  <div id="stagelabel"></div>
+  <button id="next">›</button>
+</div>
+
+<script src="assets/vendor/three-r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ════════ THEMES ════════ */
+const THEMES = {
+  night:{ label:'Gregg Night', sub:'Dark · glowing geometry',
+    bg:['#161616','#0B0B0B','#070707'], fog:0x0B0B0B, fogD:0.052,
+    grid:0x252525, ghost:0x383838, ink:0xF0EDE8,
+    unit:0xF0EDE8, face:0x4A90D9, space:0xE0349E, tri:0x3CCB8E, angle:0xC8A96E,
+    xA:0xff5555, yA:0x55ff77, zA:0x4d88ff, sketch:0.62, minimal:false },
+  paper:{ label:'Paper Sketch', sub:'Off-white · pencil feel',
+    bg:['#fffaf0','#f6f2e8','#e7ddca'], fog:0xefe9da, fogD:0.040,
+    grid:0xd9d2c3, ghost:0x9c9484, ink:0x1b1b1b,
+    unit:0x1769ff, face:0xe2811f, space:0xd9295f, tri:0x1f9c63, angle:0x927400,
+    xA:0xd9295f, yA:0x1f9c63, zA:0x1769ff, sketch:0.80, minimal:false },
+  present:{ label:'Presentation', sub:'Minimal · gallery display',
+    bg:['#10131a','#0a0c11','#050608'], fog:0x080a0e, fogD:0.045,
+    grid:0x1b1f29, ghost:0x46506a, ink:0xeef2f8,
+    unit:0x7aa8ff, face:0xffb070, space:0xff6f90, tri:0x6cffb6, angle:0xffd87a,
+    xA:0xff7a7a, yA:0x7aff9a, zA:0x7aa8ff, sketch:0.5, minimal:true }
+};
+let theme=THEMES.night, themeName='night';
+
+/* ════════ RENDERER / SCENE ════════ */
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setClearColor(0,0);
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(theme.fog,theme.fogD);
+const camera=new THREE.PerspectiveCamera(46,1,0.01,100);
+camera.up.set(0,0,1); // Z up throughout
+
+/* responsive framing: keep the figure fully in-frame at any aspect */
+let fitDist=4.0;
+function resize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  renderer.setSize(w,h,false);
+  const aspect=w/h; camera.aspect=aspect; camera.updateProjectionMatrix();
+  const R0=1.4; // bounding radius around lookAt that must stay visible
+  const halfV=THREE.MathUtils.degToRad(camera.fov/2);
+  const halfH=Math.atan(Math.tan(halfV)*aspect);
+  fitDist=Math.max(R0/Math.sin(halfV), R0/Math.sin(halfH))+0.2;
+}
+new ResizeObserver(resize).observe(canvas);
+window.addEventListener('orientationchange',function(){setTimeout(resize,180);});
+resize();
+
+scene.add(new THREE.AmbientLight(0xffffff,.75));
+const dir=new THREE.DirectionalLight(0xffffff,.6);dir.position.set(-2,-3,5);scene.add(dir);
+
+/* ════════ POINTS (Z up) ════════ */
+const O=new THREE.Vector3(0,0,0), X=new THREE.Vector3(1,0,0), Y=new THREE.Vector3(0,1,0),
+      A=new THREE.Vector3(1,1,0), B=new THREE.Vector3(1,1,1),
+      Z0=new THREE.Vector3(0,0,1), X1=new THREE.Vector3(1,0,1), Y1=new THREE.Vector3(0,1,1);
+
+/* ════════ REGISTRIES ════════ */
+const items=[], labels=[], colorRoles=[], glowMats=[];
+function colMat(role,overlay){
+  const m=new THREE.LineBasicMaterial({color:theme[role],transparent:true,opacity:0});
+  if(overlay){m.depthTest=false;m.depthWrite=false;}
+  colorRoles.push({mat:m,role});return m;
+}
+function reg(obj,opt){
+  obj.userData={stage:opt.stage||1,layer:opt.layer||'construction',maxOp:opt.maxOp==null?1:opt.maxOp,grow:!!opt.grow,always:!!opt.always,maxStage:opt.maxStage==null?null:opt.maxStage,desc:opt.desc||null};
+  if(opt.grow){obj.userData.a=opt.a.clone();obj.userData.b=opt.b.clone();obj.userData.prog=0;}
+  if(opt.overlay)obj.renderOrder=opt.overlayOrder||2;
+  items.push(obj);scene.add(obj);return obj;
+}
+function line(a,b,role,opt){opt=opt||{};
+  const pts=opt.grow?[a.clone(),a.clone()]:[a.clone(),b.clone()];
+  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),colMat(role,opt.overlay));
+  return reg(ln,Object.assign({a,b,role},opt));
+}
+/* neon glow line — additive core tube + soft halo tube (James-Turrell luminous light) */
+const _Y=new THREE.Vector3(0,1,0);
+function setSeg(grp,a,end){
+  const dir=end.clone().sub(a);const len=dir.length();
+  if(len<1e-5){grp.visible=false;return;}grp.visible=true;
+  grp.position.copy(a).addScaledVector(dir,0.5);
+  grp.quaternion.setFromUnitVectors(_Y,dir.multiplyScalar(1/len));
+  grp.scale.set(1,len,1);
+}
+function glow(a,b,role,opt){opt=opt||{};
+  const coreR=opt.coreR||0.013, haloR=opt.haloR||0.05;
+  const cMat=new THREE.MeshBasicMaterial({color:theme[role],transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});
+  const hMat=new THREE.MeshBasicMaterial({color:theme[role],transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});
+  const core=new THREE.Mesh(new THREE.CylinderGeometry(coreR,coreR,1,8,1,true),cMat);core.renderOrder=4;
+  const halo=new THREE.Mesh(new THREE.CylinderGeometry(haloR,haloR,1,12,1,true),hMat);halo.renderOrder=3;
+  const grp=new THREE.Group();grp.add(halo);grp.add(core);
+  colorRoles.push({mat:cMat,role});colorRoles.push({mat:hMat,role});glowMats.push({core:cMat,halo:hMat});
+  setSeg(grp,a,opt.grow?a:b);
+  grp.userData={isGlow:true,core:cMat,halo:hMat,a:a.clone(),b:b.clone(),
+    stage:opt.stage||1,layer:opt.layer||'construction',maxOp:opt.maxOp==null?1:opt.maxOp,
+    grow:!!opt.grow,prog:0,always:!!opt.always,maxStage:opt.maxStage==null?null:opt.maxStage,
+    haloFactor:opt.haloFactor==null?0.32:opt.haloFactor};
+  items.push(grp);scene.add(grp);return grp;
+}
+function dot(p,role,r,opt){opt=opt||{};
+  const mat=new THREE.MeshBasicMaterial({color:theme[role],transparent:true,opacity:0});
+  if(opt.overlay){mat.depthTest=false;mat.depthWrite=false;}
+  colorRoles.push({mat,role});
+  const m=new THREE.Mesh(new THREE.SphereGeometry(r||.026,18,18),mat);m.position.copy(p);
+  return reg(m,opt);
+}
+function triFill(a,b,c,role,opt){opt=opt||{};
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array([a.x,a.y,a.z,b.x,b.y,b.z,c.x,c.y,c.z]),3));
+  g.setIndex([0,1,2]);g.computeVertexNormals();
+  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:theme[role],transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));
+  colorRoles.push({mat:m.material,role});return reg(m,Object.assign({role},opt));
+}
+function arc(center,u,v,r,a0,a1,role,opt){opt=opt||{};const pts=[];const segs=44;
+  for(let i=0;i<=segs;i++){const a=a0+(a1-a0)*i/segs;
+    pts.push(center.clone().add(u.clone().multiplyScalar(Math.cos(a)*r)).add(v.clone().multiplyScalar(Math.sin(a)*r)));}
+  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),colMat(role,opt.overlay));
+  return reg(ln,Object.assign({role},opt));
+}
+function label(text,pos,role,scale,opt){opt=opt||{};
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true,depthTest:false,opacity:0}));
+  sp.position.copy(pos);sp.renderOrder=5;
+  const rec={sprite:sp,text:text,role:role,scale:scale,stage:opt.stage||1,layer:opt.layer||'labels',maxOp:opt.maxOp==null?1:opt.maxOp,always:!!opt.always,maxStage:opt.maxStage==null?null:opt.maxStage};
+  labels.push(rec);drawLabel(rec);scene.add(sp);return rec;
+}
+function drawLabel(rec){
+  const cv=document.createElement('canvas');cv.width=512;cv.height=160;
+  const ctx=cv.getContext('2d');ctx.font='700 78px Inter,Arial,sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  const col=(rec.role==='ink')?theme.ink:theme[rec.role];
+  const hex='#'+(col>>>0).toString(16).padStart(6,'0').slice(-6);
+  ctx.lineWidth=12;ctx.strokeStyle=(themeName==='paper')?'rgba(246,242,232,.95)':'rgba(8,12,18,.8)';
+  ctx.strokeText(rec.text,256,80);ctx.fillStyle=hex;ctx.fillText(rec.text,256,80);
+  const tex=new THREE.CanvasTexture(cv);tex.needsUpdate=true;
+  if(rec.sprite.material.map)rec.sprite.material.map.dispose();
+  rec.sprite.material.map=tex;rec.sprite.scale.set(rec.scale*3.2,rec.scale,1);
+}
+
+/* ════════ GRID (XY plane, dropped just below z=0 to avoid coplanar z-fighting) ════════ */
+const gridG=new THREE.Group();gridG.position.z=-0.006;
+for(let i=-3;i<=3;i++){const g=i*0.5;
+  const m1=colMat('grid');m1.depthWrite=false;
+  const m2=colMat('grid');m2.depthWrite=false;
+  gridG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-1.5,g,0),new THREE.Vector3(2.5,g,0)]),m1));
+  gridG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(g+0.5,-1.5,0),new THREE.Vector3(g+0.5,2.5,0)]),m2));
+}
+gridG.renderOrder=-1;scene.add(gridG);
+const gridMaxOp=.5;
+
+/* ════════ ORIGIN ANCHOR — the single point (0,0,0) every drawing ties into ════════
+   Persistent across ALL stages and themes. The square, both diagonals and the proof
+   triangle all emanate from here, so this is the geometric root of the whole lesson. */
+let originRing=null;
+(function(){
+  originRing=arc(O,new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),.1,0,Math.PI*2,'ink',{always:true,overlay:true,overlayOrder:3,maxOp:.42,layer:'origin'});
+  dot(O,'ink',.042,{always:true,overlay:true,overlayOrder:4,maxOp:1,layer:'origin',desc:{t:'Origin — O (0,0,0)',b:'Every line in the lesson is built from this single point. The square, both diagonals and the proof triangle all begin here.'}});
+  label('O',new THREE.Vector3(-.16,-.16,-.03),'ink',.15,{always:true,layer:'origin'});
+})();
+
+/* ════════ STAGE 1 — NOTEBOOK LINEWORK ════════ */
+let sketchUserOp=0.62;
+// Pure generated linework: no raster sketch/photo texture in this build.
+const s1desc={t:'The proof, by hand',b:'Gregg traces 1 : √2 : √3 straight from the cube — legs 1 and √2, hypotenuse √3, so 1² + (√2)² = (√3)². Hover any line for its meaning.'};
+[
+  [new THREE.Vector3(-.7,-.32,-.015),new THREE.Vector3(1.55,-.24,-.015)],
+  [new THREE.Vector3(-.62,-.58,-.015),new THREE.Vector3(1.46,-.42,-.015)],
+  [new THREE.Vector3(.25,-.95,-.015),new THREE.Vector3(1.02,.55,-.015)],
+  [new THREE.Vector3(.0,.15,-.015),new THREE.Vector3(1.32,.84,-.015)],
+  [new THREE.Vector3(.48,-.18,-.015),new THREE.Vector3(.96,.76,-.015)]
+].forEach(function(seg){line(seg[0],seg[1],'ink',{stage:1,maxStage:1,layer:'sketch',maxOp:.22,overlay:true,desc:s1desc});});
+[[O,A],[A,B],[O,B]].forEach(function(seg){line(seg[0],seg[1],'ink',{stage:1,maxStage:1,layer:'sketch',maxOp:.5,grow:true,overlay:true,desc:s1desc});});
+triFill(O,A,B,'tri',{stage:1,maxStage:1,layer:'sketch',maxOp:.08,overlay:true,overlayOrder:1,desc:s1desc});
+label('35°?',new THREE.Vector3(-.45,-.43,.02),'ink',.1,{stage:1,maxStage:1,layer:'sketch',maxOp:.6});
+label('55°',new THREE.Vector3(.88,.07,.02),'ink',.1,{stage:1,maxStage:1,layer:'sketch',maxOp:.6});
+label('√2',new THREE.Vector3(1.15,.78,.02),'ink',.11,{stage:1,maxStage:1,layer:'sketch',maxOp:.6});
+label('√3',new THREE.Vector3(.95,.48,.02),'ink',.11,{stage:1,maxStage:1,layer:'sketch',maxOp:.6});
+
+/* ════════ STAGE 2 — CLEAN 2D CONSTRUCTION ════════ */
+// base square (these 4 edges ARE the cube's bottom outline for all later stages — no duplicates drawn)
+line(O,X,'unit',{stage:2,grow:true,desc:{t:'Unit edge = 1',b:'The base module. Every length in the system scales from this single unit.'}});
+line(X,A,'unit',{stage:2,grow:true});
+line(A,Y,'unit',{stage:2,grow:true});
+line(Y,O,'unit',{stage:2,grow:true});
+dot(X,'unit',.026,{stage:2,layer:'labels'});
+dot(Y,'unit',.026,{stage:2,layer:'labels'});
+label('1',new THREE.Vector3(.5,-.16,0),'unit',.14,{stage:2,layer:'ratios'});
+label('1',new THREE.Vector3(-.16,.5,0),'unit',.14,{stage:2,layer:'ratios'});
+line(O,A,'face',{stage:2,grow:true,desc:{t:'Face diagonal = √2',b:'The diagonal across the unit square. 1² + 1² = 2 → √2, meeting the edge at 45°.'}});
+dot(A,'face',.034,{stage:2,layer:'labels'});
+label('A',new THREE.Vector3(1.13,1.12,-.05),'ink',.13,{stage:2});
+label('√2',new THREE.Vector3(.6,.62,-.12),'face',.17,{stage:2,layer:'ratios'});
+arc(O,new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),.34,0,Math.PI/4,'angle',{stage:2,layer:'angles',maxOp:.9,overlay:true});
+label('45°',new THREE.Vector3(.27,.1,0),'angle',.115,{stage:2,layer:'angles'});
+
+/* ════════ STAGE 3 — CUBE DIAGONAL PROOF ════════ */
+// vertical lift A->B (this is one of the 4 cube verticals — the proof edge)
+line(A,B,'unit',{stage:3,grow:true,desc:{t:'The lift = 1',b:'Raising one corner a single unit turns the flat √2 square into the cube.'}});
+dot(B,'space',.04,{stage:3,layer:'labels'});
+label('1',new THREE.Vector3(1.15,1.08,.5),'unit',.15,{stage:3,layer:'ratios'});
+label('B',new THREE.Vector3(1.12,1.13,1.13),'ink',.13,{stage:3});
+// the other 3 cube verticals (ghost) — distinct edges, no overlap. Retire after the
+// proof stages so they don't clutter the Lost Triangle in the stage 6+ investigations.
+line(O,Z0,'ghost',{stage:3,maxStage:5,layer:'cube',maxOp:.26});
+line(X,X1,'ghost',{stage:3,maxStage:5,layer:'cube',maxOp:.26});
+line(Y,Y1,'ghost',{stage:3,maxStage:5,layer:'cube',maxOp:.26});
+// space diagonal √3
+line(O,B,'space',{stage:3,grow:true,desc:{t:'Space diagonal = √3',b:'The diagonal through the cube body. (√2)² + 1² = 3 → √3 — the hypotenuse of the Lost Triangle.'}});
+label('√3',new THREE.Vector3(.44,.44,.66),'space',.18,{stage:3,layer:'ratios'});
+
+/* ════════ STAGE 4 — ROOT TRIANGLE REVEAL ════════ */
+triFill(O,A,B,'tri',{stage:4,layer:'roottri',maxOp:.16,overlay:true,overlayOrder:1,desc:{t:'The Lost Triangle',b:'Right triangle with legs 1 and √2 and hypotenuse √3. Acute angles 35.264° and 54.736°; 1² + (√2)² = (√3)².'}});
+// green proof outline drawn as overlay (depthTest off) so it never z-fights the √2/√3/edge lines beneath
+line(O,A,'tri',{stage:4,grow:true,maxOp:.75,layer:'roottri',overlay:true});
+line(A,B,'tri',{stage:4,grow:true,maxOp:.75,layer:'roottri',overlay:true});
+line(O,B,'tri',{stage:4,grow:true,maxOp:.75,layer:'roottri',overlay:true});
+(function(){
+  const OA=A.clone().sub(O).normalize(), OB=B.clone().sub(O).normalize();
+  const perp=new THREE.Vector3().crossVectors(OA,OB).normalize();
+  const up=new THREE.Vector3().crossVectors(perp,OA).normalize();
+  arc(O,OA,up,.32,0,Math.atan2(1,Math.sqrt(2)),'angle',{stage:4,layer:'angles',maxOp:.9,overlay:true});
+})();
+label('35.264°',new THREE.Vector3(.36,.36,.17),'angle',.12,{stage:4,layer:'angles'});
+label('54.736°',new THREE.Vector3(1.16,1.12,.78),'angle',.12,{stage:4,layer:'angles'});
+(function(){
+  const AO=O.clone().sub(A).normalize(), AB=B.clone().sub(A).normalize(), r=.1;
+  const p0=A.clone().add(AO.clone().multiplyScalar(r));
+  const p1=p0.clone().add(AB.clone().multiplyScalar(r));
+  const p2=A.clone().add(AB.clone().multiplyScalar(r));
+  const m=colMat('ink',true);
+  const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([p0,p1,p2]),m);
+  reg(ln,{stage:4,layer:'angles',maxOp:.85,overlay:true});
+})();
+// top square (the remaining 4 cube edges) — completes the 12-edge cube with NO duplicates.
+// Capped at stage 5 so the ghost cube clears before the stage 6+ investigation.
+[[Z0,X1],[X1,B],[B,Y1],[Y1,Z0]].forEach(function(s){line(s[0],s[1],'ghost',{stage:4,maxStage:5,layer:'cube',maxOp:.3});});
+
+/* ════════ STAGE 5 — XYZ AXES ════════ */
+line(O,new THREE.Vector3(1.6,0,0),'xA',{stage:5,layer:'axes',maxOp:.7});
+line(O,new THREE.Vector3(0,1.6,0),'yA',{stage:5,layer:'axes',maxOp:.7});
+line(O,new THREE.Vector3(0,0,1.6),'zA',{stage:5,layer:'axes',maxOp:.7});
+label('X',new THREE.Vector3(1.72,0,0),'xA',.13,{stage:5,layer:'axes'});
+label('Y',new THREE.Vector3(0,1.72,0),'yA',.13,{stage:5,layer:'axes'});
+label('Z',new THREE.Vector3(0,0,1.72),'zA',.13,{stage:5,layer:'axes'});
+
+/* ════════════════════════════════════════════════════════════
+   STAGES 6–10   (investigation · interpretation · confirmed)
+   custom objects manage their own opacity via updaters[]
+   ════════════════════════════════════════════════════════════ */
+const updaters=[];
+const CC=new THREE.Vector3(0.5,0.5,0.5);
+
+/* ---- STAGE 6 — SILVER RATIO (investigation, not proof) ---- */
+(function(){
+  const s=0.58, ox=1.35, oy=-0.15;
+  function P(u,v){return new THREE.Vector3(ox+u*s,oy+v*s,0);}
+  const sig=1+Math.SQRT2;
+  const d={t:'Silver ratio σ = 1+√2',b:'INVESTIGATION (not proven): the silver ratio (≈2.414) and its 45° silver triangle echo Gregg’s √2 system. Presented as an open question for Gregg to confirm.'};
+  [[[0,0],[sig,0]],[[sig,0],[sig,1]],[[sig,1],[0,1]],[[0,1],[0,0]],[[1,0],[1,1]],[[2,0],[2,1]]].forEach(function(g){
+    line(P(g[0][0],g[0][1]),P(g[1][0],g[1][1]),'face',{stage:6,maxStage:7,layer:'construction',maxOp:.55,desc:d});
+  });
+  line(P(0,0),P(1,1),'angle',{stage:6,maxStage:7,layer:'construction',maxOp:.7,desc:d});
+  label('σ = 1+√2 ≈ 2.414',P(sig*0.5,1.3),'face',.14,{stage:6,maxStage:7,layer:'construction'});
+})();
+
+/* ---- STAGE 7 — 45° VECTOR SYSTEM (ad-quadratum √2) ---- */
+(function(){
+  const d={t:'45° vector system',b:'INTERPRETATION: in the Vector House DXFs the √2 proof becomes a 45° fold — an outer square with an inner square rotated 45° (ad-quadratum). Area halves each step; the ratio is √2.'};
+  const o=[new THREE.Vector3(-0.5,-0.5,0),new THREE.Vector3(1.5,-0.5,0),new THREE.Vector3(1.5,1.5,0),new THREE.Vector3(-0.5,1.5,0)];
+  for(let i=0;i<4;i++) line(o[i],o[(i+1)%4],'unit',{stage:7,maxStage:7,layer:'construction',maxOp:.55,desc:d});
+  const m=[new THREE.Vector3(0.5,-0.5,0),new THREE.Vector3(1.5,0.5,0),new THREE.Vector3(0.5,1.5,0),new THREE.Vector3(-0.5,0.5,0)];
+  for(let i=0;i<4;i++) line(m[i],m[(i+1)%4],'face',{stage:7,maxStage:7,layer:'construction',maxOp:.8,desc:d});
+  label('45°',new THREE.Vector3(0.5,-0.34,0),'angle',.13,{stage:7,maxStage:7,layer:'construction'});
+  label('√2 module',new THREE.Vector3(1.22,1.26,0),'face',.13,{stage:7,maxStage:7,layer:'construction'});
+})();
+
+/* ---- STAGE 8 — RHOMBIC DODECAHEDRON (cube → Rhombicube morph) ---- */
+const _ax6=[new THREE.Vector3(1,0,0),new THREE.Vector3(-1,0,0),new THREE.Vector3(0,1,0),new THREE.Vector3(0,-1,0),new THREE.Vector3(0,0,1),new THREE.Vector3(0,0,-1)];
+const rdPairs=[];
+for(let i=0;i<6;i++)for(let j=i+1;j<6;j++) if(Math.abs(_ax6[i].dot(_ax6[j]))<0.5) rdPairs.push([_ax6[i],_ax6[j]]);
+function rdQuad(a,b,grow,ctr){
+  const t=new THREE.Vector3().crossVectors(a,b).normalize();
+  const apexA=ctr.clone().addScaledVector(a,0.5+0.5*grow);
+  const apexB=ctr.clone().addScaledVector(b,0.5+0.5*grow);
+  const base=ctr.clone().addScaledVector(a,0.5).addScaledVector(b,0.5);
+  return [apexA, base.clone().addScaledVector(t,0.5), apexB, base.clone().addScaledVector(t,-0.5)];
+}
+let rd=null;
+(function(){
+  const fGeo=new THREE.BufferGeometry();
+  const fPos=new Float32Array(rdPairs.length*6*3);
+  fGeo.setAttribute('position',new THREE.BufferAttribute(fPos,3));
+  const fMat=new THREE.MeshBasicMaterial({color:theme.space,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
+  colorRoles.push({mat:fMat,role:'space'});
+  const fMesh=new THREE.Mesh(fGeo,fMat);fMesh.renderOrder=1;
+  fMesh.userData={custom:true,desc:{t:'Silver rhombus face',b:'12 identical rhombi, diagonal ratio 1:√2, face angles 70.5° and 109.5°, dihedral 120°. The Catalan dual of the cuboctahedron and the Voronoi cell of the FCC lattice.'}};
+  items.push(fMesh);scene.add(fMesh);
+  const eGeo=new THREE.BufferGeometry();
+  const ePos=new Float32Array(rdPairs.length*8*3);
+  eGeo.setAttribute('position',new THREE.BufferAttribute(ePos,3));
+  const eMat=new THREE.LineBasicMaterial({color:theme.unit,transparent:true,opacity:0});
+  colorRoles.push({mat:eMat,role:'unit'});
+  scene.add(new THREE.LineSegments(eGeo,eMat));
+  rd={fGeo:fGeo,fPos:fPos,fMat:fMat,eGeo:eGeo,ePos:ePos,eMat:eMat,grow:0};
+  updaters.push(function(){
+    rd.grow+=((stage>=8?1:0)-rd.grow)*0.05;
+    const fp=rd.fPos, ep=rd.ePos; let fi=0, ei=0;
+    for(let k=0;k<rdPairs.length;k++){
+      const q=rdQuad(rdPairs[k][0],rdPairs[k][1],rd.grow,CC);
+      const tri=[q[0],q[1],q[2],q[0],q[2],q[3]];
+      for(let v=0;v<6;v++){fp[fi++]=tri[v].x;fp[fi++]=tri[v].y;fp[fi++]=tri[v].z;}
+      const e=[q[0],q[1],q[1],q[2],q[2],q[3],q[3],q[0]];
+      for(let v=0;v<8;v++){ep[ei++]=e[v].x;ep[ei++]=e[v].y;ep[ei++]=e[v].z;}
+    }
+    rd.fGeo.attributes.position.needsUpdate=true;
+    rd.eGeo.attributes.position.needsUpdate=true;
+    const show=(stage>=8)&&layerOn.rhombic;
+    rd.fMat.opacity+=((show?0.16:0)-rd.fMat.opacity)*0.1;
+    rd.eMat.opacity+=((show?0.85:0)-rd.eMat.opacity)*0.1;
+  });
+  label('1 : √2',new THREE.Vector3(1.55,0.5,0.5),'space',.15,{stage:8,layer:'rhombic'});
+  label('70.5°',new THREE.Vector3(0.5,0.5,1.66),'angle',.12,{stage:8,layer:'rhombic'});
+  label('120° dihedral',new THREE.Vector3(1.18,1.18,1.18),'angle',.12,{stage:8,layer:'rhombic'});
+})();
+
+/* ---- STAGE 9 — ARCHITECTURE (schematic linework + dihedral family) ---- */
+(function(){
+  // Captions verified 2026-06-17 against Gregg_Master_Context_v2.
+  const cards=[
+    ['Otic Oasis','Burning Man 2011–2014',{t:'Otic Oasis (2011–2014)',b:'Pod + node hybrid of interlocking birch plywood, no metal fasteners. Five builds at Burning Man, 2011–2014. The rhombic-dodecahedron “pods” are this geometry at human scale.'}],
+    ['Temple of Whollyness','2013',{t:'Temple of Whollyness (2013)',b:'A 115-ft-square, 63-ft-tall pyramid of CNC-cut birch plywood, assembled in 15 days with no metal fasteners — only custom nodes and pins. The octahedral–tetrahedral space frame realised.'}],
+    ['Sky Portal X','2022–present',{t:'Sky Portal X (2022–)',b:'Slot-to-slot panels locked with a pin; panels meet at 90° to generate the cubic family of polyhedra. Gregg’s “building blocks of Infinite Architecture”.'}],
+    ['Satellite','Burning Man 2019',{t:'Satellite (pod)',b:'A pod structure — truncated rhombic-dodecahedron shells that snap together by hand. The original Satellite design became the basis for Otic Oasis and the Solar Village.'}],
+    ['Solar Stage','Wonderfruit',{t:'Solar Stage',b:'The pod + node system as a festival stage — Wonderfruit, Thailand, 2015–2019. Over 2,137 modular wood parts, raised in 48 hours by 9 people.'}],
+    ['Node Home','2018',{t:'Node Home (2018)',b:'A residential-scale version of the Otic / Temple system — same octahedral–tetrahedral geometry, module 20% smaller. Part of Gregg’s housing-crisis response.'}]
+  ];
+  const N=cards.length, R=1.95;
+  cards.forEach(function(c,i){
+    const ang=(i/N)*Math.PI*2;
+    const pos=new THREE.Vector3(CC.x+Math.cos(ang)*R, CC.y+Math.sin(ang)*R, 0.5+(i%2?0.55:-0.35));
+    const w=.62,h=.42;
+    const a=new THREE.Vector3(pos.x-w,pos.y,pos.z-h), b=new THREE.Vector3(pos.x+w,pos.y,pos.z-h), cc=new THREE.Vector3(pos.x+w,pos.y,pos.z+h), d=new THREE.Vector3(pos.x-w,pos.y,pos.z+h);
+    [[a,b],[b,cc],[cc,d],[d,a],[a,cc],[b,d]].forEach(function(seg){line(seg[0],seg[1],i%2?'unit':'face',{stage:9,layer:'arch',maxOp:.64,overlay:true,desc:c[2]});});
+    dot(pos,i%2?'unit':'face',.035,{stage:9,layer:'arch',maxOp:.9,overlay:true,desc:c[2]});
+    label(c[0],new THREE.Vector3(pos.x,pos.y,pos.z-.62),'ink',.108,{stage:9,layer:'arch',maxOp:.92});
+    label(c[1],new THREE.Vector3(pos.x,pos.y,pos.z-.79),'ghost',.08,{stage:9,layer:'arch',maxOp:.72});
+  });
+  const fam=[
+    'Rhombic Dodecahedron — 120°',
+    'Tetrahedron — 70.5°',
+    'Cube — 90°',
+    'Octahedron — 109.5°',
+    'Truncated Tetrahedron — 109.5°, 70.5°',
+    'Cuboctahedron — 125.25°',
+    'Truncated Cube — 125.25°, 90°',
+    'Truncated Octahedron — 125.25°, 109.5°',
+    'Small Rhombicuboctahedron — 144.75°, 135°',
+    'Great Rhombicuboctahedron — 144.75°, 125.25°, 135°'
+  ];
+  fam.forEach(function(f,i){label(f,new THREE.Vector3(-2.05,-1.45,2.22-i*.2),'angle',.085,{stage:9,layer:'dihedral',maxOp:.85});});
+})();
+
+/* ---- STAGE 10 — INFINITE ARCHITECTURE (FCC space-filling) ---- */
+(function(){
+  const offs=[[1,1,0],[1,-1,0],[-1,1,0],[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[0,1,-1]];
+  const pts=[];
+  offs.forEach(function(o){
+    const ctr=new THREE.Vector3(CC.x+o[0],CC.y+o[1],CC.z+o[2]);
+    rdPairs.forEach(function(pr){
+      const q=rdQuad(pr[0],pr[1],1,ctr);
+      pts.push(q[0],q[1],q[1],q[2],q[2],q[3],q[3],q[0]);
+    });
+  });
+  const g=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineBasicMaterial({color:theme.ghost,transparent:true,opacity:0});
+  colorRoles.push({mat:mat,role:'ghost'});
+  const ls=new THREE.LineSegments(g,mat);
+  ls.userData={custom:true,desc:{t:'Infinite architecture',b:'The rhombic dodecahedron is the Voronoi cell of the face-centred-cubic (FCC) lattice — it close-packs to fill space with no gaps. This is the rigorous basis of Gregg’s “infinite architecture”. Expansion onto XYZ Cartesian space beyond this is hypothesis.'}};
+  items.push(ls);scene.add(ls);
+  updaters.push(function(){const show=(stage>=10)&&layerOn.rhombic;mat.opacity+=((show?0.5:0)-mat.opacity)*0.08;});
+})();
+
+/* ════════ LAYER TOGGLES ════════ */
+const LAYERS=[
+  {key:'sketch',label:'Original sketch',on:true},
+  {key:'construction',label:'Construction lines',on:true},
+  {key:'labels',label:'Points & labels',on:true},
+  {key:'ratios',label:'Ratios (√2 √3)',on:true},
+  {key:'angles',label:'Angle measures',on:true},
+  {key:'cube',label:'Cube framework',on:true},
+  {key:'roottri',label:'Root triangles',on:true},
+  {key:'rhombic',label:'Rhombic dodecahedron',on:true},
+  {key:'dihedral',label:'Dihedral family',on:true},
+  {key:'arch',label:'Architecture',on:true},
+  {key:'axes',label:'XYZ axes',on:false}
+];
+const layerOn={}; LAYERS.forEach(function(l){layerOn[l.key]=l.on;});
+const layerEls={};
+const list=document.getElementById('layerlist');
+const CK='<svg width="9" height="9" viewBox="0 0 9 9"><path d="M1 4.5L3.5 7L8 1.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+LAYERS.forEach(function(l){
+  const row=document.createElement('div');row.className='lyr'+(l.on?' on':'');
+  row.innerHTML='<div class="box">'+CK+'</div><span>'+l.label+'</span>';
+  row.onclick=function(){layerOn[l.key]=!layerOn[l.key];row.classList.toggle('on',layerOn[l.key]);};
+  list.appendChild(row);layerEls[l.key]=row;
+});
+
+/* ════════ SETTINGS DROPDOWN ════════ */
+const gear=document.getElementById('gear'), settings=document.getElementById('settings');
+let settingsOpen=false;
+function setSettings(o){settingsOpen=o;settings.classList.toggle('open',o);gear.classList.toggle('open',o);}
+gear.onclick=function(e){e.stopPropagation();setSettings(!settingsOpen);};
+document.addEventListener('click',function(e){if(settingsOpen&&!settings.contains(e.target)&&e.target!==gear)setSettings(false);});
+// build mode radio list
+const modelist=document.getElementById('modelist');
+Object.keys(THEMES).forEach(function(name){
+  const t=THEMES[name];
+  const row=document.createElement('div');row.className='opt'+(name==='night'?' on':'');
+  row.innerHTML='<div class="rad"></div><div class="txt">'+t.label+'<span class="sub">'+t.sub+'</span></div>';
+  row.onclick=function(){applyTheme(name);};
+  modelist.appendChild(row);t._el=row;
+});
+
+/* ════════ STAGE CONTROL ════════ */
+const STAGES=[
+  {n:1,title:'Hand-Sketch Origin',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"Gregg's original derivation — the same 1 : √2 : √3 he works out by hand. Watch it resolve into a clean proof.",
+   cam:{az:-1.55,el:1.28,r:4.3}},
+  {n:2,title:'Clean 2D Construction',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"A unit square. Its diagonal is √2 — the 45° fold. 1² + 1² = 2.",
+   cam:{az:-1.55,el:1.22,r:4.0}},
+  {n:3,title:'Cube Diagonal Proof',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"Lift one corner by 1. The diagonal through space becomes √3. (√2)² + 1² = 3.",
+   cam:{az:-2.12,el:0.44,r:4.2}},
+  {n:4,title:'Root Triangle Reveal',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"The proof triangle: legs 1 and √2, hypotenuse √3. Angles 35.264° / 54.736°, right angle at A.",
+   cam:{az:-2.3,el:0.5,r:4.0}},
+  {n:5,title:'Interactive Controls',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"Explore freely. Toggle any layer, switch display modes in Settings, add the XYZ axes. Orbit and zoom.",
+   cam:{az:-2.0,el:0.52,r:4.3}},
+  {n:6,title:'Silver Ratio — Investigation',conf:'hyp',confTxt:'Investigation · not proven',
+   body:"Does the silver ratio σ = 1+√2 (≈2.414) underlie the 45° / √2 system? Shown as an open question, not a proof.",
+   cam:{az:-1.9,el:0.62,r:4.7}},
+  {n:7,title:'45° Vector System',conf:'interp',confTxt:'Gregg-system interpretation',
+   body:"How the √2 proof becomes project geometry: the 45° fold of the Vector House — an outer square and an inner square rotated 45° (ad-quadratum).",
+   cam:{az:-2.1,el:0.5,r:4.8}},
+  {n:8,title:'Rhombic Dodecahedron',conf:'confirmed',confTxt:'Confirmed geometry',
+   body:"Cap each cube face with a Lost-Triangle pyramid → the Rhombicube. 12 silver-rhombus faces (1:√2), angles 70.5° / 109.5°, 120° dihedral.",
+   cam:{az:-2.35,el:0.5,r:5.0}},
+  {n:9,title:'Architectural System',conf:'interp',confTxt:'Interpretation · built work',
+   body:"The same dihedral family built at human scale — Otic Oasis, Temple of Whollyness, the Sky Portal series, node structures.",
+   cam:{az:-2.0,el:0.42,r:6.4}},
+  {n:10,title:'Infinite Architecture',conf:'interp',confTxt:'Confirmed tiling · XYZ expansion is hypothesis',
+   body:"The rhombic dodecahedron is the Voronoi cell of the FCC lattice — it fills space with no gaps. The rigorous basis of ‘infinite architecture’.",
+   cam:{az:-2.2,el:0.46,r:6.6}}
+];
+let stage=1;
+const capnum=document.getElementById('capnum'),captitle=document.getElementById('captitle'),
+      capbody=document.getElementById('capbody'),capconf=document.getElementById('capconf'),
+      stagelabel=document.getElementById('stagelabel');
+const dots=document.getElementById('dots');
+STAGES.forEach(function(s){const d=document.createElement('div');d.className='dot';d.onclick=function(){setStage(s.n);};dots.appendChild(d);});
+
+let camTgt={az:-1.55,el:1.28,r:4.3}, camCur={az:-1.55,el:1.28,r:4.3};
+const lookAt=new THREE.Vector3(0.5,0.5,0.32);
+let userInteracted=false, autoRotate=true;
+
+function setStage(n){
+  n=Math.max(1,Math.min(STAGES.length,n));stage=n;userInteracted=false;
+  const s=STAGES[n-1];
+  capnum.textContent='Stage '+n;captitle.textContent=s.title;capbody.textContent=s.body;
+  capconf.textContent=s.confTxt;capconf.className='conf-'+(s.conf==='confirmed'?'confirmed':s.conf==='interp'?'interp':'hyp');
+  stagelabel.textContent=n+' / '+STAGES.length;
+  camTgt={az:s.cam.az,el:s.cam.el,r:s.cam.r};
+  items.forEach(function(it){if(it.userData.grow&&it.userData.stage===n)it.userData.prog=0;});
+  Array.from(dots.children).forEach(function(d,i){d.classList.toggle('on',i===n-1);});
+  const avail={sketch:1,construction:2,labels:2,ratios:2,angles:2,cube:3,roottri:4,rhombic:8,dihedral:9,arch:9,axes:5};
+  LAYERS.forEach(function(l){layerEls[l.key].classList.toggle('disabled',stage<avail[l.key]);});
+}
+document.getElementById('next').onclick=function(){setStage(stage+1);};
+document.getElementById('prev').onclick=function(){setStage(stage-1);};
+
+/* ════════ THEME SWITCH ════════ */
+/* Bridge to the shared site toggle (assets/gf-theme.js). The nav sun/moon
+   only offers light↔dark; it maps to the instrument's paper↔night scenes.
+   The 3-way Settings radios (night/paper/present) still drive applyTheme
+   directly. gfThemeSyncing guards against the round-trip echo. */
+var gfThemeSyncing=false;
+document.addEventListener('gf-themechange',function(e){
+  if(gfThemeSyncing) return;
+  gfThemeSyncing=true;
+  applyTheme(e.detail.theme==='light'?'paper':'night');
+  gfThemeSyncing=false;
+});
+function applyTheme(name){
+  themeName=name;theme=THEMES[name];
+  Object.keys(THEMES).forEach(function(k){if(THEMES[k]._el)THEMES[k]._el.classList.toggle('on',k===name);});
+  document.body.classList.toggle('minimal',!!theme.minimal);
+  document.body.classList.toggle('paper',name==='paper');
+  glowMats.forEach(function(g){const bl=(name!=='paper')?THREE.AdditiveBlending:THREE.NormalBlending;g.core.blending=bl;g.halo.blending=bl;g.core.needsUpdate=true;g.halo.needsUpdate=true;});
+  const bg=document.getElementById('bg');
+  bg.style.background='radial-gradient(circle at 50% 32%,'+theme.bg[0]+' 0%,'+theme.bg[1]+' 52%,'+theme.bg[2]+' 100%)';
+  document.querySelector('meta[name=theme-color]').setAttribute('content',theme.bg[1]);
+  scene.fog.color.setHex(theme.fog);scene.fog.density=theme.fogD;
+  colorRoles.forEach(function(c){if(c.mat)c.mat.color.setHex(theme[c.role]);});
+  labels.forEach(drawLabel);
+  const r=document.documentElement.style;
+  if(name==='paper'){
+    r.setProperty('--panel','rgba(255,250,240,.84)');r.setProperty('--panel-bd','rgba(20,20,20,.14)');
+    r.setProperty('--tx','rgba(20,20,20,.92)');r.setProperty('--tx-dim','rgba(20,20,20,.55)');
+    r.setProperty('--tx-faint','rgba(20,20,20,.34)');r.setProperty('--chip','rgba(20,20,20,.05)');r.setProperty('--accent','#8A6A2F');
+  }else if(name==='night'){
+    /* GF design system — canonical night theme (gf-tokens.css values) */
+    r.setProperty('--panel','rgba(20,20,20,.74)');r.setProperty('--panel-bd','#252525');
+    r.setProperty('--tx','#F0EDE8');r.setProperty('--tx-dim','#8A8480');
+    r.setProperty('--tx-faint','#4A4643');r.setProperty('--chip','rgba(240,237,232,.06)');
+    r.setProperty('--accent','#C8A96E');
+  }else{
+    r.setProperty('--panel','rgba(10,15,24,.74)');r.setProperty('--panel-bd','rgba(255,255,255,.12)');
+    r.setProperty('--tx','rgba(255,255,255,.92)');r.setProperty('--tx-dim','rgba(255,255,255,.46)');
+    r.setProperty('--tx-faint','rgba(255,255,255,.26)');r.setProperty('--chip','rgba(255,255,255,.08)');
+    r.setProperty('--accent','#7aa8ff');
+  }
+  /* keep the shared nav toggle + persisted preference in sync (night/present→dark, paper→light) */
+  if(!gfThemeSyncing && window.gfTheme){
+    gfThemeSyncing=true;
+    window.gfTheme.set(name==='paper'?'light':'dark');
+    gfThemeSyncing=false;
+  }
+}
+
+/* ════════ SETTINGS CONTROLS ════════ */
+document.getElementById('sketchOp').oninput=function(e){sketchUserOp=e.target.value/100;};
+const autoBtn=document.getElementById('autorot');
+autoBtn.onclick=function(){autoRotate=!autoRotate;autoBtn.classList.toggle('on',autoRotate);if(autoRotate)userInteracted=false;};
+
+/* ════════ INPUT ════════ */
+let drag=false,px=0,py=0;const hintEl=document.getElementById('hint');
+function killHint(){hintEl.classList.add('gone');}
+canvas.addEventListener('mousedown',function(e){drag=true;px=e.clientX;py=e.clientY;userInteracted=true;killHint();});
+window.addEventListener('mouseup',function(){drag=false;});
+window.addEventListener('mousemove',function(e){if(!drag)return;
+  camTgt.az-=(e.clientX-px)*.008;camTgt.el=Math.max(.08,Math.min(1.4,camTgt.el+(e.clientY-py)*.006));
+  px=e.clientX;py=e.clientY;});
+canvas.addEventListener('wheel',function(e){camTgt.r=Math.max(2.0,Math.min(8,camTgt.r+e.deltaY*.005));userInteracted=true;killHint();},{passive:true});
+let pinch=null;
+canvas.addEventListener('touchstart',function(e){const t=e.touches[0];drag=true;px=t.clientX;py=t.clientY;userInteracted=true;killHint();
+  if(e.touches.length>=2)pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);},{passive:true});
+canvas.addEventListener('touchmove',function(e){if(!drag)return;const t=e.touches[0];
+  if(e.touches.length===1){camTgt.az-=(t.clientX-px)*.008;camTgt.el=Math.max(.08,Math.min(1.4,camTgt.el+(t.clientY-py)*.006));}
+  if(e.touches.length>=2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    if(pinch!=null)camTgt.r=Math.max(2.0,Math.min(8,camTgt.r-(d-pinch)*.012));pinch=d;}
+  px=t.clientX;py=t.clientY;e.preventDefault();},{passive:false});
+canvas.addEventListener('touchend',function(e){if(e.touches.length===0){drag=false;pinch=null;}},{passive:false});
+
+/* ════════ HOVER DESCRIPTION BOX (opens on hover · closes on click-outside or Esc) ════════ */
+const infobox=document.getElementById('infobox');
+const ray=new THREE.Raycaster();ray.params.Line.threshold=0.045;
+const ndc=new THREE.Vector2();
+let infoObj=null, infoOn=false;
+function showInfo(d,x,y){
+  infobox.querySelector('.it').textContent=d.t;
+  infobox.querySelector('.ib').textContent=d.b;
+  infobox.style.display='block';
+  const bw=infobox.offsetWidth, bh=infobox.offsetHeight;
+  let px=x+16, py=y+16;
+  if(px+bw>window.innerWidth-8)px=x-bw-16;
+  if(py+bh>window.innerHeight-8)py=window.innerHeight-bh-8;
+  if(px<8)px=8; if(py<8)py=8;
+  infobox.style.left=px+'px';infobox.style.top=py+'px';infoOn=true;
+}
+function hideInfo(){infobox.style.display='none';infoOn=false;}
+function hoverPick(x,y){
+  ndc.x=(x/window.innerWidth)*2-1; ndc.y=-(y/window.innerHeight)*2+1;
+  ray.setFromCamera(ndc,camera);
+  const hits=ray.intersectObjects(items,true);
+  let obj=null;
+  for(let i=0;i<hits.length;i++){
+    let o=hits[i].object;
+    while(o&&!(o.userData&&o.userData.desc))o=o.parent;
+    if(o&&o.userData&&o.userData.desc){const vis=o.material?o.material.opacity>0.06:true;if(vis){obj=o;break;}}
+  }
+  if(obj){if(obj!==infoObj){infoObj=obj;showInfo(obj.userData.desc,x,y);}}
+  else infoObj=null;
+}
+canvas.addEventListener('mousemove',function(e){if(!drag)hoverPick(e.clientX,e.clientY);});
+window.addEventListener('mousedown',function(e){if(infoOn&&!infobox.contains(e.target))hideInfo();});
+window.addEventListener('keydown',function(e){if(e.key==='Escape')hideInfo();});
+
+/* ════════ ANIMATION ════════ */
+function ease(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);}
+const clock=new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const t=clock.getElapsedTime();
+
+  if(autoRotate&&!userInteracted)camTgt.az+=0.0011;
+  const k=.06;
+  camCur.az+=(camTgt.az-camCur.az)*k;
+  camCur.el+=(camTgt.el-camCur.el)*k;
+  camCur.r +=(camTgt.r -camCur.r )*k;
+  const renderR=Math.max(camCur.r,fitDist); // never let the figure clip the frame
+  camera.position.set(
+    lookAt.x+renderR*Math.cos(camCur.el)*Math.cos(camCur.az),
+    lookAt.y+renderR*Math.cos(camCur.el)*Math.sin(camCur.az),
+    lookAt.z+renderR*Math.sin(camCur.el));
+  camera.lookAt(lookAt);
+
+  const gWant=(layerOn.construction&&stage>=2)?gridMaxOp:0;
+  gridG.children.forEach(function(c){c.material.opacity+=(gWant-c.material.opacity)*.08;});
+
+  items.forEach(function(it){
+    const ud=it.userData;
+    if(ud.custom)return;
+    const inRange=(stage>=ud.stage)&&(ud.maxStage==null||stage<=ud.maxStage);
+    let on=ud.always?true:(inRange && layerOn[ud.layer]!==false);
+    if(ud.isGlow){
+      let end=ud.b;
+      if(ud.grow){ud.prog=inRange?Math.min(1,ud.prog+0.022):0;const p=ease(ud.prog);end=ud.a.clone().lerp(ud.b,p);if(p<=0)on=false;}
+      setSeg(it,ud.a,end);
+      const w=on?ud.maxOp:0;
+      ud.core.opacity+=(w-ud.core.opacity)*.1;
+      ud.halo.opacity+=(w*ud.haloFactor-ud.halo.opacity)*.1;
+      return;
+    }
+    let want=on?ud.maxOp:0;
+    if(ud.isSketch)want=(inRange && layerOn.sketch)?(sketchUserOp*theme.sketch):0;
+    if(ud.grow){
+      ud.prog=inRange?Math.min(1,ud.prog+0.022):0;
+      const p=ease(ud.prog);const end=ud.a.clone().lerp(ud.b,p);
+      const arr=it.geometry.attributes.position.array;
+      arr[0]=ud.a.x;arr[1]=ud.a.y;arr[2]=ud.a.z;arr[3]=end.x;arr[4]=end.y;arr[5]=end.z;
+      it.geometry.attributes.position.needsUpdate=true;
+      if(p<=0)want=0;
+    }
+    if(it.material)it.material.opacity+=(want-it.material.opacity)*.1;
+  });
+
+  if(originRing){const s=1+Math.sin(t*1.5)*0.07;originRing.scale.set(s,s,s);originRing.material.opacity=0.34+Math.sin(t*1.5)*0.12;}
+  for(let u=0;u<updaters.length;u++)updaters[u](t);
+
+  labels.forEach(function(rec){
+    const vis=rec.always || (stage>=rec.stage && (rec.maxStage==null||stage<=rec.maxStage) && layerOn[rec.layer]!==false && !(theme.minimal && rec.layer==='labels' && rec.text.length>2));
+    const want=vis?rec.maxOp:0;
+    rec.sprite.material.opacity+=(want-rec.sprite.material.opacity)*.1;
+    rec.sprite.visible=rec.sprite.material.opacity>.01;
+  });
+
+  renderer.render(scene,camera);
+}
+
+/* ════════ INIT ════════ */
+applyTheme((window.gfTheme && window.gfTheme.get()==='light') ? 'paper' : 'night');
+setStage(1);
+animate();
+
+})();
+</script>
+</body>
+</html>

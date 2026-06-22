@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Rhombic System — Gregg Fleishman</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<style>
+  :root{ --panel:rgba(20,20,20,.74); --panel-bd:var(--border-strong); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
+  :root[data-theme="light"]{ --panel:rgba(255,250,240,.90); --panel-bd:rgba(20,20,20,.12); --panel-sh:0 8px 28px rgba(40,28,8,.10); }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;-webkit-tap-highlight-color:transparent}
+  body{color:var(--tx);font-family:var(--font-ui);background:radial-gradient(circle at 50% 40%,var(--bg-elevated) 0%,var(--bg) 56%,var(--bg) 100%);}
+  canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  /* nav inherits the canonical #gfnav from gf-tokens.css (single source) */
+  .panel{position:fixed;z-index:20;background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:var(--radius-lg);padding:14px 16px;transition:background .5s var(--ease),border-color .5s var(--ease);}
+  #info{left:24px;top:66px;max-width:290px;}
+  #info h2{font-family:var(--font-display);font-size:17px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em;color:var(--tx);transition:opacity .4s}
+  #info p{font-size:12px;line-height:1.58;margin:0;color:var(--tx-dim)}
+  #legend{right:24px;top:66px;width:224px;font-size:12px;}
+  #legend .lt{font-family:var(--font-display);font-weight:700;margin-bottom:9px;font-size:13px;color:var(--tx);}
+  .lr{display:flex;align-items:center;gap:9px;margin:6px 0;color:var(--tx-dim);}
+  .ll{width:22px;height:3px;border-radius:2px;flex-shrink:0;}
+  #btns{right:24px;bottom:24px;display:flex;gap:8px;}
+  button{font:inherit;font-family:var(--font-ui);color:var(--tx-dim);border:1px solid var(--panel-bd);background:var(--accent-dim);border-radius:9px;padding:8px 11px;cursor:pointer;transition:color .18s var(--ease),border-color .18s var(--ease);}
+  button:hover{color:var(--tx);border-color:var(--accent)}
+  @media(max-width:820px){#legend{display:none}#info{left:14px;right:14px;max-width:none}#btns{right:14px;bottom:14px}}
+  @media(max-height:500px){#info{display:none}}
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
+  <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
+  <a class="navlink" href="fleishman-sequence.html">Fleishman Sequence</a>
+  <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+  <a class="navlink active" href="rhombic-system.html">Rhombic System</a>
+  <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
+  <a class="navlink" href="fleishman-vector-system.html">Vector System</a>
+  <a class="navlink" href="poster/poster.html">Poster</a>
+  <a class="navlink" href="vertor-pod/index.html">Vertor Pod</a>
+  <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</nav>
+
+<canvas id="c"></canvas>
+
+<div id="info" class="panel">
+  <h2 id="ptitle">Cube Diagonals</h2>
+  <p id="pdesc">Three fundamental lengths in the unit cube: edge &middot; face diagonal &middot; space diagonal &mdash; the proportions 1&thinsp;:&thinsp;&radic;2&thinsp;:&thinsp;&radic;3.</p>
+</div>
+
+<div id="legend" class="panel">
+  <div class="lt">Legend</div>
+  <div id="legbody">
+    <div class="lr"><div class="ll" style="background:var(--geo-unit)"></div><span>edge = 1</span></div>
+    <div class="lr"><div class="ll" style="background:var(--geo-face)"></div><span>face diagonal = &radic;2</span></div>
+    <div class="lr"><div class="ll" style="background:var(--geo-space)"></div><span>space diagonal = &radic;3</span></div>
+    <div class="lr"><div class="ll" style="background:var(--geo-tri)"></div><span>key triangle</span></div>
+  </div>
+</div>
+
+<div id="btns" class="panel">
+  <button id="replay">&#8635; Replay</button>
+  <button id="pause">&#10074;&#10074; Pause</button>
+</div>
+
+<script src="assets/vendor/three-r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+const canvas = document.getElementById('c');
+const R = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
+R.setClearColor(0,0);
+// Fixed, camera-independent draw order — stops overlapping translucent faces and
+// coincident lines from re-sorting (and colour-flickering) as the solid rotates.
+R.sortObjects = false;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42,1,0.01,100);
+const origin = new THREE.Vector3(0,0,0);
+
+const C = GF_SCENE.active();
+GF_SCENE.onChange(GF_SCENE.reload);
+
+scene.add(new THREE.AmbientLight(0xffffff,.82));
+const sun = new THREE.DirectionalLight(0xffffff,.55);
+sun.position.set(-3,4,5); scene.add(sun);
+
+function resize(){
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  if(!w||!h)return;
+  R.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+// ---- helpers ----
+function v3(a){ return new THREE.Vector3(a[0],a[1],a[2]); }
+function lmat(col,op){ return new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op||0}); }
+function mmat(col,op){ return new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:op||0,side:THREE.DoubleSide,depthWrite:false}); }
+function ease(x){ x=Math.max(0,Math.min(1,x)); return x*x*(3-2*x); }
+function ph(t,s,d){ return ease((t-s)/d); }
+function makeLine(a,b,mat){ return new THREE.Line(new THREE.BufferGeometry().setFromPoints([v3(a),v3(b)]),mat); }
+function mkSph(p,col,r){
+  var m=new THREE.Mesh(new THREE.SphereGeometry(r,12,12),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0}));
+  m.position.set(p[0],p[1],p[2]); scene.add(m); return m;
+}
+function lbl(text,pos,color,sc){
+  var cv=document.createElement('canvas'); cv.width=400; cv.height=140;
+  var ctx=cv.getContext('2d');
+  ctx.font='700 62px Inter,Arial,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.lineWidth=9; ctx.strokeStyle=C.halo; ctx.strokeText(text,200,70);
+  ctx.fillStyle=color; ctx.fillText(text,200,70);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false,opacity:0}));
+  sp.position.copy(v3(pos)); sp.scale.set((sc||0.22)*2.86,(sc||0.22),1); scene.add(sp); return sp;
+}
+
+// ---- cube corners (±1 system) ----
+var CC=[
+  [1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],
+  [-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1]
+];
+// edges: 12 pairs
+var EIDX=[[0,1],[0,2],[0,4],[7,6],[7,5],[7,3],[1,3],[2,3],[1,5],[4,6],[2,6],[4,5]];
+var cubeLines=EIDX.map(function(e){
+  var l=makeLine(CC[e[0]],CC[e[1]],lmat(C.ghost,0)); scene.add(l); return l;
+});
+var cornerSph=CC.map(function(p){ return mkSph(p,C.unit,0.055); });
+
+// face diagonals (selected for clarity)
+var FDIAGS=[[CC[0],CC[3]],[CC[1],CC[2]],[CC[0],CC[5]],[CC[1],CC[4]],[CC[0],CC[6]],[CC[2],CC[4]]];
+var faceDiagLines=FDIAGS.map(function(e){
+  var l=makeLine(e[0],e[1],lmat(C.face,0)); scene.add(l); return l;
+});
+
+// space diagonals
+var SDIAGS=[[CC[0],CC[7]],[CC[1],CC[6]],[CC[2],CC[5]],[CC[3],CC[4]]];
+var spaceDiagLines=SDIAGS.map(function(e){
+  var l=makeLine(e[0],e[1],lmat(C.space,0)); scene.add(l); return l;
+});
+
+// key triangle: CC[7]=[-1,-1,-1], CC[2]=[1,-1,1], CC[0]=[1,1,1]
+// edge CC[2]→CC[0], face diag CC[7]→CC[2], space diag CC[7]→CC[0]
+var triGeo=new THREE.BufferGeometry();
+triGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+  CC[7][0],CC[7][1],CC[7][2], CC[2][0],CC[2][1],CC[2][2], CC[0][0],CC[0][1],CC[0][2]
+]),3));
+triGeo.setIndex([0,1,2]);
+var triMesh=new THREE.Mesh(triGeo,mmat(C.tri,0)); scene.add(triMesh);
+var triE0=makeLine(CC[7],CC[2],lmat(C.tri,0)); scene.add(triE0);
+var triE1=makeLine(CC[2],CC[0],lmat(C.tri,0)); scene.add(triE1);
+var triE2=makeLine(CC[0],CC[7],lmat(C.tri,0)); scene.add(triE2);
+
+// sprite labels (phase 1)
+var lblEdge  = lbl('1',    [1.45,0.05,1.45], C.unit,  0.22);
+var lblFDiag = lbl('√2',  [0.05,-1.55, 0.6], C.face,  0.22);
+var lblSDiag = lbl('√3',  [0.35, 0.55,-0.2], C.space, 0.24);
+var lblAngle = lbl('35°', [-1.55,-1.35,-0.8],C.tri,   0.20);
+
+// ---- poles and pyramids ----
+var POLES=[[2,0,0],[-2,0,0],[0,2,0],[0,-2,0],[0,0,2],[0,0,-2]];
+var poleSph=POLES.map(function(p){ return mkSph(p,C.space,0.09); });
+
+// 6 pyramid definitions
+var PYRS=[
+  {fc:[1,0,0],  pole:[2,0,0],  base:[CC[0],CC[1],CC[3],CC[2]]},
+  {fc:[-1,0,0], pole:[-2,0,0], base:[CC[4],CC[6],CC[7],CC[5]]},
+  {fc:[0,1,0],  pole:[0,2,0],  base:[CC[0],CC[4],CC[5],CC[1]]},
+  {fc:[0,-1,0], pole:[0,-2,0], base:[CC[2],CC[3],CC[7],CC[6]]},
+  {fc:[0,0,1],  pole:[0,0,2],  base:[CC[0],CC[2],CC[6],CC[4]]},
+  {fc:[0,0,-1], pole:[0,0,-2], base:[CC[1],CC[5],CC[7],CC[3]]}
+];
+
+// pyramid triangle meshes and apex-to-corner edge lines (dynamic apex)
+var pyrTris=[], pyrEdges=[];
+PYRS.forEach(function(pyr){
+  var fc=pyr.fc, base=pyr.base;
+  for(var i=0;i<4;i++){
+    var b1=base[i], b2=base[(i+1)%4];
+    var pa=new Float32Array([fc[0],fc[1],fc[2], b1[0],b1[1],b1[2], b2[0],b2[1],b2[2]]);
+    var geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(pa,3));
+    var mesh=new THREE.Mesh(geo,mmat(C.ink,0)); scene.add(mesh);
+    pyrTris.push({geo:geo,pa:pa,mesh:mesh,fc:fc,pole:pyr.pole});
+  }
+  for(var j=0;j<4;j++){
+    var bv=base[j];
+    var la=new Float32Array([fc[0],fc[1],fc[2], bv[0],bv[1],bv[2]]);
+    var lg=new THREE.BufferGeometry();
+    lg.setAttribute('position',new THREE.BufferAttribute(la,3));
+    var lm=new THREE.LineBasicMaterial({color:C.ink,transparent:true,opacity:0});
+    var line=new THREE.Line(lg,lm); scene.add(line);
+    pyrEdges.push({geo:lg,la:la,line:line,fc:fc,pole:pyr.pole});
+  }
+});
+
+// ---- rhombic dodecahedron faces ----
+var RF=[
+  {v:[[2,0,0],[1,1,1],[0,2,0],[1,1,-1]],t:0},
+  {v:[[2,0,0],[1,-1,1],[0,-2,0],[1,-1,-1]],t:0},
+  {v:[[-2,0,0],[-1,1,1],[0,2,0],[-1,1,-1]],t:0},
+  {v:[[-2,0,0],[-1,-1,1],[0,-2,0],[-1,-1,-1]],t:0},
+  {v:[[2,0,0],[1,1,1],[0,0,2],[1,-1,1]],t:1},
+  {v:[[2,0,0],[1,1,-1],[0,0,-2],[1,-1,-1]],t:1},
+  {v:[[-2,0,0],[-1,1,1],[0,0,2],[-1,-1,1]],t:1},
+  {v:[[-2,0,0],[-1,1,-1],[0,0,-2],[-1,-1,-1]],t:1},
+  {v:[[0,2,0],[1,1,1],[0,0,2],[-1,1,1]],t:2},
+  {v:[[0,2,0],[1,1,-1],[0,0,-2],[-1,1,-1]],t:2},
+  {v:[[0,-2,0],[1,-1,1],[0,0,2],[-1,-1,1]],t:2},
+  {v:[[0,-2,0],[1,-1,-1],[0,0,-2],[-1,-1,-1]],t:2}
+];
+var RFCOLS=[C.unit,C.face,C.tri];
+var rfMeshes=[],rfLines=[];
+RF.forEach(function(f){
+  var pts=f.v.map(v3);
+  var A=pts[0],B=pts[1],Cv=pts[2],D=pts[3];
+  var geo=new THREE.BufferGeometry();
+  var pos=new Float32Array([A.x,A.y,A.z,B.x,B.y,B.z,Cv.x,Cv.y,Cv.z,A.x,A.y,A.z,Cv.x,Cv.y,Cv.z,D.x,D.y,D.z]);
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  var m=new THREE.Mesh(geo,mmat(RFCOLS[f.t],0)); scene.add(m); rfMeshes.push(m);
+  var ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([A,B,Cv,D,A]),lmat(C.ink,0)); scene.add(ln); rfLines.push(ln);
+});
+
+// diagonal labels on face 0 for phase 3
+var diagLong  = makeLine([2,0,0],[0,2,0], lmat(C.space,0)); scene.add(diagLong);
+var diagShort = makeLine([1,1,1],[1,1,-1],lmat(C.unit,0));  scene.add(diagShort);
+var lblD1 = lbl('1',  [1.5,1.1, 0.7], C.unit, 0.20);
+var lblD2 = lbl('√2', [1.65,1.4,-0.1],C.space,0.22);
+
+// ---- info panel text ----
+var PHASES=[
+  {title:'Cube Diagonals',
+   desc:'Three fundamental lengths in the unit cube: edge &middot; face diagonal &middot; space diagonal &mdash; the proportions 1&thinsp;:&thinsp;&radic;2&thinsp;:&thinsp;&radic;3.',
+   leg:'<div class="lr"><div class="ll" style="background:var(--geo-unit)"></div><span>edge = 1</span></div><div class="lr"><div class="ll" style="background:var(--geo-face)"></div><span>face diagonal = &radic;2</span></div><div class="lr"><div class="ll" style="background:var(--geo-space)"></div><span>space diagonal = &radic;3</span></div><div class="lr"><div class="ll" style="background:var(--geo-tri)"></div><span>key triangle</span></div>'},
+  {title:'Raising the Pyramids',
+   desc:'A square pyramid rises from each of the 6 cube faces. The apex sits above the face centre at height equal to the cube edge.',
+   leg:'<div class="lr"><div class="ll" style="background:var(--geo-unit)"></div><span>cube corners</span></div><div class="lr"><div class="ll" style="background:var(--geo-space)"></div><span>pyramid apex (pole)</span></div>'},
+  {title:'Rhombic Dodecahedron',
+   desc:'Where adjacent pyramid faces meet, they form 12 congruent rhombic faces. Each rhombus has diagonal ratio 1&thinsp;:&thinsp;&radic;2 &mdash; the same proportion as the cube&rsquo;s face diagonal. This solid tiles 3D space without gaps.',
+   leg:'<div class="lr"><div class="ll" style="background:var(--geo-unit)"></div><span>xy-plane faces (4)</span></div><div class="lr"><div class="ll" style="background:var(--geo-face)"></div><span>xz-plane faces (4)</span></div><div class="lr"><div class="ll" style="background:var(--geo-tri)"></div><span>yz-plane faces (4)</span></div><div class="lr"><div class="ll" style="background:var(--geo-space)"></div><span>face poles</span></div>'}
+];
+var lastPhase=-1;
+function setPhase(p){
+  if(p===lastPhase)return;
+  lastPhase=p;
+  document.getElementById('ptitle').textContent=PHASES[p].title;
+  document.getElementById('pdesc').innerHTML=PHASES[p].desc;
+  document.getElementById('legbody').innerHTML=PHASES[p].leg;
+}
+
+/* Fixed paint order: faces under spheres under lines under labels. Pairs with
+   sortObjects=false so the renderer never re-orders these per frame. */
+scene.traverse(function(o){
+  if(o.isSprite) o.renderOrder = 3;
+  else if(o.isLine) o.renderOrder = 2;
+  else if(o.isMesh) o.renderOrder = (o.geometry && o.geometry.type === 'SphereGeometry') ? 1 : 0;
+});
+
+// ---- camera ----
+var az=-1.85, el=0.44, rad=7.2;
+var taz=az, tel=el, trad=rad;
+var dragging=false, px=0, py=0;
+canvas.addEventListener('mousedown',function(e){dragging=true;px=e.clientX;py=e.clientY;});
+window.addEventListener('mouseup',function(){dragging=false;});
+window.addEventListener('mousemove',function(e){if(!dragging)return;taz-=(e.clientX-px)*.008;tel=Math.max(.1,Math.min(1.3,tel+(e.clientY-py)*.006));px=e.clientX;py=e.clientY;});
+canvas.addEventListener('wheel',function(e){trad=Math.max(4,Math.min(14,trad+e.deltaY*.007));},{passive:true});
+canvas.addEventListener('touchstart',function(e){var t=e.touches[0];dragging=true;px=t.clientX;py=t.clientY;},{passive:true});
+canvas.addEventListener('touchmove',function(e){if(!dragging)return;var t=e.touches[0];taz-=(t.clientX-px)*.01;tel=Math.max(.1,Math.min(1.3,tel+(t.clientY-py)*.008));px=t.clientX;py=t.clientY;e.preventDefault();},{passive:false});
+canvas.addEventListener('touchend',function(){dragging=false;});
+
+// ---- clock ----
+var clock=new THREE.Clock(), paused=false, timeOffset=0, pauseAt=0;
+document.getElementById('replay').onclick=function(){clock=new THREE.Clock();timeOffset=0;paused=false;lastPhase=-1;document.getElementById('pause').innerHTML='&#10074;&#10074; Pause';};
+document.getElementById('pause').onclick=function(){
+  paused=!paused;
+  if(paused){pauseAt=clock.getElapsedTime();}
+  else{timeOffset+=clock.getElapsedTime()-pauseAt;}
+  document.getElementById('pause').innerHTML=paused?'&#9658; Resume':'&#10074;&#10074; Pause';
+};
+
+var TOTAL=24;
+
+function anim(){
+  requestAnimationFrame(anim);
+  var raw=paused?pauseAt:clock.getElapsedTime();
+  var t=(raw-timeOffset)%TOTAL;
+
+  // phase text
+  if(t<8) setPhase(0); else if(t<16) setPhase(1); else setPhase(2);
+
+  // camera
+  az+=(taz-az)*.08; el+=(tel-el)*.08; rad+=(trad-rad)*.08;
+  taz+=0.004;
+  camera.position.set(rad*Math.cos(el)*Math.cos(az), rad*Math.sin(el), rad*Math.cos(el)*Math.sin(az));
+  camera.lookAt(origin);
+
+  // loop fade-out (t=22→24)
+  var lf=1-ph(t,22,2);
+
+  // -- Phase 1: cube diagonals (0–8s) --
+  var cubeOp=(ph(t,0,.7)*.35*(1-ph(t,7.5,1.2)))+(ph(t,8.5,.5)*.10*(1-ph(t,15.5,1.5)));
+  cubeLines.forEach(function(l){l.material.opacity=cubeOp;});
+
+  cornerSph.forEach(function(s,i){
+    var op1=ph(t,.6+i*.07,.5)*.82*(1-ph(t,7.5,1.2));
+    var op2=ph(t,8.5,.5)*.38*(1-ph(t,16,1.5));
+    s.material.opacity=op1+op2;
+  });
+
+  faceDiagLines.forEach(function(l,i){
+    l.material.opacity=ph(t,2+i*.22,.7)*.72*(1-ph(t,7.5,1));
+  });
+
+  spaceDiagLines[0].material.opacity=ph(t,4.5,.7)*.95*(1-ph(t,8.2,.8));
+  spaceDiagLines[1].material.opacity=ph(t,4.7,.5)*.22*(1-ph(t,8,.8));
+  spaceDiagLines[2].material.opacity=ph(t,4.7,.5)*.22*(1-ph(t,8,.8));
+  spaceDiagLines[3].material.opacity=ph(t,4.7,.5)*.22*(1-ph(t,8,.8));
+
+  var triP=ph(t,5.5,.8)*(1-ph(t,8,.8));
+  triMesh.material.opacity=triP*.16;
+  triE0.material.opacity=triE1.material.opacity=triE2.material.opacity=triP*.85;
+
+  lblEdge.material.opacity  =ph(t,3,.7)*(1-ph(t,7.5,.8));
+  lblFDiag.material.opacity =ph(t,3.5,.7)*(1-ph(t,7.5,.8));
+  lblSDiag.material.opacity =ph(t,5,.7)*(1-ph(t,7.5,.8));
+  lblAngle.material.opacity =ph(t,6.2,.6)*(1-ph(t,7.5,.8));
+
+  // -- Phase 2: pyramids (8.5–16s) --
+  poleSph.forEach(function(s,i){
+    s.material.opacity=ph(t,8.5+i*.2,.6)*.88*(1-ph(t,16,1));
+  });
+
+  PYRS.forEach(function(pyr,pi){
+    var gStart=9+pi*.9;
+    var growP=ph(t,gStart,1.4);
+    var showP=growP*(1-ph(t,15.5,1.5));
+
+    var apx=pyr.fc[0]+growP*(pyr.pole[0]-pyr.fc[0]);
+    var apy=pyr.fc[1]+growP*(pyr.pole[1]-pyr.fc[1]);
+    var apz=pyr.fc[2]+growP*(pyr.pole[2]-pyr.fc[2]);
+
+    for(var ti=0;ti<4;ti++){
+      var pt=pyrTris[pi*4+ti];
+      pt.pa[0]=apx; pt.pa[1]=apy; pt.pa[2]=apz;
+      pt.geo.attributes.position.needsUpdate=true;
+      pt.mesh.material.opacity=showP*.18;
+    }
+    for(var ei=0;ei<4;ei++){
+      var pe=pyrEdges[pi*4+ei];
+      pe.la[0]=apx; pe.la[1]=apy; pe.la[2]=apz;
+      pe.geo.attributes.position.needsUpdate=true;
+      pe.line.material.opacity=showP*.70;
+    }
+  });
+
+  // -- Phase 3: rhombic dodecahedron (16–24s) --
+  var rfEnd=1-ph(t,22,1.5);
+  rfMeshes.forEach(function(m,i){ m.material.opacity=ph(t,17+i*.06,1)*.26*rfEnd; });
+  rfLines.forEach(function(l,i){  l.material.opacity=ph(t,17.5+i*.05,1)*.88*rfEnd; });
+
+  // pole spheres in phase 3 (keep visible)
+  // (already handled above — they fade at t=16 into pyramid phase but re-emerge here)
+  // show them again at full opacity in phase 3
+  poleSph.forEach(function(s,i){
+    s.material.opacity=(ph(t,8.5+i*.2,.6)*(1-ph(t,16,1)) + ph(t,17+i*.05,.6)*.88*rfEnd)*.88;
+  });
+
+  var diagFade=ph(t,19,.7)*rfEnd;
+  diagLong.material.opacity=diagFade*.85;
+  diagShort.material.opacity=diagFade*.85;
+  lblD1.material.opacity=diagFade;
+  lblD2.material.opacity=diagFade;
+
+  R.render(scene,camera);
+}
+anim();
+})();
+</script>
+</body>
+</html>
