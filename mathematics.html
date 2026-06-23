@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B0B0B">
 <title>The Lost Triangle — Gregg Fleishman</title>
-<meta name="description" content="A scroll-driven study of Gregg Fleishman's Lost Triangle: one right triangle in the ratio 1 : √2 : √3 generates the whole cubic family of space-filling solids.">
+<meta name="description" content="A study of Gregg Fleishman's Lost Triangle: one right triangle in the ratio 1 : √2 : √3 generates the whole cubic family of space-filling solids.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
 <meta property="og:title" content="The Lost Triangle — Infinite Architecture">
-<meta property="og:description" content="One right triangle in the ratio 1 : √2 : √3 — the edge, face-diagonal and space-diagonal of the cube — generates an entire family of space-filling solids. Scroll to see why.">
+<meta property="og:description" content="One right triangle in the ratio 1 : √2 : √3 — the edge, face-diagonal and space-diagonal of the cube — generates an entire family of space-filling solids.">
 <meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/mathematics.html">
 <meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -18,9 +18,7 @@
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- site system fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- broadside fonts (the timeless layer) -->
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
@@ -28,11 +26,9 @@
 <script src="assets/lost-triangle-engine.js" defer></script>
 <style>
   /* ============================================================
-     THE LOST TRIANGLE · "Lightbox Broadside" hybrid
-     The warm-paper canvas (engine) is the timeless artifact; the
-     page is a dark/contemporary gallery that flips with the site
-     theme. Gold is the single futurist signal. Type fuses Archivo
-     (display) + Source Serif 4 (editorial) + IBM Plex Mono (technical).
+     THE LOST TRIANGLE · Tab-driven lightbox layout
+     Canvas is fixed; text stays stationary; tabs click through
+     the five scenes. Gold is the single futurist signal.
      ============================================================ */
   :root{
     --lt-display:'Archivo',var(--font-display),sans-serif;
@@ -62,74 +58,119 @@
     transition:background .5s var(--ease), color .5s var(--ease);
   }
 
-  /* reading-progress hairline — a single gold signal, above the nav */
+  /* tab-progress hairline — advances per tab, not per scroll */
   .lt-progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--lt-track);z-index:80;}
-  .lt-progress>div{height:100%;width:0;background:var(--accent);transition:width .08s linear;}
+  .lt-progress>div{height:100%;width:0;background:var(--accent);transition:width .55s cubic-bezier(.4,0,.2,1);}
 
-  /* the scrolly stage */
-  .scrolly{position:relative;}
-  .lt-graphic{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-  .lt-canvas{
-    aspect-ratio:16/9; width:min(90vw,156vh); height:auto; display:block;
-    background:#F6F4EE; box-shadow:var(--lt-artifact); touch-action:none;
+  /* the stage: full viewport, no scroll */
+  .lt-stage{
+    position:relative;
+    height:100vh;height:100svh;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
   }
+
+  .lt-canvas{
+    aspect-ratio:16/9;width:min(90vw,156vh);height:auto;display:block;
+    background:#F6F4EE;box-shadow:var(--lt-artifact);touch-action:none;
+  }
+
+  /* drag hint */
   .lt-hint{
-    position:absolute; left:50%; bottom:6vh; transform:translateX(-50%);
-    display:flex; align-items:center; gap:11px;
-    font-family:var(--lt-mono2); font-size:12px; letter-spacing:.18em; text-transform:uppercase;
-    color:rgba(28,26,22,.62); background:rgba(246,244,238,.82);
-    padding:8px 15px; border:1px solid rgba(28,26,22,.22);
-    transition:opacity .5s; pointer-events:none;
+    position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);
+    display:flex;align-items:center;gap:11px;
+    font-family:var(--lt-mono2);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(28,26,22,.62);background:rgba(246,244,238,.82);
+    padding:8px 15px;border:1px solid rgba(28,26,22,.22);
+    transition:opacity .5s;pointer-events:none;
   }
   .lt-hint .ic{width:21px;height:21px;border:1.3px solid rgba(28,26,22,.5);border-radius:50%;
     display:flex;align-items:center;justify-content:center;font-size:12px;}
 
-  /* persistent instrument readout — ties chrome to the canvas */
+  /* panel: tabs + card, anchored bottom-left */
+  .lt-panel{
+    position:absolute;left:4vw;bottom:5vh;
+    width:min(520px,88vw);
+    z-index:20;
+  }
+
+  /* tab strip */
+  .lt-tabs{
+    display:flex;
+    border:1px solid var(--lt-card-bd);
+    border-bottom:none;
+  }
+  .lt-tab{
+    flex:1;padding:8px 4px;
+    background:rgba(13,12,9,.45);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    border:none;border-right:1px solid var(--lt-card-bd);
+    color:var(--tx-dim);cursor:pointer;
+    font-family:var(--lt-mono2);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    transition:color .2s var(--ease),background .2s var(--ease);
+    line-height:1.2;
+  }
+  :root[data-theme="light"] .lt-tab{background:rgba(255,250,240,.55);}
+  .lt-tab:last-child{border-right:none;}
+  .lt-tab:hover:not(.active){color:var(--tx);background:rgba(13,12,9,.65);}
+  :root[data-theme="light"] .lt-tab:hover:not(.active){background:rgba(255,250,240,.80);}
+  .lt-tab.active{color:var(--accent);background:var(--lt-card);}
+
+  /* card */
+  .lt-card{
+    background:var(--lt-card);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    padding:28px 32px;border:1px solid var(--lt-card-bd);
+    box-shadow:0 18px 50px rgba(0,0,0,.22);
+  }
+
+  /* panes */
+  .lt-pane{display:none;}
+  .lt-pane.active{display:block;}
+
+  .lt-eyebrow{font-family:var(--lt-mono2);font-size:12.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+  .lt-card h1{font-family:var(--lt-display);font-weight:900;font-size:clamp(44px,6vw,96px);line-height:.9;letter-spacing:-.028em;text-transform:uppercase;margin:0 0 20px;color:var(--tx);}
+  .lt-card h2{font-family:var(--lt-display);font-weight:800;font-size:clamp(26px,3.8vw,50px);line-height:1.0;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 16px;color:var(--tx);}
+  .lt-card p{font-family:var(--lt-serif);font-size:18px;line-height:1.55;color:var(--lt-body);margin:0;}
+  .lt-card p+p{margin-top:12px;}
+  .lt-card p b{color:var(--tx);font-weight:600;}
+  .lt-card .mono{font-family:var(--lt-mono2);font-weight:500;}
+  .lt-legend{font-family:var(--lt-mono2);font-size:13px;line-height:1.75;color:var(--tx-dim);margin:16px 0 0;}
+  .lt-legend b{color:var(--accent);font-weight:500;}
+
+  /* nav arrows */
+  .lt-nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:18px;
+  }
+  .lt-arrow{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--lt-mono2);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--tx-dim);background:none;border:1px solid var(--lt-card-bd);
+    padding:8px 14px;cursor:pointer;
+    transition:color .15s var(--ease),border-color .15s var(--ease),background .15s var(--ease);
+  }
+  .lt-arrow:hover{color:var(--accent);border-color:var(--accent);}
+  .lt-arrow:disabled{opacity:.25;cursor:default;pointer-events:none;}
+  .lt-step-label{font-family:var(--lt-mono2);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-faint);}
+
+  /* readout */
   .lt-readout{
-    position:fixed; left:0; right:0; bottom:0; z-index:45; pointer-events:none;
-    display:flex; justify-content:center; gap:14px; padding:14px 20px;
-    font-family:var(--lt-mono2); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--tx-dim); transition:opacity .4s;
+    position:fixed;left:0;right:0;bottom:0;z-index:45;pointer-events:none;
+    display:flex;justify-content:center;gap:14px;padding:14px 20px;
+    font-family:var(--lt-mono2);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--tx-dim);transition:opacity .4s;
   }
   .lt-readout .ix{color:var(--accent);}
   .lt-readout .sep{opacity:.4;}
 
-  /* overlaid step cards */
-  .lt-steps{position:relative;margin-top:-100vh;z-index:20;pointer-events:none;}
-  .lt-step{display:flex;align-items:center;padding:0 7vw;transition:opacity .4s var(--ease);}
-  .lt-card{
-    max-width:520px; background:var(--lt-card);
-    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
-    padding:32px 36px; border:1px solid var(--lt-card-bd);
-    box-shadow:0 18px 50px rgba(0,0,0,.22);
-  }
-  .lt-eyebrow{font-family:var(--lt-mono2);font-size:12.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
-  .lt-card h1{font-family:var(--lt-display);font-weight:900;font-size:clamp(48px,7vw,104px);line-height:.9;letter-spacing:-.028em;text-transform:uppercase;margin:0 0 22px;color:var(--tx);}
-  .lt-card h2{font-family:var(--lt-display);font-weight:800;font-size:clamp(30px,4.2vw,54px);line-height:1.0;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 18px;color:var(--tx);}
-  .lt-card p{font-family:var(--lt-serif);font-size:19px;line-height:1.55;color:var(--lt-body);margin:0;}
-  .lt-card p+p{margin-top:14px;}
-  .lt-card p b{color:var(--tx);font-weight:600;}
-  .lt-card .mono{font-family:var(--lt-mono2);font-weight:500;}
-  .lt-legend{font-family:var(--lt-mono2);font-size:13.5px;line-height:1.75;color:var(--tx-dim);margin:18px 0 0;pointer-events:auto;}
-  .lt-legend b{color:var(--accent);font-weight:500;}
-
-  /* scroll cue on the hero */
-  .lt-cue{
-    position:absolute; left:50%; bottom:3.4vh; transform:translateX(-50%);
-    font-family:var(--lt-mono2); font-size:11px; letter-spacing:.3em; text-transform:uppercase;
-    color:var(--tx-dim); display:flex; flex-direction:column; align-items:center; gap:7px;
-    transition:opacity .4s; z-index:25; pointer-events:none;
-  }
-  .lt-cue .ch{width:1px;height:26px;background:linear-gradient(var(--tx-dim),transparent);}
-
-  /* outro + the sibling artifacts */
+  /* outro */
   .lt-outro{position:relative;z-index:30;padding:20vh 7vw 18vh;border-top:1px solid var(--lt-card-bd);
     background:linear-gradient(to bottom,transparent,rgba(0,0,0,.16));}
   :root[data-theme="light"] .lt-outro{background:linear-gradient(to bottom,transparent,rgba(40,28,8,.05));}
   .lt-outro .inner{max-width:820px;margin:0 auto;text-align:center;}
   .lt-outro blockquote{font-family:var(--lt-serif);font-style:italic;font-size:clamp(25px,3.4vw,40px);line-height:1.4;color:var(--tx);margin:18px 0 10px;}
   .lt-outro .sig{font-family:var(--lt-mono2);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--tx-faint);}
-
   .lt-more{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:48px;}
   .lt-more a{
     display:inline-flex;align-items:center;gap:10px;
@@ -142,13 +183,15 @@
   .lt-more a:hover .ar{color:var(--accent-text);}
 
   @media(max-width:640px){
-    .lt-card{max-width:none;padding:24px 24px;}
-    .lt-step{padding:0 5vw;}
+    .lt-panel{left:5vw;right:5vw;width:auto;}
+    .lt-card{padding:20px 20px;}
+    .lt-tab{font-size:9.5px;padding:7px 2px;}
     .lt-readout{font-size:11px;letter-spacing:.1em;gap:10px;}
-    .lt-cue,.lt-hint{display:none;}
+    .lt-hint{display:none;}
   }
-  @media (prefers-reduced-motion: reduce){
+  @media(prefers-reduced-motion:reduce){
     body{transition:none;}
+    .lt-progress>div{transition:none;}
   }
 </style>
 </head>
@@ -175,61 +218,72 @@
 
 <div class="lt-progress"><div id="ltProg"></div></div>
 
-<div class="scrolly" id="scrolly">
-  <div class="lt-graphic">
-    <canvas class="lt-canvas" id="ltCanvas"></canvas>
-    <div class="lt-hint" id="ltHint"><span class="ic">↻</span><span>Drag the solid to rotate</span></div>
-    <div class="lt-cue" id="ltCue"><span>Scroll</span><span class="ch"></span></div>
-  </div>
+<div class="lt-stage">
+  <canvas class="lt-canvas" id="ltCanvas"></canvas>
+  <div class="lt-hint" id="ltHint"><span class="ic">↻</span><span>Drag the solid to rotate</span></div>
 
-  <div class="lt-steps">
-    <section class="lt-step" data-step="0" style="min-height:112vh">
-      <div class="lt-card" style="max-width:560px;padding:38px 42px">
+  <div class="lt-panel" role="tabpanel">
+    <!-- tab strip -->
+    <div class="lt-tabs" role="tablist" aria-label="Scene steps">
+      <button class="lt-tab active" role="tab" aria-selected="true"  data-tab="0">Intro</button>
+      <button class="lt-tab"        role="tab" aria-selected="false" data-tab="1">01 · Proof</button>
+      <button class="lt-tab"        role="tab" aria-selected="false" data-tab="2">02 · Angles</button>
+      <button class="lt-tab"        role="tab" aria-selected="false" data-tab="3">03 · Family</button>
+      <button class="lt-tab"        role="tab" aria-selected="false" data-tab="4">04 · Infinite</button>
+    </div>
+
+    <!-- card with content panes -->
+    <div class="lt-card">
+      <!-- pane 0 -->
+      <div class="lt-pane active" data-pane="0">
         <div class="lt-eyebrow" style="letter-spacing:.32em">The geometry of one root triangle</div>
         <h1>The Lost<br>Triangle</h1>
-        <p style="max-width:440px">One right triangle whose sides run in the ratio <b class="mono">1 : √2 : √3</b>. Gregg Fleishman drew a lifetime of buildings, chairs, and playgrounds out of it. Scroll to see why it holds the whole system together.</p>
+        <p style="max-width:440px">One right triangle whose sides run in the ratio <b class="mono">1 : √2 : √3</b>. Gregg Fleishman drew a lifetime of buildings, chairs, and playgrounds out of it. Click the tabs to see why it holds the whole system together.</p>
       </div>
-    </section>
 
-    <section class="lt-step" data-step="1" style="min-height:150vh">
-      <div class="lt-card">
+      <!-- pane 1 -->
+      <div class="lt-pane" data-pane="1">
         <div class="lt-eyebrow">01 — The proof</div>
         <h2>It lives inside the cube</h2>
         <p>Take any cube. Its <b>edge</b> is 1, its <b>face diagonal</b> is √2, its <b>space diagonal</b> is √3. Those three lengths <i>are</i> the triangle — it is simply the cube sliced corner to corner. The ratio isn't arbitrary; it's baked into the structure of 3D space.</p>
       </div>
-    </section>
 
-    <section class="lt-step" data-step="2" style="min-height:122vh">
-      <div class="lt-card">
+      <!-- pane 2 -->
+      <div class="lt-pane" data-pane="2">
         <div class="lt-eyebrow">02 — Two angles, one architecture</div>
         <h2>Two angles do all the work</h2>
         <p>The triangle's acute corners are <b class="mono">α ≈ 35.25°</b> and <b class="mono">β ≈ 54.75°</b> — exactly arctan(1/√2) and arctan √2 — and they add to a clean <b>90°</b>. Every joint, fold, and corner in the work is some whole-number sum of just these two angles.</p>
       </div>
-    </section>
 
-    <section class="lt-step" data-step="3" style="min-height:380vh;align-items:flex-start;padding-top:15vh">
-      <div class="lt-card" style="max-width:540px;position:sticky;top:24vh">
+      <!-- pane 3 -->
+      <div class="lt-pane" data-pane="3">
         <div class="lt-eyebrow">03 — The cubic family</div>
         <h2>A whole family from α + β</h2>
         <p>Tetrahedron, cube, octahedron, cuboctahedron, the truncations, the rhombicube — each one's dihedral angle is a tidy combination of α and β. The highlight on every solid splits its angle into those parts, so you can read the recipe straight off the geometry.</p>
         <p class="lt-legend">70.5° = <b>2α</b> · 90° = <b>α+β</b> · 109.5° = <b>2β</b><br>125.25° = <b>2α+β</b> · 144.75° = <b>α+2β</b></p>
       </div>
-    </section>
 
-    <section class="lt-step" data-step="4" style="min-height:150vh">
-      <div class="lt-card">
+      <!-- pane 4 -->
+      <div class="lt-pane" data-pane="4">
         <div class="lt-eyebrow">04 — Infinitely buildable</div>
         <h2>Outward without end</h2>
         <p>Because the angles close perfectly, the solids stack with no gaps. The same triangle that fit inside one cube now fills all of space — the face-centred-cubic lattice, about <b>74%</b> dense, repeating outward without end.</p>
       </div>
-    </section>
+
+      <!-- prev / next row -->
+      <div class="lt-nav-row">
+        <button class="lt-arrow" id="ltPrev" disabled>← Prev</button>
+        <span class="lt-step-label" id="ltStepLabel">1 / 5</span>
+        <button class="lt-arrow" id="ltNext">Next →</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <section class="lt-outro">
   <div class="inner">
     <div class="lt-eyebrow" style="text-align:center;letter-spacing:.34em">One triangle · infinite architecture</div>
-    <blockquote>“Everything is built from the same small set of relationships — you just keep finding new places to put them.”</blockquote>
+    <blockquote>"Everything is built from the same small set of relationships — you just keep finding new places to put them."</blockquote>
     <div class="sig">Gregg Fleishman · 1 : √2 : √3</div>
     <div class="lt-more">
       <a href="lost-triangle-motion.html">Motion graphic <span class="ar">→</span></a>
@@ -245,48 +299,89 @@
 
 <script>
 (function () {
+  /* T targets for each tab — chosen to land cleanly inside each scene envelope */
+  var TAB_T = [2.0, 7.0, 12.0, 24.0, 37.0];
+  var NUM_TABS = TAB_T.length;
+  var activeTab = 0;
+
   function boot() {
-    var canvas = document.getElementById('ltCanvas');
+    var canvas  = document.getElementById('ltCanvas');
     if (!canvas || typeof LostTriangle === 'undefined') { return setTimeout(boot, 40); }
 
-    var eng = new LostTriangle(canvas, { mode: 'scroll', interactive: true, captions: false, frame: true });
-    var scrolly  = document.getElementById('scrolly');
-    var progEl   = document.getElementById('ltProg');
-    var hint     = document.getElementById('ltHint');
-    var cue      = document.getElementById('ltCue');
-    var ixEl     = document.getElementById('ltIx');
-    var fxEl     = document.getElementById('ltFormula');
-    var steps    = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+    var eng     = new LostTriangle(canvas, { mode: 'scroll', interactive: true, captions: false, frame: true });
+    var progEl  = document.getElementById('ltProg');
+    var hint    = document.getElementById('ltHint');
+    var ixEl    = document.getElementById('ltIx');
+    var fxEl    = document.getElementById('ltFormula');
+    var tabs    = Array.prototype.slice.call(document.querySelectorAll('.lt-tab'));
+    var panes   = Array.prototype.slice.call(document.querySelectorAll('.lt-pane'));
+    var prevBtn = document.getElementById('ltPrev');
+    var nextBtn = document.getElementById('ltNext');
+    var stepLbl = document.getElementById('ltStepLabel');
 
     eng.onInteract = function () { hint.style.opacity = '0'; };
+    eng.setProgress(TAB_T[0] / eng.DUR);
     eng.start();
 
-    function onScroll() {
-      var r = scrolly.getBoundingClientRect();
-      var vh = window.innerHeight;
-      var total = scrolly.offsetHeight - vh;
-      var p = total > 0 ? Math.max(0, Math.min(1, -r.top / total)) : 0;
-      eng.setProgress(p);
+    /* smooth T lerp */
+    var targetT = TAB_T[0];
+    function animateTo(t) {
+      targetT = t;
+      function step() {
+        var diff = targetT - eng.T;
+        if (Math.abs(diff) < 0.02) { eng.T = targetT; return; }
+        eng.T += diff * 0.10;
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function goToTab(idx) {
+      if (idx < 0 || idx >= NUM_TABS) return;
+      activeTab = idx;
+
+      tabs.forEach(function (t, i) {
+        t.classList.toggle('active', i === idx);
+        t.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+      });
+      panes.forEach(function (p, i) { p.classList.toggle('active', i === idx); });
+
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === NUM_TABS - 1;
+      stepLbl.textContent = (idx + 1) + ' / ' + NUM_TABS;
+
+      var p = idx / (NUM_TABS - 1);
       progEl.style.width = (p * 100).toFixed(2) + '%';
 
-      var cz = vh / 2;
-      for (var i = 0; i < steps.length; i++) {
-        var b = steps[i].getBoundingClientRect();
-        var c = b.top + b.height / 2;
-        var d = Math.abs(c - cz) / (vh * 0.75);
-        steps[i].style.opacity = Math.max(0.06, 1 - d).toFixed(3);
-      }
-
-      var sc = eng.getScene(eng.T);
-      ixEl.textContent = sc.i;
-      fxEl.textContent = sc.formula;
-      cue.style.opacity = p > 0.02 ? '0' : '1';
-      if (p > 0.5) hint.style.opacity = '0';
+      animateTo(TAB_T[idx]);
+      if (idx > 0) hint.style.opacity = '0';
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    onScroll();
+
+    tabs.forEach(function (btn, i) {
+      btn.addEventListener('click', function () { goToTab(i); });
+    });
+
+    prevBtn.addEventListener('click', function () { goToTab(activeTab - 1); });
+    nextBtn.addEventListener('click', function () { goToTab(activeTab + 1); });
+
+    /* keyboard: left/right arrow when panel is focused */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') goToTab(activeTab + 1);
+      if (e.key === 'ArrowLeft')  goToTab(activeTab - 1);
+    });
+
+    /* keep readout synced each frame */
+    var _origDraw = eng.draw.bind(eng);
+    eng.draw = function () {
+      _origDraw();
+      var sc = eng.getScene(eng.T);
+      ixEl.textContent  = sc.i;
+      fxEl.textContent  = sc.formula;
+    };
+
+    goToTab(0);
   }
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
