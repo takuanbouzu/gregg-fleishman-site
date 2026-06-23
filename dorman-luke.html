@@ -12,9 +12,35 @@
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
 <style>
+  :root{--fig-panel:rgba(20,20,20,.76);--fig-panel-bd:var(--border-strong);--fig-panel-sh:0 8px 24px rgba(0,0,0,.38);}
+  :root[data-theme="light"]{--fig-panel:rgba(255,250,240,.90);--fig-panel-bd:rgba(20,20,20,.12);--fig-panel-sh:0 6px 20px rgba(40,28,8,.10);}
   .wrap{max-width:780px;margin:0 auto;padding:0 40px;}
   .sec{padding:80px 0;border-bottom:1px solid var(--hairline);}
+
+  /* embedded interactive figure */
+  .fig-outer{position:relative;height:460px;margin-top:32px;overflow:hidden;
+    background:radial-gradient(circle at 50% 40%, var(--bg-elevated) 0%, var(--bg) 72%);
+    border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);}
+  #stCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;}
+  .fig-panel{position:absolute;background:var(--fig-panel);border:1px solid var(--fig-panel-bd);
+    box-shadow:var(--fig-panel-sh);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border-radius:var(--radius-lg);padding:12px 16px;
+    transition:background .5s var(--ease),border-color .5s var(--ease);}
+  .fig-legend{top:18px;left:20px;}
+  .fig-row{display:flex;align-items:center;gap:10px;margin:6px 0;color:var(--tx-dim);font-size:12px;}
+  .fig-row b{color:var(--tx);}
+  .fig-sw{width:28px;height:3px;border-radius:2px;flex:0 0 auto;}
+  .fig-mode{bottom:18px;right:18px;display:flex;gap:8px;padding:8px;}
+  .fig-mode button{font:inherit;font-family:var(--font-ui);color:var(--tx-dim);
+    border:1px solid var(--fig-panel-bd);background:transparent;border-radius:9px;
+    padding:7px 11px;cursor:pointer;transition:color .18s var(--ease),border-color .18s var(--ease);}
+  .fig-mode button:hover,.fig-mode button.active{color:var(--tx);border-color:var(--accent);}
+  .fig-hint{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);
+    font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;
+    color:var(--tx-faint);pointer-events:none;white-space:nowrap;}
+  @media(max-width:680px){.fig-legend{display:none;}.fig-hint{display:none;}}
 
   /* research caveat */
   .research-note{background:var(--bg-surface);border-bottom:1px solid var(--border);}
@@ -88,7 +114,7 @@
   <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
   <a class="navlink active" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
-  <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
+
   <a class="navlink" href="vector-pod/index.html">Vertor Pod</a>
   <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
     <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -150,6 +176,22 @@
       <li>The resulting dual is the rhombic dodecahedron — also the Voronoi cell of the FCC lattice</li>
       <li>This is why the √2 proportioning appears throughout Gregg's system: it is a direct consequence of the duality geometry</li>
     </ul>
+  </div>
+
+  <!-- embedded Silver Triangle figure -->
+  <div class="fig-outer">
+    <canvas id="stCanvas"></canvas>
+    <div class="fig-panel fig-legend">
+      <div class="fig-row"><span class="fig-sw" style="background:var(--geo-unit)"></span><b>45°</b><span>tan(1) square fold</span></div>
+      <div class="fig-row"><span class="fig-sw" style="background:var(--geo-tri)"></span><b>35.264°</b><span>tan(1/√2) cube diagonal</span></div>
+      <div class="fig-row"><span class="fig-sw" style="background:var(--geo-face)"></span><b>√2</b><span>square diagonal</span></div>
+      <div class="fig-row"><span class="fig-sw" style="background:var(--geo-space)"></span><b>σ</b><span>1 + √2 ≈ 2.414</span></div>
+    </div>
+    <div class="fig-panel fig-mode">
+      <button id="stFlat" class="active">Square Fold</button>
+      <button id="stLost">Lost Triangle</button>
+    </div>
+    <div class="fig-hint">Drag to rotate · Scroll to zoom</div>
   </div>
 </section>
 
@@ -295,5 +337,83 @@
   </div>
 </section>
 
+<script src="assets/vendor/three-r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var canvas=document.getElementById('stCanvas');
+if(!canvas||typeof THREE==='undefined'||typeof GF_SCENE==='undefined')return;
+var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0,0);
+var scene=new THREE.Scene();
+var camera=new THREE.PerspectiveCamera(42,1,.01,100);camera.up.set(0,0,1);
+scene.add(new THREE.AmbientLight(0xffffff,.82));
+var dl=new THREE.DirectionalLight(0xffffff,.45);dl.position.set(-2,-3,5);scene.add(dl);
+var C=GF_SCENE.active();
+GF_SCENE.onChange(function(){
+  while(scene.children.length)scene.remove(scene.children[0]);
+  scene.add(new THREE.AmbientLight(0xffffff,.82));
+  var dl2=new THREE.DirectionalLight(0xffffff,.45);dl2.position.set(-2,-3,5);scene.add(dl2);
+  C=GF_SCENE.active();
+  scene.fog=new THREE.FogExp2(new THREE.Color(C.bg[2]).getHex(),.025);
+  buildScene();
+});
+scene.fog=new THREE.FogExp2(new THREE.Color(C.bg[2]).getHex(),.025);
+function mat(color,op){return new THREE.LineBasicMaterial({color:color,transparent:true,opacity:op==null?1:op});}
+function line(a,b,color,op){var l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),mat(color,op));scene.add(l);return l;}
+function label(text,pos,color,scale){
+  var cv=document.createElement('canvas');cv.width=512;cv.height=140;var ctx=cv.getContext('2d');
+  ctx.font='700 70px Inter,Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.lineWidth=10;ctx.strokeStyle=C.halo;ctx.strokeText(text,256,70);
+  ctx.fillStyle=color;ctx.fillText(text,256,70);
+  var sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false}));
+  sp.position.copy(pos);sp.scale.set(scale*3.4,scale,1);scene.add(sp);return sp;
+}
+function arc(center,a0,a1,r,color,z){
+  var pts=[];for(var i=0;i<=52;i++){var a=a0+(a1-a0)*i/52;pts.push(new THREE.Vector3(center.x+Math.cos(a)*r,center.y+Math.sin(a)*r,z||0));}
+  var l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),mat(color,1));scene.add(l);return l;
+}
+function buildScene(){
+  for(var i=-4;i<=4;i++){line(new THREE.Vector3(-3,i*.5,0),new THREE.Vector3(3,i*.5,0),C.grid,.45);line(new THREE.Vector3(i*.5,-2.2,0),new THREE.Vector3(i*.5,2.2,0),C.grid,.45);}
+  var O=new THREE.Vector3(-.65,-.45,0),X=new THREE.Vector3(.75,-.45,0),Y=new THREE.Vector3(-.65,.95,0),A=new THREE.Vector3(.75,.95,0);
+  line(O,X,C.unit,1);line(O,Y,C.unit,1);line(X,A,C.unit,.7);line(Y,A,C.unit,.7);line(O,A,C.face,1);
+  arc(O,0,Math.PI/4,.34,C.unit,.015);
+  label('45°',new THREE.Vector3(-.32,-.33,.05),C.unit,.13);
+  label('√2',new THREE.Vector3(.18,.35,.05),C.face,.16);
+  var B=new THREE.Vector3(.75,.95,.99);
+  line(A,B,C.unit,.85);line(O,B,C.tri,1);line(O,A,C.tri,.55);line(A,B,C.tri,.55);
+  var theta=Math.atan2(1,Math.sqrt(2));
+  arc(new THREE.Vector3(1.12,-.45,0),0,theta,.42,C.tri,.015);
+  line(new THREE.Vector3(1.12,-.45,0),new THREE.Vector3(1.12+Math.sqrt(2)*.7,-.45,0),C.face,1);
+  line(new THREE.Vector3(1.12+Math.sqrt(2)*.7,-.45,0),new THREE.Vector3(1.12+Math.sqrt(2)*.7,.25,0),C.unit,1);
+  line(new THREE.Vector3(1.12,-.45,0),new THREE.Vector3(1.12+Math.sqrt(2)*.7,.25,0),C.tri,1);
+  label('35.264°',new THREE.Vector3(1.52,-.29,.05),C.tri,.12);
+  label('1 : √2 : √3',new THREE.Vector3(1.78,.56,.05),C.tri,.13);
+  var sig=1+Math.SQRT2;
+  line(new THREE.Vector3(-1.18,-1.42,0),new THREE.Vector3(-1.18+sig*.42,-1.42,0),C.space,1);
+  label('σ = 1 + √2',new THREE.Vector3(-.66,-1.25,.05),C.space,.13);
+}
+buildScene();
+var az=-1.52,el=.92,r=5.2,target={az:-1.52,el:.92,r:5.2};
+document.getElementById('stFlat').onclick=function(){target={az:-1.52,el:.92,r:5.2};this.classList.add('active');document.getElementById('stLost').classList.remove('active');};
+document.getElementById('stLost').onclick=function(){target={az:-2.1,el:.46,r:4.7};this.classList.add('active');document.getElementById('stFlat').classList.remove('active');};
+var drag=false,px=0,py=0;
+canvas.addEventListener('mousedown',function(e){drag=true;px=e.clientX;py=e.clientY;});
+window.addEventListener('mouseup',function(){drag=false;});
+window.addEventListener('mousemove',function(e){if(!drag)return;target.az-=(e.clientX-px)*.008;target.el=Math.max(.08,Math.min(1.35,target.el+(e.clientY-py)*.006));px=e.clientX;py=e.clientY;});
+canvas.addEventListener('wheel',function(e){target.r=Math.max(2.8,Math.min(8,target.r+e.deltaY*.006));},{passive:true});
+var container=canvas.parentElement;
+function resize(){
+  var w=container.clientWidth,h=container.clientHeight;
+  if(!w||!h)return;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(container);resize();
+var look=new THREE.Vector3(.25,-.08,.25);
+function anim(){requestAnimationFrame(anim);az+=(target.az-az)*.05;el+=(target.el-el)*.05;r+=(target.r-r)*.05;camera.position.set(look.x+r*Math.cos(el)*Math.cos(az),look.y+r*Math.cos(el)*Math.sin(az),look.z+r*Math.sin(el));camera.lookAt(look);renderer.render(scene,camera);}
+anim();
+})();
+</script>
 </body>
 </html>
