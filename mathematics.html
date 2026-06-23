@@ -229,7 +229,6 @@
       <button class="lt-tab"        role="tab" aria-selected="false" data-tab="1">01 · Proof</button>
       <button class="lt-tab"        role="tab" aria-selected="false" data-tab="2">02 · Angles</button>
       <button class="lt-tab"        role="tab" aria-selected="false" data-tab="3">03 · Family</button>
-      <button class="lt-tab"        role="tab" aria-selected="false" data-tab="4">04 · Infinite</button>
     </div>
 
     <!-- card with content panes -->
@@ -263,13 +262,6 @@
         <p class="lt-legend">70.5° = <b>2α</b> · 90° = <b>α+β</b> · 109.5° = <b>2β</b><br>125.25° = <b>2α+β</b> · 144.75° = <b>α+2β</b></p>
       </div>
 
-      <!-- pane 4 -->
-      <div class="lt-pane" data-pane="4">
-        <div class="lt-eyebrow">04 — Infinitely buildable</div>
-        <h2>Outward without end</h2>
-        <p>Because the angles close perfectly, the solids stack with no gaps. The same triangle that fit inside one cube now fills all of space — the face-centred-cubic lattice, about <b>74%</b> dense, repeating outward without end.</p>
-      </div>
-
       <!-- prev / next row -->
       <div class="lt-nav-row">
         <button class="lt-arrow" id="ltPrev" disabled>← Prev</button>
@@ -300,7 +292,7 @@
 <script>
 (function () {
   /* T targets for each tab — chosen to land cleanly inside each scene envelope */
-  var TAB_T = [2.0, 7.0, 12.0, 24.0, 37.0];
+  var TAB_T = [2.0, 7.0, 12.0, 24.0];
   var NUM_TABS = TAB_T.length;
   var activeTab = 0;
 
