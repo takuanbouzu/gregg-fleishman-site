@@ -168,7 +168,7 @@
   #sortread .res span{color:var(--dim);font-weight:400}
 
   /* volume tally HUD */
-  #volume{left:40px;top:120px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim);
+  #volume{left:40px;top:158px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim);
     pointer-events:none}
   #volume.hide{display:none}
   #volume .big{color:var(--text);font-weight:700}
@@ -233,7 +233,7 @@
 
   <div id="masthead" class="chrome">
     <div class="sub">Six Parts · One Cube · The Whole of Space</div>
-    <div class="note">Each part is the <b>proof triangle</b>, stood up in space — six close into one cube, one module fills space.</div>
+    <div class="note">Each part is the <b>proof triangle</b>, stood up in space.</div>
   </div>
 
   <div id="loader"><div class="lt">Building the cube…</div></div>
@@ -348,7 +348,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 const SC = GF_SCENE.active();
 const isLight = GF_SCENE.name() === 'light';
 const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const BGc = new THREE.Color(cssVar('--bg') || '#0B0B0B');
+const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');  // bg from the SAME palette as geometry — avoids theme-init race
 const COL = { bg:BGc.getHex(), bone:new THREE.Color(SC.unit).getHex(), dim:new THREE.Color(SC.muted).getHex(),
               gold:new THREE.Color(SC.angle).getHex(), blue:new THREE.Color(SC.face).getHex(),
               mag:new THREE.Color(SC.space).getHex(), green:new THREE.Color(SC.tri).getHex() };
