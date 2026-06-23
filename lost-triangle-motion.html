@@ -170,6 +170,9 @@
     function fit() {
       var pad = 64;
       var k = Math.min(window.innerWidth / 1920, (window.innerHeight - pad) / 1080);
+      var cover = document.documentElement.classList.contains('gf-cover');
+      stage.style.left = cover ? '64%' : '50%';
+      stage.style.top  = cover ? '52%' : '50%';
       stage.style.transform = 'translate(-50%,-50%) scale(' + k + ')';
     }
     window.addEventListener('resize', fit); fit();
