@@ -20,19 +20,30 @@
   'use strict';
 
   var GF_SCENE = {
-    /* LIGHT — the pages' original "paper" palette (ink on cream). */
+    /* LIGHT — paper palette; geometry colours darkened for cream bg. */
     light: {
       bg:    ['#fffaf0', '#f6f2e8', '#e8deca'],   /* radial: center, mid, edge */
       ink:   '#141414', grid: '#d9d2c3', ghost: '#b4a896', muted: '#6b665d',
-      unit:  '#1769ff', face: '#e2811f', space: '#d9295f', tri: '#23a76d', angle: '#927400',
-      halo:  'rgba(246,242,232,.95)'              /* light label outline */
+      unit:  '#141414',                            /* edge = structural ink */
+      face:  '#4a7aaa',                            /* face diagonal √2 — muted blue darkened */
+      space: '#b85339',                            /* space diagonal √3 — terracotta darkened */
+      tri:   'rgba(100,145,113,0.28)',             /* root-triangle fill */
+      angle: '#8a7030',                            /* angle measures — gold darkened */
+      halo:  'rgba(246,242,232,.95)'              /* label outline */
     },
-    /* DARK — mirrors the instrument's THEMES.night (glowing geometry). */
+    /* DARK — Vector Pod instrument palette (exact token values). */
     dark: {
-      bg:    ['#161616', '#0B0B0B', '#070707'],
-      ink:   '#F0EDE8', grid: '#252525', ghost: '#383838', muted: '#8A8480',
-      unit:  '#F0EDE8', face: '#4A90D9', space: '#E0349E', tri: '#3CCB8E', angle: '#C8A96E',
-      halo:  'rgba(8,8,8,.86)'                     /* dark label outline */
+      bg:    ['#070a0b', '#07090a', '#060809'],    /* --bg void gradient */
+      ink:   '#e5e0d4',                            /* --tx parchment */
+      grid:  'rgba(198,205,198,0.10)',             /* --hairline */
+      ghost: 'rgba(198,205,198,0.16)',             /* --border */
+      muted: '#7e8581',                            /* --tx-dim */
+      unit:  '#e5e0d4',                            /* --geo-unit  edge = 1 */
+      face:  '#6f9bc4',                            /* --geo-face  √2 muted blue */
+      space: '#db684d',                            /* --geo-space √3 terracotta = --accent */
+      tri:   'rgba(119,164,133,0.22)',             /* --geo-tri   root-triangle fill */
+      angle: '#c9a24b',                            /* --geo-angle gold */
+      halo:  'rgba(9,13,14,0.82)'                 /* --nav-bg sprite label halo */
     },
 
     name: function () {
