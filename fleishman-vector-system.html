@@ -46,25 +46,34 @@
   #masthead .note b{color:var(--tx);font-weight:700}
 
   /* instrument control panel — right edge (prototype panel, themed) */
-  #panel{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:5;width:238px;
-    display:flex;flex-direction:column;gap:14px;padding:18px 16px;
-    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:var(--radius-sm);
+  #panel{position:fixed;right:16px;top:76px;transform:none;z-index:5;width:224px;
+    display:flex;flex-direction:column;gap:0;padding:0;
+    max-height:44px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
     -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
-    transition:background .5s var(--ease),border-color .5s var(--ease)}
-  #panel .ttl{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+    transition:max-height .32s cubic-bezier(.4,0,.2,1),background .5s var(--ease),border-color .5s var(--ease)}
+  #panel.panel-open{max-height:420px;overflow-y:auto;}
+  #panel .ph{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
+  #panel.panel-open .ph svg{transform:rotate(180deg)}
+  #panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
+  #panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
   #panel .ctl{display:flex;flex-direction:column;gap:7px}
-  #panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;
+  #panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
     letter-spacing:.05em;color:var(--tx)}
   #panel .lab span{color:var(--accent)}
   #panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
-    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer}
+    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
   :root[data-theme="light"] #panel input[type=range]{background:var(--border-strong)}
-  #panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;
+  #panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
     border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #panel input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #panel .tgs{display:flex;gap:7px;flex-wrap:wrap}
-  #panel .tgbtn{font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;
-    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 9px;cursor:pointer;
+  #panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
+  #panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
+    touch-action:manipulation;
     transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
   :root[data-theme="light"] #panel .tgbtn{border-color:var(--border-strong)}
   #panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
@@ -90,12 +99,17 @@
   body.clean #masthead, body.clean #panel, body.clean #legend, body.clean #capwrap, body.clean #gfnav{opacity:0;pointer-events:none}
 
   @media(max-width:860px){
-    #panel{display:none}
+    #panel{
+      right:0;left:0;top:auto;bottom:0;
+      width:100%;max-height:44px;
+      border-radius:3px 3px 0 0;
+    }
+    #panel.panel-open{max-height:65vh;overflow-y:auto;}
     #masthead{left:18px;top:66px;max-width:230px}
     #masthead .note{display:none}
-    /* legend stays bottom-left; caption lifts above it (~3 rows × 22px + 24px base = 112px) */
-    #legend{left:18px;bottom:24px}
-    #capwrap{bottom:118px}
+    #legend{left:18px;bottom:52px}
+    #capwrap{bottom:56px}
+    #stage{touch-action:none}
   }
 </style>
 </head>
@@ -140,26 +154,34 @@
 <div id="capwrap"><div class="cap" id="cap">One module · <b>1 : √2 : √3</b></div></div>
 
 <div id="panel">
-  <div class="ttl">Assembly</div>
-  <div class="ctl"><div class="lab">Pattern <span id="v-grid">2 × 2 × 2</span></div>
-    <input id="s-grid" type="range" min="1" max="4" step="1" value="2" aria-label="Assembly pattern size" /></div>
-  <div class="ctl"><div class="lab">Separation <span id="v-gap">0%</span></div>
-    <input id="s-gap" type="range" min="0" max="0.8" step="0.01" value="0" aria-label="Cell separation" /></div>
-  <div class="div"></div>
-  <div class="ttl">Vectors</div>
-  <div class="tgs">
-    <button class="tgbtn" id="tg-edge">Edges</button>
-    <button class="tgbtn" id="tg-face">√2 face</button>
-    <button class="tgbtn" id="tg-space">√3 space</button>
+  <div class="ph" id="panel-ph">
+    Controls
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </div>
-  <div class="ttl" style="margin-top:2px">Highlight</div>
-  <div class="tgs">
-    <button class="tgbtn" id="tg-proof">Proof △ · 35.26°</button>
-    <button class="tgbtn off" id="tg-frame">Single frame</button>
-  </div>
-  <div class="div"></div>
-  <div class="tgs">
-    <button class="tgbtn" id="tg-spin">Auto-rotate</button>
+  <div class="panel-body">
+    <div class="ttl">Assembly</div>
+    <div class="ctl"><div class="lab">Pattern <span id="v-grid">2 × 2 × 2</span></div>
+      <input id="s-grid" type="range" min="1" max="4" step="1" value="2" aria-label="Assembly pattern size" /></div>
+    <div class="ctl"><div class="lab">Separation <span id="v-gap">0%</span></div>
+      <input id="s-gap" type="range" min="0" max="0.8" step="0.01" value="0" aria-label="Cell separation" /></div>
+    <div class="div"></div>
+    <div class="ttl">Vectors</div>
+    <div class="tgs">
+      <button class="tgbtn" id="tg-edge">Edges</button>
+      <button class="tgbtn" id="tg-face">√2 face</button>
+      <button class="tgbtn" id="tg-space">√3 space</button>
+    </div>
+    <div class="ttl" style="margin-top:2px">Highlight</div>
+    <div class="tgs">
+      <button class="tgbtn" id="tg-proof">Proof △ · 35.26°</button>
+      <button class="tgbtn off" id="tg-frame">Single frame</button>
+    </div>
+    <div class="div"></div>
+    <div class="tgs">
+      <button class="tgbtn" id="tg-spin">Auto-rotate</button>
+    </div>
   </div>
 </div>
 
@@ -342,7 +364,7 @@ function rebuild(){
   // frame camera
   const target = new THREE.Vector3(0,0,0);
   controls.target.copy(target);
-  baseR = ext*0.92;
+  baseR = ext*1.38;
   if (!userTookOver){ const d=baseR/Math.sin((camera.fov*Math.PI/180)/2);
     camera.position.copy(target).add(new THREE.Vector3(0.85,0.55,1).normalize().multiplyScalar(d)); }
   camera.near = ext/200; camera.far = ext*40; camera.updateProjectionMatrix();
@@ -405,6 +427,14 @@ requestAnimationFrame(animate);
 // debug / capture hook
 window.__view={ scene,camera,controls,renderer,STATE,rebuild,applyVis,
   set:(o)=>{ Object.assign(STATE,o); gridLabel(); rebuild(); syncToggles(); } };
+</script>
+<script>
+(function(){
+  var ph = document.getElementById('panel-ph');
+  var panel = document.getElementById('panel');
+  if(!ph || !panel) return;
+  ph.addEventListener('click', function(){ panel.classList.toggle('panel-open'); });
+})();
 </script>
 </body>
 </html>
