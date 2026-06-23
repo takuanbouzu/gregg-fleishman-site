@@ -10,135 +10,134 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-<!-- GF design system: tokens + synchronous theme controller + WebGL palette -->
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
 <script src="assets/gf-scene.js"></script>
-<!-- COVER MODE · when embedded as the landing hero (index.html iframe, ?cover=1) -->
 <script>if(/[?&]cover=1(?:&|$)/.test(location.search))document.documentElement.classList.add('gf-cover');</script>
-<style>
-  /* site integration — fixed shared nav, masthead, loader, cover/clean hiding */
-  #gfnav{position:fixed;top:0;left:0;right:0;}
-  #masthead{position:fixed;left:40px;top:70px;z-index:6;pointer-events:none;max-width:300px;transition:opacity .6s ease}
-  #masthead .sub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  #masthead .note{margin:11px 0 0;font-family:"Space Mono",monospace;font-size:11px;line-height:1.5;color:var(--tx-dim)}
-  #masthead .note b{color:var(--tx);font-weight:700}
-  #loader{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);transition:opacity .6s ease}
-  #loader.hide{opacity:0;pointer-events:none}
-  #loader .lt{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  /* clean capture + cover hero hide the chrome */
-  body.clean #gfnav{opacity:0;pointer-events:none}
-  html.gf-cover #gfnav, html.gf-cover #masthead, html.gf-cover #legend, html.gf-cover #chapters,
-  html.gf-cover #caption, html.gf-cover #transport, html.gf-cover #panel, html.gf-cover #volume,
-  html.gf-cover #spiral, html.gf-cover #hint, html.gf-cover #gf-mobilemenu{display:none!important;}
-  /* light-mode legibility for the dark-built panel + transport */
-  :root[data-theme="light"] #panel input[type=range]{background:var(--border-strong)}
-  :root[data-theme="light"] #panel .tgbtn{border-color:var(--border-strong)}
-  :root[data-theme="light"] #panel .rule{background:var(--hairline)}
-  :root[data-theme="light"] #transport{background:rgba(255,250,240,.85)}
-  :root[data-theme="light"] #transport button{border-color:var(--border-strong)}
-  @media(max-width:860px){
-    #chapters{display:none}
-    #masthead{left:18px;top:70px;max-width:210px}
-    #masthead .note{display:none}
-    #volume{left:18px;top:128px}
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
   }
-</style>
+}
+</script>
+
 <style>
-  /* prototype var names kept, remapped to GF design tokens so chrome + 3D stay
-     matched across the night/paper toggle. Geometry colors stay canonical. */
-  :root{
+  /* ---- tab bar ---- */
+  #explore-tabs{
+    position:fixed;top:var(--nav-h,52px);left:0;right:0;z-index:15;
+    height:40px;display:flex;align-items:stretch;
+    background:var(--nav-bg,rgba(7,10,11,.88));
+    border-bottom:1px solid var(--border,rgba(198,205,198,0.16));
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  }
+  .explore-tab-btn{
+    font-family:var(--font-mono,'Space Mono',monospace);font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;
+    background:transparent;color:var(--tx-dim,#7e8581);
+    border:none;border-bottom:2px solid transparent;
+    padding:0 22px;cursor:pointer;
+    transition:color .16s,border-color .16s;
+    white-space:nowrap;
+  }
+  .explore-tab-btn:hover{color:var(--tx,#e5e0d4);}
+  .explore-tab-btn.active{
+    color:var(--tx,#e5e0d4);
+    border-bottom-color:var(--accent,#c9a24b);
+  }
+
+  /* ---- scene wrappers ---- */
+  .con-scene{position:fixed;inset:0;top:calc(var(--nav-h,52px) + 40px);z-index:1;}
+
+  /* ================================================================
+     THE CUBE scene styles
+     ================================================================ */
+  #scene-cube{
     --text:var(--tx); --dim:var(--tx-dim); --faint:var(--tx-faint);
     --gold:var(--accent); --blue:var(--geo-face); --mag:var(--geo-space); --green:var(--geo-tri);
     --line:var(--border); --bg2:var(--bg-surface);
     --panel:linear-gradient(180deg,rgba(20,20,26,.72),rgba(12,12,16,.72));
     --panel-bd:rgba(240,237,232,.12); --vig:rgba(3,3,5,.72);
   }
-  :root[data-theme="light"]{
+  #scene-cube[data-theme="light"],
+  :root[data-theme="light"] #scene-cube{
     --panel:rgba(255,250,240,.92); --panel-bd:rgba(20,20,20,.12); --vig:rgba(120,108,84,.10);
   }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;font-family:"Space Grotesk",sans-serif;-webkit-font-smoothing:antialiased}
-  #stage{position:fixed;inset:0;cursor:grab;z-index:1;touch-action:none;}
+
+  #stage{position:absolute;inset:0;cursor:grab;z-index:1;touch-action:none;}
   #stage:active{cursor:grabbing}
   #stage canvas{display:block}
 
-  /* atmospheric vignette + radial lift, behind chrome, above canvas */
-  #vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(118% 100% at 50% 44%, rgba(0,0,0,0) 52%, var(--vig) 100%);}
-  #grain{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  #vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(118% 100% at 50% 44%, rgba(0,0,0,0) 52%, var(--vig,rgba(3,3,5,.72)) 100%);}
+  #grain{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
 
-  .chrome{position:fixed;z-index:6;transition:opacity .6s ease}
+  .chrome{position:absolute;z-index:6;transition:opacity .6s ease}
 
-  #brand{left:40px;top:34px;pointer-events:none}
-  #brand .kʹ{display:flex;align-items:center;gap:11px}
-  #brand .tick{width:26px;height:1px;background:linear-gradient(90deg,var(--gold),rgba(200,169,110,0))}
-  #brand .name{font-family:"Syne",sans-serif;font-weight:800;letter-spacing:.17em;font-size:15px;text-transform:uppercase}
-  #brand .sub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.36em;color:var(--dim);text-transform:uppercase;margin-top:7px}
-  #brand .note{font-family:"Space Mono",monospace;font-size:11px;color:var(--faint);margin-top:12px;letter-spacing:.01em}
-  #brand .note b{color:var(--text);font-weight:700}
+  #masthead{left:40px;top:18px;pointer-events:none;max-width:300px;transition:opacity .6s ease}
+  #masthead .sub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+  #masthead .note{margin:11px 0 0;font-family:"Space Mono",monospace;font-size:11px;line-height:1.5;color:var(--tx-dim)}
+  #masthead .note b{color:var(--tx);font-weight:700}
 
-  #nav{right:32px;top:34px;display:flex;gap:9px}
-  #nav a{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
-    text-decoration:none;border:1px solid var(--line);border-radius:2px;padding:8px 12px;transition:border-color .2s,color .2s,background .2s}
-  #nav a:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,169,110,.06)}
+  #loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);transition:opacity .6s ease}
+  #loader.hide{opacity:0;pointer-events:none}
+  #loader .lt{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
 
-  #legend{left:40px;bottom:118px;font-family:"Space Mono",monospace;font-size:11.5px;letter-spacing:.03em;color:var(--dim);pointer-events:none}
+  #legend{left:40px;bottom:118px;font-family:"Space Mono",monospace;font-size:11.5px;letter-spacing:.03em;color:var(--tx-dim);pointer-events:none}
   #legend .row{display:flex;align-items:center;gap:11px;margin-top:10px}
   #legend .sw{width:24px;height:2px;border-radius:2px;flex:none;box-shadow:0 0 9px currentColor}
-  #legend b{color:var(--text);font-weight:700}
+  #legend b{color:var(--tx);font-weight:700}
 
-  /* ---- chapter rail : the centrepiece nav ---- */
   #chapters{left:50%;transform:translateX(-50%);bottom:96px;display:flex;gap:0;align-items:stretch}
   .chap{position:relative;cursor:pointer;padding:0 22px;display:flex;flex-direction:column;gap:5px;
-    border-left:1px solid var(--line);transition:opacity .3s}
+    border-left:1px solid var(--line,var(--border));transition:opacity .3s}
   .chap:first-child{border-left:none}
-  .chap .ix{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--faint);transition:color .3s}
-  .chap .ti{font-family:"Syne",sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.02em;color:var(--dim);white-space:nowrap;transition:color .3s}
-  .chap .bar{position:absolute;left:0;right:0;bottom:-12px;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;opacity:0;transition:opacity .3s}
-  .chap:hover .ti{color:var(--text)}
-  .chap:hover .ix{color:var(--gold)}
-  .chap.active .ti{color:var(--text)}
-  .chap.active .ix{color:var(--gold)}
+  .chap .ix{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--faint,var(--tx-faint));transition:color .3s}
+  .chap .ti{font-family:"Syne",sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));white-space:nowrap;transition:color .3s}
+  .chap .bar{position:absolute;left:0;right:0;bottom:-12px;height:2px;background:var(--gold,var(--accent));transform:scaleX(0);transform-origin:left;opacity:0;transition:opacity .3s}
+  .chap:hover .ti{color:var(--text,var(--tx))}
+  .chap:hover .ix{color:var(--gold,var(--accent))}
+  .chap.active .ti{color:var(--text,var(--tx))}
+  .chap.active .ix{color:var(--gold,var(--accent))}
   .chap.active .bar{opacity:1}
 
   #caption{left:0;right:0;bottom:60px;display:flex;justify-content:center;pointer-events:none;height:26px}
   .capstack{position:relative;width:min(86vw,820px);height:26px;text-align:center}
   .cap{position:absolute;left:0;right:0;top:0;opacity:0;font-family:"Space Mono",monospace;font-size:13.5px;
-    letter-spacing:.04em;color:var(--dim);text-wrap:balance;line-height:1.4;transition:opacity .45s ease}
-  .cap b{color:var(--gold);font-weight:700}
+    letter-spacing:.04em;color:var(--dim,var(--tx-dim));text-wrap:balance;line-height:1.4;transition:opacity .45s ease}
+  .cap b{color:var(--gold,var(--accent));font-weight:700}
 
-  /* ---- transport ---- */
   #transport{
     left:50%; transform:translateX(-50%); bottom:14px;
     display:flex; align-items:center; gap:8px;
-    background:rgba(16,16,20,.7); border:1px solid var(--line); border-radius:2px;
+    background:rgba(16,16,20,.7); border:1px solid var(--line,var(--border)); border-radius:2px;
     padding:4px 10px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
   }
   #transport button{
     font-family:"Space Mono",monospace; font-size:9px; letter-spacing:.06em;
-    background:transparent; color:var(--text); border:1px solid var(--line);
+    background:transparent; color:var(--text,var(--tx)); border:1px solid var(--line,var(--border));
     border-radius:2px; padding:3px 7px; cursor:pointer; text-transform:uppercase;
     transition:border-color .2s,color .2s; touch-action:manipulation;
   }
-  #transport button:hover{ border-color:var(--gold); color:var(--gold); }
+  #transport button:hover{ border-color:var(--gold,var(--accent)); color:var(--gold,var(--accent)); }
   #scrub{ width:140px; -webkit-appearance:none; appearance:none; height:2px;
     background:rgba(242,239,233,.18); border-radius:2px; cursor:pointer; touch-action:none; }
   #scrub::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none;
-    width:10px; height:10px; border-radius:50%; background:var(--gold);
+    width:10px; height:10px; border-radius:50%; background:var(--gold,var(--accent));
     cursor:pointer; border:none; box-shadow:0 0 6px rgba(200,169,110,.7); }
   #scrub::-moz-range-thumb{ width:10px; height:10px; border-radius:50%;
-    background:var(--gold); border:none; cursor:pointer; }
-  .tlabel{ font-family:"Space Mono",monospace; font-size:9px; color:var(--dim); min-width:28px; text-align:center; }
+    background:var(--gold,var(--accent)); border:none; cursor:pointer; }
+  .tlabel{ font-family:"Space Mono",monospace; font-size:9px; color:var(--dim,var(--tx-dim)); min-width:28px; text-align:center; }
   #transport select{ font-family:"Space Mono",monospace; font-size:9px; background:transparent;
-    color:var(--text); border:1px solid var(--line); border-radius:2px; padding:3px 5px; cursor:pointer; }
+    color:var(--text,var(--tx)); border:1px solid var(--line,var(--border)); border-radius:2px; padding:3px 5px; cursor:pointer; }
 
-  /* ---- manual panel : the hands-on centrepiece ---- */
   #panel{
-    right:16px; top:76px; transform:none; width:216px;
+    right:16px; top:18px; transform:none; width:216px;
     display:flex; flex-direction:column; gap:0; padding:0;
     max-height:44px; overflow:hidden;
     background:var(--panel); border:1px solid var(--panel-bd); border-radius:4px;
@@ -151,70 +150,65 @@
     display:flex; align-items:center; gap:8px;
     padding:12px 14px; cursor:pointer; user-select:none; flex-shrink:0;
   }
-  #panel .hd .dot{ width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold); flex-shrink:0; }
-  #panel .hd .t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text); }
-  #panel .panel-chevron{ margin-left:auto; color:var(--faint); transition:transform .28s ease; flex-shrink:0; }
+  #panel .hd .dot{ width:5px; height:5px; border-radius:50%; background:var(--gold,var(--accent)); box-shadow:0 0 6px var(--gold,var(--accent)); flex-shrink:0; }
+  #panel .hd .t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text,var(--tx)); }
+  #panel .panel-chevron{ margin-left:auto; color:var(--faint,var(--tx-faint)); transition:transform .28s ease; flex-shrink:0; }
   #panel.panel-open .panel-chevron{ transform:rotate(180deg); }
   #panel .panel-body{ display:flex; flex-direction:column; padding:0 14px 14px; gap:12px; }
-  /* tab bar */
   #panel .tab-bar{
-    display:flex; border-bottom:1px solid var(--line); margin-bottom:4px;
+    display:flex; border-bottom:1px solid var(--line,var(--border)); margin-bottom:4px;
   }
   #panel .tab-btn{
     font-family:"Space Mono",monospace; font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
-    background:transparent; color:var(--faint); border:none; border-bottom:2px solid transparent;
+    background:transparent; color:var(--faint,var(--tx-faint)); border:none; border-bottom:2px solid transparent;
     padding:7px 0; margin-bottom:-1px; cursor:pointer; flex:1;
     transition:color .15s, border-color .15s;
   }
-  #panel .tab-btn.active{ color:var(--gold); border-bottom-color:var(--gold); }
+  #panel .tab-btn.active{ color:var(--gold,var(--accent)); border-bottom-color:var(--gold,var(--accent)); }
   #panel .tab-pane{ display:none; flex-direction:column; gap:12px; }
   #panel .tab-pane.active{ display:flex; }
-  /* existing sub-styles */
-  #panel .grp-t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint); }
+  #panel .grp-t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint,var(--tx-faint)); }
   #panel .ctl{ display:flex; flex-direction:column; gap:6px; }
-  #panel .lab{ display:flex; justify-content:space-between; font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.03em; color:var(--text); }
-  #panel .lab span{ color:var(--gold); font-weight:700; }
+  #panel .lab{ display:flex; justify-content:space-between; font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.03em; color:var(--text,var(--tx)); }
+  #panel .lab span{ color:var(--gold,var(--accent)); font-weight:700; }
   #panel input[type=range]{ -webkit-appearance:none; appearance:none; height:2px; background:rgba(242,239,233,.2); border-radius:2px; cursor:pointer; width:100%; touch-action:none; }
-  #panel input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; box-shadow:0 0 8px rgba(200,169,110,.6); }
-  #panel input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; }
+  #panel input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--gold,var(--accent)); border:none; cursor:pointer; box-shadow:0 0 8px rgba(200,169,110,.6); }
+  #panel input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--gold,var(--accent)); border:none; cursor:pointer; }
   #panel .ctl { min-height:0; }
   #panel .tgs{ display:flex; gap:6px; flex-wrap:wrap; }
-  #panel .tgbtn{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.04em; background:transparent; color:var(--text); border:1px solid var(--line); border-radius:2px; padding:6px 8px; cursor:pointer; text-transform:uppercase; transition:border-color .2s,color .2s,opacity .2s; touch-action:manipulation; }
-  #panel .tgbtn:hover{ border-color:var(--gold); color:var(--gold); }
+  #panel .tgbtn{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.04em; background:transparent; color:var(--text,var(--tx)); border:1px solid var(--line,var(--border)); border-radius:2px; padding:6px 8px; cursor:pointer; text-transform:uppercase; transition:border-color .2s,color .2s,opacity .2s; touch-action:manipulation; }
+  #panel .tgbtn:hover{ border-color:var(--gold,var(--accent)); color:var(--gold,var(--accent)); }
   #panel .tgbtn.off{ opacity:.38; }
-  #panel .rule{ height:1px; background:var(--line); }
+  #panel .rule{ height:1px; background:var(--line,var(--border)); }
   #panel .axrows{ display:flex; flex-direction:column; gap:5px; }
   #panel .axrow{ display:grid; grid-template-columns:22px 1fr 14px; align-items:center; gap:6px; }
-  #panel .axlbl{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--gold); letter-spacing:.04em; font-weight:700; }
-  #panel .axval{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--text); text-align:right; }
+  #panel .axlbl{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--gold,var(--accent)); letter-spacing:.04em; font-weight:700; }
+  #panel .axval{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--text,var(--tx)); text-align:right; }
 
-  #hint{right:16px;bottom:24px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;pointer-events:none}
+  #hint{right:16px;bottom:24px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--faint,var(--tx-faint));text-transform:uppercase;pointer-events:none}
 
-  /* sort-point readout inside panel */
   #sortbox{display:none;flex-direction:column;gap:9px}
   #sortread{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;line-height:1.5;
-    background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:3px;padding:9px 10px}
+    background:rgba(0,0,0,.28);border:1px solid var(--line,var(--border));border-radius:3px;padding:9px 10px}
   #sortread .ineq{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
   #sortread .tok{font-weight:700}
-  #sortread .op{color:var(--faint)}
-  #sortread .res{margin-top:7px;color:var(--gold);font-weight:700;letter-spacing:.05em}
-  #sortread .res span{color:var(--dim);font-weight:400}
+  #sortread .op{color:var(--faint,var(--tx-faint))}
+  #sortread .res{margin-top:7px;color:var(--gold,var(--accent));font-weight:700;letter-spacing:.05em}
+  #sortread .res span{color:var(--dim,var(--tx-dim));font-weight:400}
 
-  /* volume tally HUD */
-  #volume{left:40px;top:158px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim);
+  #volume{left:40px;top:48px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));
     pointer-events:none}
   #volume.hide{display:none}
-  #volume .big{color:var(--text);font-weight:700}
-  #volume .eq{color:var(--gold);font-weight:700}
+  #volume .big{color:var(--text,var(--tx));font-weight:700}
+  #volume .eq{color:var(--gold,var(--accent));font-weight:700}
 
-  /* √2 root-spiral inset */
   #spiral{left:40px;bottom:96px;width:312px;display:none}
-  #spiral .card{background:linear-gradient(180deg,rgba(18,18,24,.9),rgba(10,10,14,.9));border:1px solid var(--line);
+  #spiral .card{background:linear-gradient(180deg,rgba(18,18,24,.9),rgba(10,10,14,.9));border:1px solid var(--line,var(--border));
     border-radius:5px;padding:14px 15px 12px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
     box-shadow:0 24px 60px -28px rgba(0,0,0,.8)}
-  #spiral .hd{font-family:"Syne",sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--text);margin-bottom:2px}
-  #spiral .sub{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.02em;color:var(--dim);margin-bottom:8px;line-height:1.45}
-  #spiral .sub b{color:var(--gold)}
+  #spiral .hd{font-family:"Syne",sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx);margin-bottom:2px}
+  #spiral .sub{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.02em;color:var(--tx-dim);margin-bottom:8px;line-height:1.45}
+  #spiral .sub b{color:var(--accent)}
   #spiral svg{display:block;width:100%;height:auto}
   body.spiral-on #legend{display:none}
 
@@ -222,14 +216,112 @@
   body.clean #caption{opacity:1}
   body.clean #caption{bottom:8vh}
 
-  /* ---- mobile panel: bottom drawer (must come after desktop #panel rules) ---- */
+  :root[data-theme="light"] #panel input[type=range]{background:var(--border-strong)}
+  :root[data-theme="light"] #panel .tgbtn{border-color:var(--border-strong)}
+  :root[data-theme="light"] #panel .rule{background:var(--hairline)}
+  :root[data-theme="light"] #transport{background:rgba(255,250,240,.85)}
+  :root[data-theme="light"] #transport button{border-color:var(--border-strong)}
+
+  html.gf-cover #masthead, html.gf-cover #legend, html.gf-cover #chapters,
+  html.gf-cover #caption, html.gf-cover #transport, html.gf-cover #panel, html.gf-cover #volume,
+  html.gf-cover #spiral, html.gf-cover #hint{display:none!important;}
+
   @media(max-width:860px){
+    #chapters{display:none}
+    #masthead{left:18px;top:18px;max-width:210px}
+    #masthead .note{display:none}
+    #volume{left:18px;top:58px}
     #transport{ bottom:0; transform:none; border-radius:0; width:100%; max-width:none; left:0; right:0; justify-content:center; padding:6px 14px; box-sizing:border-box; }
     #hint{ display:none; }
     #panel{ right:0; left:0; top:auto; bottom:44px; width:100%; border-radius:4px 4px 0 0; }
     #panel.panel-open{ max-height:60vh; }
     #caption{ bottom:140px; }
     #legend{ left:18px; bottom:170px; }
+  }
+
+  /* ================================================================
+     VECTOR SYSTEM scene styles  (all IDs prefixed vs-)
+     ================================================================ */
+  #scene-vs{
+    --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40);
+  }
+  :root[data-theme="light"] #scene-vs{
+    --panel:rgba(255,250,240,.90); --panel-bd:rgba(20,20,20,.12); --panel-sh:0 8px 28px rgba(40,28,8,.10);
+  }
+  #vs-stage{position:absolute;inset:0;z-index:0;cursor:grab}
+  #vs-stage:active{cursor:grabbing}
+  #vs-stage canvas{display:block;width:100%;height:100%}
+
+  #vs-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);transition:opacity .6s ease}
+  #vs-loader.hide{opacity:0;pointer-events:none}
+  #vs-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+
+  #vs-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
+  #vs-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+  #vs-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
+    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
+  #vs-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
+  #vs-masthead .note b{color:var(--tx);font-weight:700}
+
+  #vs-panel{position:absolute;right:16px;top:18px;z-index:5;width:224px;
+    display:flex;flex-direction:column;gap:0;padding:0;
+    max-height:44px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
+    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+    transition:max-height .32s cubic-bezier(.4,0,.2,1),background .5s var(--ease),border-color .5s var(--ease)}
+  #vs-panel.panel-open{max-height:420px;overflow-y:auto;}
+  #vs-panel .ph{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #vs-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
+  #vs-panel.panel-open .ph svg{transform:rotate(180deg)}
+  #vs-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
+  #vs-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #vs-panel .ctl{display:flex;flex-direction:column;gap:7px}
+  #vs-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
+    letter-spacing:.05em;color:var(--tx)}
+  #vs-panel .lab span{color:var(--accent)}
+  #vs-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
+    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
+  :root[data-theme="light"] #vs-panel input[type=range]{background:var(--border-strong)}
+  #vs-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
+    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #vs-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #vs-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
+  #vs-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
+    touch-action:manipulation;
+    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
+  :root[data-theme="light"] #vs-panel .tgbtn{border-color:var(--border-strong)}
+  #vs-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
+  #vs-panel .tgbtn.on{border-color:var(--accent);color:var(--accent)}
+  #vs-panel .tgbtn.off{opacity:.34}
+  #vs-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
+  :root[data-theme="light"] #vs-panel .div{background:var(--hairline)}
+
+  #vs-legend{position:absolute;left:34px;bottom:34px;z-index:4;font-family:var(--font-mono);font-size:12px;
+    letter-spacing:.04em;color:var(--tx-dim);pointer-events:none}
+  #vs-legend .row{display:flex;align-items:center;gap:10px;margin-top:9px}
+  #vs-legend .sl{width:24px;height:3px;border-radius:2px;flex:none}
+  #vs-legend b{color:var(--tx);font-weight:700}
+
+  #vs-capwrap{position:absolute;left:0;right:0;bottom:30px;z-index:4;display:flex;justify-content:center;
+    pointer-events:none;height:24px}
+  .vs-cap{font-family:var(--font-mono);font-size:14px;letter-spacing:.05em;color:var(--tx-dim);text-align:center;
+    transition:opacity .45s var(--ease)}
+  .vs-cap b{color:var(--accent);font-weight:700}
+
+  body.clean #vs-masthead, body.clean #vs-panel, body.clean #vs-legend, body.clean #vs-capwrap{opacity:0;pointer-events:none}
+
+  @media(max-width:860px){
+    #vs-panel{right:0;left:0;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
+    #vs-panel.panel-open{max-height:65vh;overflow-y:auto;}
+    #vs-masthead{left:18px;top:16px;max-width:230px}
+    #vs-masthead .note{display:none}
+    #vs-legend{left:18px;bottom:52px}
+    #vs-capwrap{bottom:56px}
+    #vs-stage{touch-action:none}
   }
 </style>
 
@@ -248,30 +340,35 @@
 </template>
 </head>
 <body>
+
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink active" href="explore.html">The Cube</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="construction.html">Construction</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+  <a class="navlink" href="rhombic-system.html">Rhombic System</a>
+  <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
+  <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</nav>
+
+<!-- Tab bar -->
+<div id="explore-tabs">
+  <button class="explore-tab-btn active" data-tab="cube">The Cube</button>
+  <button class="explore-tab-btn" data-tab="vs">Vector System</button>
+</div>
+
+<!-- ================================================================
+     SCENE: THE CUBE
+     ================================================================ -->
+<div id="scene-cube" class="con-scene" style="display:block;">
+
   <div id="stage"></div>
   <div id="vignette"></div>
   <div id="grain"></div>
-
-  <nav id="gfnav">
-    <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="fleishman-vector-system.html">Vector System</a>
-    <a class="navlink active" href="explore.html">The Cube</a>
-    <div class="navlinks">
-      <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-      <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
-      <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
-      <a class="navlink" href="fleishman-sequence.html">Fleishman Sequence</a>
-      <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
-      <a class="navlink" href="dorman-luke.html">Research</a>
-      <a class="navlink" href="rhombic-system.html">Rhombic System</a>
-    
-      <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
-    </div>
-    <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
-      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-    </button>
-  </nav>
 
   <div id="masthead" class="chrome">
     <div class="sub">Six Parts · One Cube · The Whole of Space</div>
@@ -381,15 +478,67 @@
 
   <div id="hint" class="chrome">drag to orbit · scroll to zoom</div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "./assets/vendor/three-0.160.0/three.module.js",
-    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
-  }
-}
-</script>
+</div><!-- /#scene-cube -->
 
+<!-- ================================================================
+     SCENE: VECTOR SYSTEM
+     ================================================================ -->
+<div id="scene-vs" class="con-scene" style="display:none;">
+
+  <div id="vs-stage"></div>
+  <div id="vs-loader"><div class="lt">Reconstructing the vector system…</div></div>
+
+  <div id="vs-masthead">
+    <div class="sub">The Vector System</div>
+    <h1>Single cube frame<br>→ assembly pattern</h1>
+    <p class="note">The <b>single cube frame</b> — edges, √2 face diagonals, √3 space diagonals — tiled into the <b>assembly pattern</b> that fills space.</p>
+  </div>
+
+  <div id="vs-legend">
+    <div class="row"><span class="sl" id="vs-lg-edge"></span> cube edge · <b>1</b></div>
+    <div class="row"><span class="sl" id="vs-lg-face"></span> face diagonal · <b>√2</b></div>
+    <div class="row"><span class="sl" id="vs-lg-space"></span> space diagonal · <b>√3</b></div>
+  </div>
+
+  <div id="vs-capwrap"><div class="vs-cap" id="vs-cap">One module · <b>1 : √2 : √3</b></div></div>
+
+  <div id="vs-panel">
+    <div class="ph" id="vs-panel-ph">
+      Controls
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="panel-body">
+      <div class="ttl">Assembly</div>
+      <div class="ctl"><div class="lab">Pattern <span id="vs-v-grid">2 × 2 × 2</span></div>
+        <input id="vs-s-grid" type="range" min="1" max="4" step="1" value="2" aria-label="Assembly pattern size" /></div>
+      <div class="ctl"><div class="lab">Separation <span id="vs-v-gap">0%</span></div>
+        <input id="vs-s-gap" type="range" min="0" max="0.8" step="0.01" value="0" aria-label="Cell separation" /></div>
+      <div class="div"></div>
+      <div class="ttl">Vectors</div>
+      <div class="tgs">
+        <button class="tgbtn" id="vs-tg-edge">Edges</button>
+        <button class="tgbtn" id="vs-tg-face">√2 face</button>
+        <button class="tgbtn" id="vs-tg-space">√3 space</button>
+      </div>
+      <div class="ttl" style="margin-top:2px">Highlight</div>
+      <div class="tgs">
+        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.26°</button>
+        <button class="tgbtn off" id="vs-tg-frame">Single frame</button>
+      </div>
+      <div class="div"></div>
+      <div class="tgs">
+        <button class="tgbtn" id="vs-tg-spin">Auto-rotate</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#scene-vs -->
+
+<!-- ================================================================
+     SCRIPT: THE CUBE (original module, with inactive-tab guard)
+     ================================================================ -->
 <script type="module">
 import * as THREE from 'three';
 import { Line2 } from 'three/addons/lines/Line2.js';
@@ -402,26 +551,21 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-/* palette from GF_SCENE — themes night/paper, matched to the shared chrome.
-   Geometry colors are the site's canonical contract (√3 magenta #E0349E, √2 blue
-   #4A90D9, …) rather than the prototype's brighter standalone variants. */
-const SC = GF_SCENE.dark;   // site is dark-only; gf-tokens.css neutralises any light-theme switch
+const SC = GF_SCENE.dark;
 const isLight = false;
 const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');  // bg from the SAME palette as geometry — avoids theme-init race
+const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
 const COL = { bg:BGc.getHex(), bone:new THREE.Color(SC.unit).getHex(), dim:new THREE.Color(SC.muted).getHex(),
               gold:new THREE.Color(SC.angle).getHex(), blue:new THREE.Color(SC.face).getHex(),
               mag:new THREE.Color(SC.space).getHex(), green:new THREE.Color(SC.tri).getHex() };
 const HEX = { bone:SC.unit, blue:SC.face, mag:SC.space, gold:SC.angle, green:SC.tri };
-/* rebuild the scene in the new palette when the theme flips (site convention) */
 GF_SCENE.onChange(GF_SCENE.reload);
-/* legend swatches mirror the semantic colors */
 (()=>{ const sw=document.querySelectorAll('#legend .sw'); const c=[HEX.bone,HEX.blue,HEX.mag];
   sw.forEach((s,i)=>{ s.style.background=c[i]; s.style.color=c[i]; }); })();
 const clean = new URLSearchParams(location.search).has('clean') || document.documentElement.classList.contains('gf-cover');
 if (clean) document.body.classList.add('clean');
 
-const BLOOM = 1; // bloom layer
+const BLOOM = 1;
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
 renderer.setClearColor(COL.bg, 1);
@@ -441,11 +585,10 @@ controls.target.copy(C);
 let W=1, H=1;
 const lineMats = [];
 
-/* ---------- post-processing : selective bloom ---------- */
 let bloomComposer, finalComposer, bloomPass;
 function buildComposers(){
   const renderScene = new RenderPass(scene, camera);
-  const bstr = isLight ? 0.0 : 0.55;   // additive bloom would wash out the cream paper theme
+  const bstr = isLight ? 0.0 : 0.55;
   bloomPass = new UnrealBloomPass(new THREE.Vector2(W,H), bstr, 0.5, 0.0);
   bloomPass.threshold = 0.0; bloomPass.strength = bstr; bloomPass.radius = 0.5;
   bloomComposer = new EffectComposer(renderer);
@@ -502,7 +645,6 @@ function triFill(a,b,c, color, parent){  const g = new THREE.BufferGeometry();
   (parent||scene).add(mesh);
   return m;
 }
-/* solid tetra fill (4 faces) — used to highlight the part a point falls in */
 function tetraSolid(vs, color, parent){
   const F=[[0,1,2],[0,1,3],[0,2,3],[1,2,3]]; const pos=[];
   F.forEach(([a,b,c])=>{ pos.push(vs[a].x,vs[a].y,vs[a].z, vs[b].x,vs[b].y,vs[b].z, vs[c].x,vs[c].y,vs[c].z); });
@@ -512,7 +654,6 @@ function tetraSolid(vs, color, parent){
   (parent||scene).add(mesh); return m;
 }
 
-/* ---------- additive glow halo (for the √3 diagonal) ---------- */
 function haloLine(a, b, parent){
   const g = new LineGeometry(); g.setPositions([a.x,a.y,a.z, b.x,b.y,b.z]);
   const m = new LineMaterial({ color:COL.mag, linewidth:9, transparent:true, opacity:0,
@@ -523,17 +664,16 @@ function haloLine(a, b, parent){
   return m;
 }
 
-/* ---------- the six characteristic parts (orthoschemes) ---------- */
 const O = V(0,0,0), G = V(1,1,1);
 const axes = [V(1,0,0), V(0,1,0), V(0,0,1)];
 const PIECES = [];
-const PAIRS = [];   // (i,j) ordered axis pair → part where coord_i ≥ coord_j ≥ coord_k
+const PAIRS = [];
 for (let i=0;i<3;i++) for (let j=0;j<3;j++){
   if (i===j) continue;
   PIECES.push([O.clone(), axes[i].clone(), axes[i].clone().add(axes[j]), G.clone()]);
   PAIRS.push([i,j]);
 }
-const EDGES = [[0,1],[1,2],[2,3],[0,2],[1,3],[0,3]]; // [0,3]=O-G √3 → index 5
+const EDGES = [[0,1],[1,2],[2,3],[0,2],[1,3],[0,3]];
 
 const pieceGroups = [];
 PIECES.forEach((vs, idx)=>{
@@ -549,7 +689,6 @@ PIECES.forEach((vs, idx)=>{
   pieceGroups.push(grp);
 });
 
-/* ---------- glowing nodes on the shared space diagonal O & G ---------- */
 function glowNode(pos, hex, r){
   const m = new THREE.MeshBasicMaterial({ color:hex, transparent:true, opacity:0 });
   const s = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 20), m);
@@ -559,11 +698,10 @@ function glowNode(pos, hex, r){
 const nodeO = glowNode(O, COL.gold, 0.022);
 const nodeG = glowNode(G, COL.gold, 0.022);
 
-/* ---------- 35.26° ground-angle arc (chapter 1) on part 0 at O ---------- */
 function angleArc(){
-  const p0 = PIECES[0];               // O, P1(1,0,0), P2(1,1,0), G(1,1,1)
-  const u = p0[2].clone().sub(p0[0]).normalize();  // O→P2  (√2 face diagonal)
-  const v = p0[3].clone().sub(p0[0]).normalize();  // O→G   (√3 space diagonal)
+  const p0 = PIECES[0];
+  const u = p0[2].clone().sub(p0[0]).normalize();
+  const v = p0[3].clone().sub(p0[0]).normalize();
   const n = u.clone().cross(v).normalize();
   const total = Math.acos(THREE.MathUtils.clamp(u.dot(v),-1,1));
   const N = 40, R = 0.30, pts = [];
@@ -581,13 +719,11 @@ function angleArc(){
 }
 const arcMat = angleArc();
 
-/* ---------- right-angle marker + apex arc on part 0 (magic angle) ---------- */
 function rightAngleMarker(){
-  // right angle sits at P₂=(1,1,0) between P₂→P₁ (edge) and P₂→O (face diag); draw small square
   const p0=PIECES[0]; const P2=p0[2], P1=p0[1], Ov=p0[0];
   const a=P1.clone().sub(P2).normalize().multiplyScalar(0.12);
   const b=Ov.clone().sub(P2).normalize().multiplyScalar(0.12);
-  const q0=P2.clone(), q1=P2.clone().add(a), q2=P2.clone().add(a).add(b), q3=P2.clone().add(b);
+  const q1=P2.clone().add(a), q2=P2.clone().add(a).add(b), q3=P2.clone().add(b);
   const pts=[q1.x,q1.y,q1.z, q2.x,q2.y,q2.z, q3.x,q3.y,q3.z];
   const g=new LineGeometry(); g.setPositions(pts);
   const m=new LineMaterial({color:COL.bone,linewidth:2,transparent:true,opacity:0}); m.resolution.set(W,H);
@@ -596,19 +732,16 @@ function rightAngleMarker(){
 }
 const rightMat = rightAngleMarker();
 
-/* ---------- the sort point (coordinate-sort proof) ---------- */
 const sortMat = new THREE.MeshBasicMaterial({ color:COL.gold, transparent:true, opacity:0 });
 const sortPoint = new THREE.Mesh(new THREE.SphereGeometry(0.03,24,24), sortMat);
 sortPoint.frustumCulled=false; scene.add(sortPoint);
 const sortHaloMat = new THREE.MeshBasicMaterial({ color:COL.gold, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false });
 const sortHalo = new THREE.Mesh(new THREE.SphereGeometry(0.058,24,24), sortHaloMat);
 sortHalo.frustumCulled=false; scene.add(sortHalo);
-// dotted guide lines dropping the point onto the three axes
 function guideLine(){ const m=new THREE.LineDashedMaterial({color:COL.gold,transparent:true,opacity:0,dashSize:0.04,gapSize:0.03});
   const ls=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0,0,0),V(0,0,0)]),m); ls.frustumCulled=false; scene.add(ls); return ls; }
 const guides=[guideLine(),guideLine(),guideLine()];
 
-/* ---------- mirror / array cells (face-adjacent ±X ±Y ±Z) ---------- */
 function makeMirrorCell(ci,cj,ck){
   function ct(p){
     let x=p.x,y=p.y,z=p.z;
@@ -647,7 +780,6 @@ AXIS_DIRS.forEach(d=>{
   }
 });
 
-/* ---------- assembled cube outline ---------- */
 const cubeGroup = new THREE.Group(); scene.add(cubeGroup);
 const cubeOutlineMats = (()=>{
   const c=[]; for(let x=0;x<2;x++) for(let y=0;y<2;y++) for(let z=0;z<2;z++) c.push(V(x,y,z));
@@ -655,7 +787,6 @@ const cubeOutlineMats = (()=>{
   return E.map(([a,b])=> fatLine(c[a],c[b],cubeGroup,false).mat);
 })();
 
-/* ---------- neighbour cubes (space-filling lattice) ---------- */
 const fillGroup = new THREE.Group(); scene.add(fillGroup);
 const neighbours = [];
 {
@@ -672,7 +803,6 @@ const neighbours = [];
   }
 }
 
-/* ---------- billboarded labels ---------- */
 function labelSprite(text, hex){
   const font='700 92px "Space Mono", monospace';
   const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
@@ -694,7 +824,6 @@ addLabel('√2',     HEX.blue, V(0.5,0.5,-0.11));
 addLabel('√3',     HEX.mag,  V(0.68,0.54,0.5));
 addLabel('35.26°', HEX.gold, V(0.27,0.15,0.30));
 
-/* ---------- captions ---------- */
 const capStack = document.getElementById('capstack');
 function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capStack.appendChild(d); return d; }
 const CAPS = [
@@ -706,11 +835,9 @@ const CAPS = [
   cap('Mirror across every face · each neighbour <b>the same six parts, reflected</b>'),
 ];
 
-/* ---------- camera framing ---------- */
 function frameDist(radius){ return radius / Math.sin((camera.fov*Math.PI/180)/2); }
 let baseDist = frameDist(1.05);
 
-/* ---------- state ---------- */
 const easeIO = x => x<0.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
 const clamp01 = x => Math.max(0, Math.min(1, x));
 const lerp = (a,b,t)=> a+(b-a)*t;
@@ -732,7 +859,6 @@ const tgSort=$('tg-sort'), tgSpiral=$('tg-spiral'), tgVol=$('tg-vol');
 const sortBox=$('sortbox'), sortRead=$('sortread'), volBox=$('volume'), volN=$('vol-n'), spiralBox=$('spiral');
 const sPx=$('s-px'), sPy=$('s-py'), sPz=$('s-pz'), vPx=$('v-px'), vPy=$('v-py'), vPz=$('v-pz');
 
-/* which part contains a point: part where coord_i ≥ coord_j ≥ coord_k */
 function partForPoint(x,y,z){
   const c=[{a:0,v:x},{a:1,v:y},{a:2,v:z}].sort((p,q)=>q.v-p.v);
   const i=c[0].a, j=c[1].a;
@@ -743,7 +869,7 @@ function updateSortReadout(){
   const x=STATE.px,y=STATE.py,z=STATE.pz;
   const c=[{a:0,v:x},{a:1,v:y},{a:2,v:z}].sort((p,q)=>q.v-p.v);
   const partIdx=partForPoint(x,y,z);
-  const tok=c.map(o=>`<span class="tok" style="color:${AXHEX[o.a]}">${AXNAME[o.a]}</span> <span style="color:var(--dim)">${o.v.toFixed(2)}</span>`);
+  const tok=c.map(o=>`<span class="tok" style="color:${AXHEX[o.a]}">${AXNAME[o.a]}</span> <span style="color:var(--tx-dim)">${o.v.toFixed(2)}</span>`);
   sortRead.innerHTML = `<div class="ineq">${tok[0]}<span class="op">≥</span>${tok[1]}<span class="op">≥</span>${tok[2]}</div>`+
     `<div class="res">→ Part ${partIdx+1} <span>of 6 · contains this point</span></div>`;
   return partIdx;
@@ -758,7 +884,7 @@ function render(){
     const off = (1-e)*FLY + STATE.explode*EXPLODE_MAX*e;
     g.position.copy(u.dir).multiplyScalar(off);
     g.visible = local > 0.001;
-    const dim = (STATE.sort && i!==sortIdx) ? 0.16 : 1;       // dim non-selected parts in sort mode
+    const dim = (STATE.sort && i!==sortIdx) ? 0.16 : 1;
     u.edges.forEach(ed=> ed.mat.opacity = 0.96*local*dim);
     u.halo.opacity = 0.14*local*dim;
     const faceFade = 1 - clamp01(STATE.space/2)*0.45;
@@ -773,7 +899,6 @@ function render(){
   arcMat.opacity = showAng; rightMat.opacity = showAng;
   const nodeOp = 0.9 * clamp01(STATE.parts) * (STATE.sort?0.4:1);
   nodeO.opacity = nodeOp; nodeG.opacity = nodeOp;
-  // sort point + halo + guides
   const sop = STATE.sort ? 1 : 0;
   sortPoint.position.set(STATE.px,STATE.py,STATE.pz); sortHalo.position.copy(sortPoint.position);
   sortMat.opacity = sop; sortHaloMat.opacity = 0.5*sop;
@@ -804,7 +929,6 @@ function render(){
       }
     });
   });
-  // volume tally
   volBox.classList.toggle('hide', !STATE.volume);
   if(STATE.volume){
     const count = Math.max(0,Math.min(6,Math.round(STATE.parts)));
@@ -841,26 +965,20 @@ function syncSliders(){
   syncToggles();
 }
 
-/* ---------- chapters ---------- */
 const CHAPTERS = [
-  { // 01 proof triangle — close, one part, angles on
-    state:{ parts:1, explode:0, space:0, faces:1, angles:1, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
+  { state:{ parts:1, explode:0, space:0, faces:1, angles:1, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
     dir:new THREE.Vector3(0.34,0.30,1.0).normalize(), radius:0.74, tEnd:0.25 },
-  { // 02 the part — single solid module
-    state:{ parts:1, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
+  { state:{ parts:1, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
     dir:new THREE.Vector3(0.85,0.55,0.95).normalize(), radius:0.92, tEnd:0.5 },
-  { // 03 one cube — six assembled
-    state:{ parts:6, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
+  { state:{ parts:6, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
     dir:new THREE.Vector3(0.62,0.5,0.86).normalize(), radius:1.18, tEnd:0.75 },
-  { // 04 whole of space — fill lattice
-    state:{ parts:6, explode:0, space:2, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
+  { state:{ parts:6, explode:0, space:2, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
     dir:new THREE.Vector3(0.58,0.46,0.9).normalize(), radius:2.7, tEnd:1.0 },
 ];
 let activeChapter = -1;
 const chapEls = [...document.querySelectorAll('.chap')];
 function markChapter(i){ activeChapter=i; chapEls.forEach((el,k)=> el.classList.toggle('active', k===i)); }
 
-/* camera + state tween */
 let tween = null;
 function cancelCamTween(){ if(tween) tween.killCam = true; }
 function camPose(ch){ return { pos:C.clone().add(ch.dir.clone().multiplyScalar(baseDist*ch.radius)), tgt:C.clone() }; }
@@ -880,7 +998,6 @@ function stepTween(dt){
   if(!tween) return;
   tween.t = Math.min(1, tween.t + dt/tween.dur);
   const e = easeIO(tween.t);
-  // numeric state lerp
   ['parts','explode','space','arrayFade','xPos','xNeg','yPos','yNeg','zPos','zNeg'].forEach(k=>{
     STATE[k] = lerp(tween.from.state[k], tween.toState[k], e);
   });
@@ -897,7 +1014,6 @@ chapEls.forEach(el=> el.onclick = ()=>{ playing=false; setPlaying(false); goToCh
 $('prev').onclick = ()=> goToChapter(Math.max(0, (activeChapter<0?0:activeChapter)-1));
 $('next').onclick = ()=> goToChapter(Math.min(3, (activeChapter<0?0:activeChapter)+1));
 
-/* ---------- guided tour (continuous, scrubbable) ---------- */
 function tourState(tt){
   const parts = Math.min(6, (tt/0.40)*6);
   let explode = 0;
@@ -917,7 +1033,6 @@ playBtn.onclick = ()=>{ cancelCamTween(); tween=null; if(!userTookOver) controls
 speedSel.onchange = ()=> speed=parseFloat(speedSel.value);
 scrub.oninput = ()=>{ cancelCamTween(); tween=null; setPlaying(false); setTour(scrub.value/1000); };
 
-/* ---------- manual controls ---------- */
 function manual(){ if(playing) setPlaying(false); cancelCamTween(); tween=null; }
 sParts.oninput   = ()=>{ manual(); STATE.parts=parseFloat(sParts.value); vParts.textContent=Math.round(STATE.parts)+' / 6'; render(); };
 sExplode.oninput = ()=>{ manual(); STATE.explode=parseFloat(sExplode.value); vExplode.textContent=Math.round(STATE.explode*100)+'%'; render(); };
@@ -930,7 +1045,6 @@ tgFaces.onclick  = ()=>{ STATE.faces=STATE.faces?0:1; syncToggles(); render(); }
 tgAngles.onclick = ()=>{ STATE.angles=STATE.angles?0:1; syncToggles(); render(); };
 tgSpin.onclick   = ()=>{ controls.autoRotate=!controls.autoRotate; if(controls.autoRotate) userTookOver=false; syncToggles(); };
 
-/* ---------- reveal-the-math controls ---------- */
 tgVol.onclick = ()=>{ STATE.volume=STATE.volume?0:1; syncToggles(); render(); };
 tgSort.onclick = ()=>{
   manual(); STATE.sort=STATE.sort?0:1;
@@ -948,7 +1062,6 @@ tgSpiral.onclick = ()=>{ STATE.spiral=STATE.spiral?0:1;
   document.body.classList.toggle('spiral-on', !!STATE.spiral);
   syncToggles(); };
 
-/* ---------- √2 root-spiral inset (spiral of Theodorus) ---------- */
 (function buildSpiral(){
   const N=8, pts=[]; let ang=0;
   for(let n=1;n<=N;n++){
@@ -962,24 +1075,20 @@ tgSpiral.onclick = ()=>{ STATE.spiral=STATE.spiral?0:1;
   const VW=288, VH=158, pad=24;
   const sc=Math.min((VW-2*pad)/(maxX-minX),(VH-2*pad)/(maxY-minY));
   const ox=pad-minX*sc + (VW-2*pad-(maxX-minX)*sc)/2;
-  const oy=VH-pad+minY*sc - (VH-2*pad-(maxY-minY)*sc)/2;   // flip y
+  const oy=VH-pad+minY*sc - (VH-2*pad-(maxY-minY)*sc)/2;
   const TX=p=>(ox+p.x*sc).toFixed(1), TY=p=>(oy-p.y*sc).toFixed(1);
   const O0={x:0,y:0};
   let s=`<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
-  // proof-triangle fill (O, A2, A3)
   s+=`<polygon points="${TX(O0)},${TY(O0)} ${TX(pts[1])},${TY(pts[1])} ${TX(pts[2])},${TY(pts[2])}" fill="${HEX.green}" fill-opacity="0.13"/>`;
-  // outer unit edges
   for(let i=0;i<pts.length-1;i++){
-    const hot=(i===1); // edge A2→A3 length 1 (the proof step lift)
+    const hot=(i===1);
     s+=`<line x1="${TX(pts[i])}" y1="${TY(pts[i])}" x2="${TX(pts[i+1])}" y2="${TY(pts[i+1])}" stroke="${hot?HEX.gold:'rgba(138,132,128,.42)'}" stroke-width="${hot?2:1.2}"/>`;
   }
-  // spokes O→A_n
   pts.forEach((p,i)=>{
     let col='rgba(138,132,128,.5)', w=1;
     if(p.n===2){col=HEX.blue;w=2.2;} if(p.n===3){col=HEX.mag;w=2.6;}
     s+=`<line x1="${TX(O0)}" y1="${TY(O0)}" x2="${TX(p)}" y2="${TY(p)}" stroke="${col}" stroke-width="${w}"/>`;
   });
-  // node + labels
   s+=`<circle cx="${TX(O0)}" cy="${TY(O0)}" r="3" fill="${HEX.gold}"/>`;
   pts.forEach(p=>{
     const big=(p.n===2||p.n===3);
@@ -991,7 +1100,6 @@ tgSpiral.onclick = ()=>{ STATE.spiral=STATE.spiral?0:1;
   $('spiral-svg').innerHTML=s;
 })();
 
-/* ---------- boot ---------- */
 camera.position.copy(C).add(CHAPTERS[0].dir.clone().multiplyScalar(baseDist*1.18));
 controls.update();
 resize();
@@ -1002,10 +1110,12 @@ function renderFrame(){
   renderer.setRenderTarget(null);
   renderer.render(scene, camera);
 }
-renderFrame(); // guaranteed first paint
+renderFrame();
 document.getElementById('loader').classList.add('hide');
 
+const sceneCubeEl = document.getElementById('scene-cube');
 function animate(now){
+  if (sceneCubeEl.style.display === 'none') { requestAnimationFrame(animate); return; }
   const w=stage.clientWidth, h=stage.clientHeight;
   if(w&&h&&(w!==W||h!==H)) resize();
   const dt=Math.min(0.05,(now-last)/1000); last=now;
@@ -1028,25 +1138,242 @@ function animate(now){
 }
 requestAnimationFrame(animate);
 
-window.__view = { scene, camera, controls, renderer, STATE, render, setTour, goToChapter, pause:()=>setPlaying(false), set:(o)=>{ setPlaying(false); cancelCamTween(); tween=null; Object.assign(STATE,o); render(); syncSliders(); } };
+window.__viewCube = { scene, camera, controls, renderer, STATE, render, setTour, goToChapter, pause:()=>setPlaying(false), set:(o)=>{ setPlaying(false); cancelCamTween(); tween=null; Object.assign(STATE,o); render(); syncSliders(); } };
 </script>
+
+<!-- ================================================================
+     SCRIPT: VECTOR SYSTEM (with vs- prefixed IDs and inactive-tab guard)
+     ================================================================ -->
+<script type="module">
+import * as THREE from 'three';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
+import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const SC = GF_SCENE.dark;
+const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const BG = new THREE.Color(cssVar('--bg') || '#0B0B0B');
+const COL = {
+  bone:  new THREE.Color(SC.unit),
+  dim:   new THREE.Color(SC.muted),
+  gold:  new THREE.Color(SC.angle),
+  blue:  new THREE.Color(SC.face),
+  mag:   new THREE.Color(SC.space),
+  green: new THREE.Color(SC.tri),
+};
+const HEX = { bone:SC.unit, blue:SC.face, mag:SC.space, gold:SC.angle };
+GF_SCENE.onChange(GF_SCENE.reload);
+
+document.getElementById('vs-lg-edge').style.background  = HEX.bone;
+document.getElementById('vs-lg-face').style.background  = HEX.blue;
+document.getElementById('vs-lg-space').style.background = HEX.mag;
+
+const clean = new URLSearchParams(location.search).has('clean');
+if (clean) document.body.classList.add('clean');
+
+const stage = document.getElementById('vs-stage');
+const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+renderer.setClearColor(BG, 1);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(BG.getHex(), 0.05);
+const camera = new THREE.PerspectiveCamera(36, 1, 0.01, 400);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.82;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const key = new THREE.DirectionalLight(0xfff4e2, 1.1); key.position.set(3,5,2.4); scene.add(key);
+
+let W=1,H=1;
+const lineMats = [];
+function resize(){
+  W = stage.clientWidth||innerWidth; H = stage.clientHeight||innerHeight;
+  renderer.setSize(W,H); camera.aspect=W/H; camera.updateProjectionMatrix();
+  lineMats.forEach(m=> m.resolution && m.resolution.set(W,H));
+}
+addEventListener('resize', resize);
+if (window.ResizeObserver){ new ResizeObserver(()=>{ const w=stage.clientWidth,h=stage.clientHeight; if(w&&h&&(w!==W||h!==H)) resize(); }).observe(stage); }
+
+const Cv = (x,y,z)=>[x,y,z];
+const EDGES_VS = [
+  [Cv(0,0,0),Cv(1,0,0)],[Cv(0,1,0),Cv(1,1,0)],[Cv(0,0,1),Cv(1,0,1)],[Cv(0,1,1),Cv(1,1,1)],
+  [Cv(0,0,0),Cv(0,1,0)],[Cv(1,0,0),Cv(1,1,0)],[Cv(0,0,1),Cv(0,1,1)],[Cv(1,0,1),Cv(1,1,1)],
+  [Cv(0,0,0),Cv(0,0,1)],[Cv(1,0,0),Cv(1,0,1)],[Cv(0,1,0),Cv(0,1,1)],[Cv(1,1,0),Cv(1,1,1)],
+];
+const FACES_VS = [
+  [Cv(0,0,0),Cv(1,1,0)],[Cv(1,0,0),Cv(0,1,0)],
+  [Cv(0,0,1),Cv(1,1,1)],[Cv(1,0,1),Cv(0,1,1)],
+  [Cv(0,0,0),Cv(1,0,1)],[Cv(1,0,0),Cv(0,0,1)],
+  [Cv(0,1,0),Cv(1,1,1)],[Cv(1,1,0),Cv(0,1,1)],
+  [Cv(0,0,0),Cv(0,1,1)],[Cv(0,1,0),Cv(0,0,1)],
+  [Cv(1,0,0),Cv(1,1,1)],[Cv(1,1,0),Cv(1,0,1)],
+];
+const SPACE_VS = [
+  [Cv(0,0,0),Cv(1,1,1)],[Cv(1,0,0),Cv(0,1,1)],[Cv(0,1,0),Cv(1,0,1)],[Cv(0,0,1),Cv(1,1,0)],
+];
+
+function fatSegments(color, width, op){
+  const g = new LineSegmentsGeometry();
+  const m = new LineMaterial({ color, linewidth:width, transparent:true, opacity:op, depthTest:true });
+  m.resolution.set(W,H); lineMats.push(m);
+  const ls = new LineSegments2(g, m); ls.frustumCulled=false;
+  return { ls, geo:g, mat:m };
+}
+const root = new THREE.Group(); scene.add(root);
+const edgeL = fatSegments(COL.bone, 1.7, 0.5);
+const faceL = fatSegments(COL.blue, 2.2, 0.92);
+const spaceL = fatSegments(COL.mag, 2.6, 0.96);
+edgeL.ls.renderOrder=1; faceL.ls.renderOrder=2; spaceL.ls.renderOrder=3;
+root.add(edgeL.ls); root.add(faceL.ls); root.add(spaceL.ls);
+
+const proofRoot = new THREE.Group(); scene.add(proofRoot);
+const O=new THREE.Vector3(0,0,0), Fp=new THREE.Vector3(1,1,0), Gp=new THREE.Vector3(1,1,1);
+function fatLine(a,b,color,w){
+  const g=new LineGeometry(); g.setPositions([a.x,a.y,a.z,b.x,b.y,b.z]);
+  const m=new LineMaterial({color,linewidth:w,transparent:true,opacity:0,depthTest:false});
+  m.resolution.set(W,H); const ln=new Line2(g,m); ln.renderOrder=20; ln.frustumCulled=false;
+  proofRoot.add(ln); lineMats.push(m); return m;
+}
+const pmFace = fatLine(O,Fp,COL.blue,4.0);
+const pmEdge = fatLine(Fp,Gp,COL.bone,3.4);
+const pmSpace= fatLine(O,Gp,COL.mag,4.4);
+const proofFillMat = new THREE.MeshBasicMaterial({ color:COL.green, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
+{ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute([O.x,O.y,O.z,Fp.x,Fp.y,Fp.z,Gp.x,Gp.y,Gp.z],3));
+  const mesh=new THREE.Mesh(g,proofFillMat); mesh.renderOrder=-1; mesh.frustumCulled=false; proofRoot.add(mesh); }
+const arcMat = new THREE.LineBasicMaterial({ color:COL.gold, transparent:true, opacity:0 });
+{ const u=Fp.clone().normalize(), v=Gp.clone().normalize(); const pts=[]; const ang=u.angleTo(v); const n=24; const axis=new THREE.Vector3().crossVectors(u,v).normalize();
+  for(let i=0;i<=n;i++){ const q=new THREE.Quaternion().setFromAxisAngle(axis, ang*i/n); pts.push(u.clone().applyQuaternion(q).multiplyScalar(0.34)); }
+  const g=new THREE.BufferGeometry().setFromPoints(pts); const ln=new THREE.Line(g,arcMat); ln.renderOrder=20; ln.frustumCulled=false; proofRoot.add(ln); }
+function labelSprite(text,hex){
+  const font='700 92px "Space Mono", ui-monospace, monospace';
+  const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
+  const pad=20,w=Math.ceil(meas.measureText(text).width)+pad*2,h=128;
+  const c=document.createElement('canvas'); c.width=w;c.height=h; const x=c.getContext('2d');
+  x.font=font;x.textBaseline='middle';x.textAlign='center';
+  x.fillStyle=SC.halo;const r=14;
+  x.beginPath();x.moveTo(r,6);x.arcTo(w-2,6,w-2,h-6,r);x.arcTo(w-2,h-6,2,h-6,r);x.arcTo(2,h-6,2,6,r);x.arcTo(2,6,w-2,6,r);x.fill();
+  x.fillStyle=hex;x.fillText(text,w/2,h/2+4);
+  const tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;tex.anisotropy=4;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthWrite:false,depthTest:false}));
+  sp.scale.set(0.18*w/h,0.18,1); sp.renderOrder=30; return sp;
+}
+const plabels=[];
+function addLabel(t,hex,p){ const s=labelSprite(t,hex); s.position.copy(p); proofRoot.add(s); plabels.push(s); }
+addLabel('√2',    HEX.blue, new THREE.Vector3(0.5,0.5,-0.06));
+addLabel('1',     HEX.bone, new THREE.Vector3(1.12,1.0,0.5));
+addLabel('√3',    HEX.mag,  new THREE.Vector3(0.42,0.62,0.56));
+addLabel('35.26°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
+
+const STATE = { grid:2, gap:0, edge:1, face:1, space:1, proof:1, frame:0 };
+function extent(N,gap){ return (N-1)*(1+gap)+1; }
+
+let baseR=2, userTookOver=false;
+controls.addEventListener('start', ()=>{ userTookOver=true; controls.autoRotate=false; syncToggles(); });
+
+function rebuild(){
+  const N = STATE.frame ? 1 : STATE.grid;
+  const gap = STATE.gap;
+  const ext = extent(N,gap);
+  const c = ext/2;
+  const ePos=[], fPos=[], sPos=[];
+  for (let i=0;i<N;i++) for (let j=0;j<N;j++) for (let k=0;k<N;k++){
+    const ox=i*(1+gap)-c, oy=j*(1+gap)-c, oz=k*(1+gap)-c;
+    const push=(arr,set)=>set.forEach(([a,b])=>arr.push(a[0]+ox,a[1]+oy,a[2]+oz, b[0]+ox,b[1]+oy,b[2]+oz));
+    push(ePos,EDGES_VS); push(fPos,FACES_VS); push(sPos,SPACE_VS);
+  }
+  function rebuildGeo(holder, arr){
+    const g=new LineSegmentsGeometry(); g.setPositions(arr);
+    holder.ls.geometry.dispose(); holder.ls.geometry=g; holder.geo=g; holder.ls.computeLineDistances();
+  }
+  rebuildGeo(edgeL, ePos);
+  rebuildGeo(faceL, fPos);
+  rebuildGeo(spaceL, sPos);
+  proofRoot.position.set(-c,-c,-c);
+  const target = new THREE.Vector3(0,0,0);
+  controls.target.copy(target);
+  baseR = ext*1.38;
+  if (!userTookOver){ const d=baseR/Math.sin((camera.fov*Math.PI/180)/2);
+    camera.position.copy(target).add(new THREE.Vector3(0.85,0.55,1).normalize().multiplyScalar(d)); }
+  camera.near = ext/200; camera.far = ext*40; camera.updateProjectionMatrix();
+  applyVis();
+}
+
+function applyVis(){
+  edgeL.ls.visible = !!STATE.edge; edgeL.mat.opacity = STATE.frame?0.7:0.5;
+  faceL.ls.visible = !!STATE.face;
+  spaceL.ls.visible = !!STATE.space;
+  const pf = STATE.proof?1:0;
+  pmFace.opacity=0.96*pf; pmEdge.opacity=0.9*pf; pmSpace.opacity=0.98*pf;
+  proofFillMat.opacity=0.18*pf; arcMat.opacity=0.9*pf;
+  plabels.forEach(l=>l.material.opacity=0.96*pf);
+  const cap=document.getElementById('vs-cap');
+  if (STATE.frame) cap.innerHTML='The <b>single cube frame</b> · 1 : √2 : √3';
+  else if (STATE.gap>0.02) cap.innerHTML='Pull it apart · <b>identical cube frames</b>';
+  else if (STATE.grid>1) cap.innerHTML='Assembly pattern · <b>the whole of space</b>';
+  else cap.innerHTML='One module · <b>1 : √2 : √3</b>';
+}
+
+const els=id=>document.getElementById(id);
+const sGrid=els('vs-s-grid'), sGap=els('vs-s-gap'), vGrid=els('vs-v-grid'), vGap=els('vs-v-gap');
+const tgEdge=els('vs-tg-edge'),tgFace=els('vs-tg-face'),tgSpace=els('vs-tg-space'),tgProof=els('vs-tg-proof'),tgFrame=els('vs-tg-frame'),tgSpin=els('vs-tg-spin');
+function syncToggles(){
+  tgEdge.classList.toggle('off',!STATE.edge);  tgEdge.classList.toggle('on',!!STATE.edge);
+  tgFace.classList.toggle('off',!STATE.face);   tgFace.classList.toggle('on',!!STATE.face);
+  tgSpace.classList.toggle('off',!STATE.space); tgSpace.classList.toggle('on',!!STATE.space);
+  tgProof.classList.toggle('off',!STATE.proof); tgProof.classList.toggle('on',!!STATE.proof);
+  tgFrame.classList.toggle('off',!STATE.frame); tgFrame.classList.toggle('on',!!STATE.frame);
+  tgSpin.classList.toggle('off',!controls.autoRotate); tgSpin.classList.toggle('on',!!controls.autoRotate);
+}
+function gridLabel(){ const n=STATE.frame?1:STATE.grid; vGrid.textContent=`${n} × ${n} × ${n}`; }
+sGrid.oninput=()=>{ STATE.grid=parseInt(sGrid.value); if(STATE.frame){STATE.frame=0;} gridLabel(); rebuild(); syncToggles(); };
+sGap.oninput=()=>{ STATE.gap=parseFloat(sGap.value); vGap.textContent=Math.round(STATE.gap*100)+'%'; rebuild(); };
+tgEdge.onclick=()=>{ STATE.edge=STATE.edge?0:1; syncToggles(); applyVis(); };
+tgFace.onclick=()=>{ STATE.face=STATE.face?0:1; syncToggles(); applyVis(); };
+tgSpace.onclick=()=>{ STATE.space=STATE.space?0:1; syncToggles(); applyVis(); };
+tgProof.onclick=()=>{ STATE.proof=STATE.proof?0:1; syncToggles(); applyVis(); };
+tgFrame.onclick=()=>{ STATE.frame=STATE.frame?0:1; gridLabel(); rebuild(); syncToggles(); };
+tgSpin.onclick=()=>{ controls.autoRotate=!controls.autoRotate; if(controls.autoRotate) userTookOver=false; syncToggles(); };
+
+resize();
+sGrid.value=STATE.grid; gridLabel(); vGap.textContent='0%';
+rebuild(); syncToggles();
+renderer.render(scene,camera);
+document.getElementById('vs-loader').classList.add('hide');
+
+const sceneVsEl = document.getElementById('scene-vs');
+function animate(){
+  if (sceneVsEl.style.display === 'none') { requestAnimationFrame(animate); return; }
+  const w=stage.clientWidth,h=stage.clientHeight; if(w&&h&&(w!==W||h!==H)) resize();
+  if (W>1&&H>1){ controls.update(); renderer.render(scene,camera); }
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+window.__viewVS={ scene,camera,controls,renderer,STATE,rebuild,applyVis,
+  set:(o)=>{ Object.assign(STATE,o); gridLabel(); rebuild(); syncToggles(); } };
+</script>
+
+<!-- Panel toggle for The Cube -->
 <script>
 (function(){
   var panel = document.getElementById('panel');
   var hd    = document.getElementById('panel-hd');
   if(!panel || !hd) return;
-
-  // collapse toggle (same behaviour on desktop + mobile)
   hd.addEventListener('click', function(){
     panel.classList.toggle('panel-open');
   });
-
-  // tab switching
   var tabBtns = panel.querySelectorAll('.tab-btn');
   var tabPanes = panel.querySelectorAll('.tab-pane');
   tabBtns.forEach(function(btn){
     btn.addEventListener('click', function(e){
-      e.stopPropagation(); // don't trigger hd collapse toggle
+      e.stopPropagation();
       var target = btn.dataset.tab;
       tabBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===target); });
       tabPanes.forEach(function(p){ p.classList.toggle('active', p.id==='tab-'+target); });
@@ -1054,5 +1381,33 @@ window.__view = { scene, camera, controls, renderer, STATE, render, setTour, goT
   });
 })();
 </script>
+
+<!-- Panel toggle for Vector System -->
+<script>
+(function(){
+  var ph = document.getElementById('vs-panel-ph');
+  var panel = document.getElementById('vs-panel');
+  if(!ph || !panel) return;
+  ph.addEventListener('click', function(){ panel.classList.toggle('panel-open'); });
+})();
+</script>
+
+<!-- Tab switcher -->
+<script>
+(function(){
+  const scenes = ['cube', 'vs'];
+  const btns = document.querySelectorAll('.explore-tab-btn');
+  function activate(id) {
+    scenes.forEach(s => {
+      document.getElementById('scene-' + s).style.display = (s === id) ? 'block' : 'none';
+    });
+    btns.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+    window.dispatchEvent(new Event('resize'));
+  }
+  btns.forEach(b => b.addEventListener('click', () => activate(b.dataset.tab)));
+  activate('cube');
+})();
+</script>
+
 </body>
 </html>
