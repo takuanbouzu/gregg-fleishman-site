@@ -149,11 +149,20 @@
   }
 
   @media(max-width:560px){
-    .cover{ padding:28px 22px 36px; }
+    /* Hide the live-geometry iframe on mobile — decorative only, hurts perf */
+    .cover-hero{ display:none; }
+    /* Make the scrim a solid dark bg so nothing bleeds through */
+    .cover-scrim{ background:var(--bg); }
+
+    /* Remove the full-viewport stretch — just natural document flow */
+    .cover{ min-height:0; padding:28px 22px 40px; }
+    .cover-lede{ margin-top:0; }
+
     .cover-kicker{ margin-bottom:16px; letter-spacing:.2em; }
     .cover-title{ font-size:clamp(33px,10vw,46px); }
     .cover-tag{ margin-top:10px; font-size:13px; letter-spacing:.22em; }
-    .cover-lead{ margin-top:20px; }
+    .cover-lead{ margin-top:20px; font-size:17px; }
+    .cover-actions{ margin-top:28px; gap:16px; }
     .cover-index{ margin-top:40px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 24px; }
   }
 </style>
