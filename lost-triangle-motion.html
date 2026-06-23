@@ -24,6 +24,7 @@
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
 <script src="assets/lost-triangle-engine.js" defer></script>
+<script>if(/[?&]cover=1(?:&|$)/.test(location.search))document.documentElement.classList.add("gf-cover");</script>
 <style>
   /* ============================================================
      THE LOST TRIANGLE · MOTION — "Lightbox Broadside"
@@ -88,12 +89,13 @@
   .lt-walklinks a{font-family:var(--lt-mono2);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--tx-dim);text-decoration:none;pointer-events:auto;transition:color .15s var(--ease);}
   .lt-walklinks a:hover{color:var(--accent);}
+  html.gf-cover #gfnav,html.gf-cover .lt-progress,html.gf-cover .lt-walklinks,html.gf-cover .lt-idx,html.gf-cover .lt-cap,html.gf-cover .lt-state,html.gf-cover .lt-hint{display:none!important;}
 </style>
 </head>
 <body>
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="explore.html">Explore</a>
+  <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
   <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
