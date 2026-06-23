@@ -61,7 +61,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;font-family:"Space Grotesk",sans-serif;-webkit-font-smoothing:antialiased}
-  #stage{position:fixed;inset:0;cursor:grab;z-index:1}
+  #stage{position:fixed;inset:0;cursor:grab;z-index:1;touch-action:none;}
   #stage:active{cursor:grabbing}
   #stage canvas{display:block}
 
@@ -112,54 +112,83 @@
   .cap b{color:var(--gold);font-weight:700}
 
   /* ---- transport ---- */
-  #transport{left:50%;transform:translateX(-50%);bottom:24px;display:flex;align-items:center;gap:14px;
-    background:rgba(16,16,20,.6);border:1px solid var(--line);border-radius:3px;padding:8px 14px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-  #transport button{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.06em;background:transparent;color:var(--text);
-    border:1px solid var(--line);border-radius:2px;padding:7px 10px;cursor:pointer;text-transform:uppercase;transition:border-color .2s,color .2s}
-  #transport button:hover{border-color:var(--gold);color:var(--gold)}
-  #scrub{width:240px;-webkit-appearance:none;appearance:none;height:2px;background:rgba(242,239,233,.18);border-radius:2px;cursor:pointer}
-  #scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;border:none;box-shadow:0 0 8px rgba(200,169,110,.7)}
-  #scrub::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
-  .tlabel{font-family:"Space Mono",monospace;font-size:10.5px;color:var(--dim);min-width:38px;text-align:center}
-  #transport select{font-family:"Space Mono",monospace;font-size:11px;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:2px;padding:7px 8px;cursor:pointer}
+  #transport{
+    left:50%; transform:translateX(-50%); bottom:14px;
+    display:flex; align-items:center; gap:8px;
+    background:rgba(16,16,20,.7); border:1px solid var(--line); border-radius:2px;
+    padding:4px 10px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  }
+  #transport button{
+    font-family:"Space Mono",monospace; font-size:9px; letter-spacing:.06em;
+    background:transparent; color:var(--text); border:1px solid var(--line);
+    border-radius:2px; padding:3px 7px; cursor:pointer; text-transform:uppercase;
+    transition:border-color .2s,color .2s; touch-action:manipulation;
+  }
+  #transport button:hover{ border-color:var(--gold); color:var(--gold); }
+  #scrub{ width:140px; -webkit-appearance:none; appearance:none; height:2px;
+    background:rgba(242,239,233,.18); border-radius:2px; cursor:pointer; touch-action:none; }
+  #scrub::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none;
+    width:10px; height:10px; border-radius:50%; background:var(--gold);
+    cursor:pointer; border:none; box-shadow:0 0 6px rgba(200,169,110,.7); }
+  #scrub::-moz-range-thumb{ width:10px; height:10px; border-radius:50%;
+    background:var(--gold); border:none; cursor:pointer; }
+  .tlabel{ font-family:"Space Mono",monospace; font-size:9px; color:var(--dim); min-width:28px; text-align:center; }
+  #transport select{ font-family:"Space Mono",monospace; font-size:9px; background:transparent;
+    color:var(--text); border:1px solid var(--line); border-radius:2px; padding:3px 5px; cursor:pointer; }
 
   /* ---- manual panel : the hands-on centrepiece ---- */
-  #panel{right:28px;top:50%;transform:translateY(-50%);width:248px;display:flex;flex-direction:column;gap:16px;padding:20px 18px;
-    max-height:calc(100vh - 44px);overflow-y:auto;
-    background:var(--panel);border:1px solid var(--panel-bd);border-radius:5px;
-    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 24px 60px -28px rgba(0,0,0,.8);
-    transition:max-height .32s cubic-bezier(.4,0,.2,1);}
-  /* desktop collapse */
-  #panel.panel-collapsed{max-height:52px;overflow:hidden;gap:0;}
-  #panel.panel-collapsed .panel-body{display:none;}
-  #panel .panel-chevron{margin-left:auto;color:var(--faint);transition:transform .28s ease;flex-shrink:0;}
-  #panel.panel-collapsed .panel-chevron{transform:rotate(180deg);}
-  #panel .hd{cursor:pointer;user-select:none;}
-  #panel::-webkit-scrollbar{width:6px}
-  #panel::-webkit-scrollbar-thumb{background:rgba(242,239,233,.16);border-radius:3px}
-  #panel::-webkit-scrollbar-track{background:transparent}
-  #panel .hd{display:flex;align-items:center;gap:9px}
-  #panel .hd .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
-  #panel .hd .t{font-family:"Syne",sans-serif;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
-  #panel .grp-t{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint)}
-  #panel .ctl{display:flex;flex-direction:column;gap:8px}
-  #panel .lab{display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.03em;color:var(--text)}
-  #panel .lab span{color:var(--gold);font-weight:700}
-  #panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;background:rgba(242,239,233,.2);border-radius:2px;cursor:pointer;width:100%}
-  #panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;box-shadow:0 0 8px rgba(200,169,110,.6)}
-  #panel input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
-  #panel .tgs{display:flex;gap:7px;flex-wrap:wrap}
-  #panel .tgbtn{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.04em;background:transparent;color:var(--text);
-    border:1px solid var(--line);border-radius:2px;padding:6px 9px;cursor:pointer;text-transform:uppercase;transition:border-color .2s,color .2s,opacity .2s}
-  #panel .tgbtn:hover{border-color:var(--gold);color:var(--gold)}
-  #panel .tgbtn.off{opacity:.38}
-  #panel .rule{height:1px;background:var(--line)}
-  #panel .axrows{display:flex;flex-direction:column;gap:6px}
-  #panel .axrow{display:grid;grid-template-columns:24px 1fr 14px;align-items:center;gap:7px}
-  #panel .axlbl{font-family:"Space Mono",monospace;font-size:10px;color:var(--gold);letter-spacing:.04em;font-weight:700}
-  #panel .axval{font-family:"Space Mono",monospace;font-size:10px;color:var(--text);text-align:right}
+  #panel{
+    right:16px; top:76px; transform:none; width:216px;
+    display:flex; flex-direction:column; gap:0; padding:0;
+    max-height:44px; overflow:hidden;
+    background:var(--panel); border:1px solid var(--panel-bd); border-radius:4px;
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    box-shadow:0 16px 48px -20px rgba(0,0,0,.8);
+    transition:max-height .32s cubic-bezier(.4,0,.2,1);
+  }
+  #panel.panel-open{ max-height:480px; overflow-y:auto; }
+  #panel .hd{
+    display:flex; align-items:center; gap:8px;
+    padding:12px 14px; cursor:pointer; user-select:none; flex-shrink:0;
+  }
+  #panel .hd .dot{ width:5px; height:5px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold); flex-shrink:0; }
+  #panel .hd .t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text); }
+  #panel .panel-chevron{ margin-left:auto; color:var(--faint); transition:transform .28s ease; flex-shrink:0; }
+  #panel.panel-open .panel-chevron{ transform:rotate(180deg); }
+  #panel .panel-body{ display:flex; flex-direction:column; padding:0 14px 14px; gap:12px; }
+  /* tab bar */
+  #panel .tab-bar{
+    display:flex; border-bottom:1px solid var(--line); margin-bottom:4px;
+  }
+  #panel .tab-btn{
+    font-family:"Space Mono",monospace; font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; color:var(--faint); border:none; border-bottom:2px solid transparent;
+    padding:7px 0; margin-bottom:-1px; cursor:pointer; flex:1;
+    transition:color .15s, border-color .15s;
+  }
+  #panel .tab-btn.active{ color:var(--gold); border-bottom-color:var(--gold); }
+  #panel .tab-pane{ display:none; flex-direction:column; gap:12px; }
+  #panel .tab-pane.active{ display:flex; }
+  /* existing sub-styles */
+  #panel .grp-t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint); }
+  #panel .ctl{ display:flex; flex-direction:column; gap:6px; }
+  #panel .lab{ display:flex; justify-content:space-between; font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.03em; color:var(--text); }
+  #panel .lab span{ color:var(--gold); font-weight:700; }
+  #panel input[type=range]{ -webkit-appearance:none; appearance:none; height:2px; background:rgba(242,239,233,.2); border-radius:2px; cursor:pointer; width:100%; touch-action:none; }
+  #panel input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; box-shadow:0 0 8px rgba(200,169,110,.6); }
+  #panel input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--gold); border:none; cursor:pointer; }
+  #panel .ctl { min-height:0; }
+  #panel .tgs{ display:flex; gap:6px; flex-wrap:wrap; }
+  #panel .tgbtn{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.04em; background:transparent; color:var(--text); border:1px solid var(--line); border-radius:2px; padding:6px 8px; cursor:pointer; text-transform:uppercase; transition:border-color .2s,color .2s,opacity .2s; touch-action:manipulation; }
+  #panel .tgbtn:hover{ border-color:var(--gold); color:var(--gold); }
+  #panel .tgbtn.off{ opacity:.38; }
+  #panel .rule{ height:1px; background:var(--line); }
+  #panel .axrows{ display:flex; flex-direction:column; gap:5px; }
+  #panel .axrow{ display:grid; grid-template-columns:22px 1fr 14px; align-items:center; gap:6px; }
+  #panel .axlbl{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--gold); letter-spacing:.04em; font-weight:700; }
+  #panel .axval{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--text); text-align:right; }
 
-  #hint{right:28px;bottom:24px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;pointer-events:none}
+  #hint{right:16px;bottom:24px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;pointer-events:none}
 
   /* sort-point readout inside panel */
   #sortbox{display:none;flex-direction:column;gap:9px}
@@ -195,23 +224,12 @@
 
   /* ---- mobile panel: bottom drawer (must come after desktop #panel rules) ---- */
   @media(max-width:860px){
-    /* transport stays at very bottom; drawer sits above it */
-    #transport{bottom:0;transform:translateX(-50%);border-radius:0;width:100%;max-width:none;
-      left:0;right:0;transform:none;justify-content:center;padding:10px 16px;box-sizing:border-box;}
-    #hint{display:none;}
-    #panel{
-      right:0;left:0;top:auto;bottom:52px; /* above transport */
-      transform:none;width:100%;border-radius:6px 6px 0 0;
-      max-height:56px;overflow:hidden;
-      transition:max-height .32s cubic-bezier(.4,0,.2,1);
-      padding:0 18px;gap:0;
-    }
-    #panel.panel-open{max-height:65vh;overflow-y:auto;padding:0 18px 24px;}
-    #panel .hd{padding:16px 0;cursor:pointer;user-select:none;}
-    #panel .panel-body{display:flex;flex-direction:column;gap:16px;padding-top:4px;}
-    /* caption and legend clear both bars */
-    #caption{bottom:168px;}
-    #legend{left:18px;bottom:200px;}
+    #transport{ bottom:0; transform:none; border-radius:0; width:100%; max-width:none; left:0; right:0; justify-content:center; padding:6px 14px; box-sizing:border-box; }
+    #hint{ display:none; }
+    #panel{ right:0; left:0; top:auto; bottom:44px; width:100%; border-radius:4px 4px 0 0; }
+    #panel.panel-open{ max-height:60vh; }
+    #caption{ bottom:140px; }
+    #legend{ left:18px; bottom:170px; }
   }
 </style>
 
@@ -247,7 +265,6 @@
       <a class="navlink" href="dorman-luke.html">Research</a>
       <a class="navlink" href="rhombic-system.html">Rhombic System</a>
       <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
-          <a class="navlink" href="poster/poster.html">Poster</a>
       <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
     </div>
     <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
@@ -292,51 +309,61 @@
   <div id="panel" class="chrome">
     <div class="hd" id="panel-hd">
       <span class="dot"></span>
-      <span class="t">Build it yourself</span>
-      <svg class="panel-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <span class="t">Controls</span>
+      <svg class="panel-chevron" width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
         <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
     <div class="panel-body">
-    <div class="ctl"><div class="lab">Parts <span id="v-parts">0 / 6</span></div>
-      <input id="s-parts" type="range" min="0" max="6" step="0.02" value="0" /></div>
-    <div class="ctl"><div class="lab">Explode <span id="v-explode">0%</span></div>
-      <input id="s-explode" type="range" min="0" max="1" step="0.01" value="0" /></div>
-    <div class="ctl"><div class="lab">Fill space <span id="v-space">1³</span></div>
-      <input id="s-space" type="range" min="0" max="2" step="0.01" value="0" /></div>
-    <div class="tgs">
-      <button class="tgbtn" id="tg-faces">Faces</button>
-      <button class="tgbtn off" id="tg-angles">Angles</button>
-      <button class="tgbtn" id="tg-spin">Spin</button>
-    </div>
-    <div class="rule"></div>
-    <div class="grp-t">Reveal the math</div>
-    <div class="tgs">
-      <button class="tgbtn off" id="tg-sort">Sort point</button>
-      <button class="tgbtn off" id="tg-spiral">√ spiral</button>
-      <button class="tgbtn" id="tg-vol">Volume</button>
-    </div>
-    <div id="sortbox">
-      <div class="axrows">
-        <div class="axrow"><span class="axlbl" style="color:var(--geo-face)">x</span><input id="s-px" type="range" min="0.02" max="0.98" step="0.01" value="0.72"/><span id="v-px" class="axval">.72</span></div>
-        <div class="axrow"><span class="axlbl" style="color:var(--geo-tri)">y</span><input id="s-py" type="range" min="0.02" max="0.98" step="0.01" value="0.44"/><span id="v-py" class="axval">.44</span></div>
-        <div class="axrow"><span class="axlbl" style="color:var(--geo-space)">z</span><input id="s-pz" type="range" min="0.02" max="0.98" step="0.01" value="0.19"/><span id="v-pz" class="axval">.19</span></div>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="build">Build</button>
+        <button class="tab-btn" data-tab="math">Math</button>
+        <button class="tab-btn" data-tab="array">Array</button>
       </div>
-      <div id="sortread"></div>
-    </div>
-    <div class="rule"></div>
-    <div class="grp-t">Array · per axis</div>
-    <div class="ctl"><div class="lab">Fade <span id="v-afade">0%</span></div>
-      <input id="s-afade" type="range" min="0" max="1" step="0.01" value="0" /></div>
-    <div class="axrows">
-      <div class="axrow"><span class="axlbl">+X</span><input id="s-xpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-xpos" class="axval">0</span></div>
-      <div class="axrow"><span class="axlbl">−X</span><input id="s-xneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-xneg" class="axval">0</span></div>
-      <div class="axrow"><span class="axlbl">+Y</span><input id="s-ypos" type="range" min="0" max="5" step="1" value="0"/><span id="v-ypos" class="axval">0</span></div>
-      <div class="axrow"><span class="axlbl">−Y</span><input id="s-yneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-yneg" class="axval">0</span></div>
-      <div class="axrow"><span class="axlbl">+Z</span><input id="s-zpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-zpos" class="axval">0</span></div>
-      <div class="axrow"><span class="axlbl">−Z</span><input id="s-zneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-zneg" class="axval">0</span></div>
-    </div>
-    <button class="tgbtn" id="btn-cleararray" style="width:100%">Clear array</button>
+
+      <div class="tab-pane active" id="tab-build">
+        <div class="ctl"><div class="lab">Parts <span id="v-parts">0 / 6</span></div>
+          <input id="s-parts" type="range" min="0" max="6" step="0.02" value="0" /></div>
+        <div class="ctl"><div class="lab">Explode <span id="v-explode">0%</span></div>
+          <input id="s-explode" type="range" min="0" max="1" step="0.01" value="0" /></div>
+        <div class="ctl"><div class="lab">Fill space <span id="v-space">1³</span></div>
+          <input id="s-space" type="range" min="0" max="2" step="0.01" value="0" /></div>
+        <div class="tgs">
+          <button class="tgbtn" id="tg-faces">Faces</button>
+          <button class="tgbtn off" id="tg-angles">Angles</button>
+          <button class="tgbtn" id="tg-spin">Spin</button>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-math">
+        <div class="tgs">
+          <button class="tgbtn off" id="tg-sort">Sort point</button>
+          <button class="tgbtn off" id="tg-spiral">√ spiral</button>
+          <button class="tgbtn" id="tg-vol">Volume</button>
+        </div>
+        <div id="sortbox">
+          <div class="axrows">
+            <div class="axrow"><span class="axlbl" style="color:var(--geo-face)">x</span><input id="s-px" type="range" min="0.02" max="0.98" step="0.01" value="0.72"/><span id="v-px" class="axval">.72</span></div>
+            <div class="axrow"><span class="axlbl" style="color:var(--geo-tri)">y</span><input id="s-py" type="range" min="0.02" max="0.98" step="0.01" value="0.44"/><span id="v-py" class="axval">.44</span></div>
+            <div class="axrow"><span class="axlbl" style="color:var(--geo-space)">z</span><input id="s-pz" type="range" min="0.02" max="0.98" step="0.01" value="0.19"/><span id="v-pz" class="axval">.19</span></div>
+          </div>
+          <div id="sortread"></div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-array">
+        <div class="ctl"><div class="lab">Fade <span id="v-afade">0%</span></div>
+          <input id="s-afade" type="range" min="0" max="1" step="0.01" value="0" /></div>
+        <div class="axrows">
+          <div class="axrow"><span class="axlbl">+X</span><input id="s-xpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-xpos" class="axval">0</span></div>
+          <div class="axrow"><span class="axlbl">−X</span><input id="s-xneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-xneg" class="axval">0</span></div>
+          <div class="axrow"><span class="axlbl">+Y</span><input id="s-ypos" type="range" min="0" max="5" step="1" value="0"/><span id="v-ypos" class="axval">0</span></div>
+          <div class="axrow"><span class="axlbl">−Y</span><input id="s-yneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-yneg" class="axval">0</span></div>
+          <div class="axrow"><span class="axlbl">+Z</span><input id="s-zpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-zpos" class="axval">0</span></div>
+          <div class="axrow"><span class="axlbl">−Z</span><input id="s-zneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-zneg" class="axval">0</span></div>
+        </div>
+        <button class="tgbtn" id="btn-cleararray" style="width:100%">Clear array</button>
+      </div>
     </div><!-- /.panel-body -->
   </div>
 
@@ -378,8 +405,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 /* palette from GF_SCENE — themes night/paper, matched to the shared chrome.
    Geometry colors are the site's canonical contract (√3 magenta #E0349E, √2 blue
    #4A90D9, …) rather than the prototype's brighter standalone variants. */
-const SC = GF_SCENE.active();
-const isLight = GF_SCENE.name() === 'light';
+const SC = GF_SCENE.dark;   // site is dark-only; gf-tokens.css neutralises any light-theme switch
+const isLight = false;
 const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');  // bg from the SAME palette as geometry — avoids theme-init race
 const COL = { bg:BGc.getHex(), bone:new THREE.Color(SC.unit).getHex(), dim:new THREE.Color(SC.muted).getHex(),
@@ -1008,30 +1035,23 @@ window.__view = { scene, camera, controls, renderer, STATE, render, setTour, goT
   var panel = document.getElementById('panel');
   var hd    = document.getElementById('panel-hd');
   if(!panel || !hd) return;
-  var mobile = window.matchMedia('(max-width:860px)');
 
-  function isMobile(){ return mobile.matches; }
-
-  // desktop: start open; mobile: start collapsed
-  function applyInitial(){
-    if(isMobile()){
-      panel.classList.remove('panel-collapsed');
-      panel.classList.remove('panel-open');
-    } else {
-      panel.classList.remove('panel-open');
-    }
-  }
-
+  // collapse toggle (same behaviour on desktop + mobile)
   hd.addEventListener('click', function(){
-    if(isMobile()){
-      panel.classList.toggle('panel-open');
-    } else {
-      panel.classList.toggle('panel-collapsed');
-    }
+    panel.classList.toggle('panel-open');
   });
 
-  mobile.addEventListener('change', applyInitial);
-  applyInitial();
+  // tab switching
+  var tabBtns = panel.querySelectorAll('.tab-btn');
+  var tabPanes = panel.querySelectorAll('.tab-pane');
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation(); // don't trigger hd collapse toggle
+      var target = btn.dataset.tab;
+      tabBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===target); });
+      tabPanes.forEach(function(p){ p.classList.toggle('active', p.id==='tab-'+target); });
+    });
+  });
 })();
 </script>
 </body>
