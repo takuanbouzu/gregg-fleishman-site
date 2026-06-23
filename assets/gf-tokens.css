@@ -33,10 +33,10 @@
   --tx-dim:#7e8581;                     /* secondary / muted */
   --tx-faint:#56605b;                   /* tertiary / faint */
 
-  /* ---- accent: terracotta (the one warm signal) ---- */
-  --accent:#db684d;
-  --accent-dim:rgba(219,104,77,0.12);
-  --accent-text:#070a0b;                /* ink ON a terracotta fill */
+  /* ---- accent: desert gold (chrome, active states, UI) ---- */
+  --accent:#c9a24b;
+  --accent-dim:rgba(201,162,75,0.12);
+  --accent-text:#070a0b;                /* ink ON a gold fill */
 
   /* ---- type: light geometric sans + monospace labels ---- */
   --font-display:'Hanken Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;
