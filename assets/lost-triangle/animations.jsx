@@ -338,6 +338,7 @@ function Stage({
   loop = true,
   autoplay = true,
   persistKey = 'animstage',
+  controls = true,
   children,
 }) {
   const [time, setTime] = React.useState(() => {
@@ -365,7 +366,7 @@ function Stage({
     if (!stageRef.current) return;
     const el = stageRef.current;
     const measure = () => {
-      const barH = 44; // playback bar height
+      const barH = controls ? 44 : 0; // playback bar height (none in click-to-play mode)
       const s = Math.min(
         el.clientWidth / width,
         (el.clientHeight - barH) / height
@@ -380,7 +381,7 @@ function Stage({
       ro.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [width, height]);
+  }, [width, height, controls]);
 
   // Animation loop
   React.useEffect(() => {
@@ -435,6 +436,14 @@ function Stage({
     [displayTime, duration, playing]
   );
 
+  // Click-to-play/pause (controls === false). Ignore clicks on interactive
+  // overlays (e.g. the ChapterRail buttons) so they keep their own behaviour.
+  const onStageClick = (e) => {
+    if (e.target.closest && e.target.closest('[role="button"], button, a, input')) return;
+    if (!playing && time >= duration) setTime(0);
+    setPlaying(p => !p);
+  };
+
   return (
     <div
       ref={stageRef}
@@ -447,13 +456,17 @@ function Stage({
       }}
     >
       {/* Canvas area — vertically centered in remaining space */}
-      <div style={{
-        flex: 1,
-        width: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        overflow: 'hidden',
-        minHeight: 0,
-      }}>
+      <div
+        onClick={controls ? undefined : onStageClick}
+        style={{
+          flex: 1,
+          width: '100%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          overflow: 'hidden',
+          minHeight: 0,
+          cursor: controls ? 'default' : 'pointer',
+        }}
+      >
         <div
           ref={canvasRef}
           style={{
@@ -470,20 +483,50 @@ function Stage({
           <TimelineContext.Provider value={ctxValue}>
             {children}
           </TimelineContext.Provider>
+          {!controls && !playing && <PlayHint scale={scale} />}
         </div>
       </div>
 
       {/* Playback bar — stacked below canvas, never overlapping */}
-      <PlaybackBar
-        time={displayTime}
-        actualTime={time}
-        duration={duration}
-        playing={playing}
-        onPlayPause={() => setPlaying(p => !p)}
-        onReset={() => { setTime(0); }}
-        onSeek={(t) => setTime(t)}
-        onHover={(t) => setHoverTime(t)}
-      />
+      {controls && (
+        <PlaybackBar
+          time={displayTime}
+          actualTime={time}
+          duration={duration}
+          playing={playing}
+          onPlayPause={() => setPlaying(p => !p)}
+          onReset={() => { setTime(0); }}
+          onSeek={(t) => setTime(t)}
+          onHover={(t) => setHoverTime(t)}
+        />
+      )}
+    </div>
+  );
+}
+
+// Centered play affordance shown when paused in click-to-play mode.
+// Counter-scaled so it stays a constant on-screen size inside the
+// transform:scale() canvas.
+function PlayHint({ scale = 1 }) {
+  const inv = 1 / Math.max(scale, 0.05);
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      pointerEvents: 'none',
+    }}>
+      <div style={{
+        transform: `scale(${inv})`,
+        width: 74, height: 74, borderRadius: '50%',
+        background: 'rgba(8,8,12,0.55)',
+        border: '1px solid rgba(255,255,255,0.22)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        backdropFilter: 'blur(2px)',
+      }}>
+        <svg width="30" height="30" viewBox="0 0 14 14" fill="none" style={{ marginLeft: 3 }}>
+          <path d="M3 2l9 5-9 5V2z" fill="#f6f4ef" />
+        </svg>
+      </div>
     </div>
   );
 }

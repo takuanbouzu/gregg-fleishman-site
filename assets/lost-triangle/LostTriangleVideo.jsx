@@ -722,8 +722,17 @@ function ChapterRail() {
   );
 }
 
-function VideoBody({ orient }) {
+// Pick a layout from the viewport: portrait (1080×1920) when the frame is
+// taller than it is wide — e.g. a phone — else landscape (1920×1080). Keeps the
+// motion graphic from rendering tiny on mobile.
+function pickOrient() {
+  if (typeof window === 'undefined') return 'landscape';
+  return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
+}
+
+function VideoBody({ orient: forcedOrient }) {
   const [ready, setReady] = React.useState(!!(window.Stage && window.Sprite));
+  const [autoOrient, setAutoOrient] = React.useState(() => forcedOrient || pickOrient());
   React.useEffect(() => {
     if (ready) return;
     const id = setInterval(() => {
@@ -731,16 +740,27 @@ function VideoBody({ orient }) {
     }, 30);
     return () => clearInterval(id);
   }, [ready]);
+  React.useEffect(() => {
+    if (forcedOrient) return; // caller pinned the orientation
+    const onResize = () => setAutoOrient(pickOrient());
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, [forcedOrient]);
   if (!ready) {
     return <div style={{ position:'absolute', inset:0, background:C.bg, display:'flex',
       alignItems:'center', justifyContent:'center', color:C.dim, fontFamily:MONO }}>loading…</div>;
   }
+  const orient = forcedOrient || autoOrient;
   const L = makeLayout(orient);
   const { Stage } = window;
   return (
     <LayoutContext.Provider value={L}>
-      <Stage width={L.vw} height={L.vh} duration={DURATION} background={C.bg}
-        loop={false} autoplay={true} persistKey={'losttri_' + orient}>
+      <Stage key={orient} width={L.vw} height={L.vh} duration={DURATION} background={C.bg}
+        loop={false} autoplay={true} controls={false} persistKey={'losttri_' + orient}>
         <SceneLayer />
         <ChapterRail />
       </Stage>
@@ -748,7 +768,7 @@ function VideoBody({ orient }) {
   );
 }
 
-function LostTriangleVideo() { return <VideoBody orient="landscape" />; }
+function LostTriangleVideo() { return <VideoBody />; }
 function LostTriangleVideoPortrait() { return <VideoBody orient="portrait" />; }
 
 window.LostTriangleVideo = LostTriangleVideo;
