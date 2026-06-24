@@ -16,7 +16,7 @@
 <script src="assets/gf-nav.js" defer></script>
 <script>
   /* Embed mode (?embed): drop the site nav so the motion graphic can be framed
-     inside another page — e.g. the construction.html "2D Construction" tab. */
+     inside another page as a full-bleed iframe. */
   if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('lt-embed');
 </script>
 <style>
@@ -52,8 +52,7 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="explore.html">The Cube</a>
-  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="construction.html">Construction</a>
+  <a class="navlink active" href="lost-triangle.html">The Lost Triangle</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
   <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
@@ -88,21 +87,48 @@
 <script>
 (function(){
   "use strict";
-  function mount(){
+  var root = null, currentPortrait = null;
+  function isPortrait(){
+    return window.matchMedia('(max-aspect-ratio: 1/1)').matches;
+  }
+  // Choose the layout-appropriate component: the design ships a portrait
+  // build (1080x1920) alongside the landscape one (1920x1080). Mounting the
+  // landscape component on a phone letterboxes it into a tiny center strip.
+  function render(){
     var el = document.getElementById('lt-root');
     if (!el || !window.React || !window.ReactDOM || !window.LostTriangleVideo) return false;
-    el.innerHTML = '';
-    var root = ReactDOM.createRoot(el);
-    root.render(React.createElement(window.LostTriangleVideo));
+    var portrait = isPortrait() && !!window.LostTriangleVideoPortrait;
+    var Comp = portrait ? window.LostTriangleVideoPortrait : window.LostTriangleVideo;
+    if (!root) { el.innerHTML = ''; root = ReactDOM.createRoot(el); }
+    currentPortrait = portrait;
+    root.render(React.createElement(Comp));
     return true;
   }
-  if (!mount()) {
+  if (!render()) {
     // Scripts may still be evaluating; poll briefly until globals are ready.
     var tries = 0;
     var id = setInterval(function(){
-      if (mount() || ++tries > 200) clearInterval(id);
+      if (render() || ++tries > 200) clearInterval(id);
     }, 30);
   }
+  // Re-pick the component when the aspect ratio crosses square (rotate /
+  // resize). The Stage persists the playhead per-orientation, so carry it
+  // across the switch for continuity.
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){
+      if (root && isPortrait() !== currentPortrait) {
+        try {
+          var from = currentPortrait ? 'losttri_portrait:t' : 'losttri_landscape:t';
+          var to   = currentPortrait ? 'losttri_landscape:t' : 'losttri_portrait:t';
+          var v = localStorage.getItem(from);
+          if (v != null) localStorage.setItem(to, v);
+        } catch (e) {}
+        render();
+      }
+    }, 150);
+  });
 })();
 </script>
 </body>
