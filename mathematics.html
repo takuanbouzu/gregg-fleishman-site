@@ -15,6 +15,93 @@
 <style>
 *{box-sizing:border-box;}
 html,body{margin:0;height:100%;background:#13110d;}
+:root{--mono:var(--font-mono);}
+/* ═══ SIDEBAR ═══ */
+#sidebar{position:fixed;right:0;top:46px;width:300px;height:calc(100vh - 46px);
+  background:rgba(8,12,20,.88);border-left:.5px solid rgba(255,255,255,.1);
+  -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  z-index:30;overflow-y:auto;overflow-x:hidden;padding:20px 16px 24px;
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.22,.68,0,1.2),opacity .2s;
+  pointer-events:none;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;}
+#sidebar.open{transform:translateX(0);pointer-events:auto;}
+.sb-title{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;}
+.sb-body{font-size:12.5px;line-height:1.62;color:var(--tx-dim);margin-bottom:16px;}
+.sb-sketch-wrap{position:relative;width:100%;border-radius:6px;overflow:hidden;
+  border:.5px solid rgba(255,255,255,.1);margin-bottom:14px;}
+.sb-sketch-wrap img{width:100%;display:block;}
+.sb-sketch-wrap svg{position:absolute;inset:0;width:100%;height:100%;}
+.hotspot{cursor:pointer;}
+.hotspot circle{fill:var(--accent);opacity:.7;animation:pulse 2s ease-in-out infinite;}
+.hotspot:hover circle{opacity:1;}
+.hotspot text{font-size:9px;fill:white;text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
+@keyframes pulse{0%,100%{r:5;opacity:.7;}50%{r:7;opacity:1;}}
+.proof-lines{margin:14px 0 0;}
+.proof-lines .proof-line{font-family:var(--mono);font-size:12px;color:var(--tx);padding:4px 0;
+  opacity:0;transform:translateY(4px);transition:opacity .35s ease,transform .35s ease;}
+.proof-lines.revealed .proof-line:nth-child(1){opacity:1;transform:none;transition-delay:.10s;}
+.proof-lines.revealed .proof-line:nth-child(2){opacity:1;transform:none;transition-delay:.25s;}
+.proof-lines.revealed .proof-line:nth-child(3){opacity:1;transform:none;transition-delay:.40s;}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.arch-card{border-radius:6px;overflow:hidden;cursor:pointer;
+  border:.5px solid rgba(255,255,255,.08);transition:transform .18s,border-color .18s,box-shadow .18s;}
+.arch-card:hover{transform:scale(1.03);border-color:var(--accent);
+  box-shadow:0 0 14px rgba(201,162,75,.35);}
+.arch-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+.arch-card .arch-label{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tx-dim);padding:5px 7px 6px;background:rgba(255,255,255,.04);}
+.arch-tag{font-size:8px;letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(201,162,75,.18);color:var(--accent);border-radius:4px;
+  padding:2px 5px;float:right;margin-top:1px;}
+.sb-svg-diagram{width:100%;margin-bottom:14px;border-radius:6px;
+  border:.5px solid rgba(255,255,255,.1);padding:12px;background:rgba(255,255,255,.03);}
+.sb-equation{font-family:var(--mono);font-size:13px;color:var(--tx);
+  background:rgba(255,255,255,.05);border-radius:6px;padding:10px 12px;margin:10px 0;line-height:1.8;}
+.sb-equation .dim{color:var(--tx-dim);}
+.sb-prop-row{display:flex;justify-content:space-between;align-items:baseline;
+  padding:5px 0;border-bottom:.5px solid rgba(255,255,255,.06);font-size:12px;}
+.sb-prop-row .pk{color:var(--tx-dim);}
+.sb-prop-row .pv{color:var(--tx);font-family:var(--mono);}
+.sb-lyr-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.sb-lyr-item{display:flex;align-items:center;gap:7px;padding:5px 7px;
+  border-radius:6px;background:rgba(255,255,255,.04);border:.5px solid rgba(255,255,255,.07);}
+.sb-lyr-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sb-lyr-name{font-size:11px;color:var(--tx-dim);line-height:1.3;}
+.sb-step-cards{display:flex;flex-direction:column;gap:8px;margin:10px 0;}
+.sb-step-card{background:rgba(255,255,255,.04);border-radius:6px;
+  border:.5px solid rgba(255,255,255,.08);padding:10px 12px;}
+.sb-step-n{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:5px;}
+.sb-step-label{font-size:12px;color:var(--tx);}
+.sb-blockquote{border-left:2px solid var(--accent);padding:8px 10px;margin:10px 0;
+  font-size:12px;line-height:1.6;color:var(--tx-dim);font-style:italic;}
+/* ═══ CAPDETAIL ═══ */
+#capdetail{font-family:'IBM Plex Mono',monospace;font-size:26px;letter-spacing:1px;
+  color:rgba(28,26,22,0.55);margin-top:14px;
+  opacity:0;transition:opacity .4s ease;transition-delay:.3s;}
+#capdetail.vis{opacity:1;}
+/* ═══ STAGE NAV ═══ */
+#stg-nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:10px;z-index:40;
+  background:rgba(8,12,20,.78);border:.5px solid rgba(255,255,255,.1);
+  border-radius:24px;padding:6px 14px;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+#stg-nav button{background:none;border:none;color:rgba(255,255,255,.5);
+  font-size:16px;cursor:pointer;padding:2px 6px;line-height:1;transition:color .18s;}
+#stg-nav button:hover{color:var(--accent);}
+#stg-counter{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.45);
+  letter-spacing:.08em;min-width:36px;text-align:center;}
+.stg-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);
+  cursor:pointer;transition:background .18s,transform .18s;flex-shrink:0;}
+.stg-dot.active{background:var(--accent);transform:scale(1.3);}
+.stg-dot:hover{background:rgba(255,255,255,.5);}
+@keyframes draw-line{from{stroke-dashoffset:var(--dl,300);}to{stroke-dashoffset:0;}}
+@media(max-width:768px){
+  #sidebar{width:100%;height:44vh;top:auto;bottom:60px;right:0;
+    transform:translateY(100%);border-left:none;border-top:.5px solid rgba(255,255,255,.1);}
+  #sidebar.open{transform:translateY(0);}
+  #stg-nav{bottom:4px;scale:.85;}
+}
 </style>
 </head>
 <body>
@@ -50,6 +137,7 @@ html,body{margin:0;height:100%;background:#13110d;}
       <div id="ltm-kicker" style="font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:5px;text-transform:uppercase;color:rgba(28,26,22,0.55);margin-bottom:14px;">&nbsp;</div>
       <div id="ltm-title" style="font-family:'Archivo',sans-serif;font-weight:800;font-size:88px;line-height:0.94;letter-spacing:-2px;text-transform:uppercase;color:#1C1A16;">&nbsp;</div>
       <div id="ltm-formula" style="font-family:'IBM Plex Mono',monospace;font-size:30px;letter-spacing:1px;color:rgba(28,26,22,0.7);margin-top:18px;">&nbsp;</div>
+      <div id="capdetail"></div>
     </div>
 
     <!-- progress -->
@@ -71,6 +159,15 @@ html,body{margin:0;height:100%;background:#13110d;}
   </div>
 </div>
 
+<div id="sidebar"></div>
+
+<div id="stg-nav">
+  <button id="stg-prev" aria-label="Previous stage">&#8592;</button>
+  <div id="stg-dots" style="display:flex;gap:5px;align-items:center;"></div>
+  <span id="stg-counter">1 / 8</span>
+  <button id="stg-next" aria-label="Next stage">&#8594;</button>
+</div>
+
 <script>
 (function(){
   const cv = document.getElementById('ltm-canvas');
@@ -82,6 +179,22 @@ html,body{margin:0;height:100%;background:#13110d;}
   const DUR = 40;
   let paused = false;
   let pausedAt = 0;
+
+  const STAGES = [
+    { t: 0,    body: 'Gregg drew this by hand. A unit square. A diagonal. From that one line — √2 — his entire geometry unfolds. Watch the proof build itself.',                                                                                                                                                                                          detail: 'One unit. One fold. Everything else follows.' },
+    { t: 1.5,  body: 'A unit square has a diagonal of √2. Pythagorean theorem: 1² + 1² = (√2)². The 45° fold is the foundation of everything that follows.',                                                                                                                                                                           detail: '1² + 1² = (√2)²' },
+    { t: 5.0,  body: 'Lift one corner of the square by 1 unit. The diagonal through 3D space becomes √3. Proof: (√2)² + 1² = 2 + 1 = 3.',                                                                                                                                                                                                       detail: '(√2)² + 1² = 2 + 1 = 3 → √3' },
+    { t: 11.0, body: 'Three lengths — 1, √2, √3 — form a right triangle. Its angles are 35.264° and 54.736°. These exact angles appear in every joint of Gregg’s architecture.',                                                                                                                                                   detail: '35.264° and 54.736° — the angles in every joint' },
+    { t: 15.0, body: 'The full system is now visible. Orbit freely. Toggle layers to isolate each step of the proof. Every element follows from the hand sketch in Stage 1.',                                                                                                                                                                                         detail: 'Toggle any layer to isolate a step in the proof.' },
+    { t: 20.0, body: 'Does the silver ratio σ = 1+√2 underlie the 45° system? The ad-quadratum method — squares rotated 45° — produces both √2 and σ together. Open investigation.',                                                                                                                                           detail: 'σ = 1 + √2 ≈ 2.414 — the silver ratio' },
+    { t: 25.0, body: 'Rotate the inner square 45°. Its vertices touch the midpoints of the outer square. Scale factor: 1:1/√2. This is the Vector House plan geometry — the same fold, at architectural scale.',                                                                                                                                       detail: 'The same 45° fold, from a hand sketch to a building plan.' },
+    { t: 29.0, body: 'Place a pyramid of height ½ on each face of the unit cube. The 12 rhombus faces have diagonal ratio 1:√2. Dihedral angles: cube=90°, octahedron=109.5° (2×54.736°), rhombic dodecahedron=120°. One triangle, one family of solids.',                                                                      detail: 'Cube 90° · Octahedron 109.5° (2×54.736°) · Rhombic Dodec 120°' },
+  ];
+
+  let activeHighlight = null;
+  function setHighlight(key) { activeHighlight = key; }
+  function clearHighlight() { activeHighlight = null; }
+  let _displayedStage = -1;
 
   // ---- geometry helpers ----
   function _expand(t) {
@@ -532,6 +645,96 @@ html,body{margin:0;height:100%;background:#13110d;}
     if (ref && _lastCap[node] !== txt) { ref.textContent = txt; _lastCap[node] = txt; }
   }
 
+  // ---- sidebar system ----
+  function buildSidebarHTML(n) {
+    var s = STAGES[n];
+    var titles = ['Stage 1 — The Sketch','Stage 2 — Face Diagonal','Stage 3 — Space Diagonal','Stage 4 — The Lost Triangle','Stage 5 — Full System','Stage 6 — Silver Ratio?','Stage 7 — Vector House','Stage 8 — Rhombic Dodecahedron'];
+    var h = '<div class="sb-title">' + titles[n] + '</div>';
+    h += '<div class="sb-body">' + s.body + '</div>';
+    if (n === 0) {
+      h += '<div class="sb-sketch-wrap"><img src="assets/handsketch.jpg" alt="Gregg Fleishman hand sketch"><svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><g class="hotspot" data-hl="unit-line"><circle cx="65" cy="155" r="6"/><text x="65" y="155">1</text></g><g class="hotspot" data-hl="diag-line"><circle cx="270" cy="85" r="6"/><text x="270" y="85">√2</text></g></svg></div>';
+      h += '<div class="proof-lines"><div class="proof-line">edge = 1</div><div class="proof-line">face diagonal = √2</div><div class="proof-line">1² + 1² = 2 = (√2)²</div></div>';
+    } else if (n === 1) {
+      h += '<svg class="sb-svg-diagram" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="30" width="140" height="140" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/><line x1="30" y1="170" x2="170" y2="30" stroke="#c9a24b" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="200" stroke-dashoffset="200" style="animation:draw-line 1.2s ease .3s forwards;--dl:200"/><text x="100" y="194" fill="rgba(255,255,255,.45)" font-size="12" text-anchor="middle" font-family="monospace">1</text><text x="18" y="105" fill="rgba(255,255,255,.45)" font-size="12" text-anchor="middle" font-family="monospace">1</text><text x="120" y="86" fill="#c9a24b" font-size="13" font-weight="bold" font-family="monospace">√2</text></svg>';
+      h += '<div class="sb-equation">1² + 1² = 2 = (√2)²<br><span class="dim">Pythagorean theorem in 2D</span></div>';
+    } else if (n === 2) {
+      h += '<svg class="sb-svg-diagram" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"><polyline points="100,18 162,53 162,123 100,158 38,123 38,53 100,18"/><line x1="100" y1="18" x2="100" y2="88"/><line x1="162" y1="53" x2="100" y2="88"/><line x1="38" y1="53" x2="100" y2="88"/><line x1="100" y1="88" x2="100" y2="158" stroke-dasharray="4,3"/><line x1="100" y1="88" x2="38" y2="123" stroke-dasharray="4,3"/><line x1="100" y1="88" x2="162" y2="123" stroke-dasharray="4,3"/></g><line x1="38" y1="123" x2="162" y2="53" stroke="#db684d" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="160" stroke-dashoffset="160" style="animation:draw-line 1.2s ease .4s forwards;--dl:160"/><text x="118" y="112" fill="#db684d" font-size="13" font-weight="bold" font-family="monospace">√3</text></svg>';
+      h += '<div class="sb-equation">(√2)² + 1² = 2 + 1 = 3<br><span class="dim">∴ space diagonal = √3</span></div>';
+    } else if (n === 3) {
+      h += '<svg class="sb-svg-diagram" viewBox="0 0 220 190" xmlns="http://www.w3.org/2000/svg"><polygon points="20,170 20,28 182,170" fill="rgba(119,164,133,.18)" stroke="#77a485" stroke-width="2" stroke-linejoin="round"/><rect x="20" y="154" width="16" height="16" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.2"/><text x="8" y="104" fill="rgba(255,255,255,.6)" font-size="12" text-anchor="middle" font-family="monospace">1</text><text x="104" y="186" fill="rgba(255,255,255,.6)" font-size="12" text-anchor="middle" font-family="monospace">√2</text><text x="118" y="96" fill="#c9a24b" font-size="12" font-family="monospace">√3</text><path d="M20,52 A30,30,0,0,1,44,168" fill="none" stroke="#c9a24b" stroke-width="1.8"/><text x="52" y="56" fill="#c9a24b" font-size="11" font-family="monospace">54.7°</text><path d="M148,170 A30,30,0,0,1,30,168" fill="none" stroke="#db684d" stroke-width="1.8"/><text x="110" y="152" fill="#db684d" font-size="11" font-family="monospace">35.3°</text></svg>';
+      h += '<div class="sb-blockquote">35.264° and 54.736°: the two angles that appear in every joint of Gregg\'s architecture. One triangle — one family of solids.</div>';
+    } else if (n === 4) {
+      h += '<div class="sb-lyr-grid"><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#e5e0d4"></div><div class="sb-lyr-name">Edge = 1</div></div><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#6f9bc4"></div><div class="sb-lyr-name">Face diag √2</div></div><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#db684d"></div><div class="sb-lyr-name">Space diag √3</div></div><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#77a485"></div><div class="sb-lyr-name">Root triangle</div></div><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#c9a24b"></div><div class="sb-lyr-name">Angles α / β</div></div><div class="sb-lyr-item"><div class="sb-lyr-dot" style="background:#9b8ec4"></div><div class="sb-lyr-name">Cubic family</div></div></div>';
+    } else if (n === 5) {
+      h += '<div class="sb-equation">σ = 1 + √2 ≈ 2.414<br><span class="dim">the silver ratio</span></div>';
+      h += '<svg class="sb-svg-diagram" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="160" height="100" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/><rect x="20" y="20" width="100" height="100" fill="rgba(201,162,75,.06)" stroke="#c9a24b" stroke-width="1" stroke-dasharray="4,3"/><polygon points="100,20 180,70 100,120 20,70" fill="rgba(201,162,75,.12)" stroke="#c9a24b" stroke-width="1.5"/><text x="155" y="74" fill="#c9a24b" font-size="10" text-anchor="middle" font-family="monospace">σ</text><text x="63" y="74" fill="rgba(255,255,255,.4)" font-size="10" text-anchor="middle" font-family="monospace">1</text></svg>';
+      h += '<div class="sb-blockquote">Open investigation: the ad-quadratum construction produces both √2 and σ = 1+√2 together — are these the same fold?</div>';
+    } else if (n === 6) {
+      h += '<svg class="sb-svg-diagram" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="160" height="160" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/><polygon points="100,20 180,100 100,180 20,100" fill="rgba(201,162,75,.12)" stroke="#c9a24b" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="rgba(255,255,255,.4)"/><circle cx="180" cy="20" r="3" fill="rgba(255,255,255,.4)"/><circle cx="180" cy="180" r="3" fill="rgba(255,255,255,.4)"/><circle cx="20" cy="180" r="3" fill="rgba(255,255,255,.4)"/><circle cx="100" cy="20" r="3.5" fill="#c9a24b"/><circle cx="180" cy="100" r="3.5" fill="#c9a24b"/><circle cx="100" cy="180" r="3.5" fill="#c9a24b"/><circle cx="20" cy="100" r="3.5" fill="#c9a24b"/><line x1="20" y1="194" x2="100" y2="194" stroke="rgba(255,255,255,.3)" stroke-width="1"/><text x="60" y="200" fill="rgba(255,255,255,.4)" font-size="9" text-anchor="middle" font-family="monospace">1/√2</text></svg>';
+      h += '<div class="sb-blockquote">The same 45° fold — from a hand sketch to a building plan. Scale factor: 1 : 1/√2. This is the Vector House plan geometry.</div>';
+    } else if (n === 7) {
+      h += '<div class="sb-step-cards"><div class="sb-step-card"><div class="sb-step-n">Step 1</div><div class="sb-step-label">Unit cube (edge = 1)</div></div><div class="sb-step-card"><div class="sb-step-n">Step 2</div><div class="sb-step-label">Pyramid (h = ½) on each of 6 faces</div></div><div class="sb-step-card"><div class="sb-step-n">Step 3</div><div class="sb-step-label">Adjacent faces merge → 12 rhombus faces, diagonal ratio 1 : √2</div></div></div>';
+      h += '<div class="sb-prop-row"><span class="pk">Cube</span><span class="pv">90°</span></div>';
+      h += '<div class="sb-prop-row"><span class="pk">Octahedron</span><span class="pv">109.5° (2×54.736°)</span></div>';
+      h += '<div class="sb-prop-row"><span class="pk">Rhombic Dodec</span><span class="pv">120°</span></div>';
+    }
+    return h;
+  }
+
+  function bindSidebarEvents(n) {
+    var sb = document.getElementById('sidebar');
+    if (!sb) return;
+    sb.querySelectorAll('.hotspot').forEach(function(h) {
+      h.addEventListener('mouseenter', function() { setHighlight(h.dataset.hl); });
+      h.addEventListener('mouseleave', function() { clearHighlight(); });
+    });
+    sb.querySelectorAll('.arch-card').forEach(function(c) {
+      c.addEventListener('mouseenter', function() { setHighlight(c.dataset.hl); });
+      c.addEventListener('mouseleave', function() { clearHighlight(); });
+    });
+  }
+
+  function setSidebarContent(n) {
+    var sb = document.getElementById('sidebar');
+    if (!sb) return;
+    sb.style.opacity = '0';
+    setTimeout(function() {
+      sb.innerHTML = buildSidebarHTML(n);
+      bindSidebarEvents(n);
+      sb.classList.add('open');
+      sb.style.opacity = '1';
+      setTimeout(function() {
+        var pl = sb.querySelector('.proof-lines');
+        if (pl) pl.classList.add('revealed');
+      }, 250);
+    }, 160);
+  }
+
+  function _autoUpdateStage(n) {
+    _displayedStage = n;
+    var s = STAGES[n];
+    var det = document.getElementById('capdetail');
+    if (det) {
+      det.classList.remove('vis');
+      det.textContent = s.detail || '';
+      setTimeout(function() { det.classList.add('vis'); }, 80);
+    }
+    setSidebarContent(n);
+    var cnt = document.getElementById('stg-counter');
+    if (cnt) cnt.textContent = (n + 1) + ' / 8';
+    document.querySelectorAll('.stg-dot').forEach(function(d, i) {
+      d.classList.toggle('active', i === n);
+    });
+  }
+
+  function setStage(n) {
+    n = Math.max(0, Math.min(8, n));
+    var s = STAGES[n];
+    t0 = performance.now() - s.t * 1000;
+    if (paused) { pausedAt = s.t; }
+    _displayedStage = -1;
+  }
+
   // ---- main draw ----
   function _draw() {
     if (!ctx) return;
@@ -593,6 +796,23 @@ html,body{margin:0;height:100%;background:#13110d;}
   Promise.all(fonts.map(f => document.fonts.load(f))).catch(()=>{}).then(()=>{
     loop();
     _iv = setInterval(() => { if (document.hidden) _draw(); }, 1000/30);
+
+    // stage nav init
+    var dotsEl = document.getElementById('stg-dots');
+    if (dotsEl) {
+      STAGES.forEach(function(_, i) {
+        var d = document.createElement('span');
+        d.className = 'stg-dot';
+        d.title = 'Stage ' + (i + 1);
+        d.addEventListener('click', function() { setStage(i); });
+        dotsEl.appendChild(d);
+      });
+    }
+    var prevBtn = document.getElementById('stg-prev');
+    var nextBtn = document.getElementById('stg-next');
+    if (prevBtn) prevBtn.addEventListener('click', function() { setStage(Math.max(0, _displayedStage - 1)); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { setStage(Math.min(7, _displayedStage + 1)); });
+    _autoUpdateStage(0);
   });
 
   // cleanup on unload
