@@ -362,6 +362,7 @@ function Stage({
   loop = true,
   autoplay = true,
   persistKey = 'animstage',
+  controls = true,
   children
 }) {
   const [time, setTime] = React.useState(() => {
@@ -392,7 +393,7 @@ function Stage({
     if (!stageRef.current) return;
     const el = stageRef.current;
     const measure = () => {
-      const barH = 44; // playback bar height
+      const barH = controls ? 44 : 0; // playback bar height (none in click-to-play mode)
       const s = Math.min(el.clientWidth / width, (el.clientHeight - barH) / height);
       setScale(Math.max(0.05, s));
     };
@@ -404,7 +405,7 @@ function Stage({
       ro.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [width, height]);
+  }, [width, height, controls]);
 
   // Animation loop
   React.useEffect(() => {
@@ -461,6 +462,14 @@ function Stage({
     setTime,
     setPlaying
   }), [displayTime, duration, playing]);
+
+  // Click-to-play/pause (controls === false). Ignore clicks on interactive
+  // overlays (e.g. the ChapterRail buttons) so they keep their own behaviour.
+  const onStageClick = e => {
+    if (e.target.closest && e.target.closest('[role="button"], button, a, input')) return;
+    if (!playing && time >= duration) setTime(0);
+    setPlaying(p => !p);
+  };
   return /*#__PURE__*/React.createElement("div", {
     ref: stageRef,
     style: {
@@ -473,6 +482,7 @@ function Stage({
       fontFamily: 'Inter, system-ui, sans-serif'
     }
   }, /*#__PURE__*/React.createElement("div", {
+    onClick: controls ? undefined : onStageClick,
     style: {
       flex: 1,
       width: '100%',
@@ -480,7 +490,8 @@ function Stage({
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      minHeight: 0
+      minHeight: 0,
+      cursor: controls ? 'default' : 'pointer'
     }
   }, /*#__PURE__*/React.createElement("div", {
     ref: canvasRef,
@@ -497,7 +508,9 @@ function Stage({
     }
   }, /*#__PURE__*/React.createElement(TimelineContext.Provider, {
     value: ctxValue
-  }, children))), /*#__PURE__*/React.createElement(PlaybackBar, {
+  }, children), !controls && !playing && /*#__PURE__*/React.createElement(PlayHint, {
+    scale: scale
+  }))), controls && /*#__PURE__*/React.createElement(PlaybackBar, {
     time: displayTime,
     actualTime: time,
     duration: duration,
@@ -509,6 +522,49 @@ function Stage({
     onSeek: t => setTime(t),
     onHover: t => setHoverTime(t)
   }));
+}
+
+// Centered play affordance shown when paused in click-to-play mode.
+// Counter-scaled so it stays a constant on-screen size inside the
+// transform:scale() canvas.
+function PlayHint({
+  scale = 1
+}) {
+  const inv = 1 / Math.max(scale, 0.05);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      inset: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      pointerEvents: 'none'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      transform: `scale(${inv})`,
+      width: 74,
+      height: 74,
+      borderRadius: '50%',
+      background: 'rgba(8,8,12,0.55)',
+      border: '1px solid rgba(255,255,255,0.22)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backdropFilter: 'blur(2px)'
+    }
+  }, /*#__PURE__*/React.createElement("svg", {
+    width: "30",
+    height: "30",
+    viewBox: "0 0 14 14",
+    fill: "none",
+    style: {
+      marginLeft: 3
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M3 2l9 5-9 5V2z",
+    fill: "#f6f4ef"
+  }))));
 }
 
 // ── Playback bar ────────────────────────────────────────────────────────────

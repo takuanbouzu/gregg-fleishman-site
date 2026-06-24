@@ -2121,10 +2121,18 @@ function ChapterRail() {
     }));
   }));
 }
+// Pick a layout from the viewport: portrait (1080\u00d71920) when the frame is
+// taller than it is wide \u2014 e.g. a phone \u2014 else landscape (1920\u00d71080). Keeps the
+// motion graphic from rendering tiny on mobile.
+function pickOrient() {
+  if (typeof window === 'undefined') return 'landscape';
+  return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
+}
 function VideoBody({
-  orient
+  orient: forcedOrient
 }) {
   const [ready, setReady] = React.useState(!!(window.Stage && window.Sprite));
+  const [autoOrient, setAutoOrient] = React.useState(() => forcedOrient || pickOrient());
   React.useEffect(() => {
     if (ready) return;
     const id = setInterval(() => {
@@ -2135,6 +2143,16 @@ function VideoBody({
     }, 30);
     return () => clearInterval(id);
   }, [ready]);
+  React.useEffect(() => {
+    if (forcedOrient) return; // caller pinned the orientation
+    const onResize = () => setAutoOrient(pickOrient());
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, [forcedOrient]);
   if (!ready) {
     return /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2149,6 +2167,7 @@ function VideoBody({
       }
     }, "loading\u2026");
   }
+  const orient = forcedOrient || autoOrient;
   const L = makeLayout(orient);
   const {
     Stage
@@ -2156,19 +2175,19 @@ function VideoBody({
   return /*#__PURE__*/React.createElement(LayoutContext.Provider, {
     value: L
   }, /*#__PURE__*/React.createElement(Stage, {
+    key: orient,
     width: L.vw,
     height: L.vh,
     duration: DURATION,
     background: C.bg,
     loop: false,
     autoplay: true,
+    controls: false,
     persistKey: 'losttri_' + orient
   }, /*#__PURE__*/React.createElement(SceneLayer, null), /*#__PURE__*/React.createElement(ChapterRail, null)));
 }
 function LostTriangleVideo() {
-  return /*#__PURE__*/React.createElement(VideoBody, {
-    orient: "landscape"
-  });
+  return /*#__PURE__*/React.createElement(VideoBody, null);
 }
 function LostTriangleVideoPortrait() {
   return /*#__PURE__*/React.createElement(VideoBody, {
