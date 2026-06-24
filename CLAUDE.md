@@ -45,7 +45,7 @@ gregg-fleishman-site/
 ├── index.html                 # Landing page (outer site hub)
 ├── explore.html               # THE CUBE — main interactive (4 tabs)
 ├── mathematics.html           # The Lost Triangle narrative
-├── construction.html          # 2 tabs: 2D Construction (iframe→lost-triangle.html) + Cluster Structures
+├── construction.html          # Full-bleed iframe → lost-triangle.html?embed=1 (Cluster Structures tab removed)
 ├── lost-triangle.html         # React motion graphic (1:√2:√3); ?embed=1 hides nav for iframe use
 ├── dorman-luke.html           # Research: Dorman-Luke unfolding
 ├── rhombic-system.html        # Rhombic dodecahedron system
@@ -145,11 +145,9 @@ renderer.toneMapping = THREE.NoToneMapping;
 3. **Vector System** — tiled cube frame with assembly pattern
 4. **Vector Pod** — iframe to `vector-pod/index.html`
 
-**construction.html** — 2 tabs:
-1. **2D Construction** — an `<iframe src="lost-triangle.html?embed=1">` (the React motion graphic; see below). The old hand-placed SVG + GSAP build was removed in PR #4 because its geometry was inaccurate.
-2. **Cluster Structures** — Three.js r160 + GSAP animation sequence (unchanged).
+**construction.html** — no tab bar; full-bleed `<iframe src="lost-triangle.html?embed=1">` filling the space below the nav. The Cluster Structures tab (Three.js r160 + GSAP) was removed; its standalone page `cluster-structures.html` still exists by URL but is no longer linked from the nav.
 
-(The earlier 3D Construction and Fleishman Sequence tabs were removed in PR #4 — their standalone pages `lost-triangle-construction-3d.html` and `fleishman-sequence.html` still exist by URL but are no longer tabs here.)
+(The earlier 3D Construction and Fleishman Sequence tabs were removed in PR #4 — their standalone pages `lost-triangle-construction-3d.html` and `fleishman-sequence.html` still exist by URL but are not in the nav.)
 
 ### React — Lost Triangle motion graphic (`lost-triangle.html`)
 `lost-triangle.html` mounts a React app from vendored React 18.3.1 UMD (`assets/vendor/react-18.3.1/`). The JSX is **pre-transpiled** to plain JS — no in-browser Babel. Load order: `react` → `react-dom` → `animations.js` (defines `Stage`/`Sprite`/`Easing` on `window`) → `lost-triangle-video.js` (defines `window.LostTriangleVideo` + `LostTriangleVideoPortrait`) → inline mount into `#lt-root`.
