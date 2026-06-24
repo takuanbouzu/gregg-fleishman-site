@@ -1,192 +1,141 @@
-# Handoff — Lost Triangle motion graphic + accurate 2D construction
+# Handoff — Lost Triangle 2D construction: rebuild geometry from the artist's source
 
-Branch: `claude/lucid-wozniak-btvk47` · Draft PR: **#4**
-(`https://github.com/takuanbouzu/gregg-fleishman-site/pull/4`)
+Branch: `claude/dazzling-galileo-dfi8wz` · Draft PR: **#6**
+(`https://github.com/takuanbouzu/gregg-fleishman-site/pull/6`)
 
-This branch replaces the mathematically-inaccurate "2D Construction" graphic on
-`construction.html` with a faithful implementation of the Claude Design project
-**`Lost Triangle.dc.html`** ("Motion graphic mathematics explanation").
-
-You're picking this up to (a) do the browser visual QA that couldn't be done in
-the remote/headless environment, and (b) optionally take on the follow-ups at the
-bottom. Everything below is the full context.
+This handoff is scoped to **one task**: making the animated 2D construction on
+`lost-triangle-construction.html` match Gregg's *actual* base drawing instead of
+the hand-eyeballed pixel trace it was built from.
 
 ---
 
-## 1. Why this change exists
+## 1. The problem
 
-The old `construction.html` → **2D Construction** tab drew the `1 : √2 : √3`
-figure from hand-placed SVG coordinates. The numbers didn't hold:
+`lost-triangle-construction.html` draws the `1 : √2 : √3` figure from pixel
+coordinates a previous pass "measured from `lost-triangle-color.png`". They were
+wrong:
 
-- the "unit square" was `287 × 243` px — **not square**;
-- the three construction circles had radii `185 : 195 : 193` (near-equal)
-  instead of `R = 1 : √2 : √3` (≈ `185 : 262 : 320`);
-- the blue / white / √3 triangles were eyeballed.
+- the "unit square" was `287 × 243 px` — **not square**;
+- it floated above the rhombus with no real geometric relationship to it;
+- the rhombus, circles, and √3 triangle were all eyeballed.
 
-So none of the defining relationships were actually true. The replacement design
-computes its geometry instead of eyeballing it (see §4), so it's exact.
-
----
-
-## 2. What changed (file inventory)
-
-### New — the motion graphic
-- `lost-triangle.html` — standalone page. Loads React + the design and mounts it
-  full-bleed under the site nav. `?embed=1` hides the nav (used by the iframe).
-- `assets/lost-triangle/animations.js` — **generated**. The `Stage` / `Sprite` /
-  `Easing` runtime; registers globals on `window`. Transpiled from `animations.jsx`.
-- `assets/lost-triangle/lost-triangle-video.js` — **generated**. The 9 scenes;
-  registers `window.LostTriangleVideo` (landscape 1920×1080) and
-  `window.LostTriangleVideoPortrait` (portrait 1080×1920). Transpiled from
-  `LostTriangleVideo.jsx`.
-- `assets/lost-triangle/animations.jsx`, `assets/lost-triangle/LostTriangleVideo.jsx`
-  — **source of truth** (the Claude Design handoff source). Edit these, not the `.js`.
-- `assets/lost-triangle/README.md` — provenance + how to regenerate.
-
-### New — vendored runtime (pulled from npm; CDNs are egress-blocked in the cloud env)
-- `assets/vendor/react-18.3.1/react.production.min.js`
-- `assets/vendor/react-18.3.1/react-dom.production.min.js`
-
-### Modified
-- `construction.html` — the **2D Construction** tab body is now a single
-  `<iframe id="c2d-frame" src="lost-triangle.html?embed=1">` (replacing the old
-  approximate `#c2d-art` SVG + its GSAP build IIFE). The **3D Construction** and
-  **Fleishman Sequence** tabs were removed entirely (markup, their Three.js
-  module scripts, the `fs` boot timer, and dead CSS) because those animations
-  were also mathematically inaccurate. Only two tabs remain: **2D Construction**
-  (the exact embed) and **Cluster Structures** (untouched, still Three.js + GSAP).
+Gregg flagged it directly: *"The square is incorrect… needs to be rotated so that
+the diagonal coincides with the long axis of the rhombus. What you drew is not
+even square."* He then supplied his real CAD drawing as the source of truth (§3).
 
 ---
 
-## 3. How it runs (architecture)
+## 2. What's been done so far (and the gotcha)
 
-It's plain static HTML — no build step, no bundler, no server. Load order in
-`lost-triangle.html`:
+Commit `6ebc75a` rebuilt the square as a **true** square tipped 45° so its
+diagonal lies on the rhombus long axis. **This matched Gregg's verbal description
+but NOT his source file.** When the actual drawing arrived (§3) it showed the
+square is **axis-aligned**, not tipped.
 
-1. `react.production.min.js` → sets global `window.React`
-2. `react-dom.production.min.js` → sets `window.ReactDOM` (incl. `createRoot`)
-3. `animations.js` → defines `Stage`, `Sprite`, `useTime`, `Easing`, … on `window`
-4. `lost-triangle-video.js` → defines `window.LostTriangleVideo` (+ Portrait)
-5. inline mount script → `ReactDOM.createRoot(#lt-root).render(<LostTriangleVideo/>)`,
-   with a short poller in case scripts are still evaluating.
+> ⚠️ **Next owner: the tipped-square commit `6ebc75a` should be superseded by a
+> faithful rebuild from the source SVG (§3 / §4). Do not treat it as correct.**
 
-The `Stage` component (in `animations.js`) provides auto-scaling to the viewport,
-the scrubber/playback bar, and keyboard controls (space, ←/→, 0). The video is
-73.5 s, 9 scenes, `loop={false}`, `autoplay={true}`, and persists the playhead in
-`localStorage` (`losttri_landscape` / `losttri_portrait`).
-
-`construction.html` embeds the page via iframe, so React is fully isolated from
-that page's Three.js modules — no global collisions. The tab switcher dispatches a
-`resize` event when you switch tabs, which the `Stage` listens for to re-measure.
-
-Why pre-transpiled instead of in-browser Babel: the original `.dc.html` ran JSX
-through `@babel/standalone` (~3 MB). Transpiling ahead of time means the page ships
-only ~140 KB of React. No Babel at runtime.
+The React motion graphic on `lost-triangle.html` is already on this branch and is
+unrelated to this task — leave it alone.
 
 ---
 
-## 4. Why the geometry is exact (don't "fix" it)
+## 3. The authoritative source — NEW line-drawing source for this task
 
-In `LostTriangleVideo.jsx`, `planar(L)` builds the figure from one edge length `U`:
+Gregg's master drawing is now committed in the repo:
 
-```
-A  = [AX, AY]                          // unit-square corner (right angle here)
-B  = [AX + U, AY]                      // edge = 1
-Cc = [AX + U, AY - U]                  // unit square
-D  = [AX, AY - U]
-F  = Cc + perpOut * U                  // step ONE unit perpendicular to AC
-// |A→Cc| = U·√2 (face diagonal);  |A→F| = U·√3 (space diagonal)
-// triangle A-Cc-F is the Lost Triangle: legs √2 and 1, hypotenuse √3, right angle at Cc
+| File | What it is |
+|------|------------|
+| `assets/sources/lost-triangle-starting-lines.svg` | **The line-drawing source.** 2D vector export of the starting construction lines. Use this for exact coordinates. |
+| `assets/sources/GREG_TRIANGLE_BASE_DRAWING.3dm` | The Rhino master (3D). 3.7 MB binary — reference only; the SVG is derived from it. |
+
+The SVG verbatim (also the file above):
+
+```svg
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="612pt" height="792pt" viewBox="0 0 612 792" xmlns="http://www.w3.org/2000/svg">
+  <defs />
+  <g id="Pyramid">
+    <g id="Pyramid::edge">
+      <path d="M215.99683,341.99683 L287.99683,413.99683" .../>   <!-- square diagonal TL->BR -->
+      <circle cx="288" cy="414" r="50.91" .../>                    <!-- circle @ square BR / rhombus centre -->
+      <circle cx="360" cy="414" r="50.92" .../>                    <!-- circle @ rhombus right vertex -->
+      <path d="M215.99683,413.99683 L288.0058,342.0058" .../>      <!-- square diagonal BL->TR -->
+      <path d="M215.99683,413.99683 L287.99683,413.99683 L287.99683,341.99683 L215.99683,341.99683 z" .../> <!-- the SQUARE -->
+      <circle cx="252" cy="378" r="50.91" .../>                    <!-- circle @ square centre (circumscribes square) -->
+    </g>
+  </g>
+  <g id="Layer_01">                                                 <!-- the √2 rhombus -->
+    <path d="M215.99683,413.99683 L287.99683,363.0915"  .../>      <!-- left -> top -->
+    <path d="M359.99683,413.99683 L287.99683,464.90216" .../>      <!-- right -> bottom -->
+    <path d="M287.99683,363.0915  L359.99683,413.99683" .../>      <!-- top -> right -->
+    <path d="M215.99683,413.99683 L287.99683,464.90216" .../>      <!-- left -> bottom -->
+    <path d="M287.99683,413.99683 L287.99683,464.90216" .../>      <!-- centre -> bottom (short-axis half) -->
+  </g>
+</svg>
 ```
 
-Construction circles use `r2 = U*Math.SQRT2`, `r3 = U*Math.sqrt(3)`. Everything is
-derived, so the relationships are true by construction. If a reviewer flags the
-figure as "off," it's a rendering/scaling issue, not a math error.
+---
+
+## 4. Decoded geometry (this is the spec to build to)
+
+SVG user units; y is **down** (SVG convention).
+
+**Unit square** — axis-aligned, edge = **72**:
+```
+TL (216, 342)   TR (288, 342)
+BL (216, 414)   BR (288, 414)
+```
+- Diagonals TL↔BR and BL↔TR (length 72√2 ≈ 101.82) are the **√2 face diagonals**.
+
+**√2 rhombus** — `Layer_01`:
+```
+left  (216, 414)   = square BL corner   (= one end of the long axis)
+top   (288, 363.09)
+right (360, 414)
+bottom(288, 464.90)
+centre(288, 414)   = square BR corner
+```
+- long diagonal (horizontal, left↔right) = **144** = `2 × edge`
+- short diagonal (vertical, top↔bottom) = **101.81** = `edge × √2`
+- ratio long : short = **√2 : 1** ✓ (rhombic-dodecahedron face)
+
+**Key relationships (the whole point of the drawing):**
+- The rhombus **long axis is horizontal**, collinear with the square's **bottom-edge line** (y = 414).
+- The rhombus **centre = the square's bottom-right corner**; its **left vertex = the square's bottom-left corner**.
+- All three construction circles share **r = 50.91 = ½ the square diagonal = 72/√2**, centred at: the square centre `(252,378)` (circumscribes the square), the square BR / rhombus centre `(288,414)`, and the rhombus right vertex `(360,414)`.
+
+**Not in the source:** the magenta **√3 "Lost Triangle"** payoff. It must be
+*derived* from this base (the √3 is one unit lifted off the √2 face diagonal), not
+re-eyeballed. Confirm the intended √3 vertices with Gregg before drawing it.
 
 ---
 
-## 5. Run / preview locally
+## 5. What to do next
 
-Any static server from the repo root:
+1. Replace the eyeballed constants in `lost-triangle-construction.html`
+   (`SQ`, `CIR`, `BLUE`/rhombus) with the §4 coordinates, transformed into the
+   page's `viewBox`. Cleanest: set the SVG `viewBox` to frame the source bbox
+   (`x≈[201,411]`, `y≈[327,465]`) directly so the numbers stay 1:1 with the source.
+2. Keep the GSAP draw order (square → diagonals → circles → rhombus → √3), but
+   drive every point from §4 — no magic pixels.
+3. Derive the √3 triangle from the base; get Gregg's sign-off on its placement.
+4. Re-run the headless frame checks (Playwright scripts in the session scratchpad)
+   and compare against `assets/sources/lost-triangle-starting-lines.svg` rendered
+   at the same crop.
+5. Revisit commit `6ebc75a` — its tipped square is wrong per §2/§4.
+
+---
+
+## 6. Verify locally
 
 ```bash
-python3 -m http.server 8000
-# then open:
-#   http://localhost:8000/lost-triangle.html
-#   http://localhost:8000/lost-triangle.html?embed=1     (nav hidden)
-#   http://localhost:8000/construction.html              (→ 2D Construction tab)
+python3 -m http.server 8000 --bind 127.0.0.1
+# open http://localhost:8000/lost-triangle-construction.html
+# source reference: http://localhost:8000/assets/sources/lost-triangle-starting-lines.svg
 ```
 
-Vercel previews already built green on the PR:
-- `https://gregg-fleishman-site-ubtv-git-claude-lucid-woznia-0a0c54-zenbu1.vercel.app/lost-triangle.html`
-- same host → `/construction.html`
-
----
-
-## 6. Verification status
-
-**Done (headless, in the cloud env):**
-- `node --check` passes on both generated `.js` files.
-- jsdom render of the real `lost-triangle.html` (resolving its actual `<script src>`
-  paths): React + `Stage`/`Sprite`/`Easing` register, `LostTriangleVideo` mounts,
-  the loading fallback clears, real scene `<svg>` renders — **zero runtime errors**.
-- `construction.html` script tags balanced; no dangling `c2d-*` references.
-- Both Vercel preview deployments built **Ready**; PR check is green.
-
-**NOT done — please do this (the reason for the handoff):**
-- [ ] Open `lost-triangle.html` in a real browser. Watch all 9 scenes play; confirm
-      the square reads square, circles read `1 : √2 : √3`, labels (`1`, `√2`, `√3`,
-      angles `45° / 35.26° / 54.74°`) are placed correctly and legible.
-- [ ] Resize to a narrow/portrait viewport — confirm the portrait layout
-      (`LostTriangleVideoPortrait`, 1080×1920) is selected and readable. NOTE: the
-      page currently always mounts the **landscape** component (see follow-up A).
-- [ ] Open `construction.html`, confirm the **2D Construction** tab shows the
-      embedded graphic, that switching to 3D/Sequence/Cluster and back still works,
-      and that the iframe sizes correctly on mobile.
-- [ ] Check fonts load (Cormorant / Spectral / JetBrains Mono via Google Fonts) and
-      light/dark theme toggle still looks right around the iframe.
-
----
-
-## 7. Follow-ups / open decisions (optional)
-
-**A. Portrait on mobile.** `lost-triangle.html` hardcodes `LostTriangleVideo`
-(landscape). The design also exports `LostTriangleVideoPortrait`. Consider choosing
-by viewport at mount, e.g.:
-
-```js
-var portrait = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
-var Comp = portrait ? window.LostTriangleVideoPortrait : window.LostTriangleVideo;
-ReactDOM.createRoot(el).render(React.createElement(Comp));
-```
-
-(Re-evaluate on orientation change if you want it live — the `Stage` already
-re-scales, but the component choice is made once at mount.)
-
-**B. Navigation.** The new page isn't in the global nav. Its own nav link is marked
-`active` on "The Lost Triangle" (which points to `mathematics.html`). Decide whether
-`lost-triangle.html` should get a real nav entry, be linked from `mathematics.html`,
-or stay reachable only via the construction tab.
-
-**C. `mathematics.html` / `lost-triangle-motion.html`.** There are pre-existing
-pages covering the same topic. Worth a pass to cross-link or de-duplicate, but out
-of scope for this branch.
-
-**D. Regenerating the bundles.** If you edit the `.jsx`, re-transpile (preset-react,
-`compact:false`) — see `assets/lost-triangle/README.md`. React was vendored via
-`npm pack react@18.3.1 react-dom@18.3.1` (registry.npmjs.org is reachable even where
-CDNs aren't).
-
----
-
-## 8. Reference material (not in the repo)
-
-The original Claude Design export ("Motion graphic mathematics explanation") also
-contained: `Lost Triangle.html` (a 744 KB self-contained bundle of the same thing),
-`Lost Triangle Mobile.dc.html`, `support.js` (the `dc-runtime` that we intentionally
-did **not** ship — the page mounts React directly instead), and per-scene screenshots.
-The two `.jsx` files in `assets/lost-triangle/` are the complete source we built from;
-you don't need the rest.
-
-> You can delete this `HANDOFF.md` before merging to `main` — it's a working note for
-> the branch, not site content.
+This page is an **orphaned deep-dive** (reachable by URL, not in the nav). The
+canonical Lost Triangle experience is the computed React graphic at
+`lost-triangle.html`; this construction page is the hand-drawn companion.
