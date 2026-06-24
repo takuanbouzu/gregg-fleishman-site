@@ -579,14 +579,14 @@ function PlaybackBar({
       alignItems: 'center',
       gap: 12,
       padding: '8px 16px',
-      background: 'rgba(20,20,20,0.92)',
+      background: 'rgba(8,8,12,0.92)',
       borderTop: '1px solid rgba(255,255,255,0.08)',
       width: '100%',
       maxWidth: 680,
       alignSelf: 'center',
       borderRadius: 8,
-      color: '#f6f4ef',
-      fontFamily: 'Inter, system-ui, sans-serif',
+      color: '#f2f2ee',
+      fontFamily: "'JetBrains Mono', ui-monospace, monospace",
       userSelect: 'none',
       flexShrink: 0
     }
@@ -669,7 +669,7 @@ function PlaybackBar({
       left: 0,
       width: `${pct}%`,
       height: 4,
-      background: 'oklch(72% 0.12 250)',
+      background: '#f6a82a',
       borderRadius: 2
     }
   }), /*#__PURE__*/React.createElement("div", {

@@ -29,6 +29,17 @@ Both are **generated** — edit the `.jsx` source and re-transpile, don't hand-e
   `lost-triangle.html?embed=1`, replacing the earlier hand-placed (and
   mathematically approximate) SVG construction with this exact one.
 
+## Chapter rail (the "marriage")
+
+`ChapterRail` (in `LostTriangleVideo.jsx`, replacing the old progress dots) is the
+seam between the two design languages: the site's mono-uppercase, gold-underline
+navigation idiom carrying the motion graphic's own palette, living inside its
+coordinate space. Each chapter — `1 · √2 · √3 · CUBE · RHOMBIC · DIHEDRAL ·
+SEQUENCE · PROOFS` — seeks the single timeline via `useTimeline().setTime`. So the
+removed **3D Construction** (→ CUBE) and **Fleishman Sequence** (→ SEQUENCE) tabs
+return as accurate chapters of one continuous animation. The `Stage` playback bar
+was retinted to match (gold progress, JetBrains Mono, `#08080c` chrome).
+
 ## Geometry is exact
 
 The construction is computed, not eyeballed: `planar()` builds the unit square

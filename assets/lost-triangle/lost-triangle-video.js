@@ -1998,10 +1998,57 @@ function SceneLayer() {
     lt: localTime
   }))));
 }
-function ProgressDots() {
+// ── Chapter rail ──────────────────────────────────────────────────────────────
+// The "marriage" of the two design languages: the site's mono-uppercase,
+// gold-underline navigation idiom, carrying the motion graphic's own palette and
+// living inside its coordinate space. Each chapter seeks the single timeline —
+// so CUBE (the old 3D-construction tab) and SEQUENCE (the old Fleishman-sequence
+// tab) return as accurate chapters of one continuous animation.
+const CHAPTERS = [{
+  i: 0,
+  label: '1',
+  color: C.ink
+}, {
+  i: 1,
+  label: '√2',
+  color: C.blue
+}, {
+  i: 2,
+  label: '√3',
+  color: C.mag
+}, {
+  i: 3,
+  label: 'CUBE',
+  color: C.slate
+}, {
+  i: 4,
+  label: 'RHOMBIC',
+  color: C.gold
+}, {
+  i: 5,
+  label: 'DIHEDRAL',
+  color: C.violet
+}, {
+  i: 6,
+  label: 'SEQUENCE',
+  color: C.blue
+}, {
+  i: 7,
+  label: 'PROOFS',
+  color: C.slate
+}];
+function ChapterRail() {
   const L = useL();
-  const t = window.useTime ? window.useTime() : 0;
-  const active = SCENES.findIndex(s => t >= s.start && t < s.end);
+  const tl = window.useTimeline ? window.useTimeline() : {
+    time: 0
+  };
+  const t = tl.time || 0;
+  const sceneIdx = SCENES.findIndex(s => t >= s.start && t < s.end);
+  const portrait = L.orient === 'portrait';
+  const seek = i => {
+    if (tl.setTime) tl.setTime(SCENES[i].start + 0.01);
+    if (tl.setPlaying) tl.setPlaying(true);
+  };
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'absolute',
@@ -2010,18 +2057,69 @@ function ProgressDots() {
       bottom: L.dotsBottom,
       display: 'flex',
       justifyContent: 'center',
-      gap: 14
+      alignItems: 'flex-end',
+      flexWrap: 'wrap',
+      gap: portrait ? '12px 16px' : '10px 26px',
+      padding: '0 28px',
+      fontFamily: MONO
     }
-  }, SCENES.map((s, i) => /*#__PURE__*/React.createElement("div", {
-    key: i,
-    style: {
-      width: i === active ? 26 : 7,
-      height: 7,
-      borderRadius: 4,
-      background: i === active ? C.violet : 'rgba(255,255,255,0.22)',
-      transition: 'all 240ms'
-    }
-  })));
+  }, CHAPTERS.map(ch => {
+    const active = sceneIdx === ch.i || ch.i === 7 && sceneIdx === 8;
+    const seen = sceneIdx >= ch.i;
+    return /*#__PURE__*/React.createElement("div", {
+      key: ch.i,
+      onClick: () => seek(ch.i),
+      role: "button",
+      tabIndex: 0,
+      "aria-label": 'Jump to ' + ch.label,
+      onKeyDown: e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          seek(ch.i);
+        }
+      },
+      style: {
+        position: 'relative',
+        cursor: 'pointer',
+        userSelect: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 7,
+        paddingBottom: 8,
+        opacity: active ? 1 : seen ? 0.6 : 0.34,
+        transition: 'opacity 220ms'
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        width: 7,
+        height: 7,
+        borderRadius: 4,
+        background: active ? ch.color : 'rgba(255,255,255,0.30)',
+        boxShadow: active ? '0 0 10px ' + ch.color : 'none',
+        transition: 'all 220ms'
+      }
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: portrait ? 13 : 15,
+        letterSpacing: '0.18em',
+        color: active ? C.ink : C.dim,
+        whiteSpace: 'nowrap',
+        transition: 'color 220ms'
+      }
+    }, ch.label), /*#__PURE__*/React.createElement("span", {
+      style: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: 2,
+        borderRadius: 2,
+        background: active ? ch.color : 'transparent',
+        transition: 'background 220ms'
+      }
+    }));
+  }));
 }
 function VideoBody({
   orient
@@ -2065,7 +2163,7 @@ function VideoBody({
     loop: false,
     autoplay: true,
     persistKey: 'losttri_' + orient
-  }, /*#__PURE__*/React.createElement(SceneLayer, null), /*#__PURE__*/React.createElement(ProgressDots, null)));
+  }, /*#__PURE__*/React.createElement(SceneLayer, null), /*#__PURE__*/React.createElement(ChapterRail, null)));
 }
 function LostTriangleVideo() {
   return /*#__PURE__*/React.createElement(VideoBody, {
