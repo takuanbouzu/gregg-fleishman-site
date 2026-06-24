@@ -728,7 +728,7 @@ html,body{margin:0;height:100%;background:#13110d;}
   }
 
   function setStage(n) {
-    n = Math.max(0, Math.min(8, n));
+    n = Math.max(0, Math.min(7, n));
     var s = STAGES[n];
     t0 = performance.now() - s.t * 1000;
     if (paused) { pausedAt = s.t; }
