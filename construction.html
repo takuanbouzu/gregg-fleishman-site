@@ -378,7 +378,8 @@
   "use strict";
   const SVGNS="http://www.w3.org/2000/svg";
 
-  const SQ={ tl:[159,264], tr:[446,264], br:[446,507], bl:[159,507] };
+  // Unit square rotated 45° (◇): left/right corners coincide with the fold rhombus long axis
+  const SQ={ top:[446,272], right:[725,552], bottom:[446,832], left:[166,552] };
   const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];
@@ -400,12 +401,14 @@
   const circleEls = CIR.map(o=> el('circle',
     {cx:o.c[0],cy:o.c[1],r:o.r,stroke:'var(--ring)','stroke-width':2.2,fill:'none'},gCir));
 
-  const sqEdges=[ line(SQ.tl,SQ.tr,'var(--geo-unit)',3,gSq),
-                  line(SQ.tr,SQ.br,'var(--geo-unit)',3,gSq),
-                  line(SQ.br,SQ.bl,'var(--geo-unit)',3,gSq),
-                  line(SQ.bl,SQ.tl,'var(--geo-unit)',3,gSq) ];
-  const sqDiag=[ line(SQ.tl,SQ.br,'var(--geo-face)',2.4,gSq,.9),
-                 line(SQ.tr,SQ.bl,'var(--geo-face)',2.4,gSq,.9) ];
+  const sqEdges=[ line(SQ.top,   SQ.right, 'var(--geo-unit)',3,gSq),
+                  line(SQ.right, SQ.bottom,'var(--geo-unit)',3,gSq),
+                  line(SQ.bottom,SQ.left,  'var(--geo-unit)',3,gSq),
+                  line(SQ.left,  SQ.top,   'var(--geo-unit)',3,gSq) ];
+  // Horizontal diagonal = long axis of the fold rhombus (= √2)
+  // Vertical diagonal   = other diagonal (also = √2 since both diagonals of a square are equal)
+  const sqDiag=[ line(SQ.left, SQ.right, 'var(--geo-face)',2.4,gSq,.9),
+                 line(SQ.top,  SQ.bottom,'var(--geo-face)',2.4,gSq,.9) ];
 
   const blueFill = poly([BLUE.top,BLUE.right,BLUE.bottom,BLUE.left],'var(--geo-face)',gFill,.85);
   const whiteFill= poly(WHITE,'var(--geo-unit)',gFill,1);
@@ -425,8 +428,8 @@
     {x:xy[0],y:xy[1],fill,'font-family':'Space Mono, monospace','font-size':size||26,
      'font-weight':700,stroke:'var(--bg)','stroke-width':6,'stroke-linejoin':'round','paint-order':'stroke',
      'text-anchor':'middle','dominant-baseline':'middle'},gLab); t.textContent=txt; return t; }
-  const L1   = lab('1',  [300,238],'var(--geo-unit)',30);
-  const Lsq2 = lab('√2', [250,400],'var(--geo-face)',32);
+  const L1   = lab('1',  [278,404],'var(--geo-unit)',30);   // beside upper-left side of ◇
+  const Lsq2 = lab('√2', [576,538],'var(--geo-face)',32);   // along the horizontal diagonal
   const Lsq3 = lab('√3', [690,520],'var(--geo-space)',34);
 
   const drawers=[...circleEls,...sqEdges,...sqDiag,...blueOutline,...magOutline];
@@ -445,12 +448,13 @@
 
   tl.add(()=>setCap('Three construction circles · <b>R = 1 : √2 : √3</b>'),0);
   circleEls.forEach((c,i)=> draw(c,0.7,0.05+i*0.28));
-  tl.add(()=>setCap('The module · <b>unit square, edge = 1</b>'),'>-0.1');
+  tl.add(()=>setCap('The unit square · <b>rotated 45° — side = 1</b>'),'>-0.1');
   sqEdges.forEach((e,i)=> draw(e,0.42,'>'+(i?-0.30:0)));
   tl.to(L1,{opacity:1,duration:.4},'>-0.2');
-  tl.add(()=>setCap('Fold the diagonal · <b>√2 — the face diagonal</b>'),'>-0.05');
+  tl.add(()=>setCap('Draw the diagonal · <b>√2</b> — this line becomes the fold\'s long axis'),'>-0.05');
   sqDiag.forEach((d,i)=> draw(d,0.55,'>'+(i?-0.45:0)));
   tl.add('blue','>-0.1');
+  tl.add(()=>setCap('The √2 fold · <b>diagonal = long axis of the rhombus</b>'),'blue');
   blueOutline.forEach((e,i)=> draw(e,0.4,'blue+='+(i*0.16)));
   tl.to(blueFill,{attr:{'fill-opacity':.85},duration:.8},'blue+=0.3')
     .to(whiteFill,{attr:{'fill-opacity':1},duration:.6},'blue+=0.5')
@@ -893,9 +897,11 @@ const circB = S(planCircle(409,552,195), COL.bone, 2.0, 0.46, 1, M.plan);
 const circC = S(planCircle(703,482,193), COL.bone, 2.0, 0.46, 1, M.plan);
 function planCircle(cx,cy,r,seg=96){ const a=[]; for(let i=0;i<=seg;i++){const t=i/seg*Math.PI*2; a.push(P(cx+r*Math.cos(t), cy+r*Math.sin(t)));} return a; }
 
-const sq = S([P(159,264),P(446,264),P(446,507),P(159,507),P(159,264)], COL.bone, 3.0, 1, 3, M.plan);
-const dg1 = S([P(159,264),P(446,507)], COL.face, 2.4, 0.95, 3, M.plan);
-const dg2 = S([P(446,264),P(159,507)], COL.face, 2.4, 0.95, 3, M.plan);
+// Unit square rotated 45° (◇): left/right corners sit on the fold rhombus long axis
+const sq  = S([P(166,552),P(446,272),P(725,552),P(446,832),P(166,552)], COL.bone, 3.0, 1, 3, M.plan);
+// Horizontal diagonal = long axis of fold rhombus (√2); vertical = equal diagonal of the square
+const dg1 = S([P(166,552),P(725,552)], COL.face, 2.4, 0.95, 3, M.plan);
+const dg2 = S([P(446,272),P(446,832)], COL.face, 2.4, 0.95, 3, M.plan);
 
 const foldPts = [P(444,351,-0.004),P(725,549,-0.004),P(447,753,-0.004),P(166,555,-0.004)];
 const foldFill = F([...foldPts, foldPts[0]], COL.face, M.plan);
@@ -905,8 +911,8 @@ const magPts = [P(453,360,-0.002),P(848,387,-0.002),P(617,715,-0.002)];
 const magFill = F([...magPts, magPts[0]], COL.space, M.plan);
 const magLine = S([P(453,360),P(848,387),P(617,715),P(453,360)], COL.space, 2.8, 1, 3, M.plan);
 const magDiv  = S([P(848,387),P(535,537)], COL.space, 2.0, 0.85, 3, M.plan);
-const pl1 = L('1',  HEX.bone, P(300,238), M.plan, 0.14);
-const plv2= L('√2', HEX.face, P(250,400), M.plan, 0.14);
+const pl1 = L('1',  HEX.bone, P(278,404), M.plan, 0.14);   // beside upper-left side of ◇
+const plv2= L('√2', HEX.face, P(576,538), M.plan, 0.14);   // along the horizontal diagonal
 const plv3= L('√3', HEX.space,P(690,520), M.plan, 0.14);
 
 const O=new THREE.Vector3(0,0,0), X=new THREE.Vector3(1,0,0), Z=new THREE.Vector3(0,0,1), A=new THREE.Vector3(1,0,1);
@@ -1006,9 +1012,9 @@ function cap(html){ const d=document.createElement('div'); d.className='cap'; d.
 const C = {
   spiral: cap("Gregg’s root sequence · <b>1 → √2 → √3</b>"),
   circles:cap("Three circles · <b>1 : √2 : √3</b>"),
-  square: cap("The module · <b>the unit square</b>"),
-  diag:   cap("Its diagonal · <b>√2</b>"),
-  fold:   cap("The √2 fold"),
+  square: cap("The module · <b>unit square rotated 45°</b>"),
+  diag:   cap("Its diagonal · <b>√2</b> — becomes the fold's long axis"),
+  fold:   cap("The √2 fold · <b>diagonal = long axis of the rhombus</b>"),
   lost:   cap("<b>The Lost Triangle</b> · √3"),
   orbit:  cap("Stand it up · <b>plan → space</b>"),
   cube:   cap("The module becomes a <b>cube</b>"),
