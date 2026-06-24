@@ -39,23 +39,9 @@
     position:fixed; inset:0; top:96px; overflow:hidden;
   }
 
-  /* c2d section inner layout */
-  #con-c2d{ overflow:auto; display:flex; flex-direction:column; }
-  #con-c2d header{ padding:16px 28px 8px; }
-  #con-c2d header .sub{ font-size:12px; color:var(--tx-dim); letter-spacing:.04em; }
-  #con-c2d main{ flex:1; display:flex; align-items:center; justify-content:center; padding:8px 20px; min-height:0; }
-  #c2d-stage{ position:relative; width:min(82vmin,720px); aspect-ratio:1/1; }
-  #con-c2d svg{ width:100%; height:100%; display:block; overflow:visible; }
-  #c2d-caption{
-    position:absolute; left:50%; bottom:-6px; transform:translate(-50%,100%);
-    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.02em;
-    color:var(--tx-dim); white-space:nowrap; transition:opacity .4s var(--ease); text-align:center;
-  }
-  #c2d-caption b{ color:var(--accent); font-weight:700; }
-  #c2d-controls{
-    display:flex; align-items:center; gap:14px; padding:20px 28px 24px;
-    justify-content:center; flex-wrap:wrap;
-  }
+  /* c2d section — the exact 2D construction, embedded from lost-triangle.html */
+  #con-c2d{ overflow:hidden; background:#08080c; }
+  #c2d-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 
   /* c3d section inner layout */
   #con-c3d{ display:flex; flex-direction:column; }
@@ -84,11 +70,11 @@
   .con-section button:hover{ border-color:var(--accent); color:var(--accent); }
 
   /* Scrub range inputs */
-  #c2d-scrub, #c3d-scrub{
+  #c3d-scrub{
     -webkit-appearance:none; appearance:none; width:min(46vw,340px); height:3px;
     background:var(--border-strong); border-radius:3px; outline:none;
   }
-  #c2d-scrub::-webkit-slider-thumb, #c3d-scrub::-webkit-slider-thumb{
+  #c3d-scrub::-webkit-slider-thumb{
     -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
     background:var(--accent); cursor:pointer; border:2px solid var(--bg);
   }
@@ -208,36 +194,11 @@
 <!--  TAB 1 : 2D Construction                                     -->
 <!-- ============================================================ -->
 <div id="con-c2d" class="con-section" style="display:block;">
-  <header>
-    <span class="sub">The Lost Triangle — 1 : √2 : √3 · animated construction</span>
-  </header>
-  <main>
-    <div id="c2d-stage">
-      <svg id="c2d-art" viewBox="0 0 1026 1016" aria-label="Lost Triangle construction">
-        <g id="c2d-g-circles" fill="none"></g>
-        <g id="c2d-g-fills"></g>
-        <g id="c2d-g-square" fill="none"></g>
-        <g id="c2d-g-blue" fill="none"></g>
-        <g id="c2d-g-magenta" fill="none"></g>
-        <g id="c2d-g-labels"></g>
-      </svg>
-      <div id="c2d-caption">&nbsp;</div>
-    </div>
-  </main>
-  <div id="c2d-controls">
-    <button id="c2d-play">Replay</button>
-    <button id="c2d-pause">Pause</button>
-    <div class="seg"><input id="c2d-scrub" type="range" min="0" max="1000" value="0" /></div>
-    <div class="seg">
-      <label for="c2d-speed">speed</label>
-      <select id="c2d-speed">
-        <option value="0.5">0.5×</option>
-        <option value="1" selected>1×</option>
-        <option value="1.5">1.5×</option>
-        <option value="2">2×</option>
-      </select>
-    </div>
-  </div>
+  <!-- Mathematically exact construction (1 : √2 : √3), rendered from the
+       Lost Triangle motion graphic. Framed here as the canonical 2D build. -->
+  <iframe id="c2d-frame" src="lost-triangle.html?embed=1"
+          title="The Lost Triangle — animated construction (1 : √2 : √3)"
+          loading="lazy"></iframe>
 </div>
 
 <!-- ============================================================ -->
@@ -370,116 +331,6 @@
 }
 </script>
 
-<!-- ============================================================ -->
-<!--  Script 1 : c2d (plain script, not module)                  -->
-<!-- ============================================================ -->
-<script>
-(function(){
-  "use strict";
-  const SVGNS="http://www.w3.org/2000/svg";
-
-  const SQ={ tl:[159,264], tr:[446,264], br:[446,507], bl:[159,507] };
-  const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
-  const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
-  const WHITE=[ [444,351],[166,555],[444,552] ];
-  const MAG={ a:[453,360], apex:[848,387], b:[617,715] };
-  const MAG_DIV=[ MAG.apex, [535,537] ];
-
-  const NS = id => document.getElementById('c2d-' + id);
-  const gCir=NS('g-circles'), gFill=NS('g-fills'), gSq=NS('g-square'),
-        gBlue=NS('g-blue'), gMag=NS('g-magenta'), gLab=NS('g-labels');
-
-  function el(tag,attrs,parent){ const n=document.createElementNS(SVGNS,tag);
-    for(const k in attrs) n.setAttribute(k,attrs[k]); (parent||NS('art')).appendChild(n); return n; }
-  function line(a,b,stroke,w,parent,op){ return el('line',
-    {x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke,'stroke-width':w,'stroke-linecap':'round',
-     'stroke-opacity':(op==null?1:op)},parent); }
-  function poly(pts,fill,parent,op){ return el('polygon',
-    {points:pts.map(p=>p.join(',')).join(' '),fill,'fill-opacity':(op==null?1:op)},parent); }
-
-  const circleEls = CIR.map(o=> el('circle',
-    {cx:o.c[0],cy:o.c[1],r:o.r,stroke:'var(--ring)','stroke-width':2.2,fill:'none'},gCir));
-
-  const sqEdges=[ line(SQ.tl,SQ.tr,'var(--geo-unit)',3,gSq),
-                  line(SQ.tr,SQ.br,'var(--geo-unit)',3,gSq),
-                  line(SQ.br,SQ.bl,'var(--geo-unit)',3,gSq),
-                  line(SQ.bl,SQ.tl,'var(--geo-unit)',3,gSq) ];
-  const sqDiag=[ line(SQ.tl,SQ.br,'var(--geo-face)',2.4,gSq,.9),
-                 line(SQ.tr,SQ.bl,'var(--geo-face)',2.4,gSq,.9) ];
-
-  const blueFill = poly([BLUE.top,BLUE.right,BLUE.bottom,BLUE.left],'var(--geo-face)',gFill,.85);
-  const whiteFill= poly(WHITE,'var(--geo-unit)',gFill,1);
-  const blueOutline=[ line(BLUE.top,BLUE.right,'var(--geo-unit)',2.2,gBlue,.8),
-                      line(BLUE.right,BLUE.bottom,'var(--geo-unit)',2.2,gBlue,.8),
-                      line(BLUE.bottom,BLUE.left,'var(--geo-unit)',2.2,gBlue,.8),
-                      line(BLUE.left,BLUE.top,'var(--geo-unit)',2.2,gBlue,.8),
-                      line(BLUE.top,BLUE.bottom,'var(--geo-unit)',2,gBlue,.6) ];
-
-  const magFill = poly([MAG.a,MAG.apex,MAG.b],'var(--geo-space)',gFill,.9);
-  const magOutline=[ line(MAG.a,MAG.apex,'var(--geo-unit)',2.4,gMag,.85),
-                     line(MAG.apex,MAG.b,'var(--geo-unit)',2.4,gMag,.85),
-                     line(MAG.b,MAG.a,'var(--geo-unit)',2.4,gMag,.85),
-                     line(MAG_DIV[0],MAG_DIV[1],'var(--geo-unit)',1.8,gMag,.6) ];
-
-  function lab(txt,xy,fill,size){ const t=el('text',
-    {x:xy[0],y:xy[1],fill,'font-family':'Space Mono, monospace','font-size':size||26,
-     'font-weight':700,stroke:'var(--bg)','stroke-width':6,'stroke-linejoin':'round','paint-order':'stroke',
-     'text-anchor':'middle','dominant-baseline':'middle'},gLab); t.textContent=txt; return t; }
-  const L1   = lab('1',  [300,238],'var(--geo-unit)',30);
-  const Lsq2 = lab('√2', [250,400],'var(--geo-face)',32);
-  const Lsq3 = lab('√3', [690,520],'var(--geo-space)',34);
-
-  const drawers=[...circleEls,...sqEdges,...sqDiag,...blueOutline,...magOutline];
-  drawers.forEach(n=>{ const L=n.getTotalLength(); n.style.strokeDasharray=L; n.style.strokeDashoffset=L; });
-  [blueFill,whiteFill,magFill].forEach(n=> n.setAttribute('fill-opacity',0));
-  [L1,Lsq2,Lsq3].forEach(n=> n.setAttribute('opacity',0));
-
-  const cap=NS('caption');
-  function setCap(html){ cap.style.opacity=0;
-    setTimeout(()=>{ cap.innerHTML=html; cap.style.opacity=1; },180); }
-
-  const tl=gsap.timeline({paused:true, onUpdate:syncScrub, onComplete:()=>{playBtn.textContent='Replay';}});
-  const draw=(n,d,pos)=> tl.fromTo(n,
-    {strokeDashoffset:+n.style.strokeDasharray||n.getTotalLength()},
-    {strokeDashoffset:0,duration:d,ease:'power1.inOut'}, pos);
-
-  tl.add(()=>setCap('Three construction circles · <b>R = 1 : √2 : √3</b>'),0);
-  circleEls.forEach((c,i)=> draw(c,0.7,0.05+i*0.28));
-  tl.add(()=>setCap('The module · <b>unit square, edge = 1</b>'),'>-0.1');
-  sqEdges.forEach((e,i)=> draw(e,0.42,'>'+(i?-0.30:0)));
-  tl.to(L1,{opacity:1,duration:.4},'>-0.2');
-  tl.add(()=>setCap('Fold the diagonal · <b>√2 — the face diagonal</b>'),'>-0.05');
-  sqDiag.forEach((d,i)=> draw(d,0.55,'>'+(i?-0.45:0)));
-  tl.add('blue','>-0.1');
-  blueOutline.forEach((e,i)=> draw(e,0.4,'blue+='+(i*0.16)));
-  tl.to(blueFill,{attr:{'fill-opacity':.85},duration:.8},'blue+=0.3')
-    .to(whiteFill,{attr:{'fill-opacity':1},duration:.6},'blue+=0.5')
-    .to(Lsq2,{opacity:1,duration:.4},'blue+=0.6');
-  tl.add('mag','>-0.05');
-  tl.add(()=>setCap('Lift one unit · <b>√3 — the cube’s Lost Triangle</b>'),'mag');
-  magOutline.forEach((e,i)=> draw(e,0.5,'mag+='+(i*0.2)));
-  tl.to(magFill,{attr:{'fill-opacity':.9},duration:1.0},'mag+=0.4')
-    .to(Lsq3,{opacity:1,duration:.45},'mag+=0.7');
-  tl.add(()=>setCap('<b>1² + 1² = 2</b> &nbsp;·&nbsp; <b>(√2)² + 1² = 3</b> &nbsp;·&nbsp; θ = 35.264°'),'>+0.2');
-  tl.to({},{duration:0.8});
-
-  const playBtn=NS('play'), pauseBtn=NS('pause'), scrub=NS('scrub'), speed=NS('speed');
-  let scrubbing=false;
-  function syncScrub(){ if(!scrubbing) scrub.value=Math.round(tl.progress()*1000); }
-  playBtn.onclick=()=>{ if(tl.progress()===1||tl.progress()===0){ tl.restart(); }
-    else tl.play(); playBtn.textContent='Replay'; pauseBtn.textContent='Pause'; };
-  pauseBtn.onclick=()=>{ if(tl.paused()){ tl.play(); pauseBtn.textContent='Pause'; }
-    else { tl.pause(); pauseBtn.textContent='Resume'; } };
-  scrub.addEventListener('input',()=>{ scrubbing=true; tl.pause(); tl.progress(scrub.value/1000);
-    pauseBtn.textContent='Resume'; });
-  scrub.addEventListener('change',()=>{ scrubbing=false; });
-  speed.onchange=()=> tl.timeScale(+speed.value);
-
-  const start=()=> tl.timeScale(+speed.value).play();
-  if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(()=>setTimeout(start,250)); }
-  else setTimeout(start,400);
-})();
-</script>
 
 <!-- ============================================================ -->
 <!--  Script 2 : c3d (module)                                    -->
