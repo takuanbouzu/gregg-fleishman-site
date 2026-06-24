@@ -164,7 +164,7 @@ html,body{margin:0;height:100%;background:#13110d;}
 <div id="stg-nav">
   <button id="stg-prev" aria-label="Previous stage">&#8592;</button>
   <div id="stg-dots" style="display:flex;gap:5px;align-items:center;"></div>
-  <span id="stg-counter">1 / 9</span>
+  <span id="stg-counter">1 / 8</span>
   <button id="stg-next" aria-label="Next stage">&#8594;</button>
 </div>
 
@@ -189,7 +189,6 @@ html,body{margin:0;height:100%;background:#13110d;}
     { t: 20.0, body: 'Does the silver ratio σ = 1+√2 underlie the 45° system? The ad-quadratum method — squares rotated 45° — produces both √2 and σ together. Open investigation.',                                                                                                                                           detail: 'σ = 1 + √2 ≈ 2.414 — the silver ratio' },
     { t: 25.0, body: 'Rotate the inner square 45°. Its vertices touch the midpoints of the outer square. Scale factor: 1:1/√2. This is the Vector House plan geometry — the same fold, at architectural scale.',                                                                                                                                       detail: 'The same 45° fold, from a hand sketch to a building plan.' },
     { t: 29.0, body: 'Place a pyramid of height ½ on each face of the unit cube. The 12 rhombus faces have diagonal ratio 1:√2. Dihedral angles: cube=90°, octahedron=109.5° (2×54.736°), rhombic dodecahedron=120°. One triangle, one family of solids.',                                                                      detail: 'Cube 90° · Octahedron 109.5° (2×54.736°) · Rhombic Dodec 120°' },
-    { t: 35.0, body: 'The rhombic dodecahedron tiles space with no gaps — it is the Voronoi cell of the FCC lattice. Gregg built this geometry at human scale across four decades: festival structures, permanent installations, Sky Portal X.',                                                                                                                 detail: 'The rhombic dodecahedron is the Voronoi cell of the FCC lattice.' },
   ];
 
   let activeHighlight = null;
@@ -649,7 +648,7 @@ html,body{margin:0;height:100%;background:#13110d;}
   // ---- sidebar system ----
   function buildSidebarHTML(n) {
     var s = STAGES[n];
-    var titles = ['Stage 1 — The Sketch','Stage 2 — Face Diagonal','Stage 3 — Space Diagonal','Stage 4 — The Lost Triangle','Stage 5 — Full System','Stage 6 — Silver Ratio?','Stage 7 — Vector House','Stage 8 — Rhombic Dodecahedron','Stage 9 — Space Tiling'];
+    var titles = ['Stage 1 — The Sketch','Stage 2 — Face Diagonal','Stage 3 — Space Diagonal','Stage 4 — The Lost Triangle','Stage 5 — Full System','Stage 6 — Silver Ratio?','Stage 7 — Vector House','Stage 8 — Rhombic Dodecahedron'];
     var h = '<div class="sb-title">' + titles[n] + '</div>';
     h += '<div class="sb-body">' + s.body + '</div>';
     if (n === 0) {
@@ -678,8 +677,6 @@ html,body{margin:0;height:100%;background:#13110d;}
       h += '<div class="sb-prop-row"><span class="pk">Cube</span><span class="pv">90°</span></div>';
       h += '<div class="sb-prop-row"><span class="pk">Octahedron</span><span class="pv">109.5° (2×54.736°)</span></div>';
       h += '<div class="sb-prop-row"><span class="pk">Rhombic Dodec</span><span class="pv">120°</span></div>';
-    } else if (n === 8) {
-      h += '<div class="arch-grid"><div class="arch-card" data-hl="rhombic"><img src="assets/arch/skyportal.jpg" alt="Sky Portal X"><div class="arch-label">Sky Portal X<span class="arch-tag">Rhombic</span></div></div><div class="arch-card" data-hl="fcc"><img src="assets/arch/solarstage.jpg" alt="Solar Stage"><div class="arch-label">Solar Stage<span class="arch-tag">FCC</span></div></div><div class="arch-card" data-hl="rhombic"><img src="assets/arch/temple.jpg" alt="Temple"><div class="arch-label">Temple</div></div><div class="arch-card" data-hl="fcc"><img src="assets/arch/node.jpg" alt="Node"><div class="arch-label">Node</div></div><div class="arch-card" data-hl="rhombic"><img src="assets/arch/satellite.jpg" alt="Satellite"><div class="arch-label">Satellite</div></div><div class="arch-card" data-hl="fcc"><img src="assets/arch/otic.jpg" alt="Otic"><div class="arch-label">Otic</div></div></div>';
     }
     return h;
   }
@@ -724,7 +721,7 @@ html,body{margin:0;height:100%;background:#13110d;}
     }
     setSidebarContent(n);
     var cnt = document.getElementById('stg-counter');
-    if (cnt) cnt.textContent = (n + 1) + ' / 9';
+    if (cnt) cnt.textContent = (n + 1) + ' / 8';
     document.querySelectorAll('.stg-dot').forEach(function(d, i) {
       d.classList.toggle('active', i === n);
     });
@@ -787,8 +784,6 @@ html,body{margin:0;height:100%;background:#13110d;}
     }
     _setCap('kicker', scene.k); _setCap('title', scene.t); _setCap('formula', scene.f); _setCap('sceneIdx', scene.i);
     document.getElementById('ltm-progress').style.width = (T/DUR*100).toFixed(2) + '%';
-    var _ns = T < 1.5 ? 0 : T < 5.0 ? 1 : T < 11.0 ? 2 : T < 15.0 ? 3 : T < 20.0 ? 4 : T < 25.0 ? 5 : T < 29.0 ? 6 : T < 35.0 ? 7 : 8;
-    if (_ns !== _displayedStage) { _autoUpdateStage(_ns); }
   }
 
   function loop() {
@@ -816,7 +811,8 @@ html,body{margin:0;height:100%;background:#13110d;}
     var prevBtn = document.getElementById('stg-prev');
     var nextBtn = document.getElementById('stg-next');
     if (prevBtn) prevBtn.addEventListener('click', function() { setStage(Math.max(0, _displayedStage - 1)); });
-    if (nextBtn) nextBtn.addEventListener('click', function() { setStage(Math.min(8, _displayedStage + 1)); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { setStage(Math.min(7, _displayedStage + 1)); });
+    _autoUpdateStage(0);
   });
 
   // cleanup on unload
