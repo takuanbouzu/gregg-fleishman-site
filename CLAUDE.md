@@ -67,12 +67,13 @@ About · Work · [Geometry → index.html] · Store · Contact
 - `index.html` uses "Geometry" linking to itself (the hub)
 - Other outer pages use "The Math" → `mathematics.html` as their geometry entry point
 
-### Geometry Exhibit Nav (explore, mathematics, construction, research, rhombic-system)
+### Geometry Exhibit Nav (explore, lost-triangle, construction, research, rhombic-system)
 ```
 [brand] Gregg Fleishman · The Cube · The Lost Triangle · Construction · Research · Rhombic System · Vector Pod
 ```
 - Present on all geometry pages via shared `<nav id="gfnav">`
 - `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px
+- **"The Lost Triangle" → `lost-triangle.html`** (the accurate React motion graphic — the canonical Lost Triangle page). It previously pointed to `mathematics.html`; `mathematics.html` is now the long-form narrative companion, reached from `index.html`/`about.html` CTAs and from the no-JS/no-WebGL fallback links on the motion pages.
 
 ### Orphaned Deep-Dive Pages
 These are accessible by URL only — not linked from any nav:
