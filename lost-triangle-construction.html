@@ -131,11 +131,12 @@
   "use strict";
   const SVGNS="http://www.w3.org/2000/svg";
 
-  /* ---------- geometry (measured from lost-triangle-color.png, 1026x1016) ---------- */
-  // unit square
-  const SQ={ tl:[159,264], tr:[446,264], br:[446,507], bl:[159,507] };
-  // three equal construction circles (r ~ 190)
-  const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
+  /* ---------- geometry ---------- */
+  // unit square — axis-aligned; BL = rhombus left vertex, BR = rhombus centre (diagonal crossing)
+  // side ≈ 279 px  (distance from left vertex to centre of rhombus along x)
+  const SQ={ tl:[166,273], tr:[445,273], br:[445,552], bl:[166,552] };
+  // three equal construction arcs (r = ½ × face-diagonal ≈ 197 px), at square-centre / BR / right-vertex
+  const CIR=[ {c:[305,412],r:197}, {c:[445,552],r:197}, {c:[725,552],r:197} ];
   // blue √2-fold rhombus + white inner triangle
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];               // bone half-triangle
@@ -191,8 +192,8 @@
      /* bg-coloured halo so a label stays legible over any fill (e.g. √3 on the magenta triangle) */
      stroke:'var(--bg)','stroke-width':6,'stroke-linejoin':'round','paint-order':'stroke',
      'text-anchor':'middle','dominant-baseline':'middle'},gLab); t.textContent=txt; return t; }
-  const L1   = lab('1',  [300,238],'var(--geo-unit)',30);
-  const Lsq2 = lab('√2', [250,400],'var(--geo-face)',32);
+  const L1   = lab('1',  [305,248],'var(--geo-unit)',30);   // centred above top edge
+  const Lsq2 = lab('√2', [280,425],'var(--geo-face)',32);  // beside TL→BR diagonal
   const Lsq3 = lab('√3', [690,520],'var(--geo-space)',34);
 
   /* ---------- prep draw/fade state ---------- */
