@@ -49,12 +49,12 @@ computes its geometry instead of eyeballing it (see §4), so it's exact.
 
 ### Modified
 - `construction.html` — the **2D Construction** tab body is now a single
-  `<iframe id="c2d-frame" src="lost-triangle.html?embed=1">`. Removed: the old
-  approximate `#c2d-art` SVG, its ~110-line GSAP build IIFE ("Script 1 : c2d"),
-  the `#c2d-controls`, and now-dead `#c2d-scrub` CSS. **The 3D / Fleishman
-  Sequence / Cluster Structures tabs are untouched** (still Three.js + GSAP).
-
-Net diff on `construction.html`: +10 / −159 lines.
+  `<iframe id="c2d-frame" src="lost-triangle.html?embed=1">` (replacing the old
+  approximate `#c2d-art` SVG + its GSAP build IIFE). The **3D Construction** and
+  **Fleishman Sequence** tabs were removed entirely (markup, their Three.js
+  module scripts, the `fs` boot timer, and dead CSS) because those animations
+  were also mathematically inaccurate. Only two tabs remain: **2D Construction**
+  (the exact embed) and **Cluster Structures** (untouched, still Three.js + GSAP).
 
 ---
 

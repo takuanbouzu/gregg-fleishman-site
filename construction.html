@@ -43,56 +43,15 @@
   #con-c2d{ overflow:hidden; background:#08080c; }
   #c2d-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 
-  /* c3d section inner layout */
-  #con-c3d{ display:flex; flex-direction:column; }
-  #con-c3d header{ padding:16px 28px 8px; }
-  #con-c3d header .sub{ font-size:12px; color:var(--tx-dim); letter-spacing:.04em; }
-  #con-c3d main{ flex:1; display:flex; align-items:center; justify-content:center; padding:6px 16px; min-height:0; }
-  #c3d-stage{ position:relative; width:min(86vmin,860px); aspect-ratio:1/1; }
-  #c3d-stage canvas{ display:block; width:100%; height:100%; }
-  #c3d-caption{
-    position:absolute; left:50%; bottom:6px; transform:translateX(-50%);
-    font-family:var(--font-mono); font-size:12.5px; letter-spacing:.02em; color:var(--tx-dim);
-    white-space:nowrap; transition:opacity .4s var(--ease); text-align:center; pointer-events:none;
-  }
-  #c3d-caption b{ color:var(--accent); font-weight:700; }
-  #c3d-controls{
-    display:flex; align-items:center; gap:14px; padding:14px 28px 20px;
-    justify-content:center; flex-wrap:wrap;
-  }
+  /* cls fullscreen styles */
+  #cs-stage{ position:absolute; inset:0; z-index:0; }
+  #cs-stage canvas{ display:block; }
 
-  /* Shared button/scrub/select styles */
-  .con-section button{
-    font:inherit; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--tx); background:var(--bg-surface); border:1px solid var(--border-strong);
-    border-radius:8px; padding:9px 16px; cursor:pointer; transition:all .16s var(--ease);
-  }
-  .con-section button:hover{ border-color:var(--accent); color:var(--accent); }
-
-  /* Scrub range inputs */
-  #c3d-scrub{
-    -webkit-appearance:none; appearance:none; width:min(46vw,340px); height:3px;
-    background:var(--border-strong); border-radius:3px; outline:none;
-  }
-  #c3d-scrub::-webkit-slider-thumb{
-    -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
-    background:var(--accent); cursor:pointer; border:2px solid var(--bg);
-  }
-  .seg{ display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11px; color:var(--tx-faint); }
-  select{
-    font:inherit; font-size:11px; background:var(--bg-surface); color:var(--tx-dim);
-    border:1px solid var(--border-strong); border-radius:7px; padding:7px 9px;
-  }
-
-  /* seq / cls fullscreen styles */
-  #fs-stage, #cs-stage{ position:absolute; inset:0; z-index:0; }
-  #fs-stage canvas, #cs-stage canvas{ display:block; }
-
-  #fs-capwrap, #cs-capwrap{
+  #cs-capwrap{
     position:absolute; left:0; right:0; bottom:96px; z-index:6;
     display:flex; justify-content:center; pointer-events:none; height:30px;
   }
-  .fs-capstack, .cs-capstack{
+  .cs-capstack{
     position:relative; width:min(86vw,760px); height:30px; text-align:center;
   }
   .cap{
@@ -102,45 +61,43 @@
   }
   .cap b{ color:var(--accent); font-weight:700; }
 
-  #fs-controls, #cs-controls{
+  #cs-controls{
     position:absolute; left:0; right:0; bottom:0; z-index:7;
     display:flex; align-items:center; gap:18px;
     padding:18px 30px 22px;
     background:linear-gradient(to top,var(--bg),transparent);
   }
-  #fs-controls button, #fs-controls select,
   #cs-controls button, #cs-controls select{
     font-family:var(--font-mono); font-size:12px; letter-spacing:.08em;
     background:transparent; color:var(--tx); border:1px solid var(--border-strong);
     border-radius:2px; padding:8px 12px; cursor:pointer; text-transform:uppercase;
     transition:border-color .2s,color .2s;
   }
-  #fs-controls button:hover, #fs-controls select:hover,
   #cs-controls button:hover, #cs-controls select:hover{
     border-color:var(--accent); color:var(--accent);
   }
-  #fs-scrub, #cs-scrub{
+  #cs-scrub{
     flex:1; -webkit-appearance:none; appearance:none; height:2px;
     background:var(--border-strong); border-radius:2px; cursor:pointer;
   }
-  #fs-scrub::-webkit-slider-thumb, #cs-scrub::-webkit-slider-thumb{
+  #cs-scrub::-webkit-slider-thumb{
     -webkit-appearance:none; appearance:none; width:12px; height:12px;
     border-radius:50%; background:var(--accent); cursor:pointer; border:none;
   }
   .tlabel{ font-family:var(--font-mono); font-size:11px; color:var(--tx-dim); min-width:38px; text-align:center; }
 
-  /* Fallbacks */
-  #fs-fallback, #cs-fallback{
+  /* Fallback */
+  #cs-fallback{
     position:absolute; inset:0; z-index:50; display:none; align-items:center;
     justify-content:center; padding:32px; text-align:center;
     background:var(--bg); color:var(--tx-dim); font-family:var(--font-ui);
   }
-  #fs-fallback .in, #cs-fallback .in{ max-width:440px; }
-  #fs-fallback h2, #cs-fallback h2{
+  #cs-fallback .in{ max-width:440px; }
+  #cs-fallback h2{
     font-family:var(--font-display); font-weight:800; color:var(--tx); font-size:22px; margin:0 0 12px;
   }
-  #fs-fallback p, #cs-fallback p{ font-size:14px; line-height:1.6; margin:0; }
-  #fs-fallback a, #cs-fallback a{
+  #cs-fallback p{ font-size:14px; line-height:1.6; margin:0; }
+  #cs-fallback a{
     color:var(--accent); text-decoration:none;
     border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent);
   }
@@ -185,8 +142,6 @@
 
 <div id="con-tabs">
   <button class="con-tab-btn active" data-tab="c2d">2D Construction</button>
-  <button class="con-tab-btn" data-tab="c3d">3D Construction</button>
-  <button class="con-tab-btn" data-tab="seq">Fleishman Sequence</button>
   <button class="con-tab-btn" data-tab="cls">Cluster Structures</button>
 </div>
 
@@ -201,61 +156,6 @@
           loading="lazy"></iframe>
 </div>
 
-<!-- ============================================================ -->
-<!--  TAB 2 : 3D Construction                                     -->
-<!-- ============================================================ -->
-<div id="con-c3d" class="con-section" style="display:none;">
-  <header>
-    <span class="sub">The Lost Triangle — plan → space · 1 : √2 : √3</span>
-  </header>
-  <main>
-    <div id="c3d-stage">
-      <canvas id="c3d-c"></canvas>
-      <div id="c3d-caption">&nbsp;</div>
-    </div>
-  </main>
-  <div id="c3d-controls">
-    <button id="c3d-play">Replay</button>
-    <button id="c3d-pause">Pause</button>
-    <div class="seg"><input id="c3d-scrub" type="range" min="0" max="1000" value="0" /></div>
-    <div class="seg">
-      <label for="c3d-speed">speed</label>
-      <select id="c3d-speed">
-        <option value="0.5">0.5×</option>
-        <option value="1" selected>1×</option>
-        <option value="1.5">1.5×</option>
-        <option value="2">2×</option>
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<!--  TAB 3 : Fleishman Sequence                                  -->
-<!-- ============================================================ -->
-<div id="con-seq" class="con-section" style="display:none;">
-  <div id="fs-stage"></div>
-
-  <div id="fs-fallback"><div class="in">
-    <h2>The Fleishman Sequence</h2>
-    <p>This animation needs a current browser with WebGL. Try the latest Chrome, Firefox, or Safari — or read <a href="mathematics.html">The Lost Triangle</a>.</p>
-  </div></div>
-
-  <div id="fs-capwrap"><div class="fs-capstack" id="fs-capstack"></div></div>
-
-  <div id="fs-controls">
-    <button id="fs-replay" title="Replay">↺ Replay</button>
-    <button id="fs-play" title="Play / Pause">❙❙ Pause</button>
-    <input id="fs-scrub" type="range" min="0" max="1000" value="0" />
-    <span class="tlabel" id="fs-tlabel">0.0s</span>
-    <select id="fs-speed" title="Speed">
-      <option value="0.5">0.5×</option>
-      <option value="1" selected>1×</option>
-      <option value="1.5">1.5×</option>
-      <option value="2">2×</option>
-    </select>
-  </div>
-</div>
 
 <!-- ============================================================ -->
 <!--  TAB 4 : Cluster Structures                                  -->
@@ -295,7 +195,7 @@
 <!-- ============================================================ -->
 <script>
 (function(){
-  const tabs = ['c2d','c3d','seq','cls'];
+  const tabs = ['c2d','cls'];
   const btns = document.querySelectorAll('.con-tab-btn');
   function activate(id) {
     tabs.forEach(t => {
@@ -308,12 +208,7 @@
 })();
 </script>
 
-<!-- Boot timers for fs and cs (before importmap so they fire regardless of module load) -->
-<script>
-  window.__fsBootTimer = setTimeout(function(){
-    if (!window.__fsBooted){ var f = document.getElementById('fs-fallback'); if (f) f.style.display = 'flex'; }
-  }, 8000);
-</script>
+<!-- Boot timer for cs (before importmap so it fires regardless of module load) -->
 <script>
   window.__csBootTimer = setTimeout(function(){
     if (!window.__csBooted){ var f = document.getElementById('cs-fallback'); if (f) f.style.display = 'flex'; }
@@ -332,700 +227,6 @@
 </script>
 
 
-<!-- ============================================================ -->
-<!--  Script 2 : c3d (module)                                    -->
-<!-- ============================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-
-const gsap = window.gsap;
-const NS = id => document.getElementById('c3d-' + id);
-const PAL = GF_SCENE.active();
-const COL = { unit:PAL.unit, face:PAL.face, space:PAL.space, angle:PAL.angle, green:PAL.tri };
-const CSS = { unit:PAL.unit, face:PAL.face, space:PAL.space, angle:PAL.angle };
-GF_SCENE.onChange(GF_SCENE.reload);
-
-const canvas = NS('c');
-const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setClearColor(0x000000,0);
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(26,1,0.01,100);
-
-const pivot = new THREE.Group(); scene.add(pivot); pivot.add(camera);
-const CAM0 = { rx:-Math.PI/2, ry:0, R:6.8, tx:1.20, ty:0, tz:0.80 };
-const cam = Object.assign({}, CAM0);
-
-const mats=[];
-function applyCam(){
-  pivot.position.set(cam.tx,cam.ty,cam.tz);
-  pivot.rotation.set(cam.rx,cam.ry,0);
-  camera.position.set(0,0,cam.R);
-  camera.rotation.set(0,0,0);
-}
-function resize(){
-  const w=canvas.clientWidth, h=canvas.clientHeight; if(!w||!h) return;
-  renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
-  const px=renderer.getPixelRatio();
-  mats.forEach(m=>m.resolution.set(w*px,h*px));
-}
-new ResizeObserver(resize).observe(canvas);
-
-function fatLine(pts, color, width, opacity, depthTest, order){
-  const geo=new LineGeometry(); geo.setPositions([pts[0][0],pts[0][1],pts[0][2],pts[0][0],pts[0][1],pts[0][2]]);
-  const mat=new LineMaterial({color,linewidth:width,transparent:true,opacity:(opacity==null?1:opacity)});
-  mat.worldUnits=false; mat.depthTest=(depthTest!==false); mats.push(mat);
-  const line=new Line2(geo,mat); line.renderOrder=order||0; scene.add(line);
-  const o={line,geo,mat,pts};
-  o.set=function(p){
-    p=Math.max(0,Math.min(1,p)); let arr;
-    if(p<=0.0001){ const a=pts[0]; arr=[a[0],a[1],a[2],a[0],a[1],a[2]]; }
-    else if(pts.length===2){ const a=pts[0],b=pts[1];
-      const e=[a[0]+(b[0]-a[0])*p,a[1]+(b[1]-a[1])*p,a[2]+(b[2]-a[2])*p]; arr=[a[0],a[1],a[2],e[0],e[1],e[2]]; }
-    else { const n=Math.max(2,Math.ceil(p*(pts.length-1))+1); const s=pts.slice(0,n);
-      arr=[]; s.forEach(q=>arr.push(q[0],q[1],q[2])); }
-    o.geo.setPositions(arr);
-  };
-  o.set(0); return o;
-}
-function tri(a,b,c,color,opacity,order){
-  const g=new THREE.BufferGeometry();
-  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array([...a,...b,...c]),3));
-  g.setIndex([0,1,2]); g.computeVertexNormals();
-  const m=new THREE.MeshBasicMaterial({color,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false,depthTest:false});
-  const mesh=new THREE.Mesh(g,m); mesh.renderOrder=order||5; mesh.userData.target=opacity; scene.add(mesh); return mesh;
-}
-function quad(a,b,c,d,color,opacity,order){
-  return [tri(a,b,c,color,opacity,order),tri(a,c,d,color,opacity,order)];
-}
-function label(text,pos,colorCss,scale){
-  const cv=document.createElement('canvas'); cv.width=512; cv.height=170;
-  const ctx=cv.getContext('2d'); ctx.font='700 96px "Space Mono", monospace';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.lineWidth=12; ctx.strokeStyle=PAL.halo; ctx.strokeText(text,256,90);
-  ctx.fillStyle=colorCss; ctx.fillText(text,256,90);
-  const tex=new THREE.CanvasTexture(cv); tex.anisotropy=4;
-  const m=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthTest:false});
-  const sp=new THREE.Sprite(m); sp.position.set(pos[0],pos[1],pos[2]);
-  sp.scale.set(scale*3.0,scale,1); sp.renderOrder=40; scene.add(sp); return sp;
-}
-
-const k=1/287, X0=159, Y0=264;
-const m2=(px,py)=>[(px-X0)*k, 0, (py-Y0)*k];
-const ringPts=(cx,cy,r,n=160)=>{const a=[];for(let i=0;i<=n;i++){const t=i/n*Math.PI*2;a.push(m2(cx+r*Math.cos(t),cy+r*Math.sin(t)));}return a;};
-
-const SQ={tl:[159,264],tr:[446,264],br:[446,507],bl:[159,507]};
-const CIR=[[298,387,185],[409,552,195],[703,482,193]];
-const BLUE={top:[444,351],left:[166,555],bottom:[447,753],right:[725,549]};
-const WHITE=[[444,351],[166,555],[444,552]];
-const MAG={a:[453,360],apex:[848,387],b:[617,715]};
-
-const p1lines=[], p1fills=[], p1labels=[];
-const circ = CIR.map(c=>fatLine(ringPts(c[0],c[1],c[2]),COL.unit,2.0,0.40,false,2));
-p1lines.push(...circ);
-const sqE=[ fatLine([m2(...SQ.tl),m2(...SQ.tr)],COL.unit,3,1,false,8),
-           fatLine([m2(...SQ.tr),m2(...SQ.br)],COL.unit,3,1,false,8),
-           fatLine([m2(...SQ.br),m2(...SQ.bl)],COL.unit,3,1,false,8),
-           fatLine([m2(...SQ.bl),m2(...SQ.tl)],COL.unit,3,1,false,8) ];
-const sqD=[ fatLine([m2(...SQ.tl),m2(...SQ.br)],COL.face,2.4,0.9,false,8),
-           fatLine([m2(...SQ.tr),m2(...SQ.bl)],COL.face,2.4,0.9,false,8) ];
-p1lines.push(...sqE,...sqD);
-const blueFill=quad(m2(...BLUE.top),m2(...BLUE.right),m2(...BLUE.bottom),m2(...BLUE.left),COL.face,0.85,5);
-const whiteFill=[tri(m2(...WHITE[0]),m2(...WHITE[1]),m2(...WHITE[2]),COL.unit,1,6)];
-p1fills.push(...blueFill,...whiteFill);
-const blueE=[ fatLine([m2(...BLUE.top),m2(...BLUE.right)],COL.unit,2.0,0.8,false,9),
-             fatLine([m2(...BLUE.right),m2(...BLUE.bottom)],COL.unit,2.0,0.8,false,9),
-             fatLine([m2(...BLUE.bottom),m2(...BLUE.left)],COL.unit,2.0,0.8,false,9),
-             fatLine([m2(...BLUE.left),m2(...BLUE.top)],COL.unit,2.0,0.8,false,9),
-             fatLine([m2(...BLUE.top),m2(...BLUE.bottom)],COL.unit,1.8,0.6,false,9) ];
-p1lines.push(...blueE);
-const magFill=[tri(m2(...MAG.a),m2(...MAG.apex),m2(...MAG.b),COL.space,0.9,5)];
-p1fills.push(...magFill);
-const magE=[ fatLine([m2(...MAG.a),m2(...MAG.apex)],COL.unit,2.4,0.85,false,9),
-            fatLine([m2(...MAG.apex),m2(...MAG.b)],COL.unit,2.4,0.85,false,9),
-            fatLine([m2(...MAG.b),m2(...MAG.a)],COL.unit,2.4,0.85,false,9),
-            fatLine([m2(848,387),m2(535,537)],COL.unit,1.7,0.6,false,9) ];
-p1lines.push(...magE);
-const L1p=label('1',m2(300,238),CSS.unit,0.16); const L2p=label('√2',m2(250,400),CSS.face,0.18);
-const L3p=label('√3',m2(690,520),CSS.space,0.20); p1labels.push(L1p,L2p,L3p);
-
-const p1all=[...p1lines,...p1fills,...p1labels];
-
-const O=[0,0,0],X=[1,0,0],Zp=[0,0,1],A=[1,0,1],B=[1,1,1];
-const O2=[0,1,0],X2=[1,1,0],Z2=[0,1,1];
-const ghostDefs=[[O,X],[X,A],[A,Zp],[Zp,O],[O2,X2],[X2,B],[B,Z2],[Z2,O2],[O,O2],[X,X2],[A,B],[Zp,Z2]];
-const ghost=ghostDefs.map(e=>{const o=fatLine(e,COL.unit,1.4,0.0,true,0);o.set(1);return o;});
-const base=[ fatLine([O,X],COL.unit,3,0,true,1), fatLine([X,A],COL.unit,3,0,true,1),
-            fatLine([A,Zp],COL.unit,3,0,true,1), fatLine([Zp,O],COL.unit,3,0,true,1) ];
-const faceDiag=fatLine([O,A],COL.face,3.2,0,true,2);
-const lift=fatLine([A,B],COL.unit,3,0,true,2);
-const spaceDiag=fatLine([O,B],COL.space,3.6,0,true,3);
-const proofTri=tri(O,A,B,COL.green,0.16,4);
-const ao=new THREE.Vector3(O[0]-A[0],O[1]-A[1],O[2]-A[2]).normalize();
-const ab=new THREE.Vector3(0,1,0); const s=0.13;
-const ra=[ [A[0]+ao.x*s,A[1]+ao.y*s,A[2]+ao.z*s],
-           [A[0]+ao.x*s+ab.x*s,A[1]+ao.y*s+ab.y*s,A[2]+ao.z*s+ab.z*s],
-           [A[0]+ab.x*s,A[1]+ab.y*s,A[2]+ab.z*s] ];
-const rightAngle=fatLine(ra,COL.unit,1.8,0,true,3);
-const uOA=new THREE.Vector3(...A).normalize(), uOB=new THREE.Vector3(...B).normalize();
-const arcPts=[]; for(let i=0;i<=40;i++){const t=i/40;const d=new THREE.Vector3().lerpVectors(uOA,uOB,t).normalize().multiplyScalar(0.34);arcPts.push([d.x,d.y,d.z]);}
-const arc=fatLine(arcPts,COL.angle,2.0,0,true,3);
-const L1=label('1',[1.12,0.5,1.06],CSS.unit,0.16);
-const L2=label('√2',[0.5,-0.07,0.5],CSS.face,0.18);
-const L3=label('√3',[0.40,0.52,0.52],CSS.space,0.20);
-const Lang=label('35.26°',[0.55,0.16,0.18],CSS.angle,0.12);
-const p3lines=[...ghost,...base,faceDiag,lift,spaceDiag,rightAngle,arc];
-const p3labels=[L1,L2,L3,Lang];
-
-const cap=NS('caption');
-function setCap(html){ cap.style.opacity=0; setTimeout(()=>{cap.innerHTML=html; cap.style.opacity=1;},170); }
-
-const playBtn=NS('play'), pauseBtn=NS('pause'), scrub=NS('scrub'), speed=NS('speed');
-let scrubbing=false, done=false;
-const tl=gsap.timeline({paused:true,
-  onUpdate:()=>{ if(!scrubbing) scrub.value=Math.round(tl.progress()*1000); },
-  onComplete:()=>{ playBtn.textContent='Replay'; done=true; }});
-
-const drawTo=(o,d,pos)=>{ const px={p:0}; o.set(0);
-  return tl.to(px,{p:1,duration:d,ease:'power1.inOut',onUpdate:()=>o.set(px.p)},pos); };
-const matOf=(o)=> o.mat ? o.mat : o.material;
-const fadeIn=(o,d,pos,to)=> tl.to(matOf(o),{opacity:(to==null?(o.userData&&o.userData.target)||1:to),duration:d},pos);
-const fadeOut=(o,d,pos)=> tl.to(matOf(o),{opacity:0,duration:d},pos);
-
-tl.set(cam,{rx:CAM0.rx,ry:CAM0.ry,R:CAM0.R,tx:CAM0.tx,ty:CAM0.ty,tz:CAM0.tz},0);
-
-tl.add(()=>setCap('Three construction circles · <b>R = 1 : √2 : √3</b>'),0);
-circ.forEach((c,i)=>drawTo(c,0.7,0.05+i*0.26));
-tl.add(()=>setCap('The module · <b>unit square, edge = 1</b>'),'>-0.1');
-sqE.forEach((e,i)=>drawTo(e,0.40,'>'+(i?-0.28:0)));
-fadeIn(L1p,0.4,'>-0.2',1);
-tl.add(()=>setCap('Fold the diagonal · <b>√2 — the face diagonal</b>'),'>-0.05');
-sqD.forEach((d,i)=>drawTo(d,0.5,'>'+(i?-0.42:0)));
-tl.add('blue','>-0.05');
-blueE.forEach((e,i)=>drawTo(e,0.38,'blue+='+(i*0.14)));
-blueFill.forEach(m=>fadeIn(m,0.8,'blue+=0.3'));
-whiteFill.forEach(m=>fadeIn(m,0.6,'blue+=0.5'));
-fadeIn(L2p,0.4,'blue+=0.5',1);
-tl.add(()=>setCap('Lift one unit · <b>√3 — the cube’s Lost Triangle</b>'),'>-0.05');
-tl.add('mag','>-0.05');
-magE.forEach((e,i)=>drawTo(e,0.46,'mag+='+(i*0.18)));
-magFill.forEach(m=>fadeIn(m,0.9,'mag+=0.4'));
-fadeIn(L3p,0.45,'mag+=0.6',1);
-tl.to({},{duration:0.8});
-
-tl.addLabel('orbit');
-tl.add(()=>setCap('Rotate to eye level · <b>plan → space</b>'),'orbit');
-tl.to(cam,{rx:0,duration:3.0,ease:'power2.inOut'},'orbit');
-tl.to(cam,{tx:0.5,ty:0.45,tz:0.5,R:4.6,duration:3.0,ease:'power2.inOut'},'orbit');
-p1all.forEach(o=>fadeOut(o,1.6,'orbit+=0.7'));
-
-tl.addLabel('d3','orbit+=2.7');
-tl.to(cam,{ry:-0.5,duration:2.4,ease:'power2.inOut'},'d3');
-tl.add(()=>setCap('Redraw in space · <b>unit cube base</b>'),'d3');
-base.forEach((e,i)=>drawTo(e,0.45,'d3+='+(i*0.16)));
-ghost.forEach(g=>fadeIn(g,1.0,'d3+=0.2',0.16));
-tl.add(()=>setCap('Face diagonal · <b>1² + 1² = 2 → √2</b>'),'>-0.1');
-drawTo(faceDiag,0.7,'>'); fadeIn(L2,0.4,'>-0.2',1);
-tl.add(()=>setCap('Lift one unit edge · <b>vertical = 1</b>'),'>+0.05');
-drawTo(lift,0.6,'>'); fadeIn(L1,0.4,'>-0.2',1);
-tl.add(()=>setCap('Space diagonal · <b>(√2)² + 1² = 3 → √3</b>'),'>+0.05');
-drawTo(spaceDiag,0.9,'>'); fadeIn(L3,0.45,'>-0.3',1);
-fadeIn(proofTri,0.9,'>-0.4');
-tl.add(()=>setCap('Right angle at the lift · <b>θ = 35.264°</b>'),'>-0.1');
-drawTo(rightAngle,0.4,'>'); drawTo(arc,0.6,'>-0.1'); fadeIn(Lang,0.4,'>-0.1',1);
-tl.add(()=>setCap('<b>1 : √2 : √3</b> — the cube’s Lost Triangle'),'>+0.3');
-tl.to({},{duration:1.0});
-
-function syncFromScrub(v){ tl.pause(); tl.progress(v); pauseBtn.textContent='Resume'; }
-playBtn.onclick=()=>{ done=false; tl.timeScale(+speed.value);
-  if(tl.progress()>=1||tl.progress()===0) tl.restart(); else tl.play();
-  playBtn.textContent='Replay'; pauseBtn.textContent='Pause'; };
-pauseBtn.onclick=()=>{ if(tl.paused()){tl.play();pauseBtn.textContent='Pause';}
-  else{tl.pause();pauseBtn.textContent='Resume';} };
-scrub.addEventListener('input',()=>{scrubbing=true;syncFromScrub(scrub.value/1000);});
-scrub.addEventListener('change',()=>{scrubbing=false;});
-speed.onchange=()=>tl.timeScale(+speed.value);
-
-function loop(){
-  requestAnimationFrame(loop);
-  if (document.getElementById('con-c3d').style.display === 'none') return;
-  if(done) cam.ry -= 0.0016;
-  applyCam();
-  renderer.render(scene,camera);
-}
-resize(); applyCam(); loop();
-const start=()=>{ tl.timeScale(+speed.value).play(); };
-if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(()=>setTimeout(start,250)); }
-else setTimeout(start,400);
-</script>
-
-<!-- ============================================================ -->
-<!--  Script 3 : fs — Fleishman Sequence (module)                -->
-<!-- ============================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-
-const NS = id => document.getElementById('fs-' + id);
-
-const SC = GF_SCENE.active();
-const hex = (s) => parseInt(s.replace('#',''), 16);
-const COL = {
-  bg:hex(SC.bg[1]), bone:hex(SC.ink), dim:hex(SC.muted),
-  gold:hex(SC.angle), face:hex(SC.face), space:hex(SC.space), green:hex(SC.tri)
-};
-const HEX = { bone:SC.ink, dim:SC.muted, gold:SC.angle, face:SC.face, space:SC.space, green:SC.tri };
-GF_SCENE.onChange(GF_SCENE.reload);
-const clean = new URLSearchParams(location.search).has('clean');
-if (clean) document.body.classList.add('clean');
-
-const stage = NS('stage');
-let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true }); }
-catch (e){ const f = NS('fallback'); if (f) f.style.display = 'flex'; throw e; }
-renderer.setClearColor(COL.bg, 1);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-stage.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-
-const pivot = new THREE.Group();
-scene.add(pivot);
-const camera = new THREE.PerspectiveCamera(34, 1, 0.01, 100);
-camera.position.set(0, 0, 4.4);
-pivot.add(camera);
-
-const PLAN_CENTER = new THREE.Vector3(1.05, 0, 0.80);
-const CUBE_CENTER = new THREE.Vector3(0.5, 0.5, 0.5);
-
-let W = 1, H = 1;
-const strokes = [];
-function resize(){
-  W = stage.clientWidth; H = stage.clientHeight;
-  renderer.setSize(W, H);
-  camera.aspect = W / H; camera.updateProjectionMatrix();
-  strokes.forEach(s => s.mat.resolution.set(W, H));
-}
-window.addEventListener('resize', resize);
-
-function P(px, py, y=0){ return new THREE.Vector3((px-159)/287, y, (py-264)/287); }
-
-function partial(pts, t){
-  if (t <= 0) return [pts[0].clone(), pts[0].clone()];
-  if (t >= 1) return pts.map(p => p.clone());
-  let total = 0; const seg = [];
-  for (let i=1;i<pts.length;i++){ const d = pts[i].distanceTo(pts[i-1]); seg.push(d); total += d; }
-  const target = t*total; const out = [pts[0].clone()]; let acc = 0;
-  for (let i=1;i<pts.length;i++){
-    if (acc + seg[i-1] < target){ out.push(pts[i].clone()); acc += seg[i-1]; }
-    else { const r = (target-acc)/Math.max(seg[i-1],1e-9); out.push(pts[i-1].clone().lerp(pts[i], r)); break; }
-  }
-  return out;
-}
-
-class Stroke {
-  constructor(pts, color, width, opacity=1, ro=1, opts={}){
-    this.pts = pts;
-    this.geom = new LineGeometry();
-    const cfg = { color, linewidth:width, transparent:true, opacity };
-    if (opts.dashed){ cfg.dashed = true; cfg.dashSize = opts.dashSize; cfg.gapSize = opts.gapSize; }
-    this.mat = new LineMaterial(cfg);
-    this.mat.resolution.set(W, H);
-    this.line = new Line2(this.geom, this.mat);
-    this.line.renderOrder = ro;
-    this.line.frustumCulled = false;
-    if (opts.dashed){
-      const arr = []; this.pts.forEach(v => arr.push(v.x, v.y, v.z));
-      this.geom.setPositions(arr);
-      this.line.computeLineDistances();
-      this.line.visible = true; this._p = 1;
-    } else {
-      this.setProgress(0);
-    }
-    strokes.push(this);
-    scene.add(this.line);
-  }
-  setProgress(t){
-    this._p = t;
-    this.line.visible = t > 0.0008;
-    const p = partial(this.pts, t); const arr = [];
-    p.forEach(v => { arr.push(v.x, v.y, v.z); });
-    this.geom.setPositions(arr);
-  }
-}
-function S(pts, color, width, opacity, ro, bucket, opts){
-  const s = new Stroke(pts, color, width, opacity, ro, opts);
-  if (bucket) bucket.push(s.mat);
-  return s;
-}
-
-function F(pts, color, bucket){
-  const g = new THREE.BufferGeometry(); const v = [];
-  for (let i=1;i<pts.length-1;i++){
-    v.push(pts[0].x,pts[0].y,pts[0].z, pts[i].x,pts[i].y,pts[i].z, pts[i+1].x,pts[i+1].y,pts[i+1].z);
-  }
-  g.setAttribute('position', new THREE.Float32BufferAttribute(v,3));
-  const m = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
-  const mesh = new THREE.Mesh(g, m); mesh.renderOrder = -2;
-  mesh.frustumCulled = false;
-  scene.add(mesh);
-  if (bucket) bucket.push(m);
-  return m;
-}
-
-function makeLabel(text, color, worldH=0.15){
-  const font = '700 110px "Space Mono", monospace';
-  const meas = document.createElement('canvas').getContext('2d'); meas.font = font;
-  const pad = 24;
-  const w = Math.ceil(meas.measureText(text).width) + pad*2;
-  const h = 110 + pad*2;
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const ctx = c.getContext('2d'); ctx.font = font; ctx.fillStyle = color;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(text, w/2, h/2);
-  const tex = new THREE.CanvasTexture(c); tex.anisotropy = 8; tex.minFilter = THREE.LinearFilter;
-  const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, opacity:0, depthTest:false, depthWrite:false });
-  const sp = new THREE.Sprite(mat);
-  sp.scale.set(worldH * w/h, worldH, 1);
-  sp.renderOrder = 30;
-  return { sprite:sp, mat };
-}
-function L(text, color, pos, bucket, h=0.15){
-  const { sprite, mat } = makeLabel(text, color, h);
-  sprite.position.copy(pos); scene.add(sprite);
-  if (bucket) bucket.push(mat);
-  return mat;
-}
-
-const M = { spiral:[], plan:[], cubeEdge:[], cubeBase:[], cubeExtra:[], cell:[], diamond:[], octa:[], octaFill:[], neigh:[],
-            standGhost:[], fdFlow:[], fillVec:[] };
-const flows = [];
-const addFlow = (mat, rate, start, end) => flows.push({ mat, rate, start, end });
-
-await document.fonts.ready;
-
-const rootGrid = [];
-const rootStrokes = [];
-const rootFills = [];
-const rootLabels = [];
-(function buildRoot(){
-  const S2 = Math.SQRT2, S3 = Math.sqrt(3);
-  const s = 0.60, gx = 1.05 - s*1.5, gz = 0.80 - s*1.5;
-  const U = (u,v) => new THREE.Vector3(gx + s*u, 0, gz + s*v);
-  const arc = (cu,cv,r,a0,a1,seg=40) => { const a=[]; for(let i=0;i<=seg;i++){ const t=a0+(a1-a0)*i/seg; a.push(U(cu+r*Math.cos(t), cv+r*Math.sin(t))); } return a; };
-  const O = U(1,2);
-  for (let i=0;i<=3;i++){
-    rootGrid.push(S([U(i,0),U(i,3)], COL.bone, 1.2, 0.16, 1, M.spiral));
-    rootGrid.push(S([U(0,i),U(3,i)], COL.bone, 1.2, 0.16, 1, M.spiral));
-  }
-  rootStrokes.push(S([U(1,2),U(2,2),U(2,1),U(1,1),U(1,2)], COL.bone, 2.0, 0.85, 3, M.spiral));
-  const v2diamond = [U(1,1),U(0,2),U(1,3),U(2,2)];
-  rootFills.push(F([...v2diamond.map(p=>p.clone()), v2diamond[0].clone()], COL.face, M.spiral));
-  rootStrokes.push(S([...v2diamond, v2diamond[0]], COL.face, 2.2, 0.92, 3, M.spiral));
-  rootStrokes.push(S([O, U(2,1)], COL.face, 2.2, 0.95, 4, M.spiral));
-  rootStrokes.push(S(arc(1,2,S2, -Math.PI/4, 0), COL.gold, 1.8, 0.9, 4, M.spiral));
-  const ltri = [O, U(1+S2,2), U(1+S2,1)];
-  rootFills.push(F([...ltri.map(p=>p.clone()), ltri[0].clone()], COL.green, M.spiral));
-  rootStrokes.push(S([U(1+S2,2),U(1+S2,1)], COL.bone, 1.8, 0.8, 3, M.spiral));
-  rootStrokes.push(S([O, U(1+S2,1)], COL.space, 2.4, 1, 4, M.spiral));
-  rootStrokes.push(S(arc(1,2,S3, -Math.atan2(1,S2), 0), COL.gold, 1.8, 0.9, 4, M.spiral));
-  rootLabels.push(L('1',  HEX.bone,  U(0.5,2.5), M.spiral, 0.12));
-  rootLabels.push(L('√2', HEX.face,  U(0.78,1.62), M.spiral, 0.13));
-  rootLabels.push(L('√3', HEX.space, U(1.74,1.42), M.spiral, 0.13));
-})();
-
-const circA = S(planCircle(298,387,185), COL.bone, 2.0, 0.46, 1, M.plan);
-const circB = S(planCircle(409,552,195), COL.bone, 2.0, 0.46, 1, M.plan);
-const circC = S(planCircle(703,482,193), COL.bone, 2.0, 0.46, 1, M.plan);
-function planCircle(cx,cy,r,seg=96){ const a=[]; for(let i=0;i<=seg;i++){const t=i/seg*Math.PI*2; a.push(P(cx+r*Math.cos(t), cy+r*Math.sin(t)));} return a; }
-
-const sq = S([P(159,264),P(446,264),P(446,507),P(159,507),P(159,264)], COL.bone, 3.0, 1, 3, M.plan);
-const dg1 = S([P(159,264),P(446,507)], COL.face, 2.4, 0.95, 3, M.plan);
-const dg2 = S([P(446,264),P(159,507)], COL.face, 2.4, 0.95, 3, M.plan);
-
-const foldPts = [P(444,351,-0.004),P(725,549,-0.004),P(447,753,-0.004),P(166,555,-0.004)];
-const foldFill = F([...foldPts, foldPts[0]], COL.face, M.plan);
-const foldLine = S([P(444,351),P(725,549),P(447,753),P(166,555),P(444,351)], COL.face, 2.4, 0.9, 3, M.plan);
-const whiteFill = F([P(444,351,-0.003),P(166,555,-0.003),P(444,552,-0.003)], COL.bone, M.plan);
-const magPts = [P(453,360,-0.002),P(848,387,-0.002),P(617,715,-0.002)];
-const magFill = F([...magPts, magPts[0]], COL.space, M.plan);
-const magLine = S([P(453,360),P(848,387),P(617,715),P(453,360)], COL.space, 2.8, 1, 3, M.plan);
-const magDiv  = S([P(848,387),P(535,537)], COL.space, 2.0, 0.85, 3, M.plan);
-const pl1 = L('1',  HEX.bone, P(300,238), M.plan, 0.14);
-const plv2= L('√2', HEX.face, P(250,400), M.plan, 0.14);
-const plv3= L('√3', HEX.space,P(690,520), M.plan, 0.14);
-
-const O=new THREE.Vector3(0,0,0), X=new THREE.Vector3(1,0,0), Z=new THREE.Vector3(0,0,1), A=new THREE.Vector3(1,0,1);
-const B=new THREE.Vector3(1,1,1), O2=new THREE.Vector3(0,1,0), X2=new THREE.Vector3(1,1,0), Z2=new THREE.Vector3(0,1,1);
-const cubeEdgePairs = [
-  [O,X],[X,A],[A,Z],[Z,O],
-  [O2,X2],[X2,B],[B,Z2],[Z2,O2],
-  [O,O2],[X,X2],[A,B],[Z,Z2]
-];
-const cubeEdges = cubeEdgePairs.map(([a,b]) => S([a,b], COL.bone, 1.4, 0.16, 1, M.cubeEdge));
-const baseSq = S([O,X,A,Z,O], COL.bone, 2.6, 0.92, 2, M.cubeBase);
-const faceDiag = S([O,A], COL.face, 3.0, 1, 4, M.cubeExtra);
-const lift     = S([A,B], COL.bone, 2.6, 1, 4, M.cubeExtra);
-const spaceDiag= S([O,B], COL.space,3.2, 1, 4, M.cubeExtra);
-const proofFill= F([O,A,B], COL.green, M.cubeExtra);
-const angleArc = S(arcPts(O, A.clone(), B.clone(), 0.34, 44), COL.gold, 2.0, 0.95, 4, M.cubeExtra);
-function arcPts(c,u,v,rad,seg){ u=u.clone().normalize(); v=v.clone().normalize();
-  const ang=u.angleTo(v), axis=new THREE.Vector3().crossVectors(u,v).normalize(); const a=[];
-  for(let i=0;i<=seg;i++){ const q=new THREE.Quaternion().setFromAxisAngle(axis,ang*i/seg);
-    a.push(c.clone().add(u.clone().applyQuaternion(q).multiplyScalar(rad))); } return a; }
-const cl_v2 = L('√2', HEX.face,  O.clone().lerp(A,0.5).add(new THREE.Vector3(0,-0.13,0)), M.cubeExtra, 0.13);
-const cl_1  = L('1',  HEX.bone,  A.clone().lerp(B,0.5).add(new THREE.Vector3(0.14,0,0.02)), M.cubeExtra, 0.13);
-const cl_v3 = L('√3', HEX.space, O.clone().lerp(B,0.5).add(new THREE.Vector3(-0.16,0.02,0)), M.cubeExtra, 0.14);
-const cl_th = L('35.26°', HEX.gold, O.clone().add(new THREE.Vector3(0.46,0.16,0.30)), M.cubeExtra, 0.105);
-
-const standPlan = [ P(453,360,-0.002), P(848,387,-0.002), P(617,715,-0.002) ];
-const standCube = [ A.clone(), O.clone(), B.clone() ];
-const stand = { p:0 };
-const standAt = (i) => standPlan[i].clone().lerp(standCube[i], stand.p);
-const standFillGeom = new THREE.BufferGeometry();
-standFillGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(9), 3));
-const standFillMat = new THREE.MeshBasicMaterial({ color:COL.space, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
-const standFillMesh = new THREE.Mesh(standFillGeom, standFillMat);
-standFillMesh.renderOrder = -2; standFillMesh.frustumCulled = false; scene.add(standFillMesh);
-const standOutGeom = new LineGeometry();
-const standOutMat = new LineMaterial({ color:COL.space, linewidth:2.8, transparent:true, opacity:0 });
-standOutMat.resolution.set(W, H);
-const standOut = new Line2(standOutGeom, standOutMat);
-standOut.renderOrder = 5; standOut.frustumCulled = false; scene.add(standOut);
-strokes.push({ mat:standOutMat });
-M.cubeExtra.push(standFillMat, standOutMat);
-function updateStand(){
-  const a = standAt(0), b = standAt(1), c = standAt(2);
-  const pos = standFillGeom.attributes.position;
-  pos.array.set([a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z]); pos.needsUpdate = true;
-  standOutGeom.setPositions([a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z, a.x,a.y,a.z]);
-}
-updateStand();
-
-const standGhost = S([A.clone(), O.clone(), B.clone(), A.clone()], COL.space, 1.4, 0, 5, M.standGhost,
-                     { dashed:true, dashSize:0.045, gapSize:0.035 });
-const yLift = new THREE.Vector3(0, 0.003, 0);
-const fdFlowA = S([O.clone().add(yLift), A.clone().add(yLift)], COL.face, 1.3, 0, 4, M.fdFlow,
-                  { dashed:true, dashSize:0.06, gapSize:0.05 });
-const fdFlowB = S([A.clone().add(yLift), B.clone().add(yLift)], COL.bone, 1.3, 0, 4, M.fdFlow,
-                  { dashed:true, dashSize:0.06, gapSize:0.05 });
-addFlow(fdFlowA.mat, 0.9, 20.1, 21.5);
-addFlow(fdFlowB.mat, 0.9, 21.3, 22.8);
-const fillVec = S([new THREE.Vector3(0.5,0.5,0.5), new THREE.Vector3(2.0,2.0,0.5)], COL.space, 1.4, 0, 4, M.fillVec,
-                  { dashed:true, dashSize:0.06, gapSize:0.05 });
-addFlow(fillVec.mat, 1.2, 38.9, 43.2);
-
-const corners = [];
-for (const x of [0,1]) for (const y of [0,1]) for (const z of [0,1]) corners.push(new THREE.Vector3(x,y,z));
-const apexes = [
-  new THREE.Vector3(1.5,.5,.5), new THREE.Vector3(-.5,.5,.5),
-  new THREE.Vector3(.5,1.5,.5), new THREE.Vector3(.5,-.5,.5),
-  new THREE.Vector3(.5,.5,1.5), new THREE.Vector3(.5,.5,-.5)
-];
-const cellPairs = [];
-for (const c of corners) for (const ap of apexes)
-  if (Math.abs(c.distanceTo(ap) - Math.sqrt(0.75)) < 1e-6) cellPairs.push([c, ap]);
-const cellEdges = cellPairs.map(([a,b]) => S([a,b], COL.bone, 1.6, 0.5, 2, M.cell));
-
-const dApex1 = new THREE.Vector3(1.5,.5,.5), dApex2 = new THREE.Vector3(.5,1.5,.5);
-const dCor1  = new THREE.Vector3(1,1,0),     dCor2  = new THREE.Vector3(1,1,1);
-const diamondFill = F([dApex1,dCor1,dApex2,dCor2], COL.green, M.diamond);
-const diamondOut  = S([dApex1,dCor1,dApex2,dCor2,dApex1], COL.bone, 2.4, 0.95, 5, M.diamond);
-const diamLong = S([dApex1,dApex2], COL.space, 3.0, 1, 6, M.diamond);
-const diamShort= S([dCor1,dCor2],   COL.bone,  2.6, 1, 6, M.diamond);
-const dl_v2 = L('√2', HEX.space, dApex1.clone().lerp(dApex2,0.5).add(new THREE.Vector3(0.06,0.12,0)), M.diamond, 0.13);
-const dl_1  = L('1',  HEX.bone,  dCor1.clone().lerp(dCor2,0.5).add(new THREE.Vector3(0.18,0,0.04)), M.diamond, 0.12);
-
-const octaPairs = [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]];
-const octaEdges = octaPairs.map(([i,j]) => S([apexes[i],apexes[j]], COL.face, 2.2, 0.92, 5, M.octa));
-const octaFaceTris = [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,2,4],[1,4,3],[1,3,5],[1,5,2]];
-const octaFills = octaFaceTris.map(([a,b,c]) => F([apexes[a],apexes[b],apexes[c]], COL.face, M.octaFill));
-const ol_v2 = L('√2', HEX.face, apexes[0].clone().lerp(apexes[2],0.5).add(new THREE.Vector3(0.10,0.10,0)), M.octa, 0.13);
-
-const neighStrokes = cellPairs.map(([a,b]) => {
-  const off = new THREE.Vector3(1,1,0);
-  return S([a.clone().add(off), b.clone().add(off)], COL.bone, 1.4, 0.13, 1, M.neigh);
-});
-
-const capstack = NS('capstack');
-function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capstack.appendChild(d); return d; }
-const C = {
-  spiral: cap("Gregg’s root sequence · <b>1 → √2 → √3</b>"),
-  circles:cap("Three circles · <b>1 : √2 : √3</b>"),
-  square: cap("The module · <b>the unit square</b>"),
-  diag:   cap("Its diagonal · <b>√2</b>"),
-  fold:   cap("The √2 fold"),
-  lost:   cap("<b>The Lost Triangle</b> · √3"),
-  orbit:  cap("Stand it up · <b>plan → space</b>"),
-  cube:   cap("The module becomes a <b>cube</b>"),
-  fd:     cap("Face diagonal · <b>√2</b>"),
-  liftc:  cap("Lift one unit"),
-  sd:     cap("Space diagonal · <b>√3 — the Lost Triangle in space</b>"),
-  ang:    cap("<b>θ = 35.264°</b>"),
-  intro:  cap("The Lost Triangle rises into space"),
-  raise:  cap("Raise a face on every plane of the cube"),
-  cell:   cap("The <b>rhombic cell</b> — every face a √2 diamond"),
-  ratio:  cap("<b>√2 : 1</b> — the ratio that packs space"),
-  octa1:  cap("Connect the six apexes — an <b>octahedron</b>"),
-  octa2:  cap("Every edge <b>√2</b> — the spiral, raised into space"),
-  fill:   cap("<b>One module → the whole of space</b>")
-};
-
-const tl = gsap.timeline({ paused:true });
-
-const draws = [];
-const easeFn = {};
-function getEase(name){ return easeFn[name] || (easeFn[name] = gsap.parseEase(name)); }
-function draw(stroke, start, dur=1.2, ease='power2.inOut'){
-  draws.push({ stroke, start, dur, ease:getEase(ease) });
-}
-function drawMany(arr, start, dur, stagger=0, ease='power2.inOut'){
-  arr.forEach((s,i)=>draw(s, start + i*stagger, dur, ease));
-}
-function updateDraws(t){
-  for (const d of draws){
-    let p = (t - d.start) / d.dur;
-    p = p <= 0 ? 0 : p >= 1 ? 1 : d.ease(p);
-    d.stroke.setProgress(p);
-  }
-}
-function fade(mats, to, start, dur=0.8, ease='power1.inOut'){
-  tl.to(mats,{opacity:to,duration:dur,ease},start);
-}
-function showCap(el, start, end){
-  tl.to(el,{opacity:1,duration:0.45,ease:'power1.out'},start);
-  tl.to(el,{opacity:0,duration:0.45,ease:'power1.in'},end-0.45);
-}
-
-tl.set(pivot.rotation, { x:-Math.PI/2, y:0, z:0 }, 0);
-tl.set(pivot.position, { x:PLAN_CENTER.x, y:PLAN_CENTER.y, z:PLAN_CENTER.z }, 0);
-tl.set(camera.position, { z:4.4 }, 0);
-tl.set(stand, { p:0 }, 0);
-
-drawMany(rootGrid, 0.3, 0.5, 0.035);
-draw(rootStrokes[0], 1.0, 0.6);
-draw(rootStrokes[1], 1.5, 0.7);
-draw(rootStrokes[2], 1.7, 0.5);
-draw(rootStrokes[3], 2.0, 0.6);
-fade([rootFills[0]], 0.34, 1.9, 0.7);
-draw(rootStrokes[4], 2.6, 0.4);
-draw(rootStrokes[5], 2.8, 0.6);
-draw(rootStrokes[6], 3.0, 0.6);
-fade([rootFills[1]], 0.5, 2.9, 0.7);
-fade(rootLabels, 1, 2.4, 0.7);
-showCap(C.spiral, 0.5, 4.2);
-fade(M.spiral, 0, 3.8, 0.7);
-
-draw(circA, 4.4, 1.0); draw(circB, 4.7, 1.0); draw(circC, 5.0, 1.0);
-showCap(C.circles, 4.5, 6.6);
-draw(sq, 6.7, 1.3);
-showCap(C.square, 6.7, 8.4);
-draw(dg1, 8.3, 0.8); draw(dg2, 8.5, 0.8);
-showCap(C.diag, 8.3, 9.6);
-draw(foldLine, 9.6, 1.0); fade([foldFill], 0.85, 10.0, 1.0);
-showCap(C.fold, 9.7, 11.0);
-fade([whiteFill], 1, 11.0, 0.8);
-draw(magLine, 11.6, 1.1); fade([magFill], 0.9, 12.0, 0.9); draw(magDiv, 12.4, 0.6);
-fade([pl1,plv2,plv3], 1, 12.0, 0.8);
-showCap(C.lost, 11.7, 13.8);
-
-tl.to(pivot.rotation, { x:0, duration:3.2, ease:'power2.inOut' }, 14.2);
-tl.to(pivot.position, { x:CUBE_CENTER.x, y:CUBE_CENTER.y, z:CUBE_CENTER.z, duration:3.2, ease:'power2.inOut' }, 14.2);
-fade(M.plan, 0, 14.3, 1.5);
-fade([standFillMat], 0.30, 14.4, 0.6);
-fade([standOutMat], 1, 14.4, 0.6);
-fade(M.standGhost, 0.34, 14.5, 0.6);
-fade(M.standGhost, 0, 16.8, 1.2);
-tl.to(stand, { p:1, duration:3.6, ease:'power2.inOut' }, 14.6);
-showCap(C.orbit, 14.4, 18.0);
-tl.to(pivot.rotation, { y:0.62, x:-0.30, duration:2.2, ease:'power1.inOut' }, 17.2);
-
-drawMany(cubeEdges, 18.4, 1.0, 0.025);
-draw(baseSq, 18.8, 1.2);
-showCap(C.cube, 18.6, 20.4);
-draw(faceDiag, 20.4, 0.9); fade([cl_v2], 1, 20.8, 0.6);
-fade([fdFlowA.mat], 0.30, 20.1, 0.5); fade([fdFlowA.mat], 0, 20.9, 0.5);
-showCap(C.fd, 20.4, 21.6);
-draw(lift, 21.6, 0.8); fade([cl_1], 1, 22.0, 0.6);
-fade([fdFlowB.mat], 0.30, 21.3, 0.5); fade([fdFlowB.mat], 0, 22.2, 0.5);
-showCap(C.liftc, 21.6, 22.6);
-fade([cl_v3], 1, 22.8, 0.6);
-showCap(C.sd, 22.7, 24.2);
-draw(angleArc, 24.2, 0.8); fade([cl_th], 1, 24.6, 0.6);
-showCap(C.ang, 24.2, 25.4);
-
-showCap(C.intro, 25.5, 27.0);
-fade(M.cubeExtra, 0, 26.2, 1.0);
-fade(M.cubeBase, 0.32, 26.2, 1.0);
-fade(M.cubeEdge, 0.42, 26.2, 1.0);
-drawMany(cellEdges, 27.0, 1.0, 0.05);
-showCap(C.raise, 27.0, 30.2);
-fade([diamondFill], 0.20, 30.3, 0.8);
-draw(diamondOut, 30.3, 0.9);
-draw(diamLong, 31.0, 0.8); draw(diamShort, 31.2, 0.8);
-fade([dl_v2,dl_1], 1, 31.4, 0.6);
-showCap(C.cell, 30.3, 32.4);
-showCap(C.ratio, 32.5, 34.0);
-fade(M.cell, 0.22, 34.2, 1.0);
-fade(M.diamond, 0.0, 34.2, 1.0);
-tl.to(camera.position, { z:6.0, duration:3.0, ease:'sine.inOut' }, 34.0);
-drawMany(octaEdges, 34.4, 0.9, 0.04);
-fade(M.octaFill, 0.085, 35.4, 1.2);
-fade([ol_v2], 1, 35.6, 0.6);
-showCap(C.octa1, 34.4, 36.6);
-showCap(C.octa2, 36.7, 38.6);
-fade(M.octaFill, 0.0, 38.6, 1.2);
-fade(M.octa, 0.26, 38.6, 1.2);
-fade(M.cell, 0.55, 38.6, 1.2);
-drawMany(neighStrokes, 38.8, 0.9, 0.012);
-fade(M.fillVec, 0.30, 38.9, 0.6); fade(M.fillVec, 0, 42.8, 0.4);
-tl.to(pivot.rotation, { y:0.86, duration:3.4, ease:'sine.inOut' }, 38.6);
-tl.to(camera.position, { z:6.1, duration:3.4, ease:'sine.inOut' }, 38.6);
-showCap(C.fill, 39.6, 43.2);
-tl.to({}, { duration:0.6 }, 43.2);
-
-const DUR = tl.duration();
-window.__fsTl = tl;
-window.__fsSeek = (t)=>{ tl.pause(); tl.time(t); updateDraws(t); updateStand(); renderer.render(scene, camera); };
-
-const playBtn = NS('play');
-const replayBtn = NS('replay');
-const scrub = NS('scrub');
-const speedSel = NS('speed');
-const tlabel = NS('tlabel');
-let scrubbing = false;
-
-function setPlayIcon(){ playBtn.textContent = tl.paused() ? '▶ Play' : '❙❙ Pause'; }
-playBtn.addEventListener('click', ()=>{ tl.paused() ? tl.play() : tl.pause(); setPlayIcon(); });
-replayBtn.addEventListener('click', ()=>{ tl.restart(); setPlayIcon(); });
-scrub.addEventListener('input', ()=>{ scrubbing=true; tl.pause(); tl.progress(scrub.value/1000); setPlayIcon(); });
-scrub.addEventListener('change', ()=>{ scrubbing=false; });
-speedSel.addEventListener('change', ()=>{ tl.timeScale(parseFloat(speedSel.value)); });
-
-gsap.ticker.add((time, deltaTime)=>{
-  if (document.getElementById('con-seq').style.display === 'none') return;
-  const tNow = tl.time();
-  updateDraws(tNow);
-  updateStand();
-  if (!tl.paused() && !scrubbing){
-    const dt = Math.min(0.05, (deltaTime || 16) / 1000);
-    for (const f of flows){ if (tNow >= f.start && tNow < f.end) f.mat.dashOffset -= f.rate * dt; }
-  }
-  if (!scrubbing){ scrub.value = (tl.progress()*1000)|0; }
-  tlabel.textContent = (tl.time()).toFixed(1) + 's';
-  renderer.render(scene, camera);
-});
-
-resize();
-tl.play();
-setPlayIcon();
-window.__fsBooted = true; clearTimeout(window.__fsBootTimer);
-</script>
 
 <!-- ============================================================ -->
 <!--  Script 4 : cs — Cluster Structures (module)                -->
