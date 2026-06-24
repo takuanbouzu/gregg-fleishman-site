@@ -131,13 +131,21 @@
   const SVGNS="http://www.w3.org/2000/svg";
 
   /* ---------- geometry (measured from lost-triangle-color.png, 1026x1016) ---------- */
-  // unit square
-  const SQ={ tl:[159,264], tr:[446,264], br:[446,507], bl:[159,507] };
-  // three equal construction circles (r ~ 190)
-  const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
-  // blue √2-fold rhombus + white inner triangle
+  // blue √2-fold rhombus + white inner triangle  (defined first: the square is keyed to it)
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];               // bone half-triangle
+  // unit square — a TRUE square, tipped 45° so its √2 diagonal coincides with the
+  // rhombus long axis (BLUE.left ↔ BLUE.right). Corners W,N,E,S: W/E are the long-axis
+  // endpoints; N/S are the centre ± the perpendicular half-diagonal (so all 4 edges equal).
+  const SQ = (()=>{
+    const W=BLUE.left, E=BLUE.right;
+    const cx=(W[0]+E[0])/2, cy=(W[1]+E[1])/2;          // long-axis midpoint = square centre
+    const dx=E[0]-W[0], dy=E[1]-W[1], half=Math.hypot(dx,dy)/2;
+    const nx=-dy/(half*2), ny=dx/(half*2);             // unit normal to the long axis
+    return { w:W, e:E, n:[cx-nx*half, cy-ny*half], s:[cx+nx*half, cy+ny*half] };
+  })();
+  // three equal construction circles (r ~ 190)
+  const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
   // magenta √3 Lost Triangle + internal divider
   const MAG={ a:[453,360], apex:[848,387], b:[617,715] };
   const MAG_DIV=[ MAG.apex, [535,537] ];                        // apex -> mid of left edge
@@ -159,13 +167,13 @@
   const circleEls = CIR.map(o=> el('circle',
     {cx:o.c[0],cy:o.c[1],r:o.r,stroke:'var(--ring)','stroke-width':2.2,fill:'none'},gCir));
 
-  // unit square: 4 edges + 2 diagonals
-  const sqEdges=[ line(SQ.tl,SQ.tr,'var(--geo-unit)',3,gSq),
-                  line(SQ.tr,SQ.br,'var(--geo-unit)',3,gSq),
-                  line(SQ.br,SQ.bl,'var(--geo-unit)',3,gSq),
-                  line(SQ.bl,SQ.tl,'var(--geo-unit)',3,gSq) ];
-  const sqDiag=[ line(SQ.tl,SQ.br,'var(--geo-face)',2.4,gSq,.9),
-                 line(SQ.tr,SQ.bl,'var(--geo-face)',2.4,gSq,.9) ];
+  // unit square: 4 equal edges (W→N→E→S) + 2 diagonals (W↔E is the rhombus long axis)
+  const sqEdges=[ line(SQ.w,SQ.n,'var(--geo-unit)',3,gSq),
+                  line(SQ.n,SQ.e,'var(--geo-unit)',3,gSq),
+                  line(SQ.e,SQ.s,'var(--geo-unit)',3,gSq),
+                  line(SQ.s,SQ.w,'var(--geo-unit)',3,gSq) ];
+  const sqDiag=[ line(SQ.w,SQ.e,'var(--geo-face)',2.4,gSq,.9),
+                 line(SQ.n,SQ.s,'var(--geo-face)',2.4,gSq,.9) ];
 
   // blue fold: fill + white half + outline + vertical diagonal
   const blueFill = poly([BLUE.top,BLUE.right,BLUE.bottom,BLUE.left],'var(--geo-face)',gFill,.85);
@@ -190,8 +198,8 @@
      /* bg-coloured halo so a label stays legible over any fill (e.g. √3 on the magenta triangle) */
      stroke:'var(--bg)','stroke-width':6,'stroke-linejoin':'round','paint-order':'stroke',
      'text-anchor':'middle','dominant-baseline':'middle'},gLab); t.textContent=txt; return t; }
-  const L1   = lab('1',  [300,238],'var(--geo-unit)',30);
-  const Lsq2 = lab('√2', [250,400],'var(--geo-face)',32);
+  const L1   = lab('1',  [243,378],'var(--geo-unit)',30);   // beside the upper-left edge (W→N)
+  const Lsq2 = lab('√2', [398,318],'var(--geo-face)',32);   // on the diagonal, clear of the rhombus
   const Lsq3 = lab('√3', [690,520],'var(--geo-space)',34);
 
   /* ---------- prep draw/fade state ---------- */
