@@ -251,6 +251,12 @@
     #explore-tabs::-webkit-scrollbar{ display:none; }
     .explore-tab-btn{ padding:0 12px; letter-spacing:.08em; flex-shrink:0; }
   }
+  /* Touch targets: enlarge small interactive elements on mobile */
+  @media(max-width:860px){
+    #panel .tgbtn{ padding:10px 10px; min-height:36px; }
+    #panel .hd{ min-height:44px; }
+    #transport button{ min-height:36px; padding:8px 14px; }
+  }
 
   /* ================================================================
      VECTOR SYSTEM scene styles  (all IDs prefixed vs-)
