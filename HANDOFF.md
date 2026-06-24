@@ -1,192 +1,108 @@
-# Handoff — Lost Triangle motion graphic + accurate 2D construction
+# HANDOFF — Branch Consolidation & Site Cleanup (June 2026)
 
-Branch: `claude/lucid-wozniak-btvk47` · Draft PR: **#4**
-(`https://github.com/takuanbouzu/gregg-fleishman-site/pull/4`)
-
-This branch replaces the mathematically-inaccurate "2D Construction" graphic on
-`construction.html` with a faithful implementation of the Claude Design project
-**`Lost Triangle.dc.html`** ("Motion graphic mathematics explanation").
-
-You're picking this up to (a) do the browser visual QA that couldn't be done in
-the remote/headless environment, and (b) optionally take on the follow-ups at the
-bottom. Everything below is the full context.
+This document records the consolidation pass that made `main` the single
+source of truth and trimmed back-end weight. It supersedes earlier HANDOFF
+notes carried in from feature branches.
 
 ---
 
-## 1. Why this change exists
+## 1. What was done
 
-The old `construction.html` → **2D Construction** tab drew the `1 : √2 : √3`
-figure from hand-placed SVG coordinates. The numbers didn't hold:
+### Goal
+"Pull all the latest builds, make `main` truly main, and clean up the site to
+be efficient / light on the back end." Decisions confirmed with the owner:
+**fold in all branches**, **delete merged-only branches**, **safe cleanup**.
 
-- the "unit square" was `287 × 243` px — **not square**;
-- the three construction circles had radii `185 : 195 : 193` (near-equal)
-  instead of `R = 1 : √2 : √3` (≈ `185 : 262 : 320`);
-- the blue / white / √3 triangles were eyeballed.
+### Result
+All outstanding feature branches were folded into one consolidated line on top
+of **Official V2** (`official-v2-working`, PR #9), which was the newest and most
+complete branch. Official V2 is the **canonical spine** — where two branches
+disagreed, V2's decision was kept.
 
-So none of the defining relationships were actually true. The replacement design
-computes its geometry instead of eyeballing it (see §4), so it's exact.
-
----
-
-## 2. What changed (file inventory)
-
-### New — the motion graphic
-- `lost-triangle.html` — standalone page. Loads React + the design and mounts it
-  full-bleed under the site nav. `?embed=1` hides the nav (used by the iframe).
-- `assets/lost-triangle/animations.js` — **generated**. The `Stage` / `Sprite` /
-  `Easing` runtime; registers globals on `window`. Transpiled from `animations.jsx`.
-- `assets/lost-triangle/lost-triangle-video.js` — **generated**. The 9 scenes;
-  registers `window.LostTriangleVideo` (landscape 1920×1080) and
-  `window.LostTriangleVideoPortrait` (portrait 1080×1920). Transpiled from
-  `LostTriangleVideo.jsx`.
-- `assets/lost-triangle/animations.jsx`, `assets/lost-triangle/LostTriangleVideo.jsx`
-  — **source of truth** (the Claude Design handoff source). Edit these, not the `.js`.
-- `assets/lost-triangle/README.md` — provenance + how to regenerate.
-
-### New — vendored runtime (pulled from npm; CDNs are egress-blocked in the cloud env)
-- `assets/vendor/react-18.3.1/react.production.min.js`
-- `assets/vendor/react-18.3.1/react-dom.production.min.js`
-
-### Modified
-- `construction.html` — the **2D Construction** tab body is now a single
-  `<iframe id="c2d-frame" src="lost-triangle.html?embed=1">` (replacing the old
-  approximate `#c2d-art` SVG + its GSAP build IIFE). The **3D Construction** and
-  **Fleishman Sequence** tabs were removed entirely (markup, their Three.js
-  module scripts, the `fs` boot timer, and dead CSS) because those animations
-  were also mathematically inaccurate. Only two tabs remain: **2D Construction**
-  (the exact embed) and **Cluster Structures** (untouched, still Three.js + GSAP).
+Consolidated branch: `claude/loving-sagan-08r0vp` → opened/updated as a PR into
+`main`.
 
 ---
 
-## 3. How it runs (architecture)
+## 2. Branches and how each was handled
 
-It's plain static HTML — no build step, no bundler, no server. Load order in
-`lost-triangle.html`:
+| Branch | Status before | Action |
+|---|---|---|
+| `official-v2-working` (PR #9) | newest, strict superset of `main` (+4) | **Base / canonical spine** — fast-forwarded onto it |
+| `claude/affectionate-bohr-mozto3` | 3 commits, all already in V2 | Absorbed by V2 (no-op) |
+| `claude/youthful-shannon-uhai7q` | dead-bloom cleanup + CLAUDE.md | Merged; content already present, no net change |
+| `claude/wonderful-gauss-rdeptx` | eyeballed 45° construction patch | Merged but **V2 kept** — V2 replaced this with *exact* geometry (commit "Fix unit square geometry"). The eyeballed patch was deliberately superseded. |
+| `claude/fervent-mendel-hb7kk9` | HANDOFF.md note | Merged |
+| `claude/lucid-wozniak-btvk47` | original Lost Triangle motion-graphic work | Merged; V2 already evolved from it |
+| `claude/mobile-animation-sizing-ozf74t` | mobile-friendly animation tweaks | Merged |
+| `claude/dazzling-galileo-dfi8wz` | **deletes** `construction.html`, strips Construction nav, adds 3.7 MB `.3dm` | Merged with **V2 kept** for `construction.html` (modify/delete conflict resolved in favor of keeping the page). Its nav simplification was adopted site-wide. The 3.7 MB binary was removed (see §4). |
 
-1. `react.production.min.js` → sets global `window.React`
-2. `react-dom.production.min.js` → sets `window.ReactDOM` (incl. `createRoot`)
-3. `animations.js` → defines `Stage`, `Sprite`, `useTime`, `Easing`, … on `window`
-4. `lost-triangle-video.js` → defines `window.LostTriangleVideo` (+ Portrait)
-5. inline mount script → `ReactDOM.createRoot(#lt-root).render(<LostTriangleVideo/>)`,
-   with a short poller in case scripts are still evaluating.
-
-The `Stage` component (in `animations.js`) provides auto-scaling to the viewport,
-the scrubber/playback bar, and keyboard controls (space, ←/→, 0). The video is
-73.5 s, 9 scenes, `loop={false}`, `autoplay={true}`, and persists the playhead in
-`localStorage` (`losttri_landscape` / `losttri_portrait`).
-
-`construction.html` embeds the page via iframe, so React is fully isolated from
-that page's Three.js modules — no global collisions. The tab switcher dispatches a
-`resize` event when you switch tabs, which the `Stage` listens for to re-measure.
-
-Why pre-transpiled instead of in-browser Babel: the original `.dc.html` ran JSX
-through `@babel/standalone` (~3 MB). Transpiling ahead of time means the page ships
-only ~140 KB of React. No Babel at runtime.
+### Branches that were already fully merged (safe to delete)
+- `Vector-House-Design-System` — 0 commits ahead of `main`
+- `takuanbouzu-patch-1` — 0 commits ahead of `main`
+- plus every `claude/*` branch above, once this PR merges
 
 ---
 
-## 4. Why the geometry is exact (don't "fix" it)
+## 3. Key resolution: the nav architecture fork
 
-In `LostTriangleVideo.jsx`, `planar(L)` builds the figure from one edge length `U`:
+Two branches pulled the site in opposite directions:
 
-```
-A  = [AX, AY]                          // unit-square corner (right angle here)
-B  = [AX + U, AY]                      // edge = 1
-Cc = [AX + U, AY - U]                  // unit square
-D  = [AX, AY - U]
-F  = Cc + perpOut * U                  // step ONE unit perpendicular to AC
-// |A→Cc| = U·√2 (face diagonal);  |A→F| = U·√3 (space diagonal)
-// triangle A-Cc-F is the Lost Triangle: legs √2 and 1, hypotenuse √3, right angle at Cc
-```
+- **V2 direction:** keep `construction.html`, keep `mathematics.html` as a nav
+  entry, multi-stage sidebar.
+- **galileo direction:** drop `construction.html` from nav, route **"The Lost
+  Triangle" → `lost-triangle.html`** (the animated motion graphic), with
+  `mathematics.html` as the readable no-JS fallback.
 
-Construction circles use `r2 = U*Math.SQRT2`, `r3 = U*Math.sqrt(3)`. Everything is
-derived, so the relationships are true by construction. If a reviewer flags the
-figure as "off," it's a rendering/scaling issue, not a math error.
+Folding both together initially left an **incoherent nav** — every page used
+galileo's scheme except `construction.html`, which still showed an orphan
+"Construction" tab and pointed Lost Triangle at `mathematics.html`.
 
----
-
-## 5. Run / preview locally
-
-Any static server from the repo root:
-
-```bash
-python3 -m http.server 8000
-# then open:
-#   http://localhost:8000/lost-triangle.html
-#   http://localhost:8000/lost-triangle.html?embed=1     (nav hidden)
-#   http://localhost:8000/construction.html              (→ 2D Construction tab)
-```
-
-Vercel previews already built green on the PR:
-- `https://gregg-fleishman-site-ubtv-git-claude-lucid-woznia-0a0c54-zenbu1.vercel.app/lost-triangle.html`
-- same host → `/construction.html`
+**Resolution (canonical, now consistent across all HTML pages):**
+- Geometry nav bar: `The Cube · The Lost Triangle (→ lost-triangle.html) · Research · Rhombic System · Vector Pod`
+- `lost-triangle.html` is the canonical animated Lost Triangle page.
+- `mathematics.html` is the readable fallback, linked from prose/no-JS notices
+  (index hero, fallback messages) — intentionally, not from the nav bar.
+- `construction.html` is retained as an **orphaned deep-dive** (reachable by URL,
+  active nav context = The Lost Triangle), matching the pattern documented in
+  `CLAUDE.md` for other deep-dive pages.
 
 ---
 
-## 6. Verification status
+## 4. Back-end / efficiency cleanup (safe — no visual or behavior change)
 
-**Done (headless, in the cloud env):**
-- `node --check` passes on both generated `.js` files.
-- jsdom render of the real `lost-triangle.html` (resolving its actual `<script src>`
-  paths): React + `Stage`/`Sprite`/`Easing` register, `LostTriangleVideo` mounts,
-  the loading fallback clears, real scene `<svg>` renders — **zero runtime errors**.
-- `construction.html` script tags balanced; no dangling `c2d-*` references.
-- Both Vercel preview deployments built **Ready**; PR check is green.
+- **Removed** `assets/sources/GREG_TRIANGLE_BASE_DRAWING.3dm` (**3.7 MB** CAD
+  source). It was not referenced by any HTML/JS/CSS — pure deployed-site dead
+  weight. The earlier grep hit was a false positive (an unrelated internal
+  string `"vertor pod whole unit.3dm"` inside the compiled vector-pod bundle).
+  If the CAD source needs version control, keep it in a separate repo or Git LFS
+  rather than the Pages-deployed tree.
+- Tracked files dropped from ~10 MB to **~6.5 MB**.
 
-**NOT done — please do this (the reason for the handoff):**
-- [ ] Open `lost-triangle.html` in a real browser. Watch all 9 scenes play; confirm
-      the square reads square, circles read `1 : √2 : √3`, labels (`1`, `√2`, `√3`,
-      angles `45° / 35.26° / 54.74°`) are placed correctly and legible.
-- [ ] Resize to a narrow/portrait viewport — confirm the portrait layout
-      (`LostTriangleVideoPortrait`, 1080×1920) is selected and readable. NOTE: the
-      page currently always mounts the **landscape** component (see follow-up A).
-- [ ] Open `construction.html`, confirm the **2D Construction** tab shows the
-      embedded graphic, that switching to 3D/Sequence/Cluster and back still works,
-      and that the iframe sizes correctly on mobile.
-- [ ] Check fonts load (Cormorant / Spectral / JetBrains Mono via Google Fonts) and
-      light/dark theme toggle still looks right around the iframe.
+### Deliberately kept
+- `assets/sources/lost-triangle-starting-lines.svg` (2 KB) — small, useful
+  source reference.
+- `assets/lost-triangle/*.jsx` (~64 KB) — editable dev-sources for the compiled
+  `animations.js` / `lost-triangle-video.js`. Not fetched at runtime, so they
+  add no page weight; keeping them preserves the source of truth.
 
 ---
 
-## 7. Follow-ups / open decisions (optional)
+## 5. Known follow-ups (not done — out of "safe cleanup" scope)
 
-**A. Portrait on mobile.** `lost-triangle.html` hardcodes `LostTriangleVideo`
-(landscape). The design also exports `LostTriangleVideoPortrait`. Consider choosing
-by viewport at mount, e.g.:
-
-```js
-var portrait = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
-var Comp = portrait ? window.LostTriangleVideoPortrait : window.LostTriangleVideo;
-ReactDOM.createRoot(el).render(React.createElement(Comp));
-```
-
-(Re-evaluate on orientation change if you want it live — the `Stage` already
-re-scales, but the component choice is made once at mount.)
-
-**B. Navigation.** The new page isn't in the global nav. Its own nav link is marked
-`active` on "The Lost Triangle" (which points to `mathematics.html`). Decide whether
-`lost-triangle.html` should get a real nav entry, be linked from `mathematics.html`,
-or stay reachable only via the construction tab.
-
-**C. `mathematics.html` / `lost-triangle-motion.html`.** There are pre-existing
-pages covering the same topic. Worth a pass to cross-link or de-duplicate, but out
-of scope for this branch.
-
-**D. Regenerating the bundles.** If you edit the `.jsx`, re-transpile (preset-react,
-`compact:false`) — see `assets/lost-triangle/README.md`. React was vendored via
-`npm pack react@18.3.1 react-dom@18.3.1` (registry.npmjs.org is reachable even where
-CDNs aren't).
+- **Duplicate Three.js vendors:** `three-0.160.0/` (1.3 MB ESM) and
+  `three-r128/` (592 KB minified) both ship. The r128 pages
+  (`cube-diagonals`, `dorman-luke`, `rhombic-dodecahedron`, `rhombic-system`,
+  `fleishman-vector-system`, `vector-house`) use the global `THREE`; migrating
+  them to r160 would let r128 be dropped, but that is a real refactor with
+  visual-regression risk. Left as-is.
+- `vector-pod/assets/index-DaQgZgkb.js` (1.9 MB) is a pre-compiled Vite bundle
+  whose source lives in a separate repo (per `CLAUDE.md`). Not editable here.
 
 ---
 
-## 8. Reference material (not in the repo)
-
-The original Claude Design export ("Motion graphic mathematics explanation") also
-contained: `Lost Triangle.html` (a 744 KB self-contained bundle of the same thing),
-`Lost Triangle Mobile.dc.html`, `support.js` (the `dc-runtime` that we intentionally
-did **not** ship — the page mounts React directly instead), and per-scene screenshots.
-The two `.jsx` files in `assets/lost-triangle/` are the complete source we built from;
-you don't need the rest.
-
-> You can delete this `HANDOFF.md` before merging to `main` — it's a working note for
-> the branch, not site content.
+## 6. Verification done
+- No conflict markers remain in any tracked file.
+- No page links to a non-existent target; `construction.html` is intentionally
+  unlinked (deep-dive).
+- All geometry nav bars resolved to the same canonical scheme.

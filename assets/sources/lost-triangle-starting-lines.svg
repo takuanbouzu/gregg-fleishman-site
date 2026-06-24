@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="612pt" height="792pt" viewBox="0 0 612 792" xmlns="http://www.w3.org/2000/svg">
+  <defs />
+  <g id="Pyramid">
+    <g id="Pyramid::edge">
+      <path d="M215.99683,341.99683 L287.99683,413.99683" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <circle cx="288" cy="414" r="50.91" stroke="#000000" stroke-width="0.24" fill="none" />
+      <circle cx="360" cy="414" r="50.92" stroke="#000000" stroke-width="0.24" fill="none" />
+      <path d="M215.99683,413.99683 L288.0058,342.0058" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <path d="M215.99683,413.99683 L287.99683,413.99683 L287.99683,341.99683 L215.99683,341.99683 z" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      <circle cx="252" cy="378" r="50.91" stroke="#000000" stroke-width="0.24" fill="none" />
+    </g>
+  </g>
+  <g id="Layer_01">
+    <path d="M215.99683,413.99683 L287.99683,363.0915" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M359.99683,413.99683 L287.99683,464.90216" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M287.99683,363.0915 L359.99683,413.99683" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M287.99683,363.0915 L359.99683,413.99683" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M215.99683,413.99683 L287.99683,464.90216" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M287.99683,413.99683 L287.99683,464.90216" stroke="#000000" stroke-width="0.24" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </g>
+</svg>

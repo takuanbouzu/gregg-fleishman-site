@@ -81,8 +81,7 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="explore.html">The Cube</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="construction.html">Construction</a>
+  <a class="navlink" href="lost-triangle.html">The Lost Triangle</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
   <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
@@ -140,6 +139,18 @@
   // blue √2-fold rhombus + white inner triangle
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];               // bone half-triangle
+  // unit square — a TRUE square, tipped 45° so its √2 diagonal coincides with the
+  // rhombus long axis (BLUE.left ↔ BLUE.right). Corners W,N,E,S: W/E are the long-axis
+  // endpoints; N/S are the centre ± the perpendicular half-diagonal (so all 4 edges equal).
+  const SQ = (()=>{
+    const W=BLUE.left, E=BLUE.right;
+    const cx=(W[0]+E[0])/2, cy=(W[1]+E[1])/2;          // long-axis midpoint = square centre
+    const dx=E[0]-W[0], dy=E[1]-W[1], half=Math.hypot(dx,dy)/2;
+    const nx=-dy/(half*2), ny=dx/(half*2);             // unit normal to the long axis
+    return { w:W, e:E, n:[cx-nx*half, cy-ny*half], s:[cx+nx*half, cy+ny*half] };
+  })();
+  // three equal construction circles (r ~ 190)
+  const CIR=[ {c:[298,387],r:185}, {c:[409,552],r:195}, {c:[703,482],r:193} ];
   // magenta √3 Lost Triangle + internal divider
   const MAG={ a:[453,360], apex:[848,387], b:[617,715] };
   const MAG_DIV=[ MAG.apex, [535,537] ];                        // apex -> mid of left edge
@@ -161,13 +172,13 @@
   const circleEls = CIR.map(o=> el('circle',
     {cx:o.c[0],cy:o.c[1],r:o.r,stroke:'var(--ring)','stroke-width':2.2,fill:'none'},gCir));
 
-  // unit square: 4 edges + 2 diagonals
-  const sqEdges=[ line(SQ.tl,SQ.tr,'var(--geo-unit)',3,gSq),
-                  line(SQ.tr,SQ.br,'var(--geo-unit)',3,gSq),
-                  line(SQ.br,SQ.bl,'var(--geo-unit)',3,gSq),
-                  line(SQ.bl,SQ.tl,'var(--geo-unit)',3,gSq) ];
-  const sqDiag=[ line(SQ.tl,SQ.br,'var(--geo-face)',2.4,gSq,.9),
-                 line(SQ.tr,SQ.bl,'var(--geo-face)',2.4,gSq,.9) ];
+  // unit square: 4 equal edges (W→N→E→S) + 2 diagonals (W↔E is the rhombus long axis)
+  const sqEdges=[ line(SQ.w,SQ.n,'var(--geo-unit)',3,gSq),
+                  line(SQ.n,SQ.e,'var(--geo-unit)',3,gSq),
+                  line(SQ.e,SQ.s,'var(--geo-unit)',3,gSq),
+                  line(SQ.s,SQ.w,'var(--geo-unit)',3,gSq) ];
+  const sqDiag=[ line(SQ.w,SQ.e,'var(--geo-face)',2.4,gSq,.9),
+                 line(SQ.n,SQ.s,'var(--geo-face)',2.4,gSq,.9) ];
 
   // blue fold: fill + white half + outline + vertical diagonal
   const blueFill = poly([BLUE.top,BLUE.right,BLUE.bottom,BLUE.left],'var(--geo-face)',gFill,.85);
