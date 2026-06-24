@@ -245,6 +245,12 @@
     #caption{ bottom:140px; }
     #legend{ left:18px; bottom:170px; }
   }
+  /* Tab bar: scrollable on narrow phones */
+  @media(max-width:540px){
+    #explore-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #explore-tabs::-webkit-scrollbar{ display:none; }
+    .explore-tab-btn{ padding:0 12px; letter-spacing:.08em; flex-shrink:0; }
+  }
 
   /* ================================================================
      VECTOR SYSTEM scene styles  (all IDs prefixed vs-)

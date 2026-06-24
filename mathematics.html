@@ -96,11 +96,23 @@ html,body{margin:0;height:100%;background:#13110d;}
 .stg-dot.active{background:var(--accent);transform:scale(1.3);}
 .stg-dot:hover{background:rgba(255,255,255,.5);}
 @keyframes draw-line{from{stroke-dashoffset:var(--dl,300);}to{stroke-dashoffset:0;}}
+/* Sidebar close button (shown only on mobile) */
+#sb-close{display:none;position:sticky;top:0;z-index:2;
+  width:100%;padding:6px 16px 4px;margin:-20px -16px 8px;
+  background:rgba(8,12,20,.95);border:none;border-bottom:.5px solid rgba(255,255,255,.1);
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);cursor:pointer;text-align:right;}
+#sb-close:hover{color:var(--accent);}
 @media(max-width:768px){
   #sidebar{width:100%;height:44vh;top:auto;bottom:60px;right:0;
     transform:translateY(100%);border-left:none;border-top:.5px solid rgba(255,255,255,.1);}
   #sidebar.open{transform:translateY(0);}
   #stg-nav{bottom:4px;scale:.85;}
+  #sb-close{display:block;}
+}
+@media(max-width:400px){
+  #stg-nav{scale:.75;bottom:2px;}
+  #sidebar{bottom:52px;height:40vh;}
 }
 </style>
 </head>
@@ -649,7 +661,8 @@ html,body{margin:0;height:100%;background:#13110d;}
   function buildSidebarHTML(n) {
     var s = STAGES[n];
     var titles = ['Stage 1 — The Sketch','Stage 2 — Face Diagonal','Stage 3 — Space Diagonal','Stage 4 — The Lost Triangle','Stage 5 — Full System','Stage 6 — Silver Ratio?','Stage 7 — Vector House','Stage 8 — Rhombic Dodecahedron'];
-    var h = '<div class="sb-title">' + titles[n] + '</div>';
+    var h = '<button id="sb-close" aria-label="Close panel">close ×</button>';
+    h += '<div class="sb-title">' + titles[n] + '</div>';
     h += '<div class="sb-body">' + s.body + '</div>';
     if (n === 0) {
       h += '<div class="sb-sketch-wrap"><img src="assets/handsketch.jpg" alt="Gregg Fleishman hand sketch"><svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><g class="hotspot" data-hl="unit-line"><circle cx="65" cy="155" r="6"/><text x="65" y="155">1</text></g><g class="hotspot" data-hl="diag-line"><circle cx="270" cy="85" r="6"/><text x="270" y="85">√2</text></g></svg></div>';
@@ -684,6 +697,10 @@ html,body{margin:0;height:100%;background:#13110d;}
   function bindSidebarEvents(n) {
     var sb = document.getElementById('sidebar');
     if (!sb) return;
+    var closeBtn = sb.querySelector('#sb-close');
+    if (closeBtn) closeBtn.addEventListener('click', function() {
+      sb.classList.remove('open');
+    });
     sb.querySelectorAll('.hotspot').forEach(function(h) {
       h.addEventListener('mouseenter', function() { setHighlight(h.dataset.hl); });
       h.addEventListener('mouseleave', function() { clearHighlight(); });
