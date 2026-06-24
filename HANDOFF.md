@@ -1,3 +1,45 @@
+# Merge record — 2026-06-24
+
+Snapshot of where the site sits after the June 2026 batch of work. `main` is the
+GitHub Pages deploy branch; the live site at
+`https://takuanbouzu.github.io/gregg-fleishman-site/` serves whatever `main` points at.
+
+**State: all work merged. `main` is at `5e34b17` and there is nothing pending or stranded.**
+
+### Sessions → PRs → main
+
+All four PRs are **merged and closed**. The three June 24 sessions map as follows:
+
+| Session | PR | Squash commit on `main` | Merged (UTC) |
+|---|---|---|---|
+| 2D graphics accuracy | [#4](https://github.com/takuanbouzu/gregg-fleishman-site/pull/4) — Lost Triangle motion graphic; fix inaccurate 2D construction | `5e34b17` | 05:25:45 |
+| THE CUBE background rendering bug | [#2](https://github.com/takuanbouzu/gregg-fleishman-site/pull/2) — remove dead bloom code, add CLAUDE.md (gold-bg bug already fixed in `c942cdc`) | `9208a76` | 05:25:18 |
+| Gregg's site feedback | [#3](https://github.com/takuanbouzu/gregg-fleishman-site/pull/3) — rotate construction square 45° so its diagonal aligns with the rhombus long axis | `b6a22e6` | 05:24:22 |
+| _(earlier, 06-23)_ asset upload | [#1](https://github.com/takuanbouzu/gregg-fleishman-site/pull/1) — Add files via upload | `ed49dd5` | — |
+
+They merged in dependency order (#3 → #2 → #4, each stacked on the last), producing a
+clean linear tip at `5e34b17`.
+
+### What this batch added to `main` (vs. the prior tip `c87a2a7`)
+
+- New canonical 2D construction — `lost-triangle.html` with computed `1 : √2 : √3`
+  geometry; `construction.html`'s 2D tab now embeds it (that file shrank ~960 lines).
+- Vendored React 18.3.1 UMD + pre-transpiled bundle under `assets/lost-triangle/`
+  and `assets/vendor/react-18.3.1/`.
+- THE CUBE cleanup in `explore.html` — dead bloom post-processing removed, explicit
+  sRGB color space added.
+- Docs — `CLAUDE.md` and this `HANDOFF.md`.
+
+Net since `c87a2a7`: 12 files changed, +5,261 / −1,004.
+
+### Loose ends
+- Per-session branches (`claude/lucid-wozniak-btvk47`, `claude/wonderful-gauss-rdeptx`,
+  `claude/youthful-shannon-uhai7q`) were squash-merged and removed. Only `main` and
+  `claude/fervent-mendel-hb7kk9` remain on the remote; the latter is identical to `main`.
+- Browser visual QA for PR #4 (§6 below) was the one outstanding item at merge time.
+
+---
+
 # Handoff — Lost Triangle motion graphic + accurate 2D construction
 
 Branch: `claude/lucid-wozniak-btvk47` · Draft PR: **#4**
