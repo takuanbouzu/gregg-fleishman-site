@@ -156,7 +156,7 @@ renderer.toneMapping = THREE.NoToneMapping;
 - **Edit the `.jsx`, not the `.js`** — the `.js` bundles in `assets/lost-triangle/` are generated. Re-transpile per `assets/lost-triangle/README.md` after editing.
 - The figure geometry is **computed** from one edge length (`planar(L)`), so every `1 : √2 : √3` relationship is exact by construction — don't "correct" it to eyeballed coordinates.
 - `?embed=1` (or `html.gf-cover`-style toggle) hides the site nav so the page can be framed inside `construction.html`.
-- Known follow-up: the page currently always mounts the **landscape** component even on portrait viewports.
+- The mount script picks the layout by viewport aspect ratio — `LostTriangleVideoPortrait` (1080×1920) on portrait, `LostTriangleVideo` (1920×1080) otherwise — and re-mounts (carrying the playhead) when orientation crosses square.
 
 ### Three.js r128 (older deep-dive pages)
 `cube-diagonals.html`, `dorman-luke.html`, `rhombic-dodecahedron.html`, `rhombic-system.html`, `fleishman-vector-system.html`, `vector-house.html` load Three.js r128 via `<script src="assets/vendor/three-r128/three.min.js">`. These use the global `THREE` object (not ESM).
