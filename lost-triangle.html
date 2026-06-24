@@ -88,14 +88,26 @@
 <script>
 (function(){
   "use strict";
+  var root = null, current = null;
+
+  // Portrait component when the viewport is taller than wide (phones upright);
+  // landscape otherwise. Falls back to landscape if the Portrait export is absent.
+  function pick(){
+    var portrait = window.matchMedia('(max-aspect-ratio: 1/1)').matches;
+    return (portrait && window.LostTriangleVideoPortrait)
+      ? window.LostTriangleVideoPortrait
+      : window.LostTriangleVideo;
+  }
+
   function mount(){
     var el = document.getElementById('lt-root');
     if (!el || !window.React || !window.ReactDOM || !window.LostTriangleVideo) return false;
-    el.innerHTML = '';
-    var root = ReactDOM.createRoot(el);
-    root.render(React.createElement(window.LostTriangleVideo));
+    if (!root){ el.innerHTML = ''; root = ReactDOM.createRoot(el); }
+    current = pick();
+    root.render(React.createElement(current));
     return true;
   }
+
   if (!mount()) {
     // Scripts may still be evaluating; poll briefly until globals are ready.
     var tries = 0;
@@ -103,6 +115,14 @@
       if (mount() || ++tries > 200) clearInterval(id);
     }, 30);
   }
+
+  // Swap orientation when the viewport crosses the square threshold (rotate /
+  // resize). Each orientation keeps its own playhead — the Stage persists
+  // losttri_landscape / losttri_portrait separately.
+  var mq = window.matchMedia('(max-aspect-ratio: 1/1)');
+  function onFlip(){ if (root && pick() !== current) mount(); }
+  if (mq.addEventListener) mq.addEventListener('change', onFlip);
+  else if (mq.addListener) mq.addListener(onFlip); // older Safari
 })();
 </script>
 </body>

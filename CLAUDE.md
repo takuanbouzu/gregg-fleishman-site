@@ -175,7 +175,7 @@ renderer.toneMapping = THREE.NoToneMapping;
 - Geometry is **computed, not eyeballed** — `planar()` derives every length from one edge `U` (`U·√2`, `U·√3`), so all relationships hold by construction. A figure that looks "off" is a scaling/render issue, not a math error. Don't "fix" the geometry.
 - `?embed=1` (or `html.lt-embed`) hides the site nav so the page can be framed inside `construction.html`.
 - The `Stage` auto-scales to the viewport, owns the scrubber/playback bar + keyboard controls (space, ←/→, 0), and persists the playhead in `localStorage` (`losttri_landscape` / `losttri_portrait`).
-- Currently always mounts the **landscape** component; portrait selection by viewport is an open follow-up (see `HANDOFF.md`).
+- The inline mount script picks **`LostTriangleVideoPortrait`** on portrait viewports (`max-aspect-ratio: 1/1`) and **`LostTriangleVideo`** otherwise, and re-mounts the matching component when the device rotates across the square threshold. Each orientation keeps its own playhead (`losttri_portrait` / `losttri_landscape`).
 
 ---
 
