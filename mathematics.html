@@ -17,7 +17,7 @@
 html,body{margin:0;height:100%;background:#13110d;}
 :root{--mono:var(--font-mono);}
 /* ═══ SIDEBAR ═══ */
-#sidebar{position:fixed;right:0;top:46px;width:300px;height:calc(100vh - 46px);
+#sidebar{position:fixed;right:0;top:56px;width:300px;height:calc(100vh - 56px);
   background:rgba(8,12,20,.88);border-left:.5px solid rgba(255,255,255,.1);
   -webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
   z-index:30;overflow-y:auto;overflow-x:hidden;padding:20px 16px 24px;
@@ -131,7 +131,7 @@ html,body{margin:0;height:100%;background:#13110d;}
   <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
 </nav>
 
-<div id="ltm-root" style="position:fixed;left:0;right:0;bottom:0;top:52px;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%,#1d1a14 0%,#100e0b 100%);overflow:hidden;font-family:'Source Serif 4',Georgia,serif;">
+<div id="ltm-root" style="position:fixed;left:0;right:0;bottom:0;top:56px;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 50% 0%,#1d1a14 0%,#100e0b 100%);overflow:hidden;font-family:'Source Serif 4',Georgia,serif;">
 
   <div id="ltm-stage" style="position:relative;width:1920px;height:1080px;background:#F6F4EE;color:#1C1A16;flex:none;box-shadow:0 40px 120px rgba(0,0,0,0.55);cursor:grab;touch-action:none;user-select:none;">
 
@@ -325,7 +325,7 @@ html,body{margin:0;height:100%;background:#13110d;}
   let _sv = null;
 
   // ---- fit ----
-  const navH = 52;
+  const navH = 56;
   function fit() {
     const k = Math.min(window.innerWidth / 1920, (window.innerHeight - navH) / 1080);
     const st = document.getElementById('ltm-stage');
