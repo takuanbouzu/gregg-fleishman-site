@@ -1,9 +1,34 @@
-# Gregg Fleishman Site — CLAUDE.md
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 Interactive geometry exhibit for artist Gregg Fleishman. Static multi-page site; no build step. Deploys to GitHub Pages from the `main` branch via `.nojekyll`.
 
 Live URL: `https://takuanbouzu.github.io/gregg-fleishman-site/`
 Repo: `takuanbouzu/gregg-fleishman-site`
+
+---
+
+## Commands
+
+There is **no build, lint, or test tooling** — it's vendored static HTML/CSS/JS. Do not look for `package.json`, npm scripts, or a test runner; there are none.
+
+**Run locally** (ES-module import maps require `http://`, not `file://`):
+```bash
+python3 -m http.server 8000   # then open http://localhost:8000/
+```
+(`.claude/launch.json` defines the same server on port 8080.)
+
+**Regenerate the Lost Triangle bundles** after editing `assets/lost-triangle/*.jsx` (the `.js` files are transpiled output — never hand-edit them). Run from `assets/lost-triangle/` with `@babel/standalone` available:
+```js
+const Babel = require('@babel/standalone');
+const fs = require('fs');
+for (const [src, out] of [['animations.jsx','animations.js'], ['LostTriangleVideo.jsx','lost-triangle-video.js']]) {
+  fs.writeFileSync(out, Babel.transform(fs.readFileSync(src,'utf8'), { presets:['react'], compact:false }).code);
+}
+```
+
+**URL params** (chrome-hiding toggles on the animated pages): `?embed=1` hides the site nav (for iframing — used by `construction.html`), `?cover=1` hides all UI chrome (used by the `index.html` hero iframe), `?clean=1` hides all chrome for clean video capture on the movie pages.
 
 ---
 
