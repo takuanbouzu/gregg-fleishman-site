@@ -1,7 +1,16 @@
 # HANDOFF — Remove the light theme (dark-only simplification)
 
-**Status:** scoped, not yet executed. Doc cleanup done; the code sweep is the remaining work.
+**Status: ✅ DONE (June 2026).** The light theme was fully removed and the geometry nav was
+restructured in the same pass (see below). Verified: no `data-theme`/`gfThemeToggle`/
+`gf-themechange` remnants; all pages serve HTTP 200 with the nav intact and no toggle button.
+This section is kept as a record; the spec below documents what was done.
 **Branch:** `claude/remove-light-theme` (do NOT work on `main` — Pages deploys from it).
+
+**Also done in this pass (nav restructure):** the geometry nav now follows the learning
+journey **scroll → animation → model**:
+`Gregg Fleishman · The Lost Triangle (→ mathematics.html) · Animation (→ lost-triangle.html) · The Cube (→ explore.html) · Research · Rhombic System · Vector Pod`,
+identical across all 15 geometry pages. Outer nav unified to "Geometry → index.html". See
+`CLAUDE.md` → "Two Navigation Systems" for the canonical reference.
 
 ## Goal (owner's words)
 > "Get rid of the light theme, it seems to cause glitches. Bring in some simplicity but keep it Gregg Fleishman."
