@@ -66,6 +66,16 @@
   select{ font:inherit; font-size:11px; background:var(--bg-surface); color:var(--tx-dim);
     border:1px solid var(--border-strong); border-radius:7px; padding:7px 9px; }
 
+  /* ---- MOBILE ---- */
+  @media(max-width:480px){
+    header{ padding:10px 14px 6px; }
+    main{ padding:4px 12px; }
+    #controls{ padding:10px 14px 14px; gap:8px; }
+    #scrub{ width:min(72vw,340px); }
+    button{ padding:8px 12px; font-size:11px; }
+    #stage{ width:min(88vmin,480px); }
+  }
+
   /* ---- CLEAN / RECORD MODE (?clean=1) ---- */
   body.clean{ background:var(--bg); display:block; }
   body.clean header, body.clean #controls{ display:none; }

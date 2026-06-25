@@ -148,6 +148,11 @@
     .cover-lede>*, .cover-index{ animation:none; }
   }
 
+  @media(max-width:820px){
+    /* Ensure the index grid doesn't overflow on mid-range tablets */
+    .cover-index{ grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); }
+  }
+
   @media(max-width:560px){
     /* Hide the live-geometry iframe on mobile — decorative only, hurts perf */
     .cover-hero{ display:none; }
