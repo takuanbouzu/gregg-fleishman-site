@@ -664,7 +664,7 @@ const clean = new URLSearchParams(location.search).has('clean') || document.docu
 if (clean) document.body.classList.add('clean');
 
 const stage = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setClearColor(COL.bg, 1);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.NoToneMapping;
@@ -1178,6 +1178,9 @@ resize();
 setTour(0);
 render();
 function renderFrame(){
+  // Fat lines (Line2/LineMaterial) blow up to fill the viewport when their
+  // resolution is degenerate. Never paint before the stage has real size.
+  if (W <= 1 || H <= 1) { resize(); if (W <= 1 || H <= 1) return; }
   camera.layers.enableAll();
   renderer.setRenderTarget(null);
   renderer.render(scene, camera);
@@ -1247,7 +1250,7 @@ const clean = new URLSearchParams(location.search).has('clean');
 if (clean) document.body.classList.add('clean');
 
 const stage = document.getElementById('vs-stage');
-const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setClearColor(BG, 1);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -1489,7 +1492,7 @@ const HEX = { bone:SC.ink, dim:SC.muted, gold:SC.angle, face:SC.face, space:SC.s
 const csEl = document.getElementById('scene-cs');
 const stage = document.getElementById('cs-stage');
 let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true }); }
+try { renderer = new THREE.WebGLRenderer({ antialias:true }); }
 catch(e){ stage.textContent = 'WebGL unavailable'; throw e; }
 renderer.setClearColor(COL.bg, 1);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
