@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="theme-color" content="#0B0B0B"/>
 <title>Gregg Fleishman — Geometry & Structure</title>
-<meta name="description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, the architecture that fills space, and the Vertor Pod instrument.">
+<meta name="description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, the architecture that fills space, and the Vector Pod instrument.">
 <!-- Social link previews. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
 <meta property="og:title" content="Gregg Fleishman — Geometry & Structure">
-<meta property="og:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, the architecture that fills space, and the Vertor Pod instrument.">
+<meta property="og:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle (1 : √2 : √3), the rhombic dodecahedron, the architecture that fills space, and the Vector Pod instrument.">
 <meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/">
 <meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Gregg Fleishman — Geometry & Structure">
-<meta name="twitter:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle, the rhombic dodecahedron, the architecture that fills space, and the Vertor Pod instrument.">
+<meta name="twitter:description" content="An interactive exhibit of Gregg Fleishman's geometric system — the Lost Triangle, the rhombic dodecahedron, the architecture that fills space, and the Vector Pod instrument.">
 <meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +56,7 @@
   .cover-scrim{
     position:fixed; inset:0; z-index:1; pointer-events:none;
     background:
-      linear-gradient(var(--scrim-veil),var(--scrim-veil)),
+      linear-gradient(to right, var(--scrim-veil) 0%, var(--scrim-veil) 38%, transparent 68%),
       radial-gradient(125% 88% at 50% 14%, transparent 36%, var(--scrim-edge) 100%),
       linear-gradient(to bottom, var(--scrim-top) 0%, transparent 30%, transparent 50%, var(--scrim-bot) 100%);
   }
@@ -149,11 +149,20 @@
   }
 
   @media(max-width:560px){
-    .cover{ padding:28px 22px 36px; }
+    /* Hide the live-geometry iframe on mobile — decorative only, hurts perf */
+    .cover-hero{ display:none; }
+    /* Make the scrim a solid dark bg so nothing bleeds through */
+    .cover-scrim{ background:var(--bg); }
+
+    /* Remove the full-viewport stretch — just natural document flow */
+    .cover{ min-height:0; padding:28px 22px 40px; }
+    .cover-lede{ margin-top:0; }
+
     .cover-kicker{ margin-bottom:16px; letter-spacing:.2em; }
     .cover-title{ font-size:clamp(33px,10vw,46px); }
     .cover-tag{ margin-top:10px; font-size:13px; letter-spacing:.22em; }
-    .cover-lead{ margin-top:20px; }
+    .cover-lead{ margin-top:20px; font-size:17px; }
+    .cover-actions{ margin-top:28px; gap:16px; }
     .cover-index{ margin-top:40px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 24px; }
   }
 </style>
@@ -161,18 +170,11 @@
 <body>
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="explore.html">The Cube</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle-construction.html">Construction 2D</a>
-  <a class="navlink" href="lost-triangle-construction-3d.html">Construction 3D</a>
-  <a class="navlink" href="fleishman-sequence.html">Fleishman Sequence</a>
-  <a class="navlink" href="cluster-structures.html">Cluster Structures</a>
-  <a class="navlink" href="dorman-luke.html">Research</a>
-  <a class="navlink" href="rhombic-system.html">Rhombic System</a>
-  <a class="navlink" href="silver-triangle.html">Silver Triangle</a>
-  <a class="navlink" href="fleishman-vector-system.html">Vector System</a>
-  <a class="navlink" href="poster/poster.html">Poster</a>
-  <a class="navlink" href="vertor-pod/index.html">Vertor Pod</a>
+  <a class="navlink" href="about.html">About</a>
+  <a class="navlink" href="portfolio.html">Work</a>
+  <a class="navlink active" href="index.html">Geometry</a>
+  <a class="navlink" href="store.html">Store</a>
+  <a class="navlink" href="contact.html">Contact</a>
   <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
     <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
@@ -196,23 +198,18 @@
   <nav class="cover-index" aria-label="Index of works">
     <div class="ix-group">
       <h2 class="ix-head">The Lost Triangle</h2>
-      <a href="mathematics.html">The Lost Triangle</a>
-      <a href="lost-triangle-construction.html">Construction 2D</a>
-      <a href="lost-triangle-construction-3d.html">Construction 3D</a>
-      <a href="silver-triangle.html">Silver Triangle</a>
+      <a href="mathematics.html">The Lost Triangle<span class="ix-sub">cinematic intro</span></a>
+
     </div>
     <div class="ix-group">
       <h2 class="ix-head">The System</h2>
-      <a href="fleishman-sequence.html">Fleishman Sequence</a>
-      <a href="cluster-structures.html">Cluster Structures</a>
+      <a href="explore.html">The Cube<span class="ix-sub">+ vector system</span></a>
       <a href="rhombic-system.html">Rhombic System</a>
-      <a href="fleishman-vector-system.html">Vector System</a>
     </div>
     <div class="ix-group">
       <h2 class="ix-head">Object &amp; Archive</h2>
-      <a href="vertor-pod/index.html">Vertor Pod<span class="ix-sub">interactive part study</span></a>
+      <a href="vector-pod/index.html">Vector Pod<span class="ix-sub">interactive part study</span></a>
       <a href="dorman-luke.html">Research</a>
-      <a href="poster/poster.html">Poster</a>
     </div>
   </nav>
 </main>

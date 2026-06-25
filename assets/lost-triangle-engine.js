@@ -275,7 +275,7 @@
   P._env = function (T, s, e, f) { return Math.max(0, Math.min((T - s) / f, (e - T) / f, 1)); };
   P._ease = function (p) { return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; };
   P._font = function (w, size, fam) { this.ctx.font = w + ' ' + size + 'px ' + fam; };
-  P._triPts = function () { var s = 320, Ax = 740, Ay = 700; return { A: [Ax, Ay], B: [Ax + Math.SQRT2 * s, Ay], C: [Ax, Ay - s] }; };
+  P._triPts = function () { var s = 320, Ax = 880, Ay = 700; return { A: [Ax, Ay], B: [Ax + Math.SQRT2 * s, Ay], C: [Ax, Ay - s] }; };
   P._seg = function (a, b, f) { return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]; };
 
   /* ---- scene 1: triangle build ---- */
@@ -313,7 +313,7 @@
   P._drawCube = function (T, alpha) {
     var ctx = this.ctx;
     var ay = (T - 4.4) * 0.38 + 0.5 + this.dragRY, ax = 0.46 + this.dragRX;
-    var cx = 960, cy = 540, sc = 300, self = this;
+    var cx = 1080, cy = 540, sc = 300, self = this;
     ctx.save(); ctx.globalAlpha = alpha;
     var cube = this.solids.cube;
     this._drawWire(cube.verts, cube.edges, ay, ax, sc, cx, cy, 0.32, 2.4);
@@ -364,7 +364,7 @@
   P._drawParade = function (T, alpha) {
     var ctx = this.ctx;
     var ay = T * 0.30 + this.dragRY, ax = 0.42 + Math.sin(T * 0.32) * 0.05 + this.dragRX;
-    var cx = 960, cy = 540, sc = 300;
+    var cx = 1080, cy = 540, sc = 300;
     var lp = (T - 14.5) / (33.8 - 14.5);
     var n = this.parade.length;
     var idx = Math.floor(lp * n); idx = Math.max(0, Math.min(n - 1, idx));

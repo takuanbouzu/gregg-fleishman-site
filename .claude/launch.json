@@ -1,0 +1,54 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gregg-fleishman-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8080"],
+      "port": 8080,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/gregg-fleishman-site"
+    },
+    {
+      "name": "gregg-geometry",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8081"],
+      "port": 8081,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/gregg-geometry"
+    },
+    {
+      "name": "portfolio-01-cinematic-archive",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3001"],
+      "port": 3001,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/portfolio-01-cinematic-archive"
+    },
+    {
+      "name": "portfolio-02-minimal-editorial",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3002"],
+      "port": 3002,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/portfolio-02-minimal-editorial"
+    },
+    {
+      "name": "portfolio-03-interactive-lab",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3003"],
+      "port": 3003,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/portfolio-03-interactive-lab"
+    },
+    {
+      "name": "portfolio-04-career-operating-system",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3004"],
+      "port": 3004,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/portfolio-04-career-operating-system"
+    },
+    {
+      "name": "portfolio-05-future-facing-brand",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "3005"],
+      "port": 3005,
+      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/portfolio-05-future-facing-brand"
+    }
+  ]
+}

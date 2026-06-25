@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0B0B">
+<title>About — Gregg Fleishman</title>
+<meta name="description" content="Gregg Fleishman is a Los Angeles architect and designer who has spent fifty years building structures from geometric first principles — from MoMA-collected furniture to six-story festival temples.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<style>
+  /* ── page tokens ── */
+  :root{
+    --about-rule:rgba(240,237,232,.10);
+    --about-photo-bg:var(--bg-surface);
+  }
+  :root[data-theme="light"]{
+    --about-rule:rgba(20,20,20,.10);
+    --about-photo-bg:#f0ede8;
+  }
+
+  /* ── layout ── */
+  .wrap{ max-width:1060px; margin:0 auto; padding:0 40px; }
+  .sec{ padding:88px 0; }
+  .sec + .sec{ border-top:1px solid var(--hairline); }
+  @media(max-width:680px){ .wrap{ padding:0 24px; } .sec{ padding:64px 0; } }
+
+  /* ── eyebrow / labels ── */
+  .eyebrow{
+    font-family:var(--font-mono); font-size:10px; font-weight:400;
+    letter-spacing:0.26em; text-transform:uppercase; color:var(--accent);
+    margin:0 0 20px; display:block;
+  }
+
+  /* ── hero ── */
+  .hero{ padding:100px 0 80px; }
+  .hero-inner{ display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; }
+  .hero-kicker{ font-family:var(--font-mono); font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:var(--accent); margin:0 0 24px; }
+  .hero-name{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(52px,7vw,88px); line-height:.92;
+    letter-spacing:-.04em; margin:0 0 28px;
+  }
+  .hero-role{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--tx-dim); margin:0;
+  }
+  .hero-bio{
+    font-family:var(--font-editorial); font-style:italic;
+    font-weight:300; font-size:21px; line-height:1.68;
+    color:var(--tx-dim); margin:0 0 28px;
+  }
+  .hero-bio b{ font-style:normal; font-weight:500; color:var(--tx); }
+  .hero-cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-top:32px; }
+  @media(max-width:820px){
+    .hero-inner{ grid-template-columns:1fr; gap:40px; }
+    .hero{ padding:72px 0 56px; }
+  }
+
+  /* ── credentials strip ── */
+  .creds{
+    display:flex; flex-wrap:wrap; gap:0;
+    border-top:1px solid var(--hairline); border-bottom:1px solid var(--hairline);
+    padding:32px 0;
+  }
+  .cred{
+    flex:1 1 200px; padding:0 28px;
+    border-left:1px solid var(--hairline);
+  }
+  .cred:first-child{ border-left:none; padding-left:0; }
+  .cred-label{
+    font-family:var(--font-mono); font-size:9px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--tx-faint); margin:0 0 8px;
+  }
+  .cred-value{
+    font-family:var(--font-display); font-weight:700;
+    font-size:13px; color:var(--tx); margin:0; line-height:1.4;
+  }
+  @media(max-width:600px){
+    .creds{ flex-direction:column; gap:20px; }
+    .cred{ border-left:none; border-top:1px solid var(--hairline); padding:20px 0 0; }
+    .cred:first-child{ border-top:none; padding-top:0; }
+  }
+
+  /* ── section headings ── */
+  h2.sec-title{
+    font-family:var(--font-display); font-weight:800;
+    font-size:clamp(28px,3.5vw,42px); letter-spacing:-.03em;
+    line-height:1.05; margin:0 0 48px;
+  }
+  p{ font-size:15px; line-height:1.85; color:var(--tx-dim); margin:0 0 18px; }
+  p strong{ color:var(--tx); font-weight:500; }
+
+  /* ── photo grid ── */
+  .photo-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:auto auto;
+    gap:3px;
+  }
+  .photo-grid .photo{ position:relative; overflow:hidden; background:var(--about-photo-bg); }
+  .photo-grid .photo.wide{ grid-column:span 2; }
+  .photo-grid .photo.tall{ grid-row:span 2; }
+  .photo-grid .photo img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    aspect-ratio:1; filter:brightness(.9);
+    transition:transform .6s cubic-bezier(.4,0,.2,1), filter .4s;
+  }
+  .photo-grid .photo.wide img{ aspect-ratio:2; }
+  .photo-grid .photo.tall img{ aspect-ratio:.5; height:100%; }
+  .photo-grid .photo:hover img{ transform:scale(1.04); filter:brightness(1.0); }
+  .photo-caption{
+    position:absolute; bottom:0; left:0; right:0;
+    padding:28px 16px 14px;
+    background:linear-gradient(to top, rgba(0,0,0,.76) 0%, transparent 100%);
+    font-family:var(--font-mono); font-size:9px; letter-spacing:0.18em;
+    text-transform:uppercase; color:rgba(240,237,232,.72);
+    opacity:0; transition:opacity .3s;
+  }
+  .photo-grid .photo:hover .photo-caption{ opacity:1; }
+  @media(max-width:680px){
+    .photo-grid{ grid-template-columns:1fr 1fr; }
+    .photo-grid .photo.wide{ grid-column:span 2; }
+    .photo-grid .photo.tall{ grid-row:span 1; }
+    .photo-grid .photo.tall img{ aspect-ratio:1; }
+  }
+
+  /* ── work timeline ── */
+  .timeline{ display:grid; gap:0; }
+  .trow{
+    display:grid; grid-template-columns:72px 1fr;
+    gap:24px; align-items:baseline;
+    padding:22px 0; border-top:1px solid var(--hairline);
+  }
+  .trow:last-child{ border-bottom:1px solid var(--hairline); }
+  .tyear{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:0.14em;
+    color:var(--accent); white-space:nowrap;
+  }
+  .tevent{ font-size:14px; line-height:1.7; color:var(--tx-dim); }
+  .tevent strong{ color:var(--tx); font-weight:500; }
+  @media(max-width:560px){
+    .trow{ grid-template-columns:60px 1fr; gap:16px; }
+  }
+
+  /* ── two-col layout for bio section ── */
+  .bio-cols{ display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start; }
+  @media(max-width:780px){ .bio-cols{ grid-template-columns:1fr; gap:32px; } }
+
+  /* ── pull quote ── */
+  blockquote.pullquote{
+    border:none; margin:56px 0; padding:0;
+    grid-column:1/-1;
+  }
+  blockquote.pullquote p{
+    font-family:var(--font-editorial); font-style:italic;
+    font-size:clamp(20px,2.4vw,28px); line-height:1.55;
+    color:var(--tx); margin:0;
+  }
+  blockquote.pullquote cite{
+    display:block; margin-top:16px;
+    font-family:var(--font-mono); font-size:10px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--tx-faint); font-style:normal;
+  }
+
+  /* ── exhibit link block ── */
+  .exhibit-link{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px; flex-wrap:wrap;
+    padding:40px; margin-top:64px;
+    background:var(--bg-surface);
+    border:1px solid var(--border);
+  }
+  .exhibit-link-text h3{
+    font-family:var(--font-display); font-weight:800;
+    font-size:22px; letter-spacing:-.02em; margin:0 0 8px; color:var(--tx);
+  }
+  .exhibit-link-text p{
+    font-size:13px; color:var(--tx-dim); margin:0; line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink active" href="about.html">About</a>
+  <a class="navlink" href="portfolio.html">Work</a>
+  <a class="navlink" href="mathematics.html">The Math</a>
+  <a class="navlink" href="store.html">Store</a>
+  <a class="navlink" href="contact.html">Contact</a>
+  <button class="gf-toggle" id="gfThemeToggle" type="button" aria-label="Switch to light mode">
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <p class="hero-kicker">Architect · Designer · Geometric Researcher</p>
+        <h1 class="hero-name">Gregg<br>Fleishman</h1>
+        <p class="hero-role">Los Angeles · Since 1972</p>
+      </div>
+      <div>
+        <p class="hero-bio">
+          <b>Fifty years</b> of building with geometry — from MoMA-collected chairs to six-story festival temples raised without a single metal fastener.
+        </p>
+        <p class="hero-bio">
+          Fleishman studies the mathematics hidden inside the cube. The angles, diagonals, and ratios that emerge from that geometry become the joints, spans, and proportions of everything he builds.
+        </p>
+        <div class="hero-cta-row">
+          <a class="gf-btn-fill" href="portfolio.html">See the work</a>
+          <a class="gf-btn-outline" href="mathematics.html">The geometry</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="creds">
+    <div class="cred">
+      <p class="cred-label">Education</p>
+      <p class="cred-value">USC School of Architecture, 1970</p>
+    </div>
+    <div class="cred">
+      <p class="cred-label">License</p>
+      <p class="cred-value">California Architect #13131</p>
+    </div>
+    <div class="cred">
+      <p class="cred-label">Collection</p>
+      <p class="cred-value">Museum of Modern Art, New York</p>
+    </div>
+    <div class="cred">
+      <p class="cred-label">Studio</p>
+      <p class="cred-value">Lincoln Heights, Los Angeles</p>
+    </div>
+  </div>
+</div>
+
+<!-- Photo grid -->
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">Selected work</span>
+    <div class="photo-grid">
+      <div class="photo wide">
+        <img src="assets/arch/temple.jpg" alt="Temple of Whollyness — Burning Man 2013">
+        <span class="photo-caption">Temple of Whollyness · Burning Man 2013</span>
+      </div>
+      <div class="photo">
+        <img src="assets/arch/solarstage.jpg" alt="Solar Stage — Wonderfruit Festival, Thailand">
+        <span class="photo-caption">Solar Stage · Wonderfruit 2015–2019</span>
+      </div>
+      <div class="photo">
+        <img src="assets/arch/skyportal.jpg" alt="Sky Portal">
+        <span class="photo-caption">Sky Portal Series · 2022–</span>
+      </div>
+      <div class="photo">
+        <img src="assets/arch/node.jpg" alt="Node Home structure">
+        <span class="photo-caption">Node Home Series</span>
+      </div>
+      <div class="photo wide">
+        <img src="assets/arch/satellite.jpg" alt="Satellite structure">
+        <span class="photo-caption">Satellite · Pods &amp; Panels</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bio section -->
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">Background</span>
+    <div class="bio-cols">
+      <div>
+        <h2 class="sec-title">Geometry<br>as a building system</h2>
+      </div>
+      <div>
+        <p>
+          Fleishman graduated from USC's School of Architecture in 1970 and spent nearly two decades working in commercial concrete construction. Through that period he was also researching a question: could the ratios embedded in the cube — the 1 : √2 : √3 triangle formed by its diagonals — become the basis of a complete building system?
+        </p>
+        <p>
+          By 1975 the first furniture emerged. The proportions of the plywood joints, the spans between nodes, the angles of intersection — all derive from the same geometry. The work is not decorative; it is structural logic made physical.
+        </p>
+        <p>
+          In the early 1990s, MoMA New York acquired pieces from his furniture collection. The work has since extended from chairs to domes, from domes to cathedral-scale temporary structures, from structures to the digital file systems that allow others to build from the same principles.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pull quote -->
+<section class="sec">
+  <div class="wrap">
+    <blockquote class="pullquote">
+      <p>"The cube contains a triangle no one taught me about — a triangle with sides in exactly the ratio 1 : √2 : √3. Once you see it, you can't un-see it. Everything else followed from that."</p>
+      <cite>— Gregg Fleishman</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- Timeline -->
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">Milestones</span>
+    <h2 class="sec-title">Fifty years<br>of building</h2>
+    <div class="timeline">
+      <div class="trow">
+        <span class="tyear">1970</span>
+        <span class="tevent">Graduated USC School of Architecture. Began commercial concrete construction practice in Los Angeles.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">1972</span>
+        <span class="tevent">Started geometric research into cubic space-filling systems. Developed the "Lost Triangle" concept — the 1 : √2 : √3 ratio embedded in the cube's diagonals.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">1975</span>
+        <span class="tevent">First furniture designed using the geometric system. Birch plywood cut with CNC to exploit slot-and-pin joinery derived from the cubic geometry.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">1990s</span>
+        <span class="tevent"><strong>MoMA New York</strong> acquires furniture from the collection. Work also entered the collections of Yale University and the Art Institute of Chicago.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">2011–14</span>
+        <span class="tevent"><strong>Burning Man.</strong> "Otic" series structures, Man Base Pistol, and the <strong>Temple of Whollyness</strong> — a six-story central space assembled from CNC-cut wood parts in 15 days, no metal fasteners.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">2015–19</span>
+        <span class="tevent"><strong>Wonderfruit Festival, Thailand.</strong> Solar Stage installations. Also Lucidity, Disclosure Fest, and Desert Hearts festivals in California.</span>
+      </div>
+      <div class="trow">
+        <span class="tyear">2022–</span>
+        <span class="tevent"><strong>Sky Portal Series.</strong> Simplified slot-and-pin joinery. Panels intersect at 90°, drawing from cubic polyhedra. From single portals to infinite assemblies. Gallery opening at 201 S. Broadway, Los Angeles.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Geometry exhibit link -->
+<section class="sec">
+  <div class="wrap">
+    <span class="eyebrow">The underlying math</span>
+    <div class="bio-cols">
+      <div>
+        <h2 class="sec-title">The geometry<br>made explorable</h2>
+      </div>
+      <div>
+        <p>
+          The geometry that drives Fleishman's work — the Lost Triangle, the rhombic dodecahedron, the space-filling system — is documented in an interactive web exhibit. It shows the mathematics from first principles: how the cube's diagonals create a triangle with sides in exact ratio 1 : √2 : √3, how that triangle "stands up" into space, and how the resulting cell packs the whole of space without gaps.
+        </p>
+        <div class="exhibit-link">
+          <div class="exhibit-link-text">
+            <h3>Geometry &amp; Structure</h3>
+            <p>Interactive exhibit — the Lost Triangle, construction animations, the rhombic dodecahedron, and the Vector Pod instrument.</p>
+          </div>
+          <a class="gf-btn-fill" href="mathematics.html">Enter the exhibit →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
