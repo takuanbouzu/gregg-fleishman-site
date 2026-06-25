@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Site chrome typeface -->
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<!-- Motion-graphic typefaces (from the design) -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,600&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Motion-graphic typefaces (from the design): Syne display, Cormorant Garamond labels, Space Grotesk UI -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
@@ -35,6 +35,11 @@
   /* Embed mode — no nav, stage owns the whole frame. */
   html.lt-embed #gfnav{ display:none; }
   html.lt-embed #lt-stage{ top:0; }
+
+  /* Scrub control thumb (from the design) */
+  .lt-scrub{ -webkit-appearance:none; appearance:none; height:4px; border-radius:3px; background:rgba(240,237,232,.14); outline:none; }
+  .lt-scrub::-webkit-slider-thumb{ -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:#C8A96E; cursor:pointer; box-shadow:0 0 0 4px rgba(200,169,110,.16); }
+  .lt-scrub::-moz-range-thumb{ width:15px; height:15px; border:none; border-radius:50%; background:#C8A96E; cursor:pointer; }
 
   /* Loading / no-script states */
   #lt-fallback{
@@ -77,28 +82,20 @@
 <!-- React runtime (vendored from npm; UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
 <script src="assets/vendor/react-18.3.1/react-dom.production.min.js"></script>
-<!-- Design source: Stage/Sprite runtime, then the Lost Triangle scenes
-     (pre-transpiled from animations.jsx / LostTriangleVideo.jsx) -->
-<script src="assets/lost-triangle/animations.js"></script>
-<script src="assets/lost-triangle/lost-triangle-video.js"></script>
+<!-- The Lost Triangle motion graphic — single self-contained React component
+     (plain React.createElement, no build step). Defines window.LostTriangleAnimation. -->
+<script src="assets/lost-triangle/lost-triangle-animation.js"></script>
 <script>
 (function(){
   "use strict";
-  var root = null, currentPortrait = null;
-  function isPortrait(){
-    return window.matchMedia('(max-aspect-ratio: 1/1)').matches;
-  }
-  // Choose the layout-appropriate component: the design ships a portrait
-  // build (1080x1920) alongside the landscape one (1920x1080). Mounting the
-  // landscape component on a phone letterboxes it into a tiny center strip.
+  var root = null;
+  // The design is one 1920x1080 component that scales to fit its box (it
+  // letterboxes on portrait, exactly as the original export does).
   function render(){
     var el = document.getElementById('lt-root');
-    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleVideo) return false;
-    var portrait = isPortrait() && !!window.LostTriangleVideoPortrait;
-    var Comp = portrait ? window.LostTriangleVideoPortrait : window.LostTriangleVideo;
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleAnimation) return false;
     if (!root) { el.innerHTML = ''; root = ReactDOM.createRoot(el); }
-    currentPortrait = portrait;
-    root.render(React.createElement(Comp));
+    root.render(React.createElement(window.LostTriangleAnimation, { autoplay: true }));
     return true;
   }
   if (!render()) {
@@ -108,24 +105,6 @@
       if (render() || ++tries > 200) clearInterval(id);
     }, 30);
   }
-  // Re-pick the component when the aspect ratio crosses square (rotate /
-  // resize). The Stage persists the playhead per-orientation, so carry it
-  // across the switch for continuity.
-  var rt;
-  window.addEventListener('resize', function(){
-    clearTimeout(rt);
-    rt = setTimeout(function(){
-      if (root && isPortrait() !== currentPortrait) {
-        try {
-          var from = currentPortrait ? 'losttri_portrait:t' : 'losttri_landscape:t';
-          var to   = currentPortrait ? 'losttri_landscape:t' : 'losttri_portrait:t';
-          var v = localStorage.getItem(from);
-          if (v != null) localStorage.setItem(to, v);
-        } catch (e) {}
-        render();
-      }
-    }, 150);
-  });
 })();
 </script>
 </body>
