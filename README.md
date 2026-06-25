@@ -12,13 +12,14 @@ the rest is plain SVG/Canvas. Every page shares one design system and a light/da
 
 | Page | What it is |
 |---|---|
-| `index.html` | **The Geometry Lesson** — the interactive 3D instrument |
-| `mathematics.html` | **The Lost Triangle** — the narrative, with an expandable symmetry theory note |
+| `index.html` | **The landing hub** — cover page with the Lost Triangle motion-graphic hero |
+| `explore.html` | **The Cube** — the main interactive 3D instrument (tabbed: Cube · Cluster Structures · Vector System · Vector Pod) |
+| `lost-triangle.html` | **The Lost Triangle** — the canonical animated motion graphic (`1 : √2 : √3`) |
+| `mathematics.html` | **The Lost Triangle (narrative)** — the readable long-form companion, with an expandable symmetry theory note |
 | `fleishman-sequence.html` | A ~44s cinematic build: the plan Lost Triangle stands up into the cube, the rhombic cell, and space-filling |
 | `cluster-structures.html` | A ~62s continuation: the RHOMBICUBE, two viewing axes, the truncation, and a gold-jewel close |
-| `lost-triangle.html` · `cube-diagonals.html` · `rhombic-dodecahedron.html` · `silver-triangle.html` | 3D deep-dives into individual constructions |
+| `cube-diagonals.html` · `rhombic-dodecahedron.html` · `dorman-luke.html` | 3D deep-dives into individual constructions |
 | `lost-triangle-construction.html` · `lost-triangle-construction-3d.html` | Animated step-by-step constructions (plan → space) |
-| `poster/poster.html` | The print poster (fixed cream plate) |
 
 ## Design system
 
