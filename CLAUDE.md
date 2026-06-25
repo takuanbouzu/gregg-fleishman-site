@@ -87,36 +87,39 @@ gregg-fleishman-site/
 
 ### Outer Site Nav (index, about, portfolio, store, contact)
 ```
-About · Work · [Geometry → index.html] · Store · Contact
+About · Work · Geometry · Store · Contact
 ```
-- `index.html` uses "Geometry" linking to itself (the hub)
-- Other outer pages use "The Math" → `mathematics.html` as their geometry entry point
+- All outer pages use **"Geometry" → `index.html`** (the hub). `index.html` marks it active. (Previously inconsistent: index linked to itself while the others used "The Math" → `mathematics.html`; unified June 2026.)
 
-### Geometry Exhibit Nav (explore, lost-triangle, construction, research, rhombic-system)
+### Geometry Exhibit Nav (all geometry pages)
 ```
-[brand] Gregg Fleishman · The Cube · The Lost Triangle · Construction · Research · Rhombic System · Vector Pod
+[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System · Vector Pod
 ```
-- Present on all geometry pages via shared `<nav id="gfnav">`
-- `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px
-- **"The Lost Triangle" → `lost-triangle.html`** (the accurate React motion graphic — the canonical Lost Triangle page). It previously pointed to `mathematics.html`; `mathematics.html` is now the long-form narrative companion, reached from `index.html`/`about.html` CTAs and from the no-JS/no-WebGL fallback links on the motion pages.
+- Present on all 15 geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
+- `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px.
+- **Order encodes the intended learning journey: scroll → animation → model.**
+  - **"The Lost Triangle" → `mathematics.html`** — the long-form narrative **scroll** (the entry point of the journey).
+  - **"Animation" → `lost-triangle.html`** — the accurate React motion graphic.
+  - **"The Cube" → `explore.html`** — the interactive 3D model.
+- There is no longer a "Construction" nav item; `construction.html` is an orphaned deep-dive (active context = Animation).
 
 ### Orphaned Deep-Dive Pages
 These are accessible by URL only — not linked from any nav:
-- `fleishman-sequence.html` — cinematic sequence (active nav → Construction)
-- `cluster-structures.html` — now a tab inside `explore.html` (active nav → Construction)
-- `lost-triangle-construction.html` — 2D animated construction (active nav → Construction)
-- `lost-triangle-construction-3d.html` — 3D construction proof (active nav → Construction)
+- `fleishman-sequence.html` — cinematic sequence (active nav → Animation)
+- `cluster-structures.html` — now a tab inside `explore.html` (active nav → The Cube)
+- `lost-triangle-construction.html` — 2D animated construction (active nav → Animation)
+- `lost-triangle-construction-3d.html` — 3D construction proof (active nav → Animation)
 - `cube-diagonals.html` — cube diagonal deep-dive (active nav → The Lost Triangle)
 - `rhombic-dodecahedron.html` — rhombic dodecahedron (active nav → Rhombic System)
 - `fleishman-vector-system.html` — vector system (active nav → The Cube)
 - `vector-house.html` — vector house form (active nav → Rhombic System)
-- `lost-triangle-motion.html` — looping canvas animation, embedded as iframe in `index.html`
+- `lost-triangle-motion.html` — looping canvas animation (active nav → Animation), embedded as iframe in `index.html`
 
 ---
 
 ## Theming System
 
-The site is **dark-only by design** (`gf-tokens.css` overrides any light-theme switch).
+The site is **dark-only**. The light theme was **fully removed** (June 2026): no toggle button, no `data-theme` switching, no `[data-theme="light"]` CSS rules anywhere, and `gf-theme.js` is now an inert dark-only stub. The dark tokens below are the entire palette.
 
 ### `assets/gf-tokens.css`
 Single source of truth for CSS custom properties. Drop-in replacement on all 17+ pages.
@@ -131,20 +134,16 @@ Key variables:
 - `--geo-tri: #77a485` — root triangle fill (green)
 - `--geo-angle: #c9a24b` — angle measures (gold)
 
-Light mode is neutered: `:root[data-theme="light"]{ color-scheme:dark; }` — the toggle is kept in the markup but has no visual effect.
-
 ### `assets/gf-theme.js`
-- Reads/writes `localStorage` key `gf-theme`
-- Sets `data-theme` on `<html>`
-- Exposes `window.gfTheme.get()`, `.set()`, `.toggle()`
+- Inert dark-only compatibility stub. Sets `<meta name="theme-color">` to the dark value and clears any stale `localStorage['gf-theme']`.
+- Exposes a no-op back-compat API — `window.gfTheme.get()/.set()/.toggle()` all return `'dark'` — so any leftover caller can't crash. Still loaded (via `<script>`) on every page; safe to keep.
 
 ### `assets/gf-scene.js`
-- Exposes `window.GF_SCENE` with `light` and `dark` palette objects
-- Each palette: `bg[]`, `ink`, `unit`, `face`, `space`, `tri`, `angle`, `halo`
-- Colors are CSS hex strings; `THREE.Color` parses them directly
-- `GF_SCENE.active()` returns the current palette; `GF_SCENE.onChange(cb)` fires on theme toggle
+- Exposes `window.GF_SCENE` with a **single `dark` palette** object: `bg[]`, `ink`, `unit`, `face`, `space`, `tri`, `angle`, `halo`.
+- Colors are CSS hex strings; `THREE.Color` parses them directly.
+- `GF_SCENE.active()` and `GF_SCENE.name()` always return the dark palette / `'dark'` (the light palette was removed). `GF_SCENE.onChange()` is a no-op (the `gf-themechange` event no longer fires).
 
-**Important:** WebGL scenes hardcode `const SC = GF_SCENE.dark` — do NOT use `GF_SCENE.active()` in renderer setup. Using `.active()` caused the mustard/gold background bug (when a user had light mode stored, `SC.bg` became the cream palette and was used as the WebGL clear color).
+**Note:** new WebGL pages should still read `const SC = GF_SCENE.dark` (or `.active()` — both return dark now). The historical mustard/gold background bug (caused by `.active()` returning a stored light palette) can no longer occur, since there is no light palette.
 
 ---
 
@@ -229,7 +228,7 @@ OG/Twitter meta image URLs use the full GitHub Pages URL — update these if the
 
 ## Common Pitfalls
 
-1. **Gold background on WebGL pages**: Caused by using `GF_SCENE.active()` for the clear color when a user has light mode in localStorage. Always use `GF_SCENE.dark` directly.
+1. **Gold background on WebGL pages** (historical, now impossible): was caused by `GF_SCENE.active()` returning a stored light palette for the clear color. The light palette is gone, so `.active()` and `.dark` both return dark. Still prefer `GF_SCENE.dark` for clarity in new code.
 
 2. **Color space**: Three.js r160 stores colors in linear space internally. Always set `renderer.outputColorSpace = THREE.SRGBColorSpace` explicitly to avoid ambiguity.
 

@@ -3,8 +3,7 @@
    Pairs with the RESPONSIVE NAV block in gf-tokens.css.
 
    Drop into any page that has a <nav id="gfnav"> with the
-   standard `.brand`, `.navlink` set, and `.gf-toggle`:
-     <script src="assets/gf-theme.js"></script>
+   standard `.brand` + `.navlink` set:
      <script src="assets/gf-nav.js"></script>
 
    It wraps the links in `.navlinks`, injects a `.navburger`

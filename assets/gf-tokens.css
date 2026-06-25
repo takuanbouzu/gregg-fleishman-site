@@ -7,10 +7,7 @@
 
    Drop-in replacement for /assets/gf-tokens.css — preserves the
    exact variable + class contract every page consumes, so all
-   17 pages reskin from this one file. Dark-only by design (the
-   instrument has no light mode); any [data-theme="light"] simply
-   inherits the dark palette, so the nav toggle becomes a no-op
-   (safe to remove from the markup).
+   17 pages reskin from this one file. Dark-only by design.
 
    Fonts — swap each page's <head> font link to:
    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -68,10 +65,6 @@
   /* ---- motion: quiet & short ---- */
   --ease:cubic-bezier(.4,0,.2,1);
 }
-
-/* The instrument is dark-only. Neutralize any light-theme switch so a
-   stale toggle can't wash the palette out. */
-:root[data-theme="light"]{ color-scheme:dark; }
 
 /* ---- base ---- */
 html{scroll-behavior:smooth;}
@@ -146,28 +139,6 @@ body{
 [data-reveal].is-in{opacity:1; transform:none;}
 
 /* ============================================================
-   THEME TOGGLE  (.gf-toggle) — retained for layout parity; the
-   instrument is dark-only so it no longer changes the palette.
-   Safe to delete the button markup per page.
-   ============================================================ */
-.gf-toggle{
-  appearance:none; -webkit-appearance:none;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:34px; height:34px; padding:0; flex-shrink:0;
-  border:1px solid var(--border-strong);
-  border-radius:50%; color:var(--tx-dim); cursor:pointer;
-  position:sticky; right:0; margin-left:4px;
-  background:var(--nav-bg);
-  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
-  box-shadow:-16px 0 16px -8px var(--nav-bg);
-  transition:color .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
-}
-.gf-toggle:hover{ color:var(--tx); border-color:var(--accent); }
-.gf-toggle svg{ width:16px; height:16px; display:block; }
-.gf-toggle .i-sun{ display:none; }
-.gf-toggle .i-moon{ display:block; }
-
-/* ============================================================
    RESPONSIVE NAV  ·  hamburger + slide-down menu
    ============================================================ */
 .navlinks{ display:flex; align-items:center; gap:inherit; flex-shrink:0; }
@@ -214,7 +185,6 @@ body{
   html.gf-nav-ready #gfnav .navlinks{ display:none; }
   html.gf-nav-ready #gfnav .navburger{ display:flex; }
   html.gf-nav-ready #gfnav{ overflow:visible; gap:14px; padding:0 18px; }
-  html.gf-nav-ready #gfnav .gf-toggle{ position:static; box-shadow:none; margin-left:auto; }
 }
 @media(min-width:821px){ #gf-mobilemenu{ display:none; } }
 

@@ -5,8 +5,8 @@ An interactive web exhibit of architect **Gregg Fleishman's** geometric system: 
 space, and the furniture and architecture that grow out of them.
 
 Static HTML — no build step. The animated pages use **Three.js** (ES modules) + **GSAP**;
-the rest is plain SVG/Canvas. Every page shares one design system and a light/dark
-("Paper" / "Night") toggle.
+the rest is plain SVG/Canvas. Every page shares one **dark-only** design system (the light
+theme was removed — the instrument is dark by design).
 
 ## Pages
 
@@ -25,12 +25,11 @@ the rest is plain SVG/Canvas. Every page shares one design system and a light/da
 
 Three shared assets in `assets/` drive everything:
 
-- **`gf-tokens.css`** — the canonical tokens (ground, type, the geometry colour roles).
-  Dark ("Night") is the default; `:root[data-theme="light"]` is the "Paper" palette.
-- **`gf-theme.js`** — the light/dark controller (loaded synchronously, no flash);
-  persists to `localStorage`, fires a `gf-themechange` event.
-- **`gf-scene.js`** — the matching night/paper **geometry palette for the WebGL pages**,
-  so 3D scenes and page chrome stay in sync across the toggle.
+- **`gf-tokens.css`** — the canonical dark tokens (ground, type, the geometry colour roles).
+- **`gf-theme.js`** — an inert dark-only stub (sets `theme-color`, exposes a no-op
+  `window.gfTheme` API for backward compatibility). Loaded synchronously in `<head>`.
+- **`gf-scene.js`** — the single dark **geometry palette for the WebGL pages**, so the 3D
+  scenes and page chrome share one set of colours.
 
 The animated "movie" pages share one architecture: a single scrubbable GSAP timeline, fat
 lines (`Line2`) drawn on via the render loop (seek-exact), a gimbal-free camera rig, and a
