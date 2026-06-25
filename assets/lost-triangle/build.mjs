@@ -9,10 +9,10 @@ const outDir = process.env.OUT_DIR || dir;
 const HEADER = [
   '// GENERATED — do not edit by hand.',
   '// Transpiled (Babel preset-react, classic runtime) from the JSX source.',
-  '// Source of truth: animations.jsx / LostTriangleVideo.jsx. See README.md.',
+  '// Source of truth: animations.jsx / LostTriangleVideoClean.jsx. See README.md.',
   '',
 ].join('\n');
-for (const [src, out] of [['animations.jsx','animations.js'], ['LostTriangleVideo.jsx','lost-triangle-video.js']]) {
+for (const [src, out] of [['animations.jsx','animations.js'], ['LostTriangleVideoClean.jsx','lost-triangle-video.js']]) {
   const code = fs.readFileSync(path.join(dir, src), 'utf8');
   const res = babel.transform(code, { presets: [['react', { runtime: 'classic' }]], compact: false });
   fs.writeFileSync(path.join(outDir, out), HEADER + res.code);

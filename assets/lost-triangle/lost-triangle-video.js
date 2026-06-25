@@ -1,197 +1,86 @@
 // GENERATED — do not edit by hand.
 // Transpiled (Babel preset-react, classic runtime) from the JSX source.
-// Source of truth: animations.jsx / LostTriangleVideo.jsx. See README.md.
-// LostTriangleVideo.jsx
-// Motion graphic: the Sundial construction that reveals the Lost Triangle.
-// Faithful to the reference video: fixed camera, small construction, cumulative
-// build-up, simple italic serif titles, formula at bottom.
-// Layout-aware: 1920×1080 (landscape) or 1080×1920 (portrait).
+// Source of truth: animations.jsx / LostTriangleVideoClean.jsx. See README.md.
+// LostTriangleVideoClean.jsx
+// Pure animation version — full canvas, no side panels, no reference images.
+// Palette: near-black bg · off-white lines · magenta accent (Lost Triangle only) · gold for angle labels.
 
-const R3 = Math.sqrt(3),
-  R2 = Math.SQRT2;
-
-// ── palette ───────────────────────────────────────────────────────────────────
-const C = {
-  bg: '#08080c',
-  ink: '#f2f2ee',
-  dim: '#6f7079',
-  faint: '#34343c',
-  blue: '#4f9cf9',
-  mag: '#ff3ccf',
-  violet: '#a06bff',
-  gold: '#f6a82a',
-  slate: '#8ba2bd'
+const R3c = Math.sqrt(3),
+  R2c = Math.SQRT2;
+const clc = (v, a, b) => Math.max(a, Math.min(b, v));
+const Cc = {
+  bg: '#0C0B0A',
+  ink: '#E8E5E0',
+  // off-white — construction scaffold
+  dim: '#4E4C49',
+  // mid grey
+  faint: '#1C1B19',
+  line: '#2E2C2A',
+  acc: '#FF00CC',
+  // bright magenta — matches Gregg's drawings exactly
+  blue: '#5B90C8',
+  // steel blue — √2 leg, rhombic kite, unit square
+  gold: '#C8A96E' // angle labels + close title
 };
-// Three-rod accent system matching the reference video
-const BLUE = '#29b6f6'; // ground plane, axes, diagonal
-const RED = '#ef5350'; // vertical rise
-const GOLD = '#f5a623'; // sundial hypotenuse, lost triangle
-const SERIF = "'Spectral', Georgia, serif";
-const DISP = "'Cormorant', Georgia, serif";
-const MONO = "'JetBrains Mono', ui-monospace, monospace";
-
-// ── helpers ───────────────────────────────────────────────────────────────────
-const cl = (v, a, b) => Math.max(a, Math.min(b, v));
-function sub(lt, start, dur) {
-  const E = window.Easing ? window.Easing.easeInOutCubic : t => t;
-  return E(cl((lt - start) / dur, 0, 1));
+const DISPc = "'Syne', sans-serif";
+const SERIFc = "'Cormorant Garamond', serif";
+const MONOc = "'Space Grotesk', sans-serif";
+function subc(lt, start, dur, ease) {
+  const E = window.Easing && ease ? ease : window.Easing ? window.Easing.easeInOutCubic : t => t;
+  return E(clc((lt - start) / dur, 0, 1));
 }
-const lerp = (a, b, t) => a + (b - a) * t;
-const polar = (cx, cy, r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-const ptStr = pts => pts.map(p => p.join(',')).join(' ');
-const sub2 = (a, b) => [a[0] - b[0], a[1] - b[1]];
-const add2 = (a, b) => [a[0] + b[0], a[1] + b[1]];
-const mul2 = (a, s) => [a[0] * s, a[1] * s];
-const len2 = a => Math.hypot(a[0], a[1]);
-const norm = a => {
-  const l = len2(a) || 1;
+const lerpc = (a, b, t) => a + (b - a) * t;
+const polarc = (cx, cy, r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+const ptStrc = pts => pts.map(p => p.join(',')).join(' ');
+const sub2c = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const add2c = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const mul2c = (a, s) => [a[0] * s, a[1] * s];
+const len2c = a => Math.hypot(a[0], a[1]);
+const normc = a => {
+  const l = len2c(a) || 1;
   return [a[0] / l, a[1] / l];
 };
-function arcPath(cx, cy, r, a0, a1) {
-  const [sx, sy] = polar(cx, cy, r, a0);
-  const [ex, ey] = polar(cx, cy, r, a1);
-  const large = Math.abs(a1 - a0) > Math.PI ? 1 : 0;
-  const sweep = a1 > a0 ? 1 : 0;
-  return `M${sx} ${sy} A${r} ${r} 0 ${large} ${sweep} ${ex} ${ey}`;
+function arcPathc(cx, cy, r, a0, a1) {
+  const [sx, sy] = polarc(cx, cy, r, a0),
+    [ex, ey] = polarc(cx, cy, r, a1);
+  return `M${sx} ${sy} A${r} ${r} 0 ${Math.abs(a1 - a0) > Math.PI ? 1 : 0} ${a1 > a0 ? 1 : 0} ${ex} ${ey}`;
 }
-
-// ── layout context ────────────────────────────────────────────────────────────
-const LayoutContext = React.createContext(null);
-const useL = () => React.useContext(LayoutContext);
-function makeLayout(orient) {
+const LayoutContextC = React.createContext(null);
+const useLC = () => React.useContext(LayoutContextC);
+function makeLayoutC(orient) {
   if (orient === 'portrait') {
     return {
       orient,
       vw: 1080,
       vh: 1920,
-      U: 300,
-      AX: 360,
-      AY: 1230,
-      title: {
-        x: 70,
-        y: 150,
-        size: 46,
-        kicker: 16
-      },
-      r3name: {
-        x: 540,
-        y: 1430,
-        anchor: 'middle'
-      },
-      cube: {
-        ox: 540,
-        oy: 1000,
-        scale: 470,
-        legendX: 540,
-        legendY: 1500,
-        legendRow: true
-      },
-      rho: {
-        ox: 540,
-        oy: 860,
-        s: 210,
-        dodec: [540, 1040],
-        labelX: 540,
-        labelY: 1480
-      },
-      dih: {
-        textX: 540,
-        textY: 470,
-        w1: [540, 800],
-        w2: [540, 1380],
-        dwArm: 150
-      },
-      res: {
-        tris: [[270, 620], [540, 620], [810, 620]],
-        triScale: 130,
-        end: [540, 1180]
-      },
-      dotsBottom: 70
+      GX: 540,
+      GY: 960,
+      U: 210,
+      dotsBottom: 90
     };
   }
   return {
     orient: 'landscape',
     vw: 1920,
     vh: 1080,
-    U: 218,
-    AX: 690,
-    AY: 812,
-    title: {
-      x: 150,
-      y: 150,
-      size: 52,
-      kicker: 18
-    },
-    r3name: {
-      x: 1230,
-      y: 470,
-      anchor: 'start'
-    },
-    cube: {
-      ox: 980,
-      oy: 540,
-      scale: 430,
-      legendX: 1380,
-      legendY: 430,
-      legendRow: false
-    },
-    rho: {
-      ox: 720,
-      oy: 540,
-      s: 150,
-      dodec: [980, 540],
-      labelX: 720,
-      labelY: 740
-    },
-    dih: {
-      textX: 960,
-      textY: 300,
-      w1: [640, 620],
-      w2: [1280, 620],
-      dwArm: 150
-    },
-    res: {
-      tris: [[560, 470], [960, 470], [1360, 470]],
-      triScale: 130,
-      end: [960, 760]
-    },
-    dotsBottom: 34
-  };
-}
-function planar(L) {
-  const {
-    U,
-    AX,
-    AY
-  } = L;
-  const A = [AX, AY],
-    B = [AX + U, AY],
-    Cc = [AX + U, AY - U],
-    D = [AX, AY - U];
-  const acDir = norm(sub2(Cc, A));
-  const perpOut = [acDir[1], -acDir[0]];
-  const F = add2(Cc, mul2(perpOut, U));
-  return {
-    A,
-    B,
-    Cc,
-    D,
-    F
+    GX: 960,
+    GY: 520,
+    U: 230,
+    dotsBottom: 42
   };
 }
 
-// ── SVG primitives ────────────────────────────────────────────────────────────
-function Stroke({
+// ── primitives ─────────────────────────────────────────────────────────────
+function StrokeC({
   d,
   p = 1,
-  stroke = C.ink,
-  w = 2,
+  stroke = Cc.ink,
+  w = 2.2,
   opacity = 1,
   dashArr,
   cap = 'round'
 }) {
-  const prog = cl(p, 0, 1);
-  if (prog <= 0) return null;
+  if (clc(p, 0, 1) <= 0) return null;
   return /*#__PURE__*/React.createElement("path", {
     d: d,
     fill: "none",
@@ -202,44 +91,38 @@ function Stroke({
     opacity: opacity,
     pathLength: "1",
     strokeDasharray: dashArr || '1 1',
-    strokeDashoffset: dashArr ? 0 : 1 - prog
+    strokeDashoffset: dashArr ? 0 : 1 - p
   });
 }
-const seg = (a, b) => `M${a[0]} ${a[1]} L${b[0]} ${b[1]}`;
-function Line({
+const segc = (a, b) => `M${a[0]} ${a[1]} L${b[0]} ${b[1]}`;
+function LineC({
   a,
   b,
-  p = 1,
-  stroke = C.ink,
-  w = 2,
-  opacity = 1,
-  dash
+  p,
+  ...r
 }) {
-  return /*#__PURE__*/React.createElement(Stroke, {
-    d: seg(a, b),
+  return /*#__PURE__*/React.createElement(StrokeC, {
+    d: segc(a, b),
     p: p,
-    stroke: stroke,
-    w: w,
-    opacity: opacity,
-    dashArr: dash ? '0.08 0.04' : undefined
+    ...r
   });
 }
-function Poly({
+function PolyC({
   pts,
   fill,
   opacity = 1
 }) {
   return /*#__PURE__*/React.createElement("polygon", {
-    points: ptStr(pts),
+    points: ptStrc(pts),
     fill: fill,
     fillOpacity: opacity,
-    stroke: "none"
+    strokeLinejoin: "round"
   });
 }
-function Dot({
+function DotC({
   at,
-  r = 4,
-  fill = C.ink,
+  r = 4.5,
+  fill = Cc.ink,
   opacity = 1
 }) {
   return /*#__PURE__*/React.createElement("circle", {
@@ -250,1332 +133,1022 @@ function Dot({
     opacity: opacity
   });
 }
-function RightAngle({
+function RightAngleC({
   v,
   p,
   q,
-  s = 16,
-  stroke = C.dim,
+  s = 14,
   opacity = 1
 }) {
-  const u1 = norm(sub2(p, v)),
-    u2 = norm(sub2(q, v));
-  const a = add2(v, mul2(u1, s));
-  const c = add2(v, mul2(u2, s));
-  const b = add2(a, mul2(u2, s));
-  return /*#__PURE__*/React.createElement("path", {
-    d: `M${a[0]} ${a[1]} L${b[0]} ${b[1]} L${c[0]} ${c[1]}`,
-    fill: "none",
-    stroke: stroke,
-    strokeWidth: 1.4,
+  const dp = normc(sub2c(p, v)),
+    dq = normc(sub2c(q, v));
+  const a = add2c(v, mul2c(dp, s)),
+    b = add2c(a, mul2c(dq, s)),
+    cc = add2c(v, mul2c(dq, s));
+  return /*#__PURE__*/React.createElement("g", {
     opacity: opacity
-  });
+  }, /*#__PURE__*/React.createElement("polyline", {
+    points: ptStrc([a, b, cc]),
+    fill: "none",
+    stroke: Cc.dim,
+    strokeWidth: 1.1,
+    strokeLinejoin: "miter"
+  }));
 }
-function AngleMark({
+function AngleMarkC({
   v,
   p,
   q,
-  r = 32,
-  color = C.dim,
+  r,
+  color,
   label,
-  p0 = 1,
-  labelOff = 22,
-  size = 16
+  p0,
+  size = 13,
+  labelOff = 20
 }) {
-  let a1 = Math.atan2(p[1] - v[1], p[0] - v[0]);
-  let a2 = Math.atan2(q[1] - v[1], q[0] - v[0]);
-  let d = a2 - a1;
-  while (d <= -Math.PI) d += 2 * Math.PI;
-  while (d > Math.PI) d -= 2 * Math.PI;
-  const mid = a1 + d / 2;
-  const lp = polar(v[0], v[1], r + labelOff, mid);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(Stroke, {
-    d: arcPath(v[0], v[1], r, a1, a1 + d),
-    p: p0,
+  if (!p0) return null;
+  const dp = normc(sub2c(p, v)),
+    dq = normc(sub2c(q, v));
+  const a0 = Math.atan2(dp[1], dp[0]),
+    a1 = Math.atan2(dq[1], dq[0]);
+  const mid = (a0 + a1) / 2;
+  const lx = v[0] + (r + labelOff) * Math.cos(mid),
+    ly = v[1] + (r + labelOff) * Math.sin(mid);
+  return /*#__PURE__*/React.createElement("g", {
+    opacity: p0
+  }, /*#__PURE__*/React.createElement(StrokeC, {
+    d: arcPathc(v[0], v[1], r, a0, a1),
+    p: 1,
     stroke: color,
-    w: 1.6
-  }), label && p0 > 0.6 && /*#__PURE__*/React.createElement("text", {
-    x: lp[0],
-    y: lp[1],
+    w: 1.1,
+    opacity: .6
+  }), /*#__PURE__*/React.createElement("text", {
+    x: lx,
+    y: ly,
     fill: color,
-    fontFamily: MONO,
+    fontFamily: MONOc,
     fontSize: size,
     textAnchor: "middle",
-    dominantBaseline: "middle",
-    opacity: cl((p0 - 0.6) / 0.4, 0, 1)
+    dominantBaseline: "middle"
   }, label));
 }
-function LenLabel({
+function LenLabelC({
   a,
   b,
   text,
-  color = C.ink,
-  off = 20,
+  radical,
+  color,
+  off = 0,
   size = 18,
-  opacity = 1,
-  radical
+  opacity = 1
 }) {
-  const m = mul2(add2(a, b), 0.5);
-  const u = norm(sub2(b, a));
-  const perp = [u[1], -u[0]];
-  const pos = add2(m, mul2(perp, off));
-  const label = radical ? '√' + radical : text;
-  return /*#__PURE__*/React.createElement("text", {
-    x: pos[0],
-    y: pos[1],
+  const mid = mul2c(add2c(a, b), .5);
+  const perp = normc([-(b[1] - a[1]), b[0] - a[0]]);
+  const x = mid[0] + perp[0] * off,
+    y = mid[1] + perp[1] * off;
+  return radical ? /*#__PURE__*/React.createElement("text", {
+    x: x,
+    y: y,
     fill: color,
-    fontFamily: SERIF,
+    fontFamily: SERIFc,
     fontSize: size,
-    fontStyle: "italic",
     textAnchor: "middle",
     dominantBaseline: "middle",
     opacity: opacity
-  }, label);
+  }, "√", radical) : /*#__PURE__*/React.createElement("text", {
+    x: x,
+    y: y,
+    fill: color,
+    fontFamily: MONOc,
+    fontSize: size,
+    textAnchor: "middle",
+    dominantBaseline: "middle",
+    opacity: opacity
+  }, text);
 }
-
-// ── 3D projector (fixed tilt −0.50 rad, Y = up, ground in XZ plane) ──────────
-// Geometry: O(0,0,0) A(1,0,0) B(0,0,1) F(1,0,1) T(1,√2,1) P2(−1,√2,1)
-function project([x, y, z], rotY, scale, ox, oy) {
-  x -= 0.5;
-  y -= 0.5;
-  z -= 0.5;
-  const cyA = Math.cos(rotY),
-    syA = Math.sin(rotY);
-  let X = x * cyA + z * syA,
-    Z = -x * syA + z * cyA;
-  const tilt = -0.50,
-    ct = Math.cos(tilt),
-    st = Math.sin(tilt);
-  let Y = y * ct - Z * st;
-  return [ox + X * scale, oy - Y * scale];
-}
-
-// Fixed camera — same angle every chapter, no orbit.
-const ROT_Y = 0.25;
-function cam(L) {
-  return L.orient === 'portrait' ? {
-    ox: 540,
-    oy: 1000,
-    sc: 140
-  } : {
-    ox: 820,
-    oy: 510,
-    sc: 160
-  };
-}
-
-// Ground grid: large enough to fill the frame edge-to-edge.
-// Very faint teal lines to evoke the reference's "infinite plane" look.
-function GroundGrid({
-  ox,
-  oy,
-  sc,
+function RadicalC({
+  x,
+  y,
+  n,
+  color,
+  size = 22,
   opacity = 1
 }) {
-  const P = (x, z) => project([x, 0, z], ROT_Y, sc, ox, oy);
-  const lines = [];
-  for (let i = -3; i <= 5; i++) {
-    const a = P(i, -3),
-      b = P(i, 5);
-    const c = P(-3, i),
-      d = P(5, i);
-    lines.push(/*#__PURE__*/React.createElement("line", {
-      key: 'x' + i,
-      x1: a[0],
-      y1: a[1],
-      x2: b[0],
-      y2: b[1],
-      stroke: BLUE,
-      strokeWidth: 0.7,
-      opacity: 0.12
-    }), /*#__PURE__*/React.createElement("line", {
-      key: 'z' + i,
-      x1: c[0],
-      y1: c[1],
-      x2: d[0],
-      y2: d[1],
-      stroke: BLUE,
-      strokeWidth: 0.7,
-      opacity: 0.12
-    }));
-  }
-  // Coordinate axes — slightly brighter
-  const ax0 = P(-3, 0),
-    ax1 = P(5, 0);
-  const az0 = P(0, -3),
-    az1 = P(0, 5);
-  lines.push(/*#__PURE__*/React.createElement("line", {
-    key: "axX",
-    x1: ax0[0],
-    y1: ax0[1],
-    x2: ax1[0],
-    y2: ax1[1],
-    stroke: BLUE,
-    strokeWidth: 1.2,
-    opacity: 0.30
-  }), /*#__PURE__*/React.createElement("line", {
-    key: "axZ",
-    x1: az0[0],
-    y1: az0[1],
-    x2: az1[0],
-    y2: az1[1],
-    stroke: BLUE,
-    strokeWidth: 1.2,
-    opacity: 0.30
-  }));
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: opacity
-  }, lines);
-}
-
-// Simple chapter title: "N. The Name" italic serif, small, top-left, accent color
-function ChTitle({
-  n,
-  title,
-  color,
-  lt
-}) {
-  const L = useL();
-  const isP = L.orient === 'portrait';
-  const x = isP ? 55 : 48;
-  const y = isP ? 90 : 60;
-  const fs = isP ? 38 : 32;
-  const op = cl(lt / 0.5, 0, 1);
   return /*#__PURE__*/React.createElement("text", {
     x: x,
     y: y,
     fill: color,
-    fontFamily: SERIF,
-    fontSize: fs,
-    fontStyle: "italic",
-    fontWeight: 500,
-    opacity: op
-  }, n + '. ' + title);
-}
-
-// Bottom-center text block (formula / explanation)
-function BottomText({
-  lines,
-  lt,
-  startAt = 0
-}) {
-  const L = useL();
-  const isP = L.orient === 'portrait';
-  const cx = L.vw / 2;
-  const baseY = isP ? L.vh - 200 : L.vh - 130;
-  const fs = isP ? 30 : 26;
-  return /*#__PURE__*/React.createElement("g", null, lines.map((line, i) => /*#__PURE__*/React.createElement("text", {
-    key: i,
-    x: cx,
-    y: baseY + i * (fs + 10),
-    fill: line.color || C.ink,
-    fontFamily: line.mono ? MONO : SERIF,
-    fontSize: line.size || fs,
-    fontStyle: line.italic ? 'italic' : 'normal',
+    fontFamily: SERIFc,
+    fontSize: size,
     textAnchor: "middle",
-    dominantBaseline: "middle",
-    opacity: cl((lt - startAt - i * 0.7) / 0.8, 0, 1)
-  }, line.text)));
+    opacity: opacity
+  }, "√", n);
 }
 
-// ══ CONSTRUCTION LAYERS ══════════════════════════════════════════════════════
-// Each chapter renders ALL prior elements (full opacity) + its own (animating in).
-// This matches the reference video's cumulative build.
-
-// Ch I elements: the ground square O-A-F-B
-function LayerPlane({
-  ox,
-  oy,
-  sc,
-  p = 1,
-  dim = false
-}) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    A = P(1, 0, 0),
-    B = P(0, 0, 1),
-    F = P(1, 0, 1);
-  const op = dim ? 0.35 : 1;
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: op
-  }, /*#__PURE__*/React.createElement(Line, {
-    a: O,
-    b: A,
-    p: p,
-    stroke: BLUE,
-    w: 1.8
-  }), /*#__PURE__*/React.createElement(Line, {
-    a: A,
-    b: F,
-    p: p,
-    stroke: BLUE,
-    w: 1.8
-  }), /*#__PURE__*/React.createElement(Line, {
-    a: F,
-    b: B,
-    p: p,
-    stroke: BLUE,
-    w: 1.8
-  }), /*#__PURE__*/React.createElement(Line, {
-    a: B,
-    b: O,
-    p: p,
-    stroke: BLUE,
-    w: 1.8
-  }));
+// ── 3D ─────────────────────────────────────────────────────────────────────
+function project3c([x, y, z], ry, sc, ox, oy) {
+  const cY = Math.cos(ry),
+    sY = Math.sin(ry);
+  const X = x * cY + z * sY,
+    Z = -x * sY + z * cY;
+  const tilt = -.38,
+    ct = Math.cos(tilt),
+    st = Math.sin(tilt);
+  return [ox + X * sc, oy - (y * ct - Z * st) * sc];
 }
+const CVc = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]];
+const CEc = [[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]];
 
-// Ch II elements: diagonal O-F (dashed blue) + √2 label
-function LayerDiagonal({
-  ox,
-  oy,
-  sc,
-  p = 1,
-  dim = false
+// ═══ INTRO ════════════════════════════════════════════════════════════════════
+function SceneIntroC({
+  lt
 }) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    F = P(1, 0, 1);
-  const op = dim ? 0.35 : 1;
+  const L = useLC();
+  const {
+    vw,
+    vh
+  } = L;
+  const isP = L.orient === 'portrait';
+  const ts = isP ? 92 : 108;
+  const ttP = subc(lt, .3, 1.2);
+  const spP = subc(lt, 1.1, .9);
+  const outP = lt > 3.2 ? clc(1 - (lt - 3.2) / .7, 0, 1) : 1;
   return /*#__PURE__*/React.createElement("g", {
-    opacity: op
-  }, /*#__PURE__*/React.createElement(Line, {
-    a: O,
-    b: F,
-    p: p,
-    stroke: BLUE,
-    w: 2,
-    dash: true
-  }), /*#__PURE__*/React.createElement(LenLabel, {
-    a: O,
-    b: F,
-    radical: "2",
-    color: BLUE,
-    off: -22,
-    size: 17,
-    opacity: cl(p * 2 - 1, 0, 1)
-  }));
-}
-
-// Unit length labels on the ground (shown from Ch II onward)
-function LayerGroundLabels({
-  ox,
-  oy,
-  sc,
-  p = 1
-}) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    A = P(1, 0, 0),
-    B = P(0, 0, 1);
-  const op = cl(p, 0, 1);
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: op
-  }, /*#__PURE__*/React.createElement(LenLabel, {
-    a: O,
-    b: A,
-    text: "1",
-    color: C.ink,
-    off: 16,
-    size: 16,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LenLabel, {
-    a: O,
-    b: B,
-    text: "1",
-    color: C.ink,
-    off: -16,
-    size: 16,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: O,
-    r: 4,
-    fill: BLUE
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: P(1, 0, 0),
-    r: 3,
-    fill: BLUE,
-    opacity: 0.7
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: P(1, 0, 1),
-    r: 3,
-    fill: BLUE,
-    opacity: 0.7
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: P(0, 0, 1),
-    r: 3,
-    fill: BLUE,
-    opacity: 0.7
-  }));
-}
-
-// Ch III elements: vertical post F-T (red) + √2 label
-function LayerRise({
-  ox,
-  oy,
-  sc,
-  p = 1,
-  dim = false
-}) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const F = P(1, 0, 1),
-    T = P(1, R2, 1);
-  const op = dim ? 0.5 : 1;
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: op
-  }, /*#__PURE__*/React.createElement(Line, {
-    a: F,
-    b: T,
-    p: p,
-    stroke: RED,
-    w: 2.4
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: T,
-    r: 4,
-    fill: GOLD,
-    opacity: cl(p * 2 - 1, 0, 1)
-  }), /*#__PURE__*/React.createElement(LenLabel, {
-    a: F,
-    b: T,
-    radical: "2",
-    color: RED,
-    off: 20,
-    size: 17,
-    opacity: cl(p * 2 - 1, 0, 1)
-  }), /*#__PURE__*/React.createElement("text", {
-    x: T[0] + 12,
-    y: T[1] - 4,
-    fill: GOLD,
-    fontFamily: SERIF,
-    fontSize: 16,
+    opacity: outP
+  }, /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46,
+    fill: Cc.ink,
+    fontFamily: DISPc,
+    fontWeight: 800,
+    fontSize: ts,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '-.05em'
+    },
+    opacity: ttP
+  }, "The Lost Triangle"), /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46 + ts * .82,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 11 : 12,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.26em'
+    },
+    opacity: spP
+  }, "THE FLEISHMAN SEQUENCE"), /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46 + ts * .82 + 32,
+    fill: Cc.dim,
+    fontFamily: SERIFc,
     fontStyle: "italic",
-    opacity: cl(p * 2 - 1, 0, 1)
-  }, "T"));
+    fontWeight: 300,
+    fontSize: isP ? 20 : 24,
+    textAnchor: "middle",
+    opacity: spP
+  }, "1 · √2 · √3"));
 }
 
-// Ch IV elements: sundial line O-T (gold) + "2" label
-function LayerSundial({
-  ox,
-  oy,
-  sc,
-  p = 1,
-  dim = false
+// ═══ SCENE 1 — ROOT SPIRAL ════════════════════════════════════════════════════
+function spiralPtsC(N, S, cx, cy, sa) {
+  let px = cx + S * Math.cos(sa),
+    py = cy + S * Math.sin(sa);
+  const pts = [[px, py]];
+  for (let k = 1; k <= N; k++) {
+    const dx = px - cx,
+      dy = py - cy,
+      r = Math.sqrt(dx * dx + dy * dy);
+    const perpX = -dy / r,
+      perpY = dx / r;
+    px += S * perpX;
+    py += S * perpY;
+    pts.push([px, py]);
+  }
+  return pts;
+}
+function SceneSpiralC({
+  lt
 }) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    T = P(1, R2, 1);
-  const op = dim ? 0.5 : 1;
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: op
-  }, /*#__PURE__*/React.createElement(Line, {
-    a: O,
+  const L = useLC();
+  const isP = L.orient === 'portrait';
+  const S = isP ? 108 : 124;
+  const N = 9;
+  const SA = Math.PI * .08;
+  const Ocx = L.GX + (isP ? 0 : -50);
+  const Ocy = L.GY + (isP ? 20 : 30);
+  const pts = React.useMemo(() => spiralPtsC(N, S, Ocx, Ocy, SA), [Ocx, Ocy, S]);
+  const O = [Ocx, Ocy];
+  return /*#__PURE__*/React.createElement("g", null, Array.from({
+    length: N
+  }, (_, k) => {
+    const tp = subc(lt, .6 + k * .62, .7);
+    if (tp <= 0 || !pts[k + 1]) return null;
+    const isLost = k === 1,
+      isUnit = k === 0;
+    return /*#__PURE__*/React.createElement("g", {
+      key: k
+    }, /*#__PURE__*/React.createElement(PolyC, {
+      pts: [O, pts[k], pts[k + 1]],
+      fill: isLost ? Cc.acc : isUnit ? Cc.blue : Cc.faint,
+      opacity: (isLost ? .22 : isUnit ? .12 : .03) * tp
+    }), /*#__PURE__*/React.createElement(LineC, {
+      a: O,
+      b: pts[k],
+      p: tp,
+      stroke: isLost ? Cc.acc : isUnit ? Cc.blue : Cc.dim,
+      w: isLost ? 2.6 : 1.2,
+      opacity: isLost ? 1 : isUnit ? .60 : .22
+    }), /*#__PURE__*/React.createElement(LineC, {
+      a: O,
+      b: pts[k + 1],
+      p: tp,
+      stroke: isLost ? Cc.acc : isUnit ? Cc.blue : Cc.dim,
+      w: isLost ? 2.8 : 1.2,
+      opacity: isLost ? 1 : isUnit ? .50 : .18
+    }), /*#__PURE__*/React.createElement(LineC, {
+      a: pts[k],
+      b: pts[k + 1],
+      p: tp,
+      stroke: isLost ? Cc.acc : isUnit ? Cc.blue : Cc.dim,
+      w: isLost ? 2.8 : isUnit ? 1.8 : 1.1,
+      opacity: isLost ? 1 : isUnit ? .65 : .22
+    }));
+  }), [1, 2, 3, 4, 5].map(k => {
+    const tp = subc(lt, 7.2 + (k - 1) * .44, 1.2, window.Easing && window.Easing.easeInOutSine);
+    if (tp <= 0) return null;
+    const r = S * Math.sqrt(k);
+    return /*#__PURE__*/React.createElement(StrokeC, {
+      key: k,
+      d: arcPathc(Ocx, Ocy, r, SA - .12, SA + Math.PI * 1.38 * tp),
+      p: 1,
+      stroke: k === 2 ? Cc.acc : Cc.line,
+      w: k === 2 ? 1.6 : .9,
+      opacity: k === 2 ? .38 : .14,
+      dashArr: k === 2 ? undefined : '0.025 0.022'
+    });
+  }), [1, 2, 3].map(k => {
+    const tp = subc(lt, .6 + (k - 1) * .62 + .36, .5);
+    if (tp <= 0 || !pts[k]) return null;
+    const dn = normc(sub2c(pts[k], O));
+    const lp = add2c(pts[k], mul2c(dn, 44));
+    return /*#__PURE__*/React.createElement(RadicalC, {
+      key: k,
+      x: lp[0],
+      y: lp[1],
+      n: String(k + 1),
+      color: k === 2 ? Cc.acc : k === 1 ? Cc.blue : Cc.dim,
+      size: 24,
+      opacity: tp
+    });
+  }), /*#__PURE__*/React.createElement(DotC, {
+    at: O,
+    r: 5,
+    fill: Cc.ink,
+    opacity: subc(lt, .6, .5)
+  }), (() => {
+    const op = subc(lt, 4.6, .9);
+    if (op <= 0 || !pts[2]) return null;
+    const cc2 = [(O[0] + pts[1][0] + pts[2][0]) / 3, (O[1] + pts[1][1] + pts[2][1]) / 3];
+    return /*#__PURE__*/React.createElement("g", {
+      opacity: op
+    }, /*#__PURE__*/React.createElement("text", {
+      x: cc2[0] + 16,
+      y: cc2[1] - 10,
+      fill: Cc.acc,
+      fontFamily: DISPc,
+      fontSize: isP ? 20 : 22,
+      fontWeight: 600,
+      fontStyle: "italic"
+    }, "The Lost Triangle"), /*#__PURE__*/React.createElement("text", {
+      x: cc2[0] + 16,
+      y: cc2[1] + 14,
+      fill: Cc.dim,
+      fontFamily: MONOc,
+      fontSize: 11,
+      style: {
+        letterSpacing: '.14em'
+      }
+    }, "1 · √2 · √3"));
+  })());
+}
+
+// ═══ SCENE 2 — TRIANGLE CONSTRUCTION ════════════════════════════════════════
+function SceneTriangleC({
+  lt
+}) {
+  const L = useLC();
+  const isP = L.orient === 'portrait';
+  const inv2 = R2c / 2;
+  const sc2 = isP ? 248 : 280;
+  const FCX = isP ? 540 : 960;
+  const FCY = isP ? 950 : 510;
+  const P = (ux, uy) => [FCX + (ux - 1) * sc2, FCY + (uy - 0.85) * sc2];
+  const D = P(0, 0),
+    Cv = P(1, 0),
+    A = P(0, 1),
+    B = P(1, 1),
+    C2v = P(2, 1),
+    T = P(1, 1 - inv2),
+    Bot = P(1, 1 + inv2),
+    M = P(.5, .5);
+  const rC = inv2 * sc2;
+  const ease = window.Easing && window.Easing.easeInOutSine;
+  const sqP = subc(lt, 1.0, 1.0, ease);
+  const circP = subc(lt, 2.0, 1.0);
+  const diagP = subc(lt, 3.0, 1.0, ease);
+  const swingP = subc(lt, 4.0, 1.1, ease);
+  const triP = subc(lt, 5.1, 1.0);
+  const rhombP = subc(lt, 6.1, 1.0, ease);
+  const angP = subc(lt, 7.0, .8);
+  const labP = subc(lt, 7.5, .8);
+  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(PolyC, {
+    pts: [A, B, Cv, D],
+    fill: Cc.blue,
+    opacity: .18 * sqP
+  }), /*#__PURE__*/React.createElement(StrokeC, {
+    d: `M${A[0]},${A[1]} L${B[0]},${B[1]} L${Cv[0]},${Cv[1]} L${D[0]},${D[1]} Z`,
+    p: sqP,
+    stroke: "#FFFFFF",
+    w: 1.6,
+    opacity: .70
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: M[0],
+    cy: M[1],
+    r: rC,
+    fill: "none",
+    stroke: "#FFFFFF",
+    strokeWidth: 1.4,
+    opacity: .55 * circP
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: D,
+    b: B,
+    p: diagP,
+    stroke: "#FFFFFF",
+    w: 1.2,
+    opacity: .55
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: A,
+    b: Cv,
+    p: diagP,
+    stroke: "#FFFFFF",
+    w: 1.2,
+    opacity: .55
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: B[0],
+    cy: B[1],
+    r: rC,
+    fill: "none",
+    stroke: Cc.acc,
+    strokeWidth: 1.2,
+    opacity: .40 * swingP,
+    strokeDasharray: "4 5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: T[0],
+    cy: T[1],
+    r: 4,
+    fill: Cc.acc,
+    opacity: swingP
+  }), /*#__PURE__*/React.createElement(PolyC, {
+    pts: [B, A, T],
+    fill: Cc.acc,
+    opacity: .70 * triP
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: B,
     b: T,
-    p: p,
-    stroke: GOLD,
+    p: triP,
+    stroke: "#FFFFFF",
     w: 2.4
-  }), /*#__PURE__*/React.createElement(LenLabel, {
-    a: O,
-    b: T,
-    text: "2",
-    color: GOLD,
-    off: -22,
-    size: 18,
-    opacity: cl(p * 2 - 1, 0, 1)
-  }));
-}
-
-// Ch V elements: Lost Triangle O-A-T highlighted
-// OA=1 (blue), AT=√3 (magenta), OT=2 is already the sundial (gold).
-function LayerTriangle({
-  ox,
-  oy,
-  sc,
-  p = 1
-}) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    A = P(1, 0, 0),
-    T = P(1, R2, 1);
-  const fill_op = cl((p - 0.3) / 0.7, 0, 1) * 0.12;
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(Poly, {
-    pts: [O, A, T],
-    fill: GOLD,
-    opacity: fill_op
-  }), /*#__PURE__*/React.createElement(Line, {
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: B,
+    b: A,
+    p: triP,
+    stroke: "#FFFFFF",
+    w: 2.6
+  }), /*#__PURE__*/React.createElement(LineC, {
     a: A,
     b: T,
-    p: p,
-    stroke: C.mag,
-    w: 2.4
-  }), /*#__PURE__*/React.createElement(RightAngle, {
-    v: A,
-    p: O,
+    p: triP,
+    stroke: "#FFFFFF",
+    w: 2.8
+  }), /*#__PURE__*/React.createElement(RightAngleC, {
+    v: B,
+    p: A,
     q: T,
-    s: 14,
-    stroke: C.dim,
-    opacity: cl(p * 2 - 1, 0, 1)
-  }), /*#__PURE__*/React.createElement(LenLabel, {
+    opacity: triP,
+    s: 14
+  }), /*#__PURE__*/React.createElement(PolyC, {
+    pts: [A, T, C2v, Bot],
+    fill: Cc.blue,
+    opacity: .45 * rhombP
+  }), /*#__PURE__*/React.createElement(StrokeC, {
+    d: `M${A[0]},${A[1]} L${T[0]},${T[1]} L${C2v[0]},${C2v[1]} L${Bot[0]},${Bot[1]} Z`,
+    p: rhombP,
+    stroke: "#FFFFFF",
+    w: 1.6,
+    opacity: .70
+  }), rhombP > .55 && /*#__PURE__*/React.createElement("text", {
+    x: C2v[0] + 14,
+    y: C2v[1] + 4,
+    fill: Cc.blue,
+    fontFamily: MONOc,
+    fontSize: 11,
+    opacity: clc((rhombP - .55) / .45, 0, 1),
+    style: {
+      letterSpacing: '.04em'
+    }
+  }, "rhombic face"), /*#__PURE__*/React.createElement(AngleMarkC, {
+    v: T,
+    p: A,
+    q: B,
+    r: 28,
+    color: Cc.gold,
+    label: "54.74°",
+    p0: angP,
+    size: 13,
+    labelOff: 24
+  }), /*#__PURE__*/React.createElement(AngleMarkC, {
+    v: A,
+    p: T,
+    q: B,
+    r: 22,
+    color: Cc.ink,
+    label: "35.26°",
+    p0: angP,
+    size: 13,
+    labelOff: 19
+  }), /*#__PURE__*/React.createElement(LenLabelC, {
+    a: B,
+    b: T,
+    text: "1",
+    color: Cc.ink,
+    off: -28,
+    size: 18,
+    opacity: labP
+  }), /*#__PURE__*/React.createElement(LenLabelC, {
+    a: B,
+    b: A,
+    radical: "2",
+    color: Cc.blue,
+    off: 28,
+    size: 20,
+    opacity: labP
+  }), /*#__PURE__*/React.createElement(LenLabelC, {
     a: A,
     b: T,
     radical: "3",
-    color: C.mag,
-    off: 22,
-    size: 17,
-    opacity: cl(p * 2 - 1, 0, 1)
+    color: Cc.acc,
+    off: 28,
+    size: 24,
+    opacity: labP
   }));
 }
 
-// Ch VI elements: mirror point P2 and line O-P2
-function LayerMirror({
-  ox,
-  oy,
-  sc,
-  p = 1
+// ═══ SCENE 3 — CUBE ══════════════════════════════════════════════════════════
+function SceneCubeC({
+  lt
 }) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    P2 = P(-1, R2, 1);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(Line, {
-    a: O,
-    b: P2,
-    p: p,
-    stroke: C.mag,
-    w: 2.4
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: P2,
+  const L = useLC();
+  const {
+    GX,
+    GY
+  } = L;
+  const isP = L.orient === 'portrait';
+  const scale = isP ? 210 : 255;
+  const ox = GX,
+    oy = GY + (isP ? 10 : 20);
+  const t = window.useTime ? window.useTime() : 0;
+  const rotY = 0.44 + t * .011;
+  const P = v => project3c(v, rotY, scale, ox, oy);
+  const tR = P([1, 0, 0]),
+    tU = P([0, 0, 0]),
+    tD = P([1, 1, 1]);
+  const cubeP = subc(lt, 1.0, 2.0);
+  const triP = subc(lt, .4, .9);
+  const fillP = subc(lt, 3.6, .9);
+  const labP = subc(lt, 3.4, 1.0);
+  const mU = mul2c(add2c(tR, tU), .5),
+    mF = mul2c(add2c(tR, tD), .5),
+    mS = mul2c(add2c(tU, tD), .5);
+  return /*#__PURE__*/React.createElement("g", null, CEc.map((e, i) => {
+    const a = P(CVc[e[0]]),
+      b = P(CVc[e[1]]);
+    return /*#__PURE__*/React.createElement(LineC, {
+      key: i,
+      a: a,
+      b: b,
+      p: clc(cubeP * CEc.length - i, 0, 1),
+      stroke: Cc.dim,
+      w: 1.3,
+      opacity: .55
+    });
+  }), /*#__PURE__*/React.createElement(PolyC, {
+    pts: [tR, tU, tD],
+    fill: Cc.acc,
+    opacity: .16 * fillP
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: tR,
+    b: tU,
+    p: triP,
+    stroke: Cc.ink,
+    w: 2.6
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: tR,
+    b: tD,
+    p: triP,
+    stroke: Cc.blue,
+    w: 2.8
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: tU,
+    b: tD,
+    p: triP,
+    stroke: Cc.acc,
+    w: 3.2
+  }), /*#__PURE__*/React.createElement(RightAngleC, {
+    v: tR,
+    p: tU,
+    q: tD,
+    opacity: triP,
+    s: 13
+  }), /*#__PURE__*/React.createElement(DotC, {
+    at: tR,
     r: 4,
-    fill: C.mag,
-    opacity: cl(p * 2 - 1, 0, 1)
+    fill: Cc.ink,
+    opacity: triP
+  }), /*#__PURE__*/React.createElement(DotC, {
+    at: tU,
+    r: 4,
+    fill: Cc.ink,
+    opacity: triP
+  }), /*#__PURE__*/React.createElement(DotC, {
+    at: tD,
+    r: 4,
+    fill: Cc.acc,
+    opacity: triP
   }), /*#__PURE__*/React.createElement("text", {
-    x: P2[0],
-    y: P2[1] - 12,
-    fill: C.mag,
-    fontFamily: SERIF,
-    fontSize: 16,
-    fontStyle: "italic",
+    x: mU[0],
+    y: mU[1] - 20,
+    fill: Cc.ink,
+    fontFamily: MONOc,
+    fontSize: 19,
     textAnchor: "middle",
-    opacity: cl(p * 2 - 1, 0, 1)
-  }, "P₂"), /*#__PURE__*/React.createElement(LenLabel, {
-    a: O,
-    b: P2,
-    text: "2",
-    color: C.mag,
-    off: 22,
-    size: 18,
-    opacity: cl(p * 2 - 1, 0, 1)
+    opacity: labP
+  }, "1"), /*#__PURE__*/React.createElement(RadicalC, {
+    x: mF[0] + 40,
+    y: mF[1] + 14,
+    n: "2",
+    color: Cc.blue,
+    size: 22,
+    opacity: labP
+  }), /*#__PURE__*/React.createElement(RadicalC, {
+    x: mS[0] - 42,
+    y: mS[1] - 8,
+    n: "3",
+    color: Cc.acc,
+    size: 26,
+    opacity: labP
   }));
 }
 
-// Ch VII: 120° angle arc between OP1 and OP2
-function LayerAngle120({
-  ox,
-  oy,
+// ═══ SCENE 4 — REFLECTED INTO FORM ═══════════════════════════════════════════
+const RD_Cc = [[1, 1, 1], [1, 1, -1], [1, -1, 1], [1, -1, -1], [-1, 1, 1], [-1, 1, -1], [-1, -1, 1], [-1, -1, -1]];
+const RD_Oc = [[2, 0, 0], [-2, 0, 0], [0, 2, 0], [0, -2, 0], [0, 0, 2], [0, 0, -2]];
+function rdProjC([x, y, z], ry, sc, ox, oy) {
+  const cY = Math.cos(ry),
+    sY = Math.sin(ry);
+  const X = x * cY + z * sY,
+    Z = -x * sY + z * cY;
+  const tilt = -.46,
+    ct = Math.cos(tilt),
+    st = Math.sin(tilt);
+  return [ox + X * sc, oy - (y * ct - Z * st) * sc];
+}
+function RDMiniC({
+  cx,
+  cy,
   sc,
-  p = 1
+  p
 }) {
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const O = P(0, 0, 0),
-    T = P(1, R2, 1),
-    P2 = P(-1, R2, 1);
-  return /*#__PURE__*/React.createElement(AngleMark, {
-    v: O,
-    p: T,
-    q: P2,
-    r: 28,
-    color: RED,
-    label: "120°",
-    p0: p,
-    labelOff: 20,
-    size: 15
-  });
-}
-
-// ════ SCENE 0 — TITLE CARD ═══════════════════════════════════════════════════
-function SceneTitle0({
-  lt
-}) {
-  const L = useL();
-  const inP = cl(lt / 1.2, 0, 1);
-  const cx = L.vw / 2,
-    cy = L.vh / 2;
-  const isP = L.orient === 'portrait';
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: inP
-  }, /*#__PURE__*/React.createElement("text", {
-    x: cx,
-    y: cy - 30,
-    fill: BLUE,
-    fontFamily: SERIF,
-    fontSize: isP ? 46 : 40,
-    fontStyle: "italic",
-    fontWeight: 500,
-    textAnchor: "middle"
-  }, "A New Geometric Expression"), /*#__PURE__*/React.createElement("text", {
-    x: cx,
-    y: cy + 20,
-    fill: C.dim,
-    fontFamily: SERIF,
-    fontSize: isP ? 28 : 24,
-    fontStyle: "italic",
-    textAnchor: "middle"
-  }, "by Gregg Fleishman"));
-}
-
-// ════ CHAPTER I — THE PLANE ══════════════════════════════════════════════════
-function ScenePlane({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const gridIn = sub(lt, 0.4, 2.0);
-  const sqIn = sub(lt, 2.2, 2.6);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "I",
-    title: "The Plane",
-    color: BLUE,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: gridIn
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: sqIn
+  const t = window.useTime ? window.useTime() : 0;
+  const ry = .6 + t * .22;
+  const s = sc * .44;
+  const PC = RD_Cc.map(v => rdProjC(v, ry, s, cx, cy));
+  const PO = RD_Oc.map(v => rdProjC(v, ry, s, cx, cy));
+  const edges = [];
+  RD_Oc.forEach((o, oi) => RD_Cc.forEach((c, ci) => {
+    const ax = o[0] !== 0 ? 0 : o[1] !== 0 ? 1 : 2;
+    if (Math.sign(o[ax]) === Math.sign(c[ax])) edges.push([PO[oi], PC[ci]]);
   }));
-}
-
-// ════ CHAPTER II — THE 45° DIAGONAL ══════════════════════════════════════════
-function SceneDiagonal({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const diagIn = sub(lt, 0.8, 2.4);
-  const labsIn = sub(lt, 3.0, 1.4);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "II",
-    title: "The 45° Diagonal",
-    color: BLUE,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: diagIn
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: labsIn
-  }));
-}
-
-// ════ CHAPTER III — THE RISE ══════════════════════════════════════════════════
-function SceneRise({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const riseIn = sub(lt, 0.6, 2.4);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "III",
-    title: "The Rise",
-    color: RED,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: riseIn
-  }));
-}
-
-// ════ CHAPTER IV — THE SUNDIAL LINE ══════════════════════════════════════════
-function SceneSundial({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const sunIn = sub(lt, 0.6, 2.6);
-  const fmlIn = sub(lt, 3.8, 1.2);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "IV",
-    title: "The Sundial Line",
-    color: GOLD,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: sunIn
-  }), /*#__PURE__*/React.createElement(BottomText, {
-    lt: lt,
-    startAt: 3.8,
-    lines: [{
-      text: '√((√2)² + (√2)²)  =  √4  =  2',
-      color: GOLD,
-      italic: true,
-      size: 28
-    }]
-  }));
-}
-
-// ════ CHAPTER V — THE LOST TRIANGLE ══════════════════════════════════════════
-function SceneLostTriangle({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const triIn = sub(lt, 0.6, 3.0);
-  const captIn = sub(lt, 4.0, 1.4);
-  const isP = L.orient === 'portrait';
-  const cx = L.vw / 2;
-  const captY = isP ? L.vh - 180 : L.vh - 120;
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "V",
-    title: "The Lost Triangle",
-    color: GOLD,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: triIn
-  }), /*#__PURE__*/React.createElement("text", {
-    x: cx,
-    y: captY,
-    fill: GOLD,
-    fontFamily: SERIF,
-    fontSize: isP ? 30 : 26,
-    fontStyle: "italic",
-    textAnchor: "middle",
-    opacity: captIn
-  }, "The Lost Triangle : sides  1,  √3,  2"));
-}
-
-// ════ CHAPTER VI — THE MIRROR SUNDIAL ════════════════════════════════════════
-function SceneMirror({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const mirIn = sub(lt, 0.6, 3.0);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "VI",
-    title: "The Mirror Sundial",
-    color: BLUE,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: mirIn
-  }));
-}
-
-// ════ CHAPTER VII — THE 120° REVELATION ══════════════════════════════════════
-function SceneRevelation({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const arcIn = sub(lt, 0.6, 2.0);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "VII",
-    title: "The 120° Revelation",
-    color: RED,
-    lt: lt
-  }), /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerGroundLabels, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerAngle120, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    p: arcIn
-  }), /*#__PURE__*/React.createElement(BottomText, {
-    lt: lt,
-    startAt: 3.0,
-    lines: [{
-      text: '120°  =  Interior angle of a hexagon',
-      color: GOLD,
-      italic: true,
-      size: 26
-    }, {
-      text: 'Building block of the truncated octahedron',
-      color: C.ink,
-      italic: false,
-      size: 22
-    }, {
-      text: 'This is what the Lost Triangle does.',
-      color: BLUE,
-      italic: true,
-      size: 22
-    }]
-  }));
-}
-
-// ════ PROOF TRANSITION ═══════════════════════════════════════════════════════
-// Full construction in background (dimmed). Two vector labels appear on the
-// hypotenuse endpoints T and P₂, then magnitude proofs build at the bottom.
-function SceneProofVectors({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const P = (x, y, z) => project([x, y, z], ROT_Y, sc, ox, oy);
-  const T3 = P(1, R2, 1),
-    P23 = P(-1, R2, 1);
-  const isP = L.orient === 'portrait';
-  const fs = isP ? 20 : 17;
-  const vecIn = cl(lt / 0.8, 0, 1);
-  const lbl1 = cl((lt - 0.6) / 0.6, 0, 1);
-  const lbl2 = cl((lt - 1.2) / 0.6, 0, 1);
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "∴",
-    title: "The Dihedral Proof",
-    color: C.violet,
-    lt: lt
-  }), /*#__PURE__*/React.createElement("g", {
-    opacity: 0.35
-  }, /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerAngle120, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  })), /*#__PURE__*/React.createElement("g", {
-    opacity: vecIn
-  }, /*#__PURE__*/React.createElement("text", {
-    x: T3[0] + 14,
-    y: T3[1] - 14,
-    fill: GOLD,
-    fontFamily: MONO,
-    fontSize: fs,
-    opacity: lbl1
-  }, "OP₁ = (1, √2, 1)"), /*#__PURE__*/React.createElement("text", {
-    x: P23[0] - 14,
-    y: P23[1] - 14,
-    fill: C.mag,
-    fontFamily: MONO,
-    fontSize: fs,
-    textAnchor: "end",
-    opacity: lbl2
-  }, "OP₂ = (−1, √2, 1)"), /*#__PURE__*/React.createElement(Dot, {
-    at: T3,
-    r: 5,
-    fill: GOLD,
-    opacity: lbl1
-  }), /*#__PURE__*/React.createElement(Dot, {
-    at: P23,
-    r: 5,
-    fill: C.mag,
-    opacity: lbl2
-  })), /*#__PURE__*/React.createElement(BottomText, {
-    lt: lt,
-    startAt: 2.2,
-    lines: [{
-      text: '|OP₁|  =  √(1² + (√2)² + 1²)  =  √4  =  2',
-      color: GOLD,
-      mono: true,
-      size: isP ? 22 : 20
-    }, {
-      text: '|OP₂|  =  √(1² + (√2)² + 1²)  =  √4  =  2',
-      color: C.mag,
-      mono: true,
-      size: isP ? 22 : 20
-    }]
-  }));
-}
-
-// ════ PROOF 2 — DOT PRODUCT ══════════════════════════════════════════════════
-function SceneProofDotProduct({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const isP = L.orient === 'portrait';
-  const cx = L.vw / 2;
-  const fs = isP ? 22 : 20;
-  const baseY = isP ? L.vh - 310 : L.vh - 195;
-  const rows = [{
-    text: 'OP₁ · OP₂',
-    color: C.ink,
-    t0: 0.5
-  }, {
-    text: '= (1)(−1)  +  (√2)(√2)  +  (1)(1)',
-    color: C.dim,
-    t0: 1.6
-  }, {
-    text: '=  −1  +  2  +  1',
-    color: C.dim,
-    t0: 2.7
-  }, {
-    text: '= 2',
-    color: GOLD,
-    t0: 3.6
-  }];
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "∴",
-    title: "The Dihedral Proof",
-    color: C.violet,
-    lt: lt
-  }), /*#__PURE__*/React.createElement("g", {
-    opacity: 0.25
-  }, /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerAngle120, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  })), rows.map((row, i) => /*#__PURE__*/React.createElement("text", {
+  return /*#__PURE__*/React.createElement("g", null, edges.map((e, i) => /*#__PURE__*/React.createElement(LineC, {
     key: i,
-    x: cx,
-    y: baseY + i * (fs + 12),
-    fill: row.color,
-    fontFamily: MONO,
-    fontSize: fs,
-    textAnchor: "middle",
-    dominantBaseline: "middle",
-    opacity: cl((lt - row.t0) / 0.8, 0, 1)
-  }, row.text)));
-}
-
-// ════ PROOF 3 — THE ANGLE ════════════════════════════════════════════════════
-function SceneProofAngle({
-  lt
-}) {
-  const L = useL();
-  const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const isP = L.orient === 'portrait';
-  const cx = L.vw / 2;
-  const fs = isP ? 24 : 22;
-  const baseY = isP ? L.vh - 320 : L.vh - 200;
-  const rows = [{
-    text: 'cos θ  =  OP₁·OP₂ / (|OP₁|·|OP₂|)',
-    color: C.ink,
-    t0: 0.4
-  }, {
-    text: '      =  2 / (2 × 2)  =  ½',
-    color: C.dim,
-    t0: 1.5
-  }, {
-    text: 'θ  =  60°',
-    color: GOLD,
-    t0: 2.5
-  }, {
-    text: 'dihedral angle  =  120°',
-    color: RED,
-    t0: 3.4
-  }];
-  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement(ChTitle, {
-    n: "∴",
-    title: "The Dihedral Proof",
-    color: C.violet,
-    lt: lt
-  }), /*#__PURE__*/React.createElement("g", {
-    opacity: 0.25
-  }, /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 1
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerAngle120, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  })), rows.map((row, i) => /*#__PURE__*/React.createElement("text", {
+    a: e[0],
+    b: e[1],
+    p: clc(p * 1.4, 0, 1),
+    stroke: Cc.blue,
+    w: 1.3,
+    opacity: .70
+  })), PO.map((v, i) => /*#__PURE__*/React.createElement(DotC, {
     key: i,
-    x: cx,
-    y: baseY + i * (fs + 16),
-    fill: row.color,
-    fontFamily: MONO,
-    fontSize: fs,
-    textAnchor: "middle",
-    dominantBaseline: "middle",
-    opacity: cl((lt - row.t0) / 0.8, 0, 1)
-  }, row.text)));
+    at: v,
+    r: 2.4,
+    fill: Cc.acc,
+    opacity: p
+  })));
 }
-
-// ════ CLOSING CARD ════════════════════════════════════════════════════════════
-function SceneEnd({
+function SceneReflectC({
   lt
 }) {
-  const L = useL();
-  const inP = cl(lt / 1.5, 0, 1);
+  const L = useLC();
   const {
-    ox,
-    oy,
-    sc
-  } = cam(L);
-  const cx = L.vw / 2,
-    cy = L.vh / 2;
+    GX,
+    GY
+  } = L;
   const isP = L.orient === 'portrait';
-  const tagY = isP ? cy + 240 : cy + 180;
-  return /*#__PURE__*/React.createElement("g", {
-    opacity: inP
-  }, /*#__PURE__*/React.createElement(GroundGrid, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    opacity: 0.5
-  }), /*#__PURE__*/React.createElement(LayerPlane, {
-    ox: ox,
-    oy: oy,
-    sc: sc,
-    dim: true
-  }), /*#__PURE__*/React.createElement(LayerDiagonal, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerRise, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerSundial, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerTriangle, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerMirror, {
-    ox: ox,
-    oy: oy,
-    sc: sc
-  }), /*#__PURE__*/React.createElement(LayerAngle120, {
-    ox: ox,
-    oy: oy,
-    sc: sc
+  const pW = isP ? 280 : 348;
+  const pH = isP ? 360 : 400;
+  const gap = isP ? 20 : 32;
+  const totalW = 3 * pW + 2 * gap;
+  const px0 = GX - totalW / 2;
+  const pXi = i => px0 + i * (pW + gap);
+  const pY0 = GY - pH * .5 - (isP ? 50 : 10);
+  const cY = pY0 + pH * .44;
+  const S = pW * .22;
+  const labY = pY0 + pH + 42;
+  const p1 = subc(lt, 1.2, 1.0),
+    p2 = subc(lt, 4.2, 1.0),
+    p3 = subc(lt, 7.2, 1.0);
+  const Tv = {
+    O: [pXi(0) + pW * .42, cY + S * .30],
+    T: [pXi(0) + pW * .42, cY - S * .82],
+    R: [pXi(0) + pW * .74, cY + S * .30]
+  };
+  const rS = S * .86,
+    rCX = pXi(1) + pW * .5;
+  const Rh = {
+    top: [rCX, cY - rS],
+    bot: [rCX, cY + rS],
+    L: [rCX - rS * R2c, cY],
+    R: [rCX + rS * R2c, cY]
+  };
+  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("g", {
+    opacity: p1
+  }, /*#__PURE__*/React.createElement(PolyC, {
+    pts: [Tv.O, Tv.T, Tv.R],
+    fill: Cc.acc,
+    opacity: .20
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Tv.O,
+    b: Tv.T,
+    p: 1,
+    stroke: Cc.ink,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Tv.O,
+    b: Tv.R,
+    p: 1,
+    stroke: Cc.ink,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Tv.T,
+    b: Tv.R,
+    p: 1,
+    stroke: Cc.acc,
+    w: 2.6
+  }), /*#__PURE__*/React.createElement(RightAngleC, {
+    v: Tv.O,
+    p: Tv.T,
+    q: Tv.R,
+    opacity: 1,
+    s: 10
   }), /*#__PURE__*/React.createElement("text", {
-    x: cx,
-    y: tagY,
-    fill: C.ink,
-    fontFamily: SERIF,
-    fontSize: isP ? 26 : 22,
-    fontStyle: "italic",
-    textAnchor: "middle"
-  }, "The Lost Triangle defines the Fleishman joint's 120° dihedral angle."), /*#__PURE__*/React.createElement("text", {
-    x: cx,
-    y: tagY + (isP ? 44 : 36),
-    fill: C.dim,
-    fontFamily: SERIF,
-    fontSize: isP ? 20 : 17,
-    fontStyle: "italic",
-    textAnchor: "middle"
-  }, "gregg fleishman"));
+    x: pXi(0) + pW * .5,
+    y: labY,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 11 : 12,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.08em'
+    }
+  }, "ONE TRIANGLE")), /*#__PURE__*/React.createElement("g", {
+    opacity: p2
+  }, /*#__PURE__*/React.createElement(PolyC, {
+    pts: [Rh.top, Rh.R, Rh.bot, Rh.L],
+    fill: Cc.acc,
+    opacity: .14
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.top,
+    b: Rh.R,
+    p: 1,
+    stroke: Cc.acc,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.R,
+    b: Rh.bot,
+    p: 1,
+    stroke: Cc.acc,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.bot,
+    b: Rh.L,
+    p: 1,
+    stroke: Cc.acc,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.L,
+    b: Rh.top,
+    p: 1,
+    stroke: Cc.acc,
+    w: 2.0
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.top,
+    b: Rh.bot,
+    p: 1,
+    stroke: Cc.dim,
+    w: .8,
+    opacity: .28,
+    dashArr: "0.04 0.03"
+  }), /*#__PURE__*/React.createElement(LineC, {
+    a: Rh.L,
+    b: Rh.R,
+    p: 1,
+    stroke: Cc.dim,
+    w: .8,
+    opacity: .28,
+    dashArr: "0.04 0.03"
+  }), /*#__PURE__*/React.createElement(DotC, {
+    at: [rCX, cY],
+    r: 3,
+    fill: Cc.dim,
+    opacity: p2
+  }), /*#__PURE__*/React.createElement("text", {
+    x: rCX,
+    y: labY,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 11 : 12,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.08em'
+    }
+  }, "RHOMBIC FACE")), /*#__PURE__*/React.createElement("g", {
+    opacity: p3
+  }, /*#__PURE__*/React.createElement(RDMiniC, {
+    cx: pXi(2) + pW * .5,
+    cy: cY,
+    sc: S * 1.8,
+    p: p3
+  }), /*#__PURE__*/React.createElement("text", {
+    x: pXi(2) + pW * .5,
+    y: labY,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 11 : 12,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.08em'
+    }
+  }, "DODECAHEDRON")));
 }
-const SCENES = [{
-  c: SceneTitle0,
-  start: 0.0,
-  end: 10.0
+
+// ═══ SCENE 5 — DIHEDRAL ANGLES ════════════════════════════════════════════════
+function WireC({
+  verts,
+  edges,
+  ry = .55,
+  sc,
+  cx,
+  cy
+}) {
+  const P = v => {
+    const [x, y, z] = v;
+    const cY2 = Math.cos(ry),
+      sY2 = Math.sin(ry);
+    const X = x * cY2 + z * sY2,
+      Z = -x * sY2 + z * cY2;
+    const tilt = -.38,
+      ct = Math.cos(tilt),
+      st = Math.sin(tilt);
+    return [cx + X * sc, cy - (y * ct - Z * st) * sc];
+  };
+  return /*#__PURE__*/React.createElement("g", null, edges.map((e, i) => {
+    const a = P(verts[e[0]]),
+      b = P(verts[e[1]]);
+    return /*#__PURE__*/React.createElement(LineC, {
+      key: i,
+      a: a,
+      b: b,
+      p: 1,
+      stroke: Cc.ink,
+      w: 1.1,
+      opacity: .50
+    });
+  }));
+}
+const CUBE_WC = {
+  verts: CVc,
+  edges: CEc
+};
+const TETRA_WC = {
+  verts: [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]],
+  edges: [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
+};
+const OCTA_WC = {
+  verts: [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]],
+  edges: [[0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [1, 3], [1, 4], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5]]
+};
+function SceneAnglesC({
+  lt
+}) {
+  const L = useLC();
+  const {
+    GX,
+    GY
+  } = L;
+  const isP = L.orient === 'portrait';
+  const cW = isP ? 214 : 272;
+  const cH = isP ? 270 : 340;
+  const gap = isP ? 14 : 26;
+  const totalW = 4 * cW + 3 * gap;
+  const cX0 = GX - totalW / 2;
+  const cXi = i => cX0 + i * (cW + gap);
+  const icCX = i => cXi(i) + cW * .5;
+  const cY0 = GY - cH * .5 - (isP ? 30 : 10);
+  const icCY = cY0 + cH * .40;
+  const icS = cW * .36;
+  const labY1 = cY0 + cH - 40;
+  const labY2 = cY0 + cH - 12;
+  const p = [subc(lt, 1.2, .9), subc(lt, 2.4, .9), subc(lt, 3.6, .9), subc(lt, 4.8, .9)];
+  const cards = [{
+    l: 'CUBE',
+    a: '90°',
+    wire: CUBE_WC,
+    rd: false
+  }, {
+    l: 'TETRAHEDRON',
+    a: '70.53°',
+    wire: TETRA_WC,
+    rd: false
+  }, {
+    l: 'OCTAHEDRON',
+    a: '109.47°',
+    wire: OCTA_WC,
+    rd: false
+  }, {
+    l: 'RHOMBIC',
+    a: '120°',
+    wire: null,
+    rd: true
+  }];
+  return /*#__PURE__*/React.createElement("g", null, cards.map(({
+    l,
+    a,
+    wire,
+    rd
+  }, i) => /*#__PURE__*/React.createElement("g", {
+    key: i,
+    opacity: p[i]
+  }, rd ? /*#__PURE__*/React.createElement(RDMiniC, {
+    cx: icCX(i),
+    cy: icCY,
+    sc: icS * .88,
+    p: p[i]
+  }) : /*#__PURE__*/React.createElement(WireC, {
+    ...wire,
+    ry: .55,
+    sc: icS * .36,
+    cx: icCX(i),
+    cy: icCY
+  }), /*#__PURE__*/React.createElement("text", {
+    x: icCX(i),
+    y: labY1,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 10 : 11,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.10em'
+    }
+  }, l), /*#__PURE__*/React.createElement("text", {
+    x: icCX(i),
+    y: labY2,
+    fill: Cc.ink,
+    fontFamily: SERIFc,
+    fontStyle: "italic",
+    fontSize: isP ? 28 : 36,
+    textAnchor: "middle"
+  }, a))));
+}
+
+// ═══ CLOSE ════════════════════════════════════════════════════════════════════
+function SceneCloseC({
+  lt
+}) {
+  const L = useLC();
+  const {
+    vw,
+    vh
+  } = L;
+  const isP = L.orient === 'portrait';
+  const ts = isP ? 92 : 108;
+  const txP = subc(lt, .3, 1.4);
+  const spP = subc(lt, 1.1, .9);
+  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46,
+    fill: Cc.ink,
+    fontFamily: DISPc,
+    fontWeight: 800,
+    fontSize: ts,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '-.04em'
+    },
+    opacity: txP
+  }, "The Lost Triangle"), /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46 + ts * .82,
+    fill: Cc.gold,
+    fontFamily: SERIFc,
+    fontStyle: "italic",
+    fontWeight: 300,
+    fontSize: isP ? 28 : 34,
+    textAnchor: "middle",
+    opacity: spP
+  }, "1 · √2 · √3"), /*#__PURE__*/React.createElement("text", {
+    x: vw / 2,
+    y: vh * .46 + ts * .82 + 50,
+    fill: Cc.dim,
+    fontFamily: MONOc,
+    fontSize: isP ? 11 : 12,
+    textAnchor: "middle",
+    style: {
+      letterSpacing: '.24em'
+    },
+    opacity: spP
+  }, "THE FLEISHMAN SEQUENCE"));
+}
+
+// ── Scene schedule ──────────────────────────────────────────────────────────
+const SCENES_C = [{
+  c: SceneIntroC,
+  start: 0,
+  end: 4
 }, {
-  c: ScenePlane,
-  start: 10.0,
-  end: 20.0
+  c: SceneSpiralC,
+  start: 4,
+  end: 18
 }, {
-  c: SceneDiagonal,
-  start: 20.0,
-  end: 30.0
+  c: SceneTriangleC,
+  start: 18,
+  end: 32
 }, {
-  c: SceneRise,
-  start: 30.0,
-  end: 40.0
+  c: SceneCubeC,
+  start: 32,
+  end: 44
 }, {
-  c: SceneSundial,
-  start: 40.0,
-  end: 52.0
+  c: SceneReflectC,
+  start: 44,
+  end: 58
 }, {
-  c: SceneLostTriangle,
-  start: 52.0,
-  end: 63.0
+  c: SceneAnglesC,
+  start: 58,
+  end: 70
 }, {
-  c: SceneMirror,
-  start: 63.0,
-  end: 74.0
-}, {
-  c: SceneRevelation,
-  start: 74.0,
-  end: 88.0
-}, {
-  c: SceneProofVectors,
-  start: 88.0,
-  end: 102.0
-}, {
-  c: SceneProofDotProduct,
-  start: 102.0,
-  end: 116.0
-}, {
-  c: SceneProofAngle,
-  start: 116.0,
-  end: 130.0
-}, {
-  c: SceneEnd,
-  start: 130.0,
-  end: 140.0
+  c: SceneCloseC,
+  start: 70,
+  end: 75
 }];
-const DURATION = 140.0;
-function SceneLayer() {
-  const L = useL();
+const DURATION_C = 75;
+function ProgressDotsC() {
+  const L = useLC();
+  const t = window.useTime ? window.useTime() : 0;
+  const main = SCENES_C.slice(1, 6);
+  const active = main.findIndex(s => t >= s.start && t < s.end);
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: L.dotsBottom,
+      display: 'flex',
+      justifyContent: 'center',
+      gap: 10
+    }
+  }, main.map((_, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      width: i === active ? 20 : 6,
+      height: 6,
+      borderRadius: 3,
+      background: i === active ? 'rgba(232,229,224,.75)' : 'rgba(255,255,255,.10)',
+      transition: 'all 260ms'
+    }
+  })));
+}
+function SceneLayerC() {
+  const L = useLC();
   const {
     Sprite
   } = window;
@@ -1587,7 +1160,7 @@ function SceneLayer() {
       position: 'absolute',
       inset: 0
     }
-  }, SCENES.map((s, i) => /*#__PURE__*/React.createElement(Sprite, {
+  }, SCENES_C.map((s, i) => /*#__PURE__*/React.createElement(Sprite, {
     key: i,
     start: s.start,
     end: s.end
@@ -1597,133 +1170,10 @@ function SceneLayer() {
     lt: localTime
   }))));
 }
-// ── Chapter rail ──────────────────────────────────────────────────────────────
-const CHAPTERS = [{
-  i: 1,
-  label: 'PLANE',
-  color: BLUE
-}, {
-  i: 2,
-  label: 'DIAGONAL',
-  color: BLUE
-}, {
-  i: 3,
-  label: 'RISE',
-  color: RED
-}, {
-  i: 4,
-  label: 'SUNDIAL',
-  color: GOLD
-}, {
-  i: 5,
-  label: 'TRIANGLE',
-  color: GOLD
-}, {
-  i: 6,
-  label: 'MIRROR',
-  color: BLUE
-}, {
-  i: 7,
-  label: '120°',
-  color: RED
-}, {
-  i: 8,
-  label: 'PROOF',
-  color: C.violet
-}];
-function ChapterRail() {
-  const L = useL();
-  const tl = window.useTimeline ? window.useTimeline() : {
-    time: 0
-  };
-  const t = tl.time || 0;
-  const sceneIdx = SCENES.findIndex(s => t >= s.start && t < s.end);
-  const portrait = L.orient === 'portrait';
-  const seek = i => {
-    if (tl.setTime) tl.setTime(SCENES[i].start + 0.01);
-    if (tl.setPlaying) tl.setPlaying(true);
-  };
-  return /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: L.dotsBottom,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'flex-end',
-      flexWrap: 'wrap',
-      gap: portrait ? '12px 16px' : '10px 26px',
-      padding: '0 28px',
-      fontFamily: MONO
-    }
-  }, CHAPTERS.map(ch => {
-    const active = sceneIdx === ch.i;
-    const seen = sceneIdx > ch.i;
-    return /*#__PURE__*/React.createElement("div", {
-      key: ch.i,
-      onClick: () => seek(ch.i),
-      role: "button",
-      tabIndex: 0,
-      "aria-label": 'Jump to ' + ch.label,
-      onKeyDown: e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          seek(ch.i);
-        }
-      },
-      style: {
-        position: 'relative',
-        cursor: 'pointer',
-        userSelect: 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 7,
-        paddingBottom: 8,
-        opacity: active ? 1 : seen ? 0.6 : 0.34,
-        transition: 'opacity 220ms'
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        background: active ? ch.color : 'rgba(255,255,255,0.25)',
-        boxShadow: active ? '0 0 8px ' + ch.color : 'none',
-        transition: 'all 220ms'
-      }
-    }), /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: portrait ? 11 : 13,
-        letterSpacing: '0.16em',
-        color: active ? ch.color : C.dim,
-        whiteSpace: 'nowrap',
-        transition: 'color 220ms'
-      }
-    }, ch.label), /*#__PURE__*/React.createElement("span", {
-      style: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: 1.5,
-        borderRadius: 1,
-        background: active ? ch.color : 'transparent',
-        transition: 'background 220ms'
-      }
-    }));
-  }));
-}
-function pickOrient() {
-  if (typeof window === 'undefined') return 'landscape';
-  return window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
-}
-function VideoBody({
-  orient: forcedOrient
+function VideoBodyC({
+  orient
 }) {
   const [ready, setReady] = React.useState(!!(window.Stage && window.Sprite));
-  const [autoOrient, setAutoOrient] = React.useState(() => forcedOrient || pickOrient());
   React.useEffect(() => {
     if (ready) return;
     const id = setInterval(() => {
@@ -1734,60 +1184,51 @@ function VideoBody({
     }, 30);
     return () => clearInterval(id);
   }, [ready]);
-  React.useEffect(() => {
-    if (forcedOrient) return;
-    const onResize = () => setAutoOrient(pickOrient());
-    window.addEventListener('resize', onResize);
-    window.addEventListener('orientationchange', onResize);
-    return () => {
-      window.removeEventListener('resize', onResize);
-      window.removeEventListener('orientationchange', onResize);
-    };
-  }, [forcedOrient]);
   if (!ready) {
     return /*#__PURE__*/React.createElement("div", {
       style: {
         position: 'absolute',
         inset: 0,
-        background: C.bg,
+        background: Cc.bg,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: C.dim,
-        fontFamily: MONO
+        color: Cc.dim,
+        fontFamily: MONOc,
+        fontSize: '14px',
+        letterSpacing: '.1em'
       }
     }, "loading…");
   }
-  const orient = forcedOrient || autoOrient;
-  const L = makeLayout(orient);
+  const L = makeLayoutC(orient);
   const {
     Stage
   } = window;
-  return /*#__PURE__*/React.createElement(LayoutContext.Provider, {
+  return /*#__PURE__*/React.createElement(LayoutContextC.Provider, {
     value: L
   }, /*#__PURE__*/React.createElement(Stage, {
-    key: orient,
     width: L.vw,
     height: L.vh,
-    duration: DURATION,
-    background: C.bg,
+    duration: DURATION_C,
+    background: Cc.bg,
+    persistKey: "animstage-clean",
     loop: false,
-    autoplay: true,
-    controls: false,
-    persistKey: 'losttri_' + orient
-  }, /*#__PURE__*/React.createElement(SceneLayer, null), /*#__PURE__*/React.createElement(ChapterRail, null)));
+    autoplay: true
+  }, /*#__PURE__*/React.createElement(SceneLayerC, null), /*#__PURE__*/React.createElement(ProgressDotsC, null)));
 }
-function LostTriangleVideo() {
-  return /*#__PURE__*/React.createElement(VideoBody, null);
+function LostTriangleVideoClean() {
+  return /*#__PURE__*/React.createElement(VideoBodyC, {
+    orient: "landscape"
+  });
 }
-function LostTriangleVideoPortrait() {
-  return /*#__PURE__*/React.createElement(VideoBody, {
+function LostTriangleVideoCleanPortrait() {
+  return /*#__PURE__*/React.createElement(VideoBodyC, {
     orient: "portrait"
   });
 }
-window.LostTriangleVideo = LostTriangleVideo;
-window.LostTriangleVideoPortrait = LostTriangleVideoPortrait;
+window.LostTriangleVideoClean = LostTriangleVideoClean;
+window.LostTriangleVideoCleanPortrait = LostTriangleVideoCleanPortrait;
 if (typeof module !== 'undefined') module.exports = {
-  LostTriangleVideo,
-  LostTriangleVideoPortrait
+  LostTriangleVideoClean,
+  LostTriangleVideoCleanPortrait
 };

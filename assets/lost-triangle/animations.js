@@ -1,6 +1,6 @@
 // GENERATED — do not edit by hand.
 // Transpiled (Babel preset-react, classic runtime) from the JSX source.
-// Source of truth: animations.jsx / LostTriangleVideo.jsx. See README.md.
+// Source of truth: animations.jsx / LostTriangleVideoClean.jsx. See README.md.
 // @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
 
 /* BEGIN USAGE */

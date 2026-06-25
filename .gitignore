@@ -2,3 +2,7 @@
 # Regenerate with design-system/build.sh; never edit or commit these.
 design-system/gf-tokens.css
 design-system/gf-nav.js
+
+# Dev-only Babel install for the Lost Triangle JSX transpile (assets/lost-triangle/build.mjs).
+# Installed transiently with `npm install --no-save @babel/standalone`; never commit.
+node_modules/
