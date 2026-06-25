@@ -286,8 +286,19 @@
     var act = chapters[0]; for (var ci = 0; ci < chapters.length; ci++) { if (t >= chapters[ci][0]) act = chapters[ci]; }
     push(this.txt(72, 158, act[1], act[2], this.sm(t, act[0], act[0] + 0.7), { size: 52, anchor: 'start', glow: true, w: 800, face: "'Syne',sans-serif", ls: -1 }));
 
+    // Callout box — bottom right, fades in during the 120° revelation
+    var bop = this.fio(t, 70, 72, 86, 87.5);
+    if (bop > 0) {
+      push(h('g', { key: 'callout', opacity: bop },
+        h('rect', { x: 1650, y: 1000, width: 240, height: 60, rx: 12, fill: 'rgba(224,52,158,.08)', stroke: 'rgba(224,52,158,.4)', strokeWidth: 2 }),
+        h('text', { x: 1770, y: 1018, textAnchor: 'middle', fontSize: '13px', fontFamily: "'Space Mono',monospace", fill: '#E0349E', letterSpacing: '.08em' }, '120° DIHEDRAL'),
+        h('text', { x: 1770, y: 1045, textAnchor: 'middle', fontSize: '11px', fontFamily: "'Space Grotesk',sans-serif", fill: 'rgba(240,237,232,.65)', letterSpacing: '.04em' }, 'Hexagon corner angle')
+      ));
+    }
+
     var scene = h('svg', { viewBox: '0 0 1920 1080', width: '100%', height: '100%', style: { position: 'absolute', inset: 0, display: 'block' } }, k);
 
+    var ctaOp = this.sm(t, 84.5, 87);
     var mm = Math.floor(t / 60), sss = Math.floor(t % 60), dm = Math.floor(this.END / 60), ds = Math.floor(this.END % 60);
     return {
       scene: scene,
@@ -298,7 +309,9 @@
       scrubVal: Math.round(t / this.END * 1000),
       tlabel: mm + ':' + String(sss).padStart(2, '0'),
       durlabel: dm + ':' + String(ds).padStart(2, '0'),
-      uiOpacity: 1
+      uiOpacity: 1 - this.sm(t, 85, 87) * 0.82,
+      ctaOp: ctaOp,
+      ctaPointer: ctaOp > 0.1 ? 'auto' : 'none'
     };
   };
 
@@ -312,7 +325,12 @@
         style: { position: 'absolute', left: '50%', top: '50%', width: STAGE_W + 'px', height: STAGE_H + 'px', transform: 'translate(-50%,-50%)', transformOrigin: 'center center' } },
         h('div', { style: { position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 72% 64% at 50% 44%, #16140F 0%, #0E0E0D 54%, #0B0B0B 100%)' } }),
         v.scene,
-        h('div', { style: { position: 'absolute', left: '50%', bottom: '34px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '18px', padding: '11px 20px', borderRadius: '14px', background: 'rgba(18,18,18,.66)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(240,237,232,.07)', boxShadow: '0 8px 30px rgba(0,0,0,.5)', opacity: v.uiOpacity, transition: 'opacity .4s', fontFamily: "'Space Grotesk',sans-serif" } },
+        h('div', { style: { position: 'absolute', left: '50%', bottom: '270px', transform: 'translateX(-50%)', opacity: v.ctaOp, transition: 'opacity 1.4s ease', textAlign: 'center', pointerEvents: v.ctaPointer, whiteSpace: 'nowrap' } },
+          h('div', { style: { fontFamily: "'Cormorant Garamond',serif", fontSize: '18px', letterSpacing: '.22em', textTransform: 'uppercase', color: '#8A8480', marginBottom: '22px' } }, 'The triangle becomes the joint'),
+          h('a', { href: 'explore.html', style: { display: 'inline-block', fontFamily: "'Syne',sans-serif", fontSize: '16px', fontWeight: 700, letterSpacing: '.28em', textTransform: 'uppercase', color: '#C8A96E', textDecoration: 'none', border: '1px solid rgba(200,169,110,.45)', borderRadius: '3px', padding: '16px 44px', background: 'rgba(200,169,110,.06)', animation: 'pulse-glow 3s ease-in-out infinite', transition: 'background .3s,border-color .3s' } }, 'Explore the Cube Model →'),
+          h('div', { style: { marginTop: '20px', fontFamily: "'Space Grotesk',sans-serif", fontSize: '12px', letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(138,132,128,.5)' } }, 'Six parts · The whole of space')
+        ),
+        h('div', { style: { position: 'absolute', left: '50%', bottom: '34px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '18px', padding: '11px 20px', borderRadius: '14px', background: 'rgba(18,18,18,.66)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(240,237,232,.07)', boxShadow: '0 8px 30px rgba(0,0,0,.5)', opacity: v.uiOpacity, transition: 'opacity .8s', fontFamily: "'Space Grotesk',sans-serif" } },
           h('button', { onClick: v.toggle, style: { width: '40px', height: '40px', border: 'none', borderRadius: '10px', background: 'rgba(200,169,110,.16)', color: '#F0EDE8', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, v.playIcon),
           h('button', { onClick: v.restart, style: { width: '36px', height: '36px', border: 'none', borderRadius: '10px', background: 'rgba(240,237,232,.06)', color: '#8A8480', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, '↻'),
           h('span', { style: { fontSize: '12px', color: '#8A8480', fontVariantNumeric: 'tabular-nums', minWidth: '40px', textAlign: 'right', letterSpacing: '0.04em' } }, v.tlabel),
