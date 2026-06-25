@@ -164,6 +164,22 @@
     .cover-actions{ margin-top:28px; gap:16px; }
     .cover-index{ margin-top:40px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px 24px; }
   }
+
+  @media(max-width:600px){
+    /* match the phone treatment up to 600px: drop the live iframe, solid bg */
+    .cover-hero{ display:none; }
+    .cover-scrim{ background:var(--bg); }
+    .cover{ min-height:0; padding:28px 22px 40px; }
+    .cover-lede{ margin-top:0; }
+    .cover-index{ margin-top:40px; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+    /* larger tap targets for the index links */
+    .ix-group a{ padding:8px 0; }
+  }
+
+  @media(max-width:420px){
+    /* very narrow phones: single-column index so titles never crowd */
+    .cover-index{ grid-template-columns:1fr; }
+  }
 </style>
 </head>
 <body>

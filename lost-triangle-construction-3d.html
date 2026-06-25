@@ -46,6 +46,21 @@
   body.clean header,body.clean #controls,body.clean #gfnav{display:none;}
   body.clean main{height:100vh;padding:0;}
   body.clean #stage{width:min(96vmin,1040px);}
+
+  /* ---- MOBILE (≤600px) ---- */
+  @media(max-width:600px){
+    html,body{overflow-x:hidden;max-width:100%;}
+    header{padding:10px 14px 6px;}
+    main{padding:4px 12px;}
+    #stage{width:min(90vmin,520px);}
+    /* caption sits inside the stage — let it wrap so a long formula doesn't overflow */
+    #caption{white-space:normal;width:92%;font-size:11.5px;line-height:1.4;bottom:2px;}
+    #controls{padding:12px 14px calc(16px + env(safe-area-inset-bottom,0px));gap:8px 10px;}
+    button{padding:9px 12px;font-size:11px;}
+    #scrub{width:min(72vw,340px);height:4px;}
+    #scrub::-webkit-slider-thumb{width:18px;height:18px;}
+    #scrub::-moz-range-thumb{width:18px;height:18px;}
+  }
 </style>
 </head>
 <body>

@@ -97,6 +97,14 @@
     h1{font-size:44px;}
     .sec{padding:56px 0;}
   }
+  @media(max-width:600px){
+    .fig-outer{height:380px;}
+    .fig-panel{padding:8px 10px;border-radius:var(--radius-md,9px);}
+    /* mode toggle: cap width, dock bottom-center, larger tap targets, wrap if needed */
+    .fig-mode{right:10px;left:10px;bottom:12px;justify-content:center;flex-wrap:wrap;
+      max-width:calc(100% - 20px);}
+    .fig-mode button{min-height:40px;padding:9px 12px;font-size:12px;}
+  }
 </style>
 </head>
 <body>

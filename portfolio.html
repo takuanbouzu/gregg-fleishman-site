@@ -19,6 +19,22 @@
   .sec{ padding:88px 0; }
   .sec + .sec{ border-top:1px solid var(--hairline); }
   @media(max-width:680px){ .wrap{ padding:0 24px; } .sec{ padding:56px 0; } }
+  @media(max-width:600px){
+    /* one item per row so names/sublines never get cramped */
+    .item-grid{ grid-template-columns:1fr; }
+    /* category header: stack title above the count */
+    .cat-header{ grid-template-columns:1fr; align-items:start; gap:8px; margin-bottom:28px; }
+    .cat-count{ padding-bottom:0; }
+    /* media + readability */
+    .cat-hero img{ max-width:100%; }
+    .lead, .cat-desc{ font-size:15px; }
+    .page-header .lead{ font-size:18px; }
+    /* collections note + store CTA stack with comfortable padding */
+    .collections-note{ padding:22px 20px; gap:14px; }
+    /* the inline-styled store-CTA panel (last .sec) → stack + full-width button */
+    .sec:last-of-type .wrap > div{ flex-direction:column; align-items:stretch !important; padding:28px 22px !important; }
+    .sec:last-of-type .gf-btn-fill{ width:100%; text-align:center; }
+  }
   @media(max-width:480px){ .page-header h1{ font-size:clamp(36px,9vw,48px); } .page-header{ padding:56px 0 40px; } }
 
   /* ── eyebrow ── */

@@ -33,6 +33,17 @@
   button:hover{color:var(--tx);border-color:var(--accent);}
   button.active{color:var(--tx);border-color:var(--accent);}
   @media(max-width:900px){#legend{display:none}#title,#note{left:14px;right:14px;max-width:none}#controls{right:14px;bottom:14px}#note{bottom:66px}}
+  @media(max-width:600px){
+    #title{left:10px;right:10px;top:60px;max-width:92vw;padding:10px 12px;
+      max-height:26vh;overflow-y:auto;}
+    #title h1{font-size:17px;}
+    #title p{font-size:11.5px;}
+    /* note docked just above the controls, compact + scrollable */
+    #note{left:10px;right:10px;bottom:62px;max-width:92vw;padding:10px 12px;
+      font-size:11.5px;max-height:24vh;overflow-y:auto;}
+    #controls{right:10px;bottom:10px;gap:6px;}
+    #controls button{min-height:40px;padding:9px 12px;}
+  }
   @media(max-height:620px){#note{display:none}}
 </style>
 </head>

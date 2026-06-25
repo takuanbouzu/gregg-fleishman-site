@@ -82,6 +82,19 @@
     .creds{ flex-direction:column; gap:20px; }
     .cred{ border-left:none; border-top:1px solid var(--hairline); padding:20px 0 0; }
     .cred:first-child{ border-top:none; padding-top:0; }
+    /* photo grid → single column so each image gets full width */
+    .photo-grid{ grid-template-columns:1fr; }
+    .photo-grid .photo.wide{ grid-column:span 1; }
+    .photo-grid .photo img,
+    .photo-grid .photo.wide img,
+    .photo-grid .photo.tall img{ aspect-ratio:3/2; }
+    /* captions always visible on touch (no hover) */
+    .photo-grid .photo .photo-caption{ opacity:1; }
+    /* exhibit link block: stack, comfortable padding, full-width CTA */
+    .exhibit-link{ flex-direction:column; align-items:stretch; gap:18px; padding:28px 22px; margin-top:48px; }
+    .exhibit-link .gf-btn-fill{ width:100%; text-align:center; }
+    /* slightly larger body text for reading comfort */
+    p{ font-size:16px; }
   }
 
   /* ── section headings ── */
