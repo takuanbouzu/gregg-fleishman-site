@@ -366,40 +366,37 @@ function SceneReflectC({ lt }) {
   const L = useLC();
   const { GX, GY } = L;
   const isP = L.orient === 'portrait';
-  const pW  = isP ? 280 : 348;
-  const pH  = isP ? 360 : 400;
-  const gap = isP ? 20 : 32;
-  const totalW = 3*pW + 2*gap;
-  const px0 = GX - totalW/2;
-  const pXi = i => px0 + i*(pW+gap);
-  const pY0 = GY - pH*.5 - (isP ? 50 : 10);
-  const cY  = pY0 + pH*.44;
-  const S   = pW * .22;
-  const labY = pY0 + pH + 42;
   const p1=subc(lt,1.2,1.0), p2=subc(lt,4.2,1.0), p3=subc(lt,7.2,1.0);
-  const Tv = {
-    O:[pXi(0)+pW*.42, cY+S*.30],
-    T:[pXi(0)+pW*.42, cY-S*.82],
-    R:[pXi(0)+pW*.74, cY+S*.30],
-  };
-  const rS=S*.86, rCX=pXi(1)+pW*.5;
-  const Rh = {
-    top:[rCX,cY-rS], bot:[rCX,cY+rS], L:[rCX-rS*R2c,cY], R:[rCX+rS*R2c,cY],
-  };
+
+  // Portrait stacks the three panels vertically (uses the tall phone canvas, so
+  // each figure is large/legible); landscape keeps them side by side.
+  const S       = isP ? 118 : 76.6;      // figure scale
+  const labelDy = isP ? (S + 96) : 266;  // label offset below each panel's centre
+  const labelFs = isP ? 16 : 12;
+  const colStep = isP ? 0 : 380;         // landscape: horizontal spread
+  const rowStep = isP ? 460 : 0;         // portrait: vertical spread
+  const CX = i => GX + (isP ? 0 : (i - 1) * colStep);
+  const CY = i => GY + (isP ? (i - 1) * rowStep : -34);
+
+  // Each panel is drawn around a LOCAL origin, then positioned via translate —
+  // so the same drawing serves both the row (landscape) and the stack (portrait).
+  const rS = S * .86;
+  const Tv = { O:[-.36*S, .30*S], T:[-.36*S, -.82*S], R:[1.09*S, .30*S] };
+  const Rh = { top:[0,-rS], bot:[0,rS], L:[-rS*R2c,0], R:[rS*R2c,0] };
   return (
     <g>
       {/* Panel 1 — One triangle */}
-      <g opacity={p1}>
+      <g opacity={p1} transform={`translate(${CX(0)},${CY(0)})`}>
         <PolyC pts={[Tv.O,Tv.T,Tv.R]} fill={Cc.acc} opacity={.20} />
         <LineC a={Tv.O} b={Tv.T} p={1} stroke={Cc.ink} w={2.0} />
         <LineC a={Tv.O} b={Tv.R} p={1} stroke={Cc.ink} w={2.0} />
         <LineC a={Tv.T} b={Tv.R} p={1} stroke={Cc.acc} w={2.6} />
         <RightAngleC v={Tv.O} p={Tv.T} q={Tv.R} opacity={1} s={10} />
-        <text x={pXi(0)+pW*.5} y={labY} fill={Cc.dim} fontFamily={MONOc}
-          fontSize={isP?11:12} textAnchor="middle" style={{letterSpacing:'.08em'}}>ONE TRIANGLE</text>
+        <text x={0} y={labelDy} fill={Cc.dim} fontFamily={MONOc}
+          fontSize={labelFs} textAnchor="middle" style={{letterSpacing:'.08em'}}>ONE TRIANGLE</text>
       </g>
       {/* Panel 2 — Rhombic face */}
-      <g opacity={p2}>
+      <g opacity={p2} transform={`translate(${CX(1)},${CY(1)})`}>
         <PolyC pts={[Rh.top,Rh.R,Rh.bot,Rh.L]} fill={Cc.acc} opacity={.14} />
         <LineC a={Rh.top} b={Rh.R}   p={1} stroke={Cc.acc} w={2.0} />
         <LineC a={Rh.R}   b={Rh.bot} p={1} stroke={Cc.acc} w={2.0} />
@@ -407,15 +404,15 @@ function SceneReflectC({ lt }) {
         <LineC a={Rh.L}   b={Rh.top} p={1} stroke={Cc.acc} w={2.0} />
         <LineC a={Rh.top} b={Rh.bot} p={1} stroke={Cc.dim} w={.8} opacity={.28} dashArr="0.04 0.03" />
         <LineC a={Rh.L}   b={Rh.R}   p={1} stroke={Cc.dim} w={.8} opacity={.28} dashArr="0.04 0.03" />
-        <DotC at={[rCX,cY]} r={3} fill={Cc.dim} opacity={p2} />
-        <text x={rCX} y={labY} fill={Cc.dim} fontFamily={MONOc}
-          fontSize={isP?11:12} textAnchor="middle" style={{letterSpacing:'.08em'}}>RHOMBIC FACE</text>
+        <DotC at={[0,0]} r={3} fill={Cc.dim} opacity={p2} />
+        <text x={0} y={labelDy} fill={Cc.dim} fontFamily={MONOc}
+          fontSize={labelFs} textAnchor="middle" style={{letterSpacing:'.08em'}}>RHOMBIC FACE</text>
       </g>
       {/* Panel 3 — Dodecahedron */}
-      <g opacity={p3}>
-        <RDMiniC cx={pXi(2)+pW*.5} cy={cY} sc={S*1.8} p={p3} />
-        <text x={pXi(2)+pW*.5} y={labY} fill={Cc.dim} fontFamily={MONOc}
-          fontSize={isP?11:12} textAnchor="middle" style={{letterSpacing:'.08em'}}>DODECAHEDRON</text>
+      <g opacity={p3} transform={`translate(${CX(2)},${CY(2)})`}>
+        <RDMiniC cx={0} cy={0} sc={S*1.8} p={p3} />
+        <text x={0} y={labelDy} fill={Cc.dim} fontFamily={MONOc}
+          fontSize={labelFs} textAnchor="middle" style={{letterSpacing:'.08em'}}>DODECAHEDRON</text>
       </g>
     </g>
   );
@@ -447,18 +444,6 @@ function SceneAnglesC({ lt }) {
   const L = useLC();
   const { GX, GY } = L;
   const isP = L.orient === 'portrait';
-  const cW  = isP ? 214 : 272;
-  const cH  = isP ? 270 : 340;
-  const gap = isP ? 14 : 26;
-  const totalW = 4*cW + 3*gap;
-  const cX0 = GX - totalW/2;
-  const cXi = i => cX0 + i*(cW+gap);
-  const icCX = i => cXi(i)+cW*.5;
-  const cY0 = GY - cH*.5 - (isP ? 30 : 10);
-  const icCY = cY0+cH*.40;
-  const icS  = cW*.36;
-  const labY1 = cY0+cH-40;
-  const labY2 = cY0+cH-12;
   const p = [subc(lt,1.2,.9),subc(lt,2.4,.9),subc(lt,3.6,.9),subc(lt,4.8,.9)];
   const cards = [
     { l:'CUBE',        a:'90°',     wire:CUBE_WC,  rd:false },
@@ -466,18 +451,34 @@ function SceneAnglesC({ lt }) {
     { l:'OCTAHEDRON',  a:'109.47°', wire:OCTA_WC,  rd:false },
     { l:'RHOMBIC',     a:'120°',    wire:null,      rd:true  },
   ];
+  // Portrait lays the four cards out as a 2×2 grid (large + legible on a phone);
+  // landscape keeps the single row of four. Each card draws around a local
+  // origin and is placed with a translate.
+  const cols    = isP ? 2 : 4;
+  const rows    = 4 / cols;
+  const wireSc  = isP ? 52 : 35.25;
+  const rdSc    = isP ? 128 : 86.2;
+  const colStep = isP ? 470 : 298;
+  const rowStep = isP ? 600 : 0;
+  const baseCY  = isP ? GY : GY - 44;
+  const nameDy  = isP ? 196 : 164;
+  const angDy   = isP ? 250 : 192;
+  const nameFs  = isP ? 15 : 11;
+  const angFs   = isP ? 48 : 36;
+  const CX = i => GX + ((i % cols) - (cols - 1) / 2) * colStep;
+  const CY = i => baseCY + (Math.floor(i / cols) - (rows - 1) / 2) * rowStep;
   return (
     <g>
       {cards.map(({ l,a,wire,rd },i) => (
-        <g key={i} opacity={p[i]}>
+        <g key={i} opacity={p[i]} transform={`translate(${CX(i)},${CY(i)})`}>
           {rd
-            ? <RDMiniC cx={icCX(i)} cy={icCY} sc={icS*.88} p={p[i]} />
-            : <WireC {...wire} ry={.55} sc={icS*.36} cx={icCX(i)} cy={icCY} />
+            ? <RDMiniC cx={0} cy={0} sc={rdSc} p={p[i]} />
+            : <WireC {...wire} ry={.55} sc={wireSc} cx={0} cy={0} />
           }
-          <text x={icCX(i)} y={labY1} fill={Cc.dim} fontFamily={MONOc}
-            fontSize={isP?10:11} textAnchor="middle" style={{letterSpacing:'.10em'}}>{l}</text>
-          <text x={icCX(i)} y={labY2} fill={Cc.ink} fontFamily={SERIFc}
-            fontStyle="italic" fontSize={isP?28:36} textAnchor="middle">{a}</text>
+          <text x={0} y={nameDy} fill={Cc.dim} fontFamily={MONOc}
+            fontSize={nameFs} textAnchor="middle" style={{letterSpacing:'.10em'}}>{l}</text>
+          <text x={0} y={angDy} fill={Cc.ink} fontFamily={SERIFc}
+            fontStyle="italic" fontSize={angFs} textAnchor="middle">{a}</text>
         </g>
       ))}
     </g>
