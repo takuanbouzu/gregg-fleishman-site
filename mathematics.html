@@ -24,15 +24,16 @@
 <style>
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
-  body{background:#08080c;color:var(--tx);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;}
+  body{background:#070707;color:var(--tx);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;}
 
-  /* Full-bleed motion-graphic stage, seated under the fixed nav bar */
+  /* Stage sits below the fixed nav and scrolls with the page */
   #lt-stage{
-    position:fixed; inset:0; top:56px;
-    background:#08080c; overflow:hidden;
+    margin-top:56px;
+    min-height:calc(100vh - 56px);
+    background:#070707;
+    overflow-x:hidden;
   }
-  /* The React <Stage> mounts here and fills the box (position:absolute inset:0). */
-  #lt-root{ position:absolute; inset:0; }
+  #lt-root{ height:100%; }
 
   /* Embed mode — no nav, stage owns the whole frame. */
   html.lt-embed #gfnav{ display:none; }

@@ -1,345 +1,362 @@
-/* ============================================================================
-   The Lost Triangle — motion graphic (1 : √2 : √3)
+/* Lost Triangle — The Device
+   Converted from DC component to plain React class (no build step).
+   Defines window.LostTriangleAnimation, mounted by mathematics.html. */
+(function () {
+  'use strict';
 
-   Ported verbatim from the Claude Design export
-   `lost-triangle-animation.source.dc.html` (88-second, 7-chapter SVG build of
-   the Lost Triangle and its 120° Fleishman-joint revelation).
+  var cr = React.createElement;
 
-   The original ran on Claude Design's `DCLogic` runtime + a `{{ }}` template.
-   Here it is a plain React component on this repo's vendored React 18.3.1
-   (UMD global `window.React`). It uses `React.createElement` throughout — there
-   is NO JSX and therefore NO build step: THIS FILE IS THE SOURCE OF TRUTH.
-   Edit it directly.
+  var CARD_BORDERS   = ['#4A90D9','#E0349E','rgba(240,237,232,.65)','#3CCB8E','#C8A96E','#E0349E'];
+  var CARD_FSIZES    = ['19px','19px','19px','21px','21px','17px'];
+  var CARD_BADGES    = ['1','2','3','σ','✸','2\xd7'];
+  var CARD_LABELS    = ['FOLD','EXTRUDE','CLOSE','REFLECT','GENERATE','DOUBLE'];
+  var CARD_DESCS     = [
+    'the √2 face diagonal — a 45° reflection in the square',
+    'rise by exactly 1, orthogonal to the plane',
+    'the √3 hypotenuse — the cube’s space diagonal',
+    'mirror across its legs → 48 copies tile the cube',
+    'a Wythoff seed point → the cubic polyhedron family',
+    'double its angles → 70.53° / 109.47° space-filling faces'
+  ];
 
-   The scene-drawing math (proj / seg / dot / lab / txt / arc / renderVals) is
-   copied unchanged from the export — every 1 : √2 : √3 relationship is computed
-   from one geometric unit, so don't "correct" it to eyeballed coordinates.
+  var CHAIN_LABELS  = ['Lost Triangle','Cubic symmetry','Cube \xb7 Octahedron','Rhombic dodecahedron'];
+  var CHAIN_SUBS    = ['1 : √2 : √3','Oₕ \xb7 48 copies','Cuboctahedron \xb7 Trunc-octa','faces 70.53° / 109.47° — fills space'];
+  var CHAIN_BORDERS = ['#3CCB8E','#4A90D9','#C8A96E','#E0349E'];
+  var CHAIN_BGS     = ['rgba(60,203,142,.05)','rgba(74,144,217,.05)','rgba(200,169,110,.05)','rgba(224,52,158,.05)'];
+  var CHAIN_ARROWS  = [
+    { label:'reflect σ',  w:82, x2:72, ax:73 },
+    { label:'Wythoff seed',    w:98, x2:88, ax:89 },
+    { label:'dual',            w:64, x2:54, ax:55 }
+  ];
 
-   Exposes: window.LostTriangleAnimation  (a React component class)
-   ============================================================================ */
-(function (global) {
-  "use strict";
-  var React = global.React;
-  if (!React) return;
-  var h = React.createElement;
+  class LostTriangleDevice extends React.Component {
+    constructor(props) {
+      super(props);
+      this.END=60; this.S=300; this.cx=960; this.cy=560;
+      this.el=20*Math.PI/180; this.az0=-0.55; this.KEY='lt_device';
+      this.C={ink:'#F0EDE8',blue:'#4A90D9',terra:'#E0349E',gold:'#C8A96E',green:'#3CCB8E'};
+      this.CH=[0,9,18,27,39,51];
+      this.NAME=['FOLD','EXTRUDE','CLOSE','REFLECT','GENERATE','DOUBLE'];
+      this.CAP=[
+        'the √2 face diagonal — a 45° fold',
+        'rise by exactly 1, orthogonal to the plane',
+        'the √3 hypotenuse closes the triangle',
+        'mirror across its legs — 48 copies tile the cube',
+        'a Wythoff seed opens the cubic family',
+        'double the angles — space-filling faces'
+      ];
+      this.COL=['#4A90D9','#E0349E','#F0EDE8','#3CCB8E','#C8A96E','#E0349E'];
+      this.RGB=['74,144,217','224,52,158','240,237,232','60,203,142','200,169,110','224,52,158'];
+      this.CHC=['60,203,142','74,144,217','200,169,110','224,52,158'];
+      this.O=[0,0,0]; this.E=[1,0,1]; this.V=[1,1,1];
+      this.cube=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+      this.edges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
-  var STAGE_W = 1920, STAGE_H = 1080;
+      var perms=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]],signs=[];
+      for(var a=0;a<2;a++)for(var b=0;b<2;b++)for(var c=0;c<2;c++)signs.push([a?-1:1,b?-1:1,c?-1:1]);
+      var G=[]; perms.forEach(function(p){signs.forEach(function(s){G.push([p,s]);});});
+      var gp=function(m,p){var pe=m[0],si=m[1];return[si[0]*p[pe[0]],si[1]*p[pe[1]],si[2]*p[pe[2]]];};
+      this.TR=G.map((m)=>[gp(m,this.E),gp(m,this.V)]);
 
-  function LostTriangleAnimation(props) {
-    React.Component.call(this, props);
-    this.END = 88;
-    this.S = 92; this.cx = 960; this.cy = 600; this.el = 26 * Math.PI / 180; this.GU = 1.6;
-    this.az0 = -32 * Math.PI / 180;
-    // GF geometry role-colors — bone (unit), blue (face √2), magenta (space √3 /
-    // Lost Triangle), gold (angle/chrome).
-    this.C = {
-      grid: '#4A90D9', axis: '#4A90D9', cyan: '#4A90D9', red: '#E0349E',
-      gold: '#C8A96E', white: '#F0EDE8', green: '#3CCB8E',
-      titleCyan: '#7FB2E6', titleRed: '#F05BB5', titleGold: '#D8BE8F',
-      labelCyan: '#A9CDEE', labelRed: '#F58FCF', labelGold: '#E3D0AC',
-      magenta: '#E0349E', titleMag: '#F05BB5', labelMag: '#F58FCF'
-    };
-    // 3D points (z up). GU scales the unit.
-    var g = this.GU, r2 = Math.sqrt(2);
-    this.P = {
-      O: [0, 0, 0],
-      U: [g, 0, 0],            // unit leg corner (base "1")
-      Dg: [g, g, 0],           // diagonal end (1,1,0)
-      T: [g, g, r2 * g],       // P1 apex (1,1,sqrt2)
-      MU: [-g, 0, 0],
-      MDg: [-g, g, 0],
-      P2: [-g, g, r2 * g]
-    };
-    // grid lines (z=0)
-    this.grid = []; var N = 5;
-    for (var i = -N; i <= N; i++) { this.grid.push([[i, -N, 0], [i, N, 0]]); this.grid.push([[-N, i, 0], [N, i, 0]]); }
-    // ground rotation circle (final)
-    this.circle = []; var R = 3.4;
-    for (var k = 0; k <= 64; k++) { var a = 2 * Math.PI * k / 64; this.circle.push([R * Math.cos(a), R * Math.sin(a), 0]); }
-    this.state = { t: 0, playing: false };
-
-    this.screenRef = this.screenRef.bind(this);
-    this.fit = this.fit.bind(this);
-  }
-  LostTriangleAnimation.prototype = Object.create(React.Component.prototype);
-  LostTriangleAnimation.prototype.constructor = LostTriangleAnimation;
-
-  var proto = LostTriangleAnimation.prototype;
-
-  proto.componentDidMount = function () {
-    var saved = parseFloat(localStorage.getItem('lt_t'));
-    if (!isNaN(saved) && saved > 0 && saved < this.END) this.setState({ t: saved });
-    else if (this.props.autoplay) this.setState({ playing: true });
-    this.fit();
-    this._fit = this.fit;
-    window.addEventListener('resize', this._fit);
-    if (typeof ResizeObserver !== 'undefined' && this.screen) {
-      this._ro = new ResizeObserver(this._fit);
-      this._ro.observe(this.screen);
-    }
-    this._last = performance.now();
-    var self = this;
-    var loop = function (now) {
-      var dt = (now - self._last) / 1000; self._last = now;
-      if (self.state.playing) {
-        var nt = self.state.t + dt;
-        if (nt >= self.END) { nt = self.END; self.setState({ t: nt, playing: false }); }
-        else self.setState({ t: nt });
-        if (Math.floor(nt * 4) !== self._sv) { self._sv = Math.floor(nt * 4); localStorage.setItem('lt_t', nt.toFixed(2)); }
+      this.CUBO=[[1,1,0],[1,-1,0],[-1,1,0],[-1,-1,0],[1,0,1],[1,0,-1],[-1,0,1],[-1,0,-1],[0,1,1],[0,1,-1],[0,-1,1],[0,-1,-1]];
+      this.CUBOE=[];
+      for(var i=0;i<12;i++)for(var j=i+1;j<12;j++){
+        var d=Math.hypot(this.CUBO[i][0]-this.CUBO[j][0],this.CUBO[i][1]-this.CUBO[j][1],this.CUBO[i][2]-this.CUBO[j][2]);
+        if(Math.abs(d-Math.SQRT2)<1e-6)this.CUBOE.push([i,j]);
       }
-      self._raf = requestAnimationFrame(loop);
-    };
-    this._raf = requestAnimationFrame(loop);
-  };
-  proto.componentWillUnmount = function () {
-    cancelAnimationFrame(this._raf);
-    window.removeEventListener('resize', this._fit);
-    if (this._ro) this._ro.disconnect();
-  };
 
-  proto.screenRef = function (el) { this.screen = el; if (el) this.fit(); };
+      var RDc=[]; for(var x=0;x<2;x++)for(var y=0;y<2;y++)for(var z=0;z<2;z++)RDc.push([x?1:-1,y?1:-1,z?1:-1]);
+      var RDax=[[2,0,0],[-2,0,0],[0,2,0],[0,-2,0],[0,0,2],[0,0,-2]];
+      this.RDV=RDc.concat(RDax); this.RDE=[];
+      var self=this;
+      RDc.forEach(function(c,ci){
+        for(var ax=0;ax<3;ax++){
+          var tt=[0,0,0]; tt[ax]=2*(c[ax]>0?1:-1);
+          for(var k=0;k<RDax.length;k++)if(RDax[k][0]===tt[0]&&RDax[k][1]===tt[1]&&RDax[k][2]===tt[2])self.RDE.push([ci,8+k]);
+        }
+      });
 
-  // Scale the 1920×1080 stage to fit its mount box (the page seats this below a
-  // fixed nav, so measure the container, not the raw viewport).
-  proto.fit = function () {
-    if (!this.stage) return;
-    var box = this.screen || (this.stage.parentNode);
-    if (!box) return;
-    var w = box.clientWidth, ht = box.clientHeight;
-    if (!w || !ht) return;
-    var s = Math.min(w / STAGE_W, ht / STAGE_H);
-    this.stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
-  };
-
-  // ---- helpers (verbatim from the export) ----
-  proto.sm = function (t, a, b) { if (b <= a) return t >= b ? 1 : 0; var e = (t - a) / (b - a); e = e < 0 ? 0 : e > 1 ? 1 : e; return e * e * (3 - 2 * e); };
-  proto.fio = function (t, a, b, c, d) { return this.sm(t, a, b) * (1 - this.sm(t, c, d)); };
-  proto.proj = function (p) {
-    var a = this._az, ce = Math.cos(a), se = Math.sin(a);
-    var xa = p[0] * ce - p[1] * se, ya = p[0] * se + p[1] * ce, za = p[2];
-    var zb = ya * Math.sin(this.el) + za * Math.cos(this.el);
-    return [this.cx + xa * this.S, this.cy - zb * this.S];
-  };
-  proto.lerpP = function (A, B, k) { return [A[0] + (B[0] - A[0]) * k, A[1] + (B[1] - A[1]) * k]; };
-  proto.seg = function (p0, p1, prog, color, w, o) {
-    o = o || {}; var key = 's' + (this._k++); if (prog <= 0) return null;
-    var A = this.proj(p0), B0 = this.proj(p1); var B = this.lerpP(A, B0, prog);
-    return h('line', { key: key, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: color, strokeWidth: w, strokeLinecap: 'round',
-      strokeDasharray: o.dash, opacity: o.op == null ? 1 : o.op, filter: o.glow === false ? undefined : 'url(#g)' });
-  };
-  proto.dot = function (p, rad, color, op) {
-    var key = 'c' + (this._k++); if (op <= 0) return null; var P = this.proj(p);
-    return h('circle', { key: key, cx: P[0], cy: P[1], r: rad, fill: color, opacity: op, filter: 'url(#g)' });
-  };
-  proto.lab = function (p, txt, color, op, o) {
-    o = o || {}; var key = 'l' + (this._k++); if (op <= 0) return null; var P = this.proj(p);
-    return h('text', { key: key, x: P[0] + (o.dx || 0), y: P[1] + (o.dy || 0), fill: color, opacity: op, fontSize: o.size || 30,
-      fontFamily: "'Cormorant Garamond',serif", fontStyle: o.italic ? 'italic' : 'normal', fontWeight: o.w || 600, textAnchor: o.anchor || 'middle', filter: 'url(#g)' }, txt);
-  };
-  proto.txt = function (x, y, s, color, op, o) {
-    o = o || {}; var key = 'x' + (this._k++); if (op <= 0) return null;
-    return h('text', { key: key, x: x, y: y, fill: color, opacity: op, fontSize: o.size || 34,
-      fontFamily: o.face || "'Cormorant Garamond',serif", fontStyle: o.italic ? 'italic' : 'normal', fontWeight: o.w || 500, textAnchor: o.anchor || 'middle', filter: o.glow ? 'url(#g)' : undefined, letterSpacing: o.ls || 0 }, s);
-  };
-  proto.arc = function (O3, A3, B3, rad, prog, color, op) {
-    var key = 'a' + (this._k++); if (prog <= 0 || op <= 0) return null;
-    var O = this.proj(O3), A = this.proj(A3), B = this.proj(B3);
-    var aA = Math.atan2(A[1] - O[1], A[0] - O[0]), aB = Math.atan2(B[1] - O[1], B[0] - O[0]);
-    var d = aB - aA; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; var aE = aA + d * prog;
-    var x0 = O[0] + rad * Math.cos(aA), y0 = O[1] + rad * Math.sin(aA), x1 = O[0] + rad * Math.cos(aE), y1 = O[1] + rad * Math.sin(aE);
-    return h('path', { key: key, d: 'M' + x0 + ' ' + y0 + ' A' + rad + ' ' + rad + ' 0 0 ' + (d > 0 ? 1 : 0) + ' ' + x1 + ' ' + y1, stroke: color, strokeWidth: 2.4, fill: 'none', strokeDasharray: '5 6', opacity: op, filter: 'url(#g)', strokeLinecap: 'round' });
-  };
-  // 3D midpoint helper
-  proto.lerpP3 = function (a, b, k) { return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; };
-
-  proto.renderVals = function () {
-    var t = this.state.t, C = this.C, P = this.P, k = []; this._k = 0;
-    var self = this;
-    // azimuth: fixed until final rotation, then 360 sweep
-    var ROT0 = 72, ROT1 = 84;
-    this._az = this.az0 + (t > ROT0 ? 2 * Math.PI * this.sm(t, ROT0, ROT1) : 0);
-    var push = function (e) { if (e) k.push(e); };
-
-    // defs (glow)
-    push(h('defs', { key: 'd' },
-      h('filter', { id: 'g', x: '-60%', y: '-60%', width: '220%', height: '220%' },
-        h('feGaussianBlur', { stdDeviation: 2.4, result: 'b' }),
-        h('feMerge', null, h('feMergeNode', { in: 'b' }), h('feMergeNode', { in: 'SourceGraphic' })))));
-
-    // GRID
-    var gOp = this.sm(t, 0.5, 4) * 0.12;
-    this.grid.forEach(function (s, i) {
-      push(h('line', Object.assign({ key: 'gr' + i },
-        (function () { var A = self.proj(s[0]), B = self.proj(s[1]); return { x1: A[0], y1: A[1], x2: B[0], y2: B[1] }; })(),
-        { stroke: C.grid, strokeWidth: 1, opacity: gOp })));
-    });
-    // rotation ground circle (final)
-    var cOp = this.fio(t, 72.5, 73.5, 85.5, 87) * 0.5;
-    if (cOp > 0) {
-      var pts = this.circle.map(function (p) { return self.proj(p); });
-      push(h('polyline', { key: 'circ', points: pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' '), fill: 'none', stroke: C.green, strokeWidth: 1.5, strokeDasharray: '4 9', opacity: cOp }));
+      this.state={t:0,playing:false};
+      this.fitEl=null; this.frameEl=null;
+      this._fitRef  =(el)=>{this.fitEl  =el; if(el)this.fit();};
+      this._frameRef=(el)=>{this.frameEl=el; if(el)this.fit();};
     }
 
-    // AXES (chapter I)
-    push(h('g', { key: 'ax' },
-      this.seg([-5, 0, 0], [5, 0, 0], this.sm(t, 4, 6.2), C.axis, 1.6, { glow: true, op: 0.40 }),
-      this.seg([0, -5, 0], [0, 5, 0], this.sm(t, 5.4, 7.6), C.axis, 1.6, { glow: true, op: 0.40 }),
-      this.dot(P.O, 3.5, C.axis, this.sm(t, 5.8, 6.6) * 0.6)));
+    componentDidMount(){
+      var saved=parseFloat(localStorage.getItem(this.KEY));
+      if(!isNaN(saved)&&saved>0&&saved<this.END) this.setState({t:saved});
+      else if(this.props.autoplay??true) this.setState({playing:true});
+      this._key=(e)=>{
+        if(e.key==='ArrowRight')this.nextCh();
+        else if(e.key==='ArrowLeft')this.prevCh();
+        else if(e.key==='Escape')this.restart();
+      };
+      window.addEventListener('keydown',this._key);
+      this._fit=()=>this.fit(); window.addEventListener('resize',this._fit); this.fit();
+      this._last=performance.now();
+      var loop=(now)=>{
+        var dt=(now-this._last)/1000; this._last=now;
+        if(this.state.playing){
+          var nt=this.state.t+dt;
+          if(nt>=this.END){nt=this.END;this.setState({t:nt,playing:false});}
+          else this.setState({t:nt});
+          if(Math.floor(nt*4)!==this._sv){this._sv=Math.floor(nt*4);localStorage.setItem(this.KEY,nt.toFixed(2));}
+        }
+        this._raf=requestAnimationFrame(loop);
+      };
+      this._raf=requestAnimationFrame(loop);
+    }
 
-    // filled Lost Triangle (O–T–Dg), revealed at the end (sits behind the strut lines)
-    { var fop = this.sm(t, 63.5, 65.2) * 0.34; if (fop > 0) { var Os = this.proj(P.O), Ts = this.proj(P.T), Ds = this.proj(P.Dg);
-      push(h('polygon', { key: 'fillTri', points: Os[0] + ',' + Os[1] + ' ' + Ts[0] + ',' + Ts[1] + ' ' + Ds[0] + ',' + Ds[1], fill: 'rgba(60,203,142,' + (fop * 0.8) + ')', stroke: 'none' })); } }
+    componentWillUnmount(){
+      cancelAnimationFrame(this._raf);
+      window.removeEventListener('keydown',this._key);
+      window.removeEventListener('resize',this._fit);
+    }
 
-    // ===== II. 45° diagonal — the unit square =====
-    var B = [0, this.GU, 0];
-    // solid square edges
-    push(this.seg(P.O, P.U, this.sm(t, 8.4, 9.2), C.cyan, 1.8, { glow: true }));
-    push(this.seg(P.U, P.Dg, this.sm(t, 9.0, 9.8), C.cyan, 1.8, { glow: true }));
-    push(this.seg(P.Dg, B, this.sm(t, 9.6, 10.4), C.cyan, 1.8, { glow: true }));
-    push(this.seg(B, P.O, this.sm(t, 10.2, 11.0), C.cyan, 1.8, { glow: true }));
-    // corner dots
-    { var dop = this.sm(t, 10.6, 11.2); push(this.dot(P.O, 3.6, C.cyan, dop)); push(this.dot(P.U, 3.6, C.cyan, dop)); push(this.dot(P.Dg, 3.6, C.cyan, dop)); push(this.dot(B, 3.6, C.cyan, dop)); }
-    // side labels — matched to blue edge color
-    { var o1 = this.sm(t, 10.8, 11.4); push(this.lab(this.lerpP3(B, P.Dg, 0.5), '1', C.labelCyan, o1, { dy: -14, size: 27, italic: true })); push(this.lab(this.lerpP3(P.O, P.U, 0.5), '1', C.labelCyan, o1, { dy: 24, size: 27, italic: true })); }
-    // dashed √2 diagonal
-    push(this.seg(P.O, P.Dg, this.sm(t, 11.4, 12.9), C.cyan, 2.6, { dash: '10 9', glow: true }));
-    push(this.lab(this.lerpP3(P.O, P.Dg, 0.6), '√2', C.labelCyan, this.sm(t, 12.9, 13.5), { dy: 26, dx: 8, size: 30, italic: true }));
-    // clean 45° arc
-    push(this.arc(P.O, P.U, P.Dg, 40, this.sm(t, 13.3, 14.0), C.cyan, this.sm(t, 13.3, 14.0) * 0.85));
-    push(this.lab(this.lerpP3(P.O, P.Dg, 0.17), '45°', C.labelCyan, this.sm(t, 14.0, 14.5), { dy: 18, dx: 6, size: 21, italic: true }));
+    fit(){
+      if(!this.frameEl||!this.fitEl)return;
+      var availW=window.innerWidth-28, availH=window.innerHeight-104;
+      var s=Math.min(availW/1180,availH/980,1);
+      this.frameEl.style.transform='scale('+s+')';
+      this.fitEl.style.width=(1180*s)+'px';
+      this.fitEl.style.height=(980*s)+'px';
+    }
 
-    // ===== III. The Rise =====
-    { var rStart = 18.1, rEnd = 19.0, rp = this.sm(t, rStart, rEnd), tip = this.lerpP3(P.Dg, P.T, rp);
-      push(this.seg(P.Dg, P.T, rp, C.magenta, 11, { glow: false, op: 0.22 }));
-      push(this.seg(P.Dg, P.T, rp, C.magenta, 3.4, { glow: false }));
-      push(this.dot(tip, 4.6, C.magenta, this.sm(t, rStart, rStart + 0.25)));
-      push(this.lab(this.lerpP3(P.Dg, P.T, 0.5), '√2', C.labelMag, this.sm(t, rStart + 0.7 * (rEnd - rStart), rEnd), { dx: 26, size: 30, italic: true })); }
+    curCI(){var ci=0;for(var i=0;i<this.CH.length;i++){if(this.state.t>=this.CH[i]-0.001)ci=i;}return ci;}
+    seekCh(i){i=Math.max(0,Math.min(5,i));this.setState({t:this.CH[i]+0.02,playing:true});localStorage.setItem(this.KEY,this.CH[i].toFixed(2));}
+    nextCh(){this.seekCh(this.curCI()+1);}
+    prevCh(){this.seekCh(this.curCI()-1);}
+    restart(){this.setState({t:0,playing:true});}
+    toggle(){if(this.state.t>=this.END)this.setState({t:0,playing:true});else this.setState(s=>({playing:!s.playing}));}
+    onSeek(e){var val=parseFloat(e.target.value)/1000*this.END;this.setState({t:val,playing:false});localStorage.setItem(this.KEY,val.toFixed(2));}
 
-    // ===== IV. Sundial line =====
-    push(this.seg(P.O, P.T, this.sm(t, 27.6, 29.5), C.gold, 3.4, { glow: true }));
-    push(this.dot(P.T, 5, C.gold, this.sm(t, 29.4, 30)));
-    push(this.lab(P.T, 'T', C.titleGold, this.sm(t, 29.6, 30.2), { dx: 26, dy: -10, size: 34 }));
-    push(this.lab(this.lerpP3(P.O, P.T, 0.5), '2', C.labelGold, this.sm(t, 28.4, 29.6), { dx: -22, size: 34, w: 600 }));
-    push(this.txt(960, 886, 'Floor diagonal √2  +  rise √2  →  the sundial line', C.white, this.fio(t, 30, 31, 38, 38.8), { size: 36, italic: true }));
-    push(this.txt(960, 922, 'length = √((√2)² + (√2)²) = √4 = 2', C.labelGold, this.fio(t, 31, 32, 38, 38.8), { size: 32, italic: true }));
+    sm(t,a,b){if(b<=a)return t>=b?1:0;var e=(t-a)/(b-a);e=e<0?0:e>1?1:e;return e*e*(3-2*e);}
+    fio(t,a,b,c,d){return this.sm(t,a,b)*(1-this.sm(t,c,d));}
+    proj(p,sc){sc=sc||this.S;var a=this._az,ce=Math.cos(a),se=Math.sin(a);var xa=p[0]*ce-p[1]*se,ya=p[0]*se+p[1]*ce,za=p[2];var zb=ya*Math.sin(this.el)+za*Math.cos(this.el);return[this.cx+xa*sc,this.cy-zb*sc];}
+    mid(a,b){return[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2];}
 
-    // ===== V. Lost Triangle =====
-    push(this.seg(P.O, P.U, this.sm(t, 38.6, 39.7), C.cyan, 3, { glow: true }));
-    push(this.seg(P.U, P.T, this.sm(t, 40, 41.5), C.magenta, 2.4, { dash: '7 7' }));
-    { var o = this.sm(t, 41.5, 42.1); push(this.lab(this.lerpP3(P.O, P.U, 0.5), '1', C.labelCyan, o, { dy: 26, size: 28 })); push(this.lab(this.lerpP3(P.U, P.T, 0.55), '√3', C.labelMag, o, { dx: 26, size: 30, italic: true })); }
-    push(this.txt(960, 886, 'The Lost Triangle:  sides  1,  √3,  2', C.titleGold, this.fio(t, 42.5, 43.5, 49, 49.8), { size: 40, italic: true }));
-    push(this.txt(960, 922, 'a 30–60–90 right triangle, seen edge-on', C.white, this.fio(t, 43.5, 44.3, 49, 49.8), { size: 30, italic: true }));
+    seg(p0,p1,prog,color,w,sc,o){
+      o=o||{}; if(prog<=0)return null;
+      var A=this.proj(p0,sc),B0=this.proj(p1,sc),B=[A[0]+(B0[0]-A[0])*prog,A[1]+(B0[1]-A[1])*prog];
+      return cr('line',{key:'s'+(this._k++),x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:color,strokeWidth:w,strokeLinecap:'round',strokeDasharray:o.dash,opacity:o.op==null?1:o.op,filter:o.glow===false?undefined:'url(#g)'});
+    }
+    ln(a,b,color,w,op,dash){
+      return cr('line',{key:'L'+(this._k++),x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:color,strokeWidth:w,strokeLinecap:'round',opacity:op==null?1:op,strokeDasharray:dash});
+    }
+    poly(ps,fill,op,sc){
+      var pts=ps.map((p)=>{var P=this.proj(p,sc);return P[0].toFixed(1)+','+P[1].toFixed(1);}).join(' ');
+      return cr('polygon',{key:'p'+(this._k++),points:pts,fill:fill,stroke:'none',opacity:op});
+    }
+    dot(p,rad,color,op,sc){
+      if(op<=0)return null;
+      var P=this.proj(p,sc);
+      return cr('circle',{key:'c'+(this._k++),cx:P[0],cy:P[1],r:rad,fill:color,opacity:op,filter:'url(#g)'});
+    }
+    labP(p,txt,color,op,o){
+      o=o||{}; if(op<=0)return null;
+      var P=this.proj(p,o.sc);
+      return cr('text',{key:'l'+(this._k++),x:P[0]+(o.dx||0),y:P[1]+(o.dy||0),fill:color,opacity:op,fontSize:o.size||32,fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontWeight:o.w||600,textAnchor:'middle',filter:'url(#g)'},txt);
+    }
+    txt(x,y,s,color,op,o){
+      o=o||{}; if(op<=0)return null;
+      return cr('text',{key:'x'+(this._k++),x,y,fill:color,opacity:op,fontSize:o.size||34,fontFamily:o.face||"'Cormorant Garamond',serif",fontStyle:o.italic?'italic':'normal',fontWeight:o.w||500,textAnchor:o.anchor||'middle',letterSpacing:o.ls||0,filter:o.glow?'url(#g)':undefined},s);
+    }
+    rang(O3,A3,B3,c,op){
+      if(op<=0)return null;
+      var D=this.proj(O3),A=this.proj(A3),B=this.proj(B3);
+      var v1=[A[0]-D[0],A[1]-D[1]],v2=[B[0]-D[0],B[1]-D[1]];
+      var n1=Math.hypot(v1[0],v1[1])||1,n2=Math.hypot(v2[0],v2[1])||1,s=18;
+      var a=[D[0]+v1[0]/n1*s,D[1]+v1[1]/n1*s],b=[D[0]+v2[0]/n2*s,D[1]+v2[1]/n2*s],cc=[a[0]+v2[0]/n2*s,a[1]+v2[1]/n2*s];
+      return cr('path',{key:'r'+(this._k++),d:'M '+a[0]+' '+a[1]+' L '+cc[0]+' '+cc[1]+' L '+b[0]+' '+b[1],fill:'none',stroke:c,strokeWidth:2,opacity:op,filter:'url(#g)'});
+    }
 
-    // ===== VI. Mirror Sundial =====
-    push(this.seg(P.O, P.MDg, this.sm(t, 49.6, 50.8), C.cyan, 2.6, { glow: true }));
-    push(this.seg(P.MDg, P.P2, this.sm(t, 51, 52.4), C.magenta, 3, { glow: true }));
-    push(this.seg(P.O, P.P2, this.sm(t, 52.6, 54.2), C.magenta, 3.4, { glow: true }));
-    push(this.dot(P.P2, 5, C.magenta, this.sm(t, 54, 54.6)));
-    push(this.lab(P.P2, 'P₂', C.titleMag, this.sm(t, 54.2, 54.8), { dx: -14, dy: -22, size: 34, italic: true }));
-    push(this.lab(this.lerpP3(P.O, P.P2, 0.5), '2', C.labelMag, this.sm(t, 52.8, 54), { dx: -22, size: 32, w: 600 }));
+    buildScene(){
+      var t=this.state.t,C=this.C,k=[]; this._k=0; this._az=this.az0+0.12*t;
+      var push=(e)=>{if(e)k.push(e);};
+      var O=this.O,E=this.E,V=this.V;
+      var showCube=this.props.showCube??true, showAngles=this.props.showAngles??true;
 
-    // ===== VII. 120° Revelation (the discovery) =====
-    { var Os2 = this.proj(P.O), Ts2 = this.proj(P.T), Ps = this.proj(P.P2);
-      var aA = Math.atan2(Ts2[1] - Os2[1], Ts2[0] - Os2[0]), aB = Math.atan2(Ps[1] - Os2[1], Ps[0] - Os2[0]);
-      var dd = aB - aA; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI;
-      var prog = this.sm(t, 60, 61.8), aE = aA + dd * prog, vis = this.fio(t, 60, 61.6, 86, 87.5), rW = 128, sweep = dd > 0 ? 1 : 0;
-      if (vis > 0) {
-        var wx0 = Os2[0] + rW * Math.cos(aA), wy0 = Os2[1] + rW * Math.sin(aA), wx1 = Os2[0] + rW * Math.cos(aE), wy1 = Os2[1] + rW * Math.sin(aE);
-        push(h('path', { key: 'wedge', d: 'M' + Os2[0] + ' ' + Os2[1] + ' L' + wx0 + ' ' + wy0 + ' A' + rW + ' ' + rW + ' 0 0 ' + sweep + ' ' + wx1 + ' ' + wy1 + ' Z', fill: 'rgba(224,52,158,0.14)', stroke: 'none', opacity: vis }));
-        push(h('path', { key: 'warc', d: 'M' + wx0 + ' ' + wy0 + ' A' + rW + ' ' + rW + ' 0 0 ' + sweep + ' ' + wx1 + ' ' + wy1, fill: 'none', stroke: C.red, strokeWidth: 3.6, opacity: vis, filter: 'url(#g)', strokeLinecap: 'round' }));
+      push(cr('defs',{key:'d'},
+        cr('filter',{id:'g',x:'-60%',y:'-60%',width:'220%',height:'220%'},
+          cr('feGaussianBlur',{stdDeviation:2.2,result:'b'}),
+          cr('feMerge',null,
+            cr('feMergeNode',{in:'b'}),
+            cr('feMergeNode',{in:'SourceGraphic'})))));
+
+      var cubeOp=(showCube?1:0)*this.sm(t,0.3,2)*(1-this.sm(t,46,50)*0.7);
+      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]]),b=this.proj(this.cube[e[1]]);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
+
+      var mainOp=1-this.sm(t,27.5,29.5)*0.55;
+      var fillp=this.sm(t,18,20)*(1-this.sm(t,27.5,29.5)*0.4);
+      if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1));
+
+      var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,null,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30}));
+      var ri=this.sm(t,9.5,13); push(this.seg(E,V,ri,C.terra,4,null,{op:mainOp})); if(ri>0.6)push(this.labP(this.mid(E,V),'1',C.terra,mainOp,{dx:30,size:30}));
+      var hy=this.sm(t,18.5,22); push(this.seg(O,V,hy,C.ink,4.4,null,{op:mainOp})); if(hy>0.6)push(this.labP(this.mid(O,V),'√3',C.ink,mainOp,{dx:-32,size:30}));
+      push(this.rang(E,O,V,'rgba(60,203,142,.9)',fillp));
+
+      if(showAngles&&this.sm(t,21,23)>0){
+        var apo=this.sm(t,21,23)*mainOp;
+        push(this.labP(O,'35.26°',C.gold,apo,{dx:54,dy:-26,size:22}));
+        push(this.labP(V,'54.74°',C.gold,apo,{dx:-6,dy:42,size:22}));
       }
-      var fr = this.sm(t, 61.5, 63.6); if (fr > 0 && fr < 1) { push(h('circle', { key: 'flash', cx: Os2[0], cy: Os2[1], r: 26 + fr * 250, fill: 'none', stroke: C.red, strokeWidth: 4 * (1 - fr), opacity: (1 - fr) * 0.85, filter: 'url(#g)' })); }
-      var am = (aA + aE) / 2, lp = [Os2[0] + (rW + 62) * Math.cos(am), Os2[1] + (rW + 62) * Math.sin(am)];
-      var appear = this.sm(t, 61.8, 62.7), sc = (0.55 + 0.45 * appear) * (1 + 0.05 * Math.sin(t * 3.2)), lop = this.fio(t, 61.8, 62.5, 86, 87.5);
-      if (lop > 0) {
-        push(h('circle', { key: 'glow120', cx: lp[0], cy: lp[1] - 18, r: 70, fill: C.red, opacity: lop * 0.18, filter: 'url(#g)' }));
-        push(h('text', { key: 't120', x: lp[0], y: lp[1], fill: C.titleRed, opacity: lop, fontSize: 72, fontWeight: 600, fontFamily: "'Cormorant Garamond',serif", textAnchor: 'middle', filter: 'url(#g)', transform: 'translate(' + lp[0] + ' ' + lp[1] + ') scale(' + sc + ') translate(' + (-lp[0]) + ' ' + (-lp[1]) + ')' }, '120°'));
+
+      push(this.dot(O,7,C.ink,this.sm(t,0.3,2)));
+      push(this.dot(E,6,C.blue,fd));
+      push(this.dot(V,7,C.ink,hy));
+
+      var lo=this.sm(t,0.3,2)*mainOp;
+      if(lo>0.3){
+        push(this.labP(O,'O',C.ink,lo,{dx:-22,dy:6,size:21}));
+        if(fd>0.4)push(this.labP(E,'E',C.ink,fd*mainOp,{dx:20,dy:8,size:21}));
+        if(hy>0.4)push(this.labP(V,'V',C.ink,hy*mainOp,{dx:16,dy:-12,size:21}));
       }
-    }
-    // right-angle marker at the rise foot (Dg)
-    { var rop = this.sm(t, 64, 65.4); if (rop > 0) { var D = this.proj(P.Dg), Tp = this.proj(P.T), Up = this.proj(P.U);
-      var v1 = [Tp[0] - D[0], Tp[1] - D[1]], v2 = [Up[0] - D[0], Up[1] - D[1]];
-      var n1 = Math.hypot(v1[0], v1[1]) || 1, n2 = Math.hypot(v2[0], v2[1]) || 1, ss2 = 15;
-      var ra = [D[0] + v1[0] / n1 * ss2, D[1] + v1[1] / n1 * ss2], rb = [D[0] + v2[0] / n2 * ss2, D[1] + v2[1] / n2 * ss2], rc = [ra[0] + v2[0] / n2 * ss2, ra[1] + v2[1] / n2 * ss2];
-      push(h('path', { key: 'rang', d: 'M ' + ra[0] + ' ' + ra[1] + ' L ' + rc[0] + ' ' + rc[1] + ' L ' + rb[0] + ' ' + rb[1], fill: 'none', stroke: 'rgba(60,203,142,.65)', strokeWidth: 2, opacity: rop })); } }
 
-    // math block (bottom-left)
-    var mOp = this.fio(t, 63, 64.4, 71, 71.8); var mx = 86;
-    push(this.txt(mx, 742, 'OP₁ = (1, 1, √2),   |OP₁| = 2', C.white, mOp, { size: 34, italic: true, anchor: 'start' }));
-    push(this.txt(mx, 798, 'OP₂ = (−1, 1, √2),   |OP₂| = 2   (mirror)', C.white, mOp, { size: 34, italic: true, anchor: 'start' }));
-    push(this.txt(mx, 854, 'cos θ = (−1 + 1 + 2) / 4 = 1/2   ⟹   θ = 60°', C.white, mOp, { size: 34, italic: true, anchor: 'start' }));
-    push(this.txt(mx, 912, 'supplement:  180° − 60° = 120°   (hexagon corner)', C.titleRed, mOp, { size: 34, italic: true, anchor: 'start', w: 600 }));
+      var rv=this.fio(t,27.5,29,50,51.5);
+      if(rv>0){
+        var N=Math.floor(48*this.sm(t,28.5,38));
+        for(var i=0;i<N&&i<48;i++){
+          push(this.poly([O,this.TR[i][0],this.TR[i][1]],'rgba(60,203,142,0.08)',rv));
+          push(this.ln(this.proj(O),this.proj(this.TR[i][0]),'rgba(74,144,217,0.55)',1.2,rv*0.7));
+          push(this.ln(this.proj(this.TR[i][0]),this.proj(this.TR[i][1]),'rgba(224,52,158,0.55)',1.2,rv*0.7));
+        }
+      }
 
-    // ===== Final statements =====
-    push(this.txt(960, 882, 'The Lost Triangle defines the Fleishman joint’s 120° dihedral angle.', C.white, this.sm(t, 75, 76.4), { size: 46, italic: true, glow: true }));
-    push(this.txt(960, 922, 'gregg fleishman', 'rgba(138,132,128,.85)', this.sm(t, 77, 78), { size: 30, italic: true }));
+      var wv=this.fio(t,39,40.5,51,52);
+      if(wv>0){
+        var seed=this.sm(t,39.5,40.8);
+        push(this.dot(E,12*seed,C.gold,wv));
+        var cloud=this.sm(t,40.5,43);
+        this.CUBO.forEach((p)=>push(this.dot(p,6,C.gold,wv*cloud)));
+        var ce2=this.sm(t,43,46);
+        this.CUBOE.forEach((e)=>push(this.seg(this.CUBO[e[0]],this.CUBO[e[1]],ce2,C.gold,2.4,null,{op:wv})));
+        var rd=this.sm(t,46.5,50);
+        this.RDE.forEach((e)=>push(this.seg(this.RDV[e[0]],this.RDV[e[1]],rd,C.terra,2.8,this.S*0.62,{op:wv})));
+        this.RDV.forEach((p)=>push(this.dot(p,4.5,C.terra,wv*rd,this.S*0.62)));
+      }
 
-    // ===== Beginner captions (one per chapter) =====
-    push(this.txt(960, 914, 'A flat floor of unit squares — each cell is 1 × 1', C.white, this.fio(t, 3.2, 4.2, 7.2, 7.9), { size: 34, italic: true }));
-    push(this.txt(960, 914, 'A unit square’s diagonal is √2   (since 1² + 1² = 2)', C.white, this.fio(t, 15, 15.8, 17.3, 18), { size: 34, italic: true }));
-    push(this.txt(960, 914, 'Now rise straight up by √2 — the same length as the diagonal', C.white, this.fio(t, 21.5, 22.3, 26.3, 27), { size: 34, italic: true }));
-    push(this.txt(960, 914, 'Mirror the sundial across the upright plane — a twin line, length 2', C.white, this.fio(t, 55, 55.8, 58.4, 59), { size: 34, italic: true }));
+      var dv=this.fio(t,51.5,53,60,61);
+      if(dv>0){
+        var pp=150,qq=150*Math.tan(35.264*Math.PI/180),C0=960,C1=560;
+        push(cr('polygon',{key:'rh',points:C0+','+(C1-pp)+' '+(C0+qq)+','+C1+' '+C0+','+(C1+pp)+' '+(C0-qq)+','+C1,fill:'rgba(60,203,142,0.16)',stroke:C.green,strokeWidth:3,opacity:dv,filter:'url(#g)'}));
+        push(this.txt(C0,C1-pp-16,'70.53°',C.gold,dv,{size:24,italic:true}));
+        push(this.txt(C0,C1+pp+34,'70.53°',C.gold,dv,{size:24,italic:true}));
+        push(this.txt(C0-qq-14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'end',italic:true}));
+        push(this.txt(C0+qq+14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'start',italic:true}));
+      }
 
-    // TITLE (top-left) — Syne display, color-coded per chapter
-    var chapters = [[0, 'I. The Plane', C.titleCyan], [8, 'II. The 45° Diagonal', C.titleCyan], [18, 'III. The Rise', C.titleRed],
-      [27, 'IV. The Sundial Line', C.titleGold], [38, 'V. The Lost Triangle', C.titleGold], [49, 'VI. The Mirror Sundial', C.titleCyan], [59, 'VII. The 120° Revelation', C.titleRed]];
-    var act = chapters[0]; for (var ci = 0; ci < chapters.length; ci++) { if (t >= chapters[ci][0]) act = chapters[ci]; }
-    push(this.txt(72, 158, act[1], act[2], this.sm(t, act[0], act[0] + 0.7), { size: 52, anchor: 'start', glow: true, w: 800, face: "'Syne',sans-serif", ls: -1 }));
-
-    // Callout box — bottom right, fades in during the 120° revelation
-    var bop = this.fio(t, 70, 72, 86, 87.5);
-    if (bop > 0) {
-      push(h('g', { key: 'callout', opacity: bop },
-        h('rect', { x: 1650, y: 1000, width: 240, height: 60, rx: 12, fill: 'rgba(224,52,158,.08)', stroke: 'rgba(224,52,158,.4)', strokeWidth: 2 }),
-        h('text', { x: 1770, y: 1018, textAnchor: 'middle', fontSize: '13px', fontFamily: "'Space Mono',monospace", fill: '#E0349E', letterSpacing: '.08em' }, '120° DIHEDRAL'),
-        h('text', { x: 1770, y: 1045, textAnchor: 'middle', fontSize: '11px', fontFamily: "'Space Grotesk',sans-serif", fill: 'rgba(240,237,232,.65)', letterSpacing: '.04em' }, 'Hexagon corner angle')
-      ));
+      return cr('svg',{viewBox:'500 100 920 920',width:'100%',height:'100%',preserveAspectRatio:'xMidYMid meet',role:'img',style:{position:'absolute',inset:0,display:'block',overflow:'visible'}},k);
     }
 
-    var scene = h('svg', { viewBox: '0 0 1920 1080', width: '100%', height: '100%', style: { position: 'absolute', inset: 0, display: 'block' } }, k);
+    render(){
+      var t=this.state.t;
+      var ci=this.curCI();
+      var scene=this.buildScene();
 
-    var ctaOp = this.sm(t, 84.5, 87);
-    var mm = Math.floor(t / 60), sss = Math.floor(t % 60), dm = Math.floor(this.END / 60), ds = Math.floor(this.END % 60);
-    return {
-      scene: scene,
-      playIcon: this.state.playing ? '❚❚' : '►',
-      toggle: function () { if (self.state.t >= self.END) self.setState({ t: 0, playing: true }); else self.setState(function (s) { return { playing: !s.playing }; }); },
-      restart: function () { self.setState({ t: 0, playing: true }); },
-      onSeek: function (e) { var v = parseFloat(e.target.value) / 1000 * self.END; self.setState({ t: v, playing: false }); localStorage.setItem('lt_t', v.toFixed(2)); },
-      scrubVal: Math.round(t / this.END * 1000),
-      tlabel: mm + ':' + String(sss).padStart(2, '0'),
-      durlabel: dm + ':' + String(ds).padStart(2, '0'),
-      uiOpacity: 1 - this.sm(t, 85, 87) * 0.82,
-      ctaOp: ctaOp,
-      ctaPointer: ctaOp > 0.1 ? 'auto' : 'none'
-    };
-  };
+      var caption   = this.CAP[ci];
+      var stepColor = this.COL[ci];
+      var stepGlow  = 'rgba('+this.RGB[ci]+',.4)';
+      var stepLabel = ('0'+(ci+1)).slice(-2)+' \xb7 '+this.NAME[ci];
+      var playIcon  = this.state.playing?'❚❚':'▶';
+      var scrubVal  = Math.round(t/this.END*1000);
 
-  // The `<x-dc>` template, rebuilt with React.createElement.
-  proto.render = function () {
-    var self = this;
-    var v = this.renderVals();
-    return h('div', { 'data-screen-label': 'Lost Triangle', ref: this.screenRef,
-      style: { position: 'absolute', inset: 0, background: '#0B0B0B', overflow: 'hidden' } },
-      h('div', { ref: function (el) { self.stage = el; if (el) self.fit(); },
-        style: { position: 'absolute', left: '50%', top: '50%', width: STAGE_W + 'px', height: STAGE_H + 'px', transform: 'translate(-50%,-50%)', transformOrigin: 'center center' } },
-        h('div', { style: { position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 72% 64% at 50% 44%, #16140F 0%, #0E0E0D 54%, #0B0B0B 100%)' } }),
-        v.scene,
-        h('div', { style: { position: 'absolute', left: '50%', bottom: '270px', transform: 'translateX(-50%)', opacity: v.ctaOp, transition: 'opacity 1.4s ease', textAlign: 'center', pointerEvents: v.ctaPointer, whiteSpace: 'nowrap' } },
-          h('div', { style: { fontFamily: "'Cormorant Garamond',serif", fontSize: '18px', letterSpacing: '.22em', textTransform: 'uppercase', color: '#8A8480', marginBottom: '22px' } }, 'The triangle becomes the joint'),
-          h('a', { href: 'explore.html', style: { display: 'inline-block', fontFamily: "'Syne',sans-serif", fontSize: '16px', fontWeight: 700, letterSpacing: '.28em', textTransform: 'uppercase', color: '#C8A96E', textDecoration: 'none', border: '1px solid rgba(200,169,110,.45)', borderRadius: '3px', padding: '16px 44px', background: 'rgba(200,169,110,.06)', animation: 'pulse-glow 3s ease-in-out infinite', transition: 'background .3s,border-color .3s' } }, 'Explore the Cube Model →'),
-          h('div', { style: { marginTop: '20px', fontFamily: "'Space Grotesk',sans-serif", fontSize: '12px', letterSpacing: '.18em', textTransform: 'uppercase', color: 'rgba(138,132,128,.5)' } }, 'Six parts · The whole of space')
-        ),
-        h('div', { style: { position: 'absolute', left: '50%', bottom: '34px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '18px', padding: '11px 20px', borderRadius: '14px', background: 'rgba(18,18,18,.66)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(240,237,232,.07)', boxShadow: '0 8px 30px rgba(0,0,0,.5)', opacity: v.uiOpacity, transition: 'opacity .8s', fontFamily: "'Space Grotesk',sans-serif" } },
-          h('button', { onClick: v.toggle, style: { width: '40px', height: '40px', border: 'none', borderRadius: '10px', background: 'rgba(200,169,110,.16)', color: '#F0EDE8', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, v.playIcon),
-          h('button', { onClick: v.restart, style: { width: '36px', height: '36px', border: 'none', borderRadius: '10px', background: 'rgba(240,237,232,.06)', color: '#8A8480', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' } }, '↻'),
-          h('span', { style: { fontSize: '12px', color: '#8A8480', fontVariantNumeric: 'tabular-nums', minWidth: '40px', textAlign: 'right', letterSpacing: '0.04em' } }, v.tlabel),
-          h('input', { className: 'lt-scrub', type: 'range', min: 0, max: 1000, value: v.scrubVal, onChange: v.onSeek, style: { width: '360px' } }),
-          h('span', { style: { fontSize: '12px', color: '#8A8480', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' } }, v.durlabel)
+      var cards=[];
+      for(var j=0;j<6;j++){
+        var active=(j===ci);
+        cards.push({
+          op:     active?1:.5,
+          border: active?this.COL[j]:'rgba(240,237,232,.08)',
+          shadow: active?'0 0 30px rgba('+this.RGB[j]+',.18)':'none',
+          bg:     active?this.COL[j]:'rgba('+this.RGB[j]+',.10)',
+          txt:    active?'#0B0B0B':this.COL[j],
+          glow:   active?'0 0 22px rgba('+this.RGB[j]+',.5)':'0 0 12px rgba('+this.RGB[j]+',.16)'
+        });
+      }
+
+      var chIdx=ci<=2?0:ci===3?1:ci===4?2:3;
+      var chains=[];
+      for(var c2=0;c2<4;c2++){
+        var act=chIdx===c2;
+        chains.push({op:act?1:.45, glow:act?'0 0 30px rgba('+this.CHC[c2]+',.28)':'none'});
+      }
+      var chPicks=[2,3,4,5];
+
+      return cr('div',{style:{display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'24px 14px',background:'#070707',minHeight:'100%',boxSizing:'border-box',fontFamily:"'Space Grotesk',sans-serif"}},
+        cr('div',{ref:this._fitRef,style:{position:'relative',flex:'0 0 auto'}},
+          cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'980px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
+
+            cr('div',{style:{position:'absolute',inset:0,background:'radial-gradient(ellipse 76% 70% at 52% 42%, #16140F 0%, #0E0E0D 56%, #0A0A0A 100%)'}}),
+
+            cr('div',{style:{position:'absolute',left:'34px',top:'24px',right:'34px'}},
+              cr('div',{style:{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'31px',letterSpacing:'-.01em',color:'#F0EDE8',lineHeight:1,textShadow:'0 0 24px rgba(240,237,232,.18)'}},'THE LOST TRIANGLE AS A DEVICE'),
+              cr('div',{style:{fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontSize:'17px',color:'#9b958c',marginTop:'8px'}},'the cube’s characteristic triangle — centre-to-face, centre-to-edge, centre-to-vertex = 1 : √2 : √3')
+            ),
+
+            cr('div',{style:{position:'absolute',left:'36px',top:'182px',width:'400px',display:'flex',flexDirection:'column',gap:'18px'}},
+              ...cards.map((card,j)=>
+                cr('div',{key:'card'+j,onClick:()=>this.seekCh(j),style:{display:'flex',alignItems:'center',gap:'18px',height:'80px',padding:'0 20px',boxSizing:'border-box',background:'rgba(240,237,232,.03)',border:'1px solid '+card.border,borderRadius:'11px',cursor:'pointer',opacity:card.op,boxShadow:card.shadow,transition:'all .4s ease'}},
+                  cr('div',{style:{flex:'0 0 auto',width:'48px',height:'48px',borderRadius:'50%',border:'1.5px solid '+CARD_BORDERS[j],background:card.bg,color:card.txt,boxShadow:card.glow,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:CARD_FSIZES[j],transition:'all .4s ease'}},CARD_BADGES[j]),
+                  cr('div',null,
+                    cr('div',{style:{fontFamily:"'Space Grotesk',sans-serif",fontWeight:600,fontSize:'15px',letterSpacing:'.12em',color:'#F0EDE8'}},CARD_LABELS[j]),
+                    cr('div',{style:{fontFamily:"'Space Mono',monospace",fontSize:'11.5px',lineHeight:1.5,color:'rgba(240,237,232,.5)',marginTop:'4px'}},CARD_DESCS[j])
+                  )
+                )
+              )
+            ),
+
+            cr('div',{style:{position:'absolute',left:'560px',top:'132px'}},
+              cr('div',{style:{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:'13px',letterSpacing:'.34em',color:'rgba(240,237,232,.75)'}},'THE DEVICE'),
+              cr('div',{style:{fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontSize:'15px',color:'#9b958c',marginTop:'6px'}},'triangle O–E–V = 1 of the 48 pieces the cube’s symmetry cuts it into')
+            ),
+
+            cr('div',{style:{position:'absolute',left:'484px',top:'182px',width:'664px',height:'438px',pointerEvents:'none'}},scene),
+
+            cr('div',{style:{position:'absolute',left:'560px',width:'540px',top:'632px',textAlign:'center'}},
+              cr('div',{style:{fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontSize:'26px',color:stepColor,textShadow:'0 0 22px '+stepGlow,transition:'color .4s ease, text-shadow .4s ease',lineHeight:1.2}},caption)
+            ),
+
+            cr('div',{style:{position:'absolute',left:'560px',width:'540px',top:'690px',display:'flex',flexDirection:'column',alignItems:'center',gap:'20px'}},
+              cr('div',{style:{display:'flex',alignItems:'center',gap:'12px',padding:'9px 16px',borderRadius:'13px',background:'rgba(240,237,232,.04)',border:'1px solid rgba(240,237,232,.08)',fontFamily:"'Space Mono',monospace",width:'436px',boxSizing:'border-box'}},
+                cr('button',{onClick:()=>this.prevCh(),style:{flex:'0 0 auto',width:'34px',height:'34px',border:'none',borderRadius:'9px',background:'rgba(240,237,232,.06)',color:'#F0EDE8',fontSize:'15px',cursor:'pointer'}},'‹'),
+                cr('button',{onClick:()=>this.toggle(),style:{flex:'0 0 auto',width:'40px',height:'40px',border:'none',borderRadius:'9px',background:'rgba(200,169,110,.18)',color:'#F0EDE8',fontSize:'13px',cursor:'pointer'}},playIcon),
+                cr('button',{onClick:()=>this.nextCh(),style:{flex:'0 0 auto',width:'34px',height:'34px',border:'none',borderRadius:'9px',background:'rgba(240,237,232,.06)',color:'#F0EDE8',fontSize:'15px',cursor:'pointer'}},'›'),
+                cr('input',{className:'lt-scrub',type:'range',min:0,max:1000,value:scrubVal,onChange:(e)=>this.onSeek(e),style:{flex:'1 1 auto',minWidth:'60px'}}),
+                cr('span',{style:{flex:'0 0 auto',fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.6)',minWidth:'96px',textAlign:'right',whiteSpace:'nowrap'}},stepLabel)
+              ),
+              cr('a',{href:'explore.html',style:{textDecoration:'none',padding:'13px 26px',border:'1px solid rgba(200,169,110,.55)',borderRadius:'4px',background:'rgba(200,169,110,.05)',boxShadow:'0 0 26px rgba(200,169,110,.12)',fontFamily:"'Space Mono',monospace",fontSize:'12px',letterSpacing:'.22em',color:'#C8A96E'}},'ENTER THE CUBE MODEL →')
+            ),
+
+            cr('div',{style:{position:'absolute',left:'36px',top:'824px',fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:'13px',letterSpacing:'.26em',color:'rgba(240,237,232,.78)'}},'WHAT THE DEVICE BUILDS'),
+
+            cr('div',{style:{position:'absolute',left:'36px',top:'856px',right:'36px',display:'flex',alignItems:'center'}},
+              ...[0,1,2,3].reduce(function(acc,i){
+                acc.push(
+                  cr('div',{key:'ch'+i,onClick:()=>this.seekCh(chPicks[i]),style:{flex:'1 1 0',minWidth:0,boxSizing:'border-box',padding:'0 14px',height:'86px',border:'1px solid '+CHAIN_BORDERS[i],borderRadius:'10px',background:CHAIN_BGS[i],boxShadow:chains[i].glow,opacity:chains[i].op,cursor:'pointer',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:'6px',transition:'all .4s ease'}},
+                    cr('div',{style:{fontFamily:"'Space Grotesk',sans-serif",fontWeight:600,fontSize:'15px',color:'#F0EDE8',whiteSpace:i===3?'nowrap':undefined}},CHAIN_LABELS[i]),
+                    cr('div',{style:{fontFamily:"'Space Mono',monospace",fontSize:'11px',color:'rgba(240,237,232,.55)',lineHeight:1.4,textAlign:'center'}},CHAIN_SUBS[i])
+                  )
+                );
+                if(i<3){
+                  var ar=CHAIN_ARROWS[i];
+                  acc.push(
+                    cr('div',{key:'ar'+i,style:{flex:'0 0 '+ar.w+'px',position:'relative',height:'86px',display:'flex',alignItems:'center',justifyContent:'center'}},
+                      cr('div',{style:{fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontSize:'14px',color:'#E0349E',position:'absolute',top:'28px',width:'100%',textAlign:'center'}},ar.label),
+                      cr('svg',{viewBox:'0 0 '+ar.w+' 16',style:{width:ar.w+'px',height:'16px',marginTop:'16px',overflow:'visible'}},
+                        cr('line',{x1:0,y1:8,x2:ar.x2,y2:8,stroke:'rgba(240,237,232,.5)',strokeWidth:1.6,strokeLinecap:'round'}),
+                        cr('path',{d:'M '+ar.ax+' 3 L '+ar.w+' 8 L '+ar.ax+' 13 Z',fill:'rgba(240,237,232,.5)'})
+                      )
+                    )
+                  );
+                }
+                return acc;
+              }.bind(this),[])
+            )
+
+          )
         )
-      )
-    );
-  };
+      );
+    }
+  }
 
-  global.LostTriangleAnimation = LostTriangleAnimation;
-})(typeof window !== 'undefined' ? window : this);
+  window.LostTriangleAnimation = LostTriangleDevice;
+})();
