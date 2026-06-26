@@ -66,7 +66,7 @@
 </nav>
 
 <div id="lt-stage">
-  <div id="lt-root">
+  <div id="lt-root"><!-- The Device -->
     <div id="lt-fallback">
       <svg class="lt-tri" width="120" height="96" viewBox="0 0 120 96" fill="none" aria-hidden="true">
         <polygon points="20,80 100,80 20,16" fill="none" stroke="#ff3ccf" stroke-width="3" stroke-linejoin="round"/>
@@ -79,6 +79,7 @@
     <div id="lt-fallback">This animated construction of the Lost Triangle (1 : √2 : √3) needs JavaScript.</div>
   </noscript>
 </div>
+<div id="lt-root-2"></div>
 
 <!-- React runtime (vendored from npm; UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
@@ -103,6 +104,25 @@
     var tries = 0;
     var id = setInterval(function(){
       if (render() || ++tries > 200) clearInterval(id);
+    }, 30);
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  var root2 = null;
+  function render2(){
+    var el = document.getElementById('lt-root-2');
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleConstruction) return false;
+    if (!root2) { root2 = ReactDOM.createRoot(el); }
+    root2.render(React.createElement(window.LostTriangleConstruction, { autoplay: true }));
+    return true;
+  }
+  if (!render2()) {
+    var tries = 0;
+    var id = setInterval(function(){
+      if (render2() || ++tries > 200) clearInterval(id);
     }, 30);
   }
 })();
