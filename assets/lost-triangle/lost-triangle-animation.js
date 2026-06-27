@@ -263,6 +263,7 @@
       var stepLabel = ('0'+(ci+1)).slice(-2)+' \xb7 '+this.NAME[ci];
       var playIcon  = this.state.playing?'❚❚':'▶';
       var scrubVal  = Math.round(t/this.END*1000);
+      var tcMM=Math.floor(t/60); var tcSS=Math.floor(t%60); var tcStr=tcMM+':'+(tcSS<10?'0':'')+tcSS;
 
       var cards=[];
       for(var j=0;j<6;j++){
@@ -325,6 +326,7 @@
                 cr('button',{onClick:()=>this.toggle(),style:{flex:'0 0 auto',width:'40px',height:'40px',border:'none',borderRadius:'9px',background:'rgba(200,169,110,.18)',color:'#F0EDE8',fontSize:'13px',cursor:'pointer'}},playIcon),
                 cr('button',{onClick:()=>this.nextCh(),style:{flex:'0 0 auto',width:'34px',height:'34px',border:'none',borderRadius:'9px',background:'rgba(240,237,232,.06)',color:'#F0EDE8',fontSize:'15px',cursor:'pointer'}},'›'),
                 cr('input',{className:'lt-scrub',type:'range',min:0,max:1000,value:scrubVal,onChange:(e)=>this.onSeek(e),style:{flex:'1 1 auto',minWidth:'60px'}}),
+                cr('span',{style:{flex:'0 0 auto',fontFamily:"'Space Mono',monospace",fontSize:'10px',letterSpacing:'.08em',color:'rgba(240,237,232,.32)',minWidth:'36px',textAlign:'center',whiteSpace:'nowrap'}},tcStr),
                 cr('span',{style:{flex:'0 0 auto',fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.6)',minWidth:'96px',textAlign:'right',whiteSpace:'nowrap'}},stepLabel)
               ),
               cr('a',{href:'explore.html',style:{textDecoration:'none',padding:'13px 26px',border:'1px solid rgba(200,169,110,.55)',borderRadius:'4px',background:'rgba(200,169,110,.05)',boxShadow:'0 0 26px rgba(200,169,110,.12)',fontFamily:"'Space Mono',monospace",fontSize:'12px',letterSpacing:'.22em',color:'#C8A96E'}},'ENTER THE CUBE MODEL →')

@@ -436,6 +436,7 @@
     <div class="row"><span class="sw"></span> edge <b>= 1</b></div>
     <div class="row"><span class="sw"></span> face diagonal <b>√2</b></div>
     <div class="row"><span class="sw"></span> space diagonal <b>√3</b></div>
+    <div class="row" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(240,237,232,.07);color:var(--geo-angle);letter-spacing:.04em;font-size:10.5px;" title="35.2644° / 54.7356° exact">35.25° / 54.75° / 90°</div>
   </div>
 
   <div id="chapters" class="chrome">
@@ -577,7 +578,7 @@
       </div>
       <div class="ttl" style="margin-top:2px">Highlight</div>
       <div class="tgs">
-        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.26°</button>
+        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.25°</button>
         <button class="tgbtn off" id="vs-tg-frame">Single frame</button>
       </div>
       <div class="div"></div>
@@ -879,7 +880,7 @@ function addLabel(text,hex,pos){ const sp=labelSprite(text,hex); sp.position.cop
 addLabel('1',      HEX.bone, V(0.5,-0.05,-0.06));
 addLabel('√2',     HEX.blue, V(0.5,0.5,-0.11));
 addLabel('√3',     HEX.mag,  V(0.68,0.54,0.5));
-addLabel('35.26°', HEX.gold, V(0.27,0.15,0.30));
+addLabel('35.25°', HEX.gold, V(0.27,0.15,0.30));
 
 const capStack = document.getElementById('capstack');
 function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capStack.appendChild(d); return d; }
@@ -1049,7 +1050,7 @@ function goToChapter(i, opts={}){
   const toState = ch.state;
   userTookOver = false; controls.autoRotate = false;
   tween = { t:0, dur: opts.instant?0.0001:1.5, from, toState, goalPos:goal.pos, goalTgt:goal.tgt, killCam:false, onDone:opts.onDone };
-  tt = ch.tEnd; scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%';
+  tt = ch.tEnd; scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
 }
 function stepTween(dt){
   if(!tween) return;
@@ -1084,7 +1085,7 @@ let tt = 0, playing = true, speed = 1, last = performance.now();
 const DURATION = 30;
 function setPlaying(p){ playing = p; playBtn.textContent = p ? '❙❙' : '►'; }
 function setTour(v){ tt = clamp01(v); Object.assign(STATE, tourState(tt));
-  scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%'; markChapter(chapterForT(tt)); render(); syncSliders(); }
+  scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s'; markChapter(chapterForT(tt)); render(); syncSliders(); }
 
 playBtn.onclick = ()=>{ cancelCamTween(); tween=null; if(!userTookOver) controls.autoRotate=true; setPlaying(!playing); };
 speedSel.onchange = ()=> speed=parseFloat(speedSel.value);
@@ -1184,7 +1185,7 @@ function animate(now){
     tt += dt*speed/DURATION;
     if(tt>=1){ tt=1; setPlaying(false); }
     Object.assign(STATE, tourState(tt));
-    scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%';
+    scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
     markChapter(chapterForT(tt));
     render(); syncSliders();
   }
@@ -1328,7 +1329,7 @@ function addLabel(t,hex,p){ const s=labelSprite(t,hex); s.position.copy(p); proo
 addLabel('√2',    HEX.blue, new THREE.Vector3(0.5,0.5,-0.06));
 addLabel('1',     HEX.bone, new THREE.Vector3(1.12,1.0,0.5));
 addLabel('√3',    HEX.mag,  new THREE.Vector3(0.42,0.62,0.56));
-addLabel('35.26°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
+addLabel('35.25°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
 
 const STATE = { grid:2, gap:0, edge:1, face:1, space:1, proof:1, frame:0 };
 function extent(N,gap){ return (N-1)*(1+gap)+1; }
