@@ -32,7 +32,7 @@
   class LostTriangleDevice extends React.Component {
     constructor(props) {
       super(props);
-      this.END=60; this.S=300; this.cx=960; this.cy=560;
+      this.END=66; this.S=300; this.cx=960; this.cy=560;
       this.el=20*Math.PI/180; this.az0=-0.55; this.KEY='lt_device';
       this.C={ink:'#F0EDE8',blue:'#4A90D9',terra:'#E0349E',gold:'#C8A96E',green:'#3CCB8E'};
       this.CH=[0,9,18,27,39,51];
@@ -165,9 +165,9 @@
       o=o||{}; if(op<=0)return null;
       return cr('text',{key:'x'+(this._k++),x,y,fill:color,opacity:op,fontSize:o.size||34,fontFamily:o.face||"'Cormorant Garamond',serif",fontStyle:o.italic?'italic':'normal',fontWeight:o.w||500,textAnchor:o.anchor||'middle',letterSpacing:o.ls||0,filter:o.glow?'url(#g)':undefined},s);
     }
-    rang(O3,A3,B3,c,op){
+    rang(O3,A3,B3,c,op,sc){
       if(op<=0)return null;
-      var D=this.proj(O3),A=this.proj(A3),B=this.proj(B3);
+      var D=this.proj(O3,sc),A=this.proj(A3,sc),B=this.proj(B3,sc);
       var v1=[A[0]-D[0],A[1]-D[1]],v2=[B[0]-D[0],B[1]-D[1]];
       var n1=Math.hypot(v1[0],v1[1])||1,n2=Math.hypot(v2[0],v2[1])||1,s=18;
       var a=[D[0]+v1[0]/n1*s,D[1]+v1[1]/n1*s],b=[D[0]+v2[0]/n2*s,D[1]+v2[1]/n2*s],cc=[a[0]+v2[0]/n2*s,a[1]+v2[1]/n2*s];
@@ -192,28 +192,29 @@
 
       var mainOp=1-this.sm(t,27.5,29.5)*0.55;
       var fillp=this.sm(t,18,20)*(1-this.sm(t,27.5,29.5)*0.4);
-      if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1));
+      var aSc=this.S+80*this.fio(t,17,22,28,32);
+      if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1,aSc));
 
-      var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,null,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30}));
-      var ri=this.sm(t,9.5,13); push(this.seg(E,V,ri,C.terra,4,null,{op:mainOp})); if(ri>0.6)push(this.labP(this.mid(E,V),'1',C.terra,mainOp,{dx:30,size:30}));
-      var hy=this.sm(t,18.5,22); push(this.seg(O,V,hy,C.ink,4.4,null,{op:mainOp})); if(hy>0.6)push(this.labP(this.mid(O,V),'√3',C.ink,mainOp,{dx:-32,size:30}));
-      push(this.rang(E,O,V,'rgba(60,203,142,.9)',fillp));
+      var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,aSc,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30,sc:aSc}));
+      var ri=this.sm(t,9.5,13); push(this.seg(E,V,ri,C.terra,4,aSc,{op:mainOp})); if(ri>0.6)push(this.labP(this.mid(E,V),'1',C.terra,mainOp,{dx:30,size:30,sc:aSc}));
+      var hy=this.sm(t,18.5,22); push(this.seg(O,V,hy,C.ink,4.4,aSc,{op:mainOp})); if(hy>0.6)push(this.labP(this.mid(O,V),'√3',C.ink,mainOp,{dx:-32,size:30,sc:aSc}));
+      push(this.rang(E,O,V,'rgba(60,203,142,.9)',fillp,aSc));
 
-      if(showAngles&&this.sm(t,21,23)>0){
-        var apo=this.sm(t,21,23)*mainOp;
-        push(this.labP(O,'35.26°',C.gold,apo,{dx:54,dy:-26,size:22}));
-        push(this.labP(V,'54.74°',C.gold,apo,{dx:-6,dy:42,size:22}));
+      if(showAngles&&this.fio(t,20,24,30,33)>0){
+        var apo=this.fio(t,20,24,30,33)*mainOp;
+        push(this.labP(O,'35.25°',C.gold,apo,{dx:54,dy:-26,size:28,sc:aSc}));
+        push(this.labP(V,'54.75°',C.gold,apo,{dx:-6,dy:42,size:28,sc:aSc}));
       }
 
-      push(this.dot(O,7,C.ink,this.sm(t,0.3,2)));
-      push(this.dot(E,6,C.blue,fd));
-      push(this.dot(V,7,C.ink,hy));
+      push(this.dot(O,7,C.ink,this.sm(t,0.3,2),aSc));
+      push(this.dot(E,6,C.blue,fd,aSc));
+      push(this.dot(V,7,C.ink,hy,aSc));
 
       var lo=this.sm(t,0.3,2)*mainOp;
       if(lo>0.3){
-        push(this.labP(O,'O',C.ink,lo,{dx:-22,dy:6,size:21}));
-        if(fd>0.4)push(this.labP(E,'E',C.ink,fd*mainOp,{dx:20,dy:8,size:21}));
-        if(hy>0.4)push(this.labP(V,'V',C.ink,hy*mainOp,{dx:16,dy:-12,size:21}));
+        push(this.labP(O,'O',C.ink,lo,{dx:-22,dy:6,size:21,sc:aSc}));
+        if(fd>0.4)push(this.labP(E,'E',C.ink,fd*mainOp,{dx:20,dy:8,size:21,sc:aSc}));
+        if(hy>0.4)push(this.labP(V,'V',C.ink,hy*mainOp,{dx:16,dy:-12,size:21,sc:aSc}));
       }
 
       var rv=this.fio(t,27.5,29,50,51.5);
@@ -239,7 +240,7 @@
         this.RDV.forEach((p)=>push(this.dot(p,4.5,C.terra,wv*rd,this.S*0.62)));
       }
 
-      var dv=this.fio(t,51.5,53,60,61);
+      var dv=this.fio(t,51.5,53,66,67);
       if(dv>0){
         var pp=150,qq=150*Math.tan(35.264*Math.PI/180),C0=960,C1=560;
         push(cr('polygon',{key:'rh',points:C0+','+(C1-pp)+' '+(C0+qq)+','+C1+' '+C0+','+(C1+pp)+' '+(C0-qq)+','+C1,fill:'rgba(60,203,142,0.16)',stroke:C.green,strokeWidth:3,opacity:dv,filter:'url(#g)'}));
@@ -247,6 +248,7 @@
         push(this.txt(C0,C1+pp+34,'70.53°',C.gold,dv,{size:24,italic:true}));
         push(this.txt(C0-qq-14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'end',italic:true}));
         push(this.txt(C0+qq+14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'start',italic:true}));
+        push(this.txt(C0+qq/2+18,C1-pp/2+10,'120° dihedral',C.gold,dv*this.sm(t,53.5,56),{size:18,italic:true,anchor:'start'}));
       }
 
       return cr('svg',{viewBox:'500 100 920 920',width:'100%',height:'100%',preserveAspectRatio:'xMidYMid meet',role:'img',style:{position:'absolute',inset:0,display:'block',overflow:'visible'}},k);
