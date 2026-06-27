@@ -80,6 +80,7 @@
   </noscript>
 </div>
 <div id="lt-root-2" style="margin-top:0;"></div>
+<div id="lt-root-3" style="position:relative;min-height:100vh;"></div>
 
 <!-- React runtime (vendored from npm; UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
@@ -88,6 +89,9 @@
      (plain React.createElement, no build step). Defines window.LostTriangleAnimation. -->
 <script src="assets/lost-triangle/lost-triangle-animation.js"></script>
 <script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
+<!-- Clean animation runtime + scenes (Stage/Sprite + LostTriangleVideoClean) -->
+<script src="assets/lost-triangle/lt-clean-animations.js"></script>
+<script src="assets/lost-triangle/lt-clean-video.js"></script>
 <script>
 (function(){
   "use strict";
@@ -126,6 +130,34 @@
       if (render2() || ++tries > 200) clearInterval(id);
     }, 30);
   }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  var root3 = null, currentPortrait3 = null;
+  function isPortrait(){ return window.matchMedia('(max-aspect-ratio: 1/1)').matches; }
+  function render3(){
+    var el = document.getElementById('lt-root-3');
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleVideoClean) return false;
+    var portrait = isPortrait() && !!window.LostTriangleVideoCleanPortrait;
+    var Comp = portrait ? window.LostTriangleVideoCleanPortrait : window.LostTriangleVideoClean;
+    if (!root3) { root3 = ReactDOM.createRoot(el); }
+    currentPortrait3 = portrait;
+    root3.render(React.createElement(Comp));
+    return true;
+  }
+  if (!render3()) {
+    var tries = 0;
+    var id = setInterval(function(){
+      if (render3() || ++tries > 200) clearInterval(id);
+    }, 30);
+  }
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ if (root3 && isPortrait() !== currentPortrait3) render3(); }, 150);
+  });
 })();
 </script>
 </body>
