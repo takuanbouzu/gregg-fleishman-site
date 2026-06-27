@@ -2,3 +2,9 @@
 # Regenerate with design-system/build.sh; never edit or commit these.
 design-system/gf-tokens.css
 design-system/gf-nav.js
+
+# dev-only transpile dependency (not shipped)
+node_modules/
+
+# design reference archives (not page assets)
+vector-pod/*.zip

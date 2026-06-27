@@ -128,11 +128,13 @@
     position:absolute; bottom:0; left:0; right:0;
     padding:28px 16px 14px;
     background:linear-gradient(to top, rgba(0,0,0,.76) 0%, transparent 100%);
-    font-family:var(--font-mono); font-size:9px; letter-spacing:0.18em;
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em;
     text-transform:uppercase; color:rgba(240,237,232,.72);
     opacity:0; transition:opacity .3s;
   }
   .photo-grid .photo:hover .photo-caption{ opacity:1; }
+  /* On touch screens captions are always visible — no hover available */
+  @media(hover:none){ .photo-caption{ opacity:1; } }
   @media(max-width:680px){
     .photo-grid{ grid-template-columns:1fr 1fr; }
     .photo-grid .photo.wide{ grid-column:span 2; }
@@ -186,6 +188,7 @@
     background:var(--bg-surface);
     border:1px solid var(--border);
   }
+  @media(max-width:480px){ .exhibit-link{ padding:24px 20px; } }
   .exhibit-link-text h3{
     font-family:var(--font-display); font-weight:800;
     font-size:22px; letter-spacing:-.02em; margin:0 0 8px; color:var(--tx);

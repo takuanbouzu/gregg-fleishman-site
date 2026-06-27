@@ -166,7 +166,7 @@
   }
 
   @media(max-width:600px){
-    /* match the phone treatment up to 600px: drop the live iframe, solid bg */
+    /* drop the live iframe on phones; solid bg */
     .cover-hero{ display:none; }
     .cover-scrim{ background:var(--bg); }
     .cover{ min-height:0; padding:28px 22px 40px; }
@@ -179,6 +179,9 @@
   @media(max-width:420px){
     /* very narrow phones: single-column index so titles never crowd */
     .cover-index{ grid-template-columns:1fr; }
+  }
+  @media(max-width:380px){
+    .cover{ padding:24px 18px 36px; }
   }
 </style>
 </head>
@@ -201,8 +204,7 @@
     <h1 class="cover-title">Gregg Fleishman<span class="cover-tag">Geometry &amp; Structure</span></h1>
     <p class="cover-lead">One architect's geometry, made explorable — the <b>Lost Triangle</b> of 1 : √2 : √3, the rhombic dodecahedron that fills space, and the structures built from it.</p>
     <div class="cover-actions">
-      <a class="gf-btn-fill" href="explore.html">Enter the model</a>
-      <a class="cover-textlink" href="mathematics.html">Start with the Lost Triangle →</a>
+      <a class="gf-btn-fill" href="mathematics.html" aria-label="Enter the math lesson — The Lost Triangle">Enter Math Lesson</a>
     </div>
   </div>
 

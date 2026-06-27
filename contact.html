@@ -51,6 +51,7 @@
     font-weight:300; font-size:20px; line-height:1.68;
     color:var(--tx-dim); max-width:560px; margin:0;
   }
+  @media(max-width:480px){ .page-header{ padding:56px 0 40px; } .page-header h1{ font-size:clamp(40px,10vw,56px); } .page-header .lead{ font-size:17px; } }
 
   /* ── two-col contact layout ── */
   .contact-grid{
@@ -72,6 +73,10 @@
   .info-value{
     font-size:14px; line-height:1.7; color:var(--tx-dim); margin:0;
   }
+  @media(max-width:480px){
+    .info-row{ grid-template-columns:1fr; gap:6px; padding:16px 0; }
+    .info-label{ padding-top:0; }
+  }
   .info-value a{
     color:var(--tx); text-decoration:none;
     transition:color .15s;
@@ -79,56 +84,26 @@
   .info-value a:hover{ color:var(--accent); }
   .info-value strong{ color:var(--tx); font-weight:500; }
 
-  /* ── form ── */
-  .contact-form{ display:grid; gap:20px; }
-  .field{ display:grid; gap:8px; }
-  label{
-    font-family:var(--font-mono); font-size:9px; letter-spacing:0.22em;
-    text-transform:uppercase; color:var(--tx-faint);
-  }
-  input, textarea, select{
-    background:var(--bg-surface);
+  /* ── email CTA ── */
+  .email-cta{
+    display:block; padding:28px 24px;
     border:1px solid var(--border);
-    color:var(--tx);
-    font-family:var(--font-ui); font-size:14px;
-    padding:12px 14px; width:100%; box-sizing:border-box;
-    border-radius:0; outline:none;
+    text-decoration:none;
     transition:border-color .18s, background .18s;
-    -webkit-appearance:none; appearance:none;
   }
-  input:focus, textarea:focus, select:focus{
-    border-color:var(--accent); background:var(--bg-elevated);
+  .email-cta:hover{ border-color:var(--accent); background:var(--bg-surface); }
+  .email-cta-label{
+    display:block;
+    font-family:var(--font-mono); font-size:9px; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--tx-faint); margin-bottom:12px;
   }
-  textarea{ resize:vertical; min-height:140px; line-height:1.6; }
-  select{ cursor:pointer; }
-  /* select arrow */
-  .select-wrap{ position:relative; }
-  .select-wrap::after{
-    content:""; position:absolute; right:14px; top:50%; transform:translateY(-50%);
-    width:8px; height:8px; pointer-events:none;
-    border-right:1.5px solid var(--tx-dim); border-bottom:1.5px solid var(--tx-dim);
-    transform:translateY(-65%) rotate(45deg);
+  .email-cta-addr{
+    display:block;
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(18px,2.4vw,26px); letter-spacing:-.02em;
+    color:var(--tx);
   }
-
-  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  @media(max-width:480px){ .field-row{ grid-template-columns:1fr; } }
-
-  .form-submit{
-    display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:8px;
-  }
-  .form-note{
-    font-family:var(--font-mono); font-size:9px; letter-spacing:0.12em;
-    color:var(--tx-faint); line-height:1.6;
-  }
-
-  /* ── success / error states ── */
-  #form-feedback{
-    display:none; padding:16px 18px;
-    font-family:var(--font-mono); font-size:11px; letter-spacing:0.1em;
-    border:1px solid var(--border);
-  }
-  #form-feedback.success{ border-color:var(--conf-confirmed); color:var(--conf-confirmed); }
-  #form-feedback.error{ border-color:var(--conf-hyp); color:var(--conf-hyp); }
+  .email-cta:hover .email-cta-addr{ color:var(--accent); }
 
   /* ── social links ── */
   .social-links{ display:flex; gap:24px; flex-wrap:wrap; margin-top:32px; }
@@ -221,97 +196,23 @@
         </div>
       </div>
 
-      <!-- Right: form -->
+      <!-- Right: email CTA -->
       <div>
         <span class="eyebrow">Message</span>
-        <!-- Replace YOUR_FORM_ID with a Formspree form ID, or swap this form action for any other handler -->
-        <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-          <div class="field-row">
-            <div class="field">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required autocomplete="name">
-            </div>
-            <div class="field">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required autocomplete="email">
-            </div>
-          </div>
-          <div class="field">
-            <label for="subject">Subject</label>
-            <div class="select-wrap">
-              <select id="subject" name="subject">
-                <option value="">Select a topic</option>
-                <option value="commission">Commission / Custom build</option>
-                <option value="installation">Festival / Public installation</option>
-                <option value="licensing">File licensing</option>
-                <option value="studio">Studio visit</option>
-                <option value="press">Press / Media</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" required placeholder="Tell me about your project…"></textarea>
-          </div>
-          <div class="form-submit">
-            <button class="gf-btn-fill" type="submit">Send message</button>
-            <span class="form-note">No spam. Direct reply from Gregg's studio.</span>
-          </div>
-          <div id="form-feedback" role="status" aria-live="polite"></div>
-        </form>
+        <a class="email-cta" href="mailto:gregg@greggfleishman.com">
+          <span class="email-cta-label">Email the studio</span>
+          <span class="email-cta-addr">gregg@greggfleishman.com</span>
+        </a>
+        <p style="margin-top:20px;font-size:13px;line-height:1.75;color:var(--tx-faint);">
+          For commissions, installations, licensing, studio visits, and press inquiries.
+          Direct reply from Gregg.
+        </p>
       </div>
 
     </div>
   </div>
 </section>
 
-<script>
-  /* Progressive form enhancement — intercepts submit, posts JSON to Formspree,
-     shows inline success/error without a page reload. */
-  (function () {
-    var form = document.getElementById('contact-form');
-    var feedback = document.getElementById('form-feedback');
-    if (!form || !feedback) return;
 
-    /* Skip enhancement if the action URL is still the placeholder */
-    if (form.action.indexOf('YOUR_FORM_ID') !== -1) {
-      /* Dev mode: just show a console note, don't intercept */
-      return;
-    }
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var btn = form.querySelector('[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Sending…';
-      feedback.style.display = 'none';
-
-      fetch(form.action, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: new FormData(form)
-      })
-      .then(function (r) {
-        if (r.ok) {
-          form.reset();
-          feedback.className = 'success';
-          feedback.textContent = 'Message sent. You\'ll hear back from the studio soon.';
-        } else {
-          throw new Error('server error');
-        }
-      })
-      .catch(function () {
-        feedback.className = 'error';
-        feedback.textContent = 'Something went wrong. Try emailing directly: gregg@greggfleishman.com';
-      })
-      .finally(function () {
-        feedback.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Send message';
-      });
-    });
-  })();
-</script>
 </body>
 </html>

@@ -74,6 +74,10 @@
     padding-bottom:6px;
   }
   .cat-desc{ font-size:15px; line-height:1.8; color:var(--tx-dim); max-width:600px; margin:0 0 40px; }
+  @media(max-width:480px){
+    .cat-header{ grid-template-columns:1fr; gap:4px; }
+    .cat-count{ padding-bottom:0; }
+  }
 
   /* ── hero image for each category ── */
   .cat-hero{
@@ -133,6 +137,14 @@
 
   /* ── cta row ── */
   .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-top:40px; }
+
+  /* ── store cta block ── */
+  .portfolio-cta{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px; flex-wrap:wrap; padding:40px;
+    background:var(--bg-surface); border:1px solid var(--border);
+  }
+  @media(max-width:480px){ .portfolio-cta{ padding:24px 20px; } }
 
   p{ font-size:15px; line-height:1.85; color:var(--tx-dim); margin:0 0 16px; }
   p:last-child{ margin-bottom:0; }
@@ -400,7 +412,7 @@
 <!-- Store CTA -->
 <section class="sec">
   <div class="wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:40px;background:var(--bg-surface);border:1px solid var(--border);">
+    <div class="portfolio-cta">
       <div>
         <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.24em;text-transform:uppercase;color:var(--accent);margin:0 0 10px;">All designs available as file downloads</p>
         <h3 style="font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0 0 8px;color:var(--tx);">Build one yourself</h3>

@@ -247,6 +247,12 @@
     #panel .hd{ min-height:44px; }
     #transport button{ min-height:36px; padding:8px 14px; }
   }
+  /* Very small phones: hide non-essential chrome to give canvas breathing room */
+  @media(max-width:400px){
+    #masthead{ display:none; }
+    #legend{ display:none; }
+    .explore-tab-btn{ font-size:9px; padding:0 9px; }
+  }
 
   /* ================================================================
      PHONE LAYOUT (≤600px) — The Cube scene
@@ -465,7 +471,6 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle.html">Animation</a>
   <a class="navlink active" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
