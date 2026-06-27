@@ -79,7 +79,7 @@
     <div id="lt-fallback">This animated construction of the Lost Triangle (1 : √2 : √3) needs JavaScript.</div>
   </noscript>
 </div>
-<div id="lt-root-2"></div>
+<div id="lt-root-2" style="margin-top:0;"></div>
 
 <!-- React runtime (vendored from npm; UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
@@ -87,6 +87,7 @@
 <!-- The Lost Triangle motion graphic — single self-contained React component
      (plain React.createElement, no build step). Defines window.LostTriangleAnimation. -->
 <script src="assets/lost-triangle/lost-triangle-animation.js"></script>
+<script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
 <script>
 (function(){
   "use strict";
@@ -114,9 +115,9 @@
   var root2 = null;
   function render2(){
     var el = document.getElementById('lt-root-2');
-    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleConstruction) return false;
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleRiseZ) return false;
     if (!root2) { root2 = ReactDOM.createRoot(el); }
-    root2.render(React.createElement(window.LostTriangleConstruction, { autoplay: true }));
+    root2.render(React.createElement(window.LostTriangleRiseZ, { autoplay: true }));
     return true;
   }
   if (!render2()) {
