@@ -105,12 +105,12 @@
   .photo-grid .photo.tall{ grid-row:span 2; }
   .photo-grid .photo img{
     width:100%; height:100%; object-fit:cover; display:block;
-    aspect-ratio:1; filter:brightness(.9);
-    transition:transform .6s cubic-bezier(.4,0,.2,1), filter .4s;
+    aspect-ratio:1;
+    transition:transform .6s cubic-bezier(.4,0,.2,1);
   }
   .photo-grid .photo.wide img{ aspect-ratio:2; }
   .photo-grid .photo.tall img{ aspect-ratio:.5; height:100%; }
-  .photo-grid .photo:hover img{ transform:scale(1.04); filter:brightness(1.0); }
+  .photo-grid .photo:hover img{ transform:scale(1.04); }
   .photo-caption{
     position:absolute; bottom:0; left:0; right:0;
     padding:28px 16px 14px;
