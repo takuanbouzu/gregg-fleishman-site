@@ -253,3 +253,15 @@ a.gf-card:hover{ border-color:var(--border-strong); background:rgba(255,255,255,
     scrollbar-width:none; padding-bottom:4px; }
   .gf-chiprow::-webkit-scrollbar{ display:none; }
 }
+
+/* ============================================================
+   ACCESSIBILITY  ·  focus-visible ring in the site palette
+   ============================================================ */
+:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+/* reduced-motion: geometry animations become static completed state */
+@media(prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
