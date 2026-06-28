@@ -365,7 +365,7 @@
           // Scroll chevron — leads to Construction Triangles below
           cr('div',{style:{position:'absolute',bottom:'18px',right:'36px',display:'flex',alignItems:'center',gap:'10px'}},
             cr('button',{
-              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el) el.scrollIntoView({behavior:'smooth'}); },
+              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el){ el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='lost-triangle-construction-triangles.html'; } },
               style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 16px',border:'1px solid rgba(240,237,232,.12)',borderRadius:'8px',background:'rgba(240,237,232,.04)',cursor:'pointer',fontFamily:"'Space Mono',monospace",fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.5)',transition:'all .2s'}
             },'CONSTRUCTION TRIANGLES ↓')
           )
