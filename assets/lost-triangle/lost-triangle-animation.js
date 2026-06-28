@@ -187,12 +187,12 @@
             cr('feMergeNode',{in:'b'}),
             cr('feMergeNode',{in:'SourceGraphic'})))));
 
+      var aSc=this.S+80*this.fio(t,17,22,28,32);
       var cubeOp=(showCube?1:0)*this.sm(t,0.3,2)*(1-this.sm(t,46,50)*0.7);
-      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]]),b=this.proj(this.cube[e[1]]);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
+      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]],aSc),b=this.proj(this.cube[e[1]],aSc);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
 
       var mainOp=1-this.sm(t,27.5,29.5)*0.55;
       var fillp=this.sm(t,18,20)*(1-this.sm(t,27.5,29.5)*0.4);
-      var aSc=this.S+80*this.fio(t,17,22,28,32);
       if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1,aSc));
 
       var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,aSc,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30,sc:aSc}));
