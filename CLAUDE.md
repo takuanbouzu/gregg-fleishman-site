@@ -51,9 +51,12 @@ gregg-fleishman-site/
 │   ├── gf-scene.js            # WebGL palette helper (shared geometry colors)
 │   ├── lost-triangle-engine.js # Pure Canvas 2D renderer for Lost Triangle (legacy motion page)
 │   ├── lost-triangle/         # React motion graphic (see lost-triangle.html)
-│   │   ├── lost-triangle-animation.js          # SOURCE OF TRUTH — single React component, plain React.createElement, NO build step
-│   │   ├── lost-triangle-animation.source.dc.html # Provenance — original Claude Design export (not loaded by the site)
-│   │   └── README.md          # Provenance + porting notes
+│   │   ├── animations.jsx     # Source of truth — Stage/Sprite/Easing runtime
+│   │   ├── animations.js      # GENERATED (transpiled) — do not edit by hand
+│   │   ├── LostTriangleVideoClean.jsx # Source of truth — the 7 "Clean" scenes (landscape + portrait)
+│   │   ├── lost-triangle-video.js # GENERATED (transpiled) — do not edit by hand
+│   │   ├── build.mjs          # Transpiles the .jsx → .js (node build.mjs)
+│   │   └── README.md          # Provenance + how to regenerate the .js bundles
 │   ├── arch/                  # Architecture photography (6 JPGs)
 │   ├── drawings/              # Artwork images (6 PNGs)
 │   ├── handsketch.jpg         # Sketch reference
@@ -172,13 +175,14 @@ renderer.toneMapping = THREE.NoToneMapping;
 (The earlier 3D Construction and Fleishman Sequence tabs were removed in PR #4 — their standalone pages `lost-triangle-construction-3d.html` and `fleishman-sequence.html` still exist by URL but are not in the nav.)
 
 ### React — Lost Triangle motion graphic (`lost-triangle.html`)
-`lost-triangle.html` mounts a React app from vendored React 18.3.1 UMD (`assets/vendor/react-18.3.1/`). Load order: `react` → `react-dom` → `lost-triangle-animation.js` (defines `window.LostTriangleAnimation`) → inline mount into `#lt-root` as `<LostTriangleAnimation autoplay />`.
+`lost-triangle.html` mounts a React app from vendored React 18.3.1 UMD (`assets/vendor/react-18.3.1/`). The JSX is **pre-transpiled** to plain JS — no in-browser Babel. Load order: `react` → `react-dom` → `animations.js` (defines `Stage`/`Sprite`/`Easing`/`useTime` on `window`) → `lost-triangle-video.js` (defines `window.LostTriangleVideoClean` + `LostTriangleVideoCleanPortrait`) → inline mount into `#lt-root`.
 
-- The animation is a **single self-contained React component** ported from a Claude Design (claude.ai/design) export. It uses plain `React.createElement` — **no JSX, no build step. `lost-triangle-animation.js` IS the source of truth; edit it directly.** (`lost-triangle-animation.source.dc.html` is the original export, kept for provenance only; it is not loaded by the site.)
-- It's an 88-second, 7-chapter SVG build (Plane → 45° Diagonal → Rise → Sundial Line → Lost Triangle → Mirror Sundial → 120° Revelation) ending on the Fleishman joint's 120° dihedral angle.
-- The figure geometry is **computed** from one geometric unit (`this.GU`, points in `this.P`), so every `1 : √2 : √3` relationship is exact by construction — don't "correct" it to eyeballed coordinates.
-- `?embed=1` (or `html.lt-embed`) hides the site nav so the page can be framed inside `construction.html`.
-- One 1920×1080 stage scales to fit its mount box via `fit()` (measures the container, not the raw viewport, so it seats below the fixed nav); it letterboxes on portrait. The playhead persists to `localStorage` key `lt_t`.
+This is the **"Clean" build** — a faithful port of the Claude Design file `Lost Triangle Clean.dc.html` (pure full-canvas animation, no side panels). 7 scenes: Intro · Root Spiral · Triangle Construction · Cube · Reflected into Form · Dihedral Angles · Close (75s). Palette magenta `#FF00CC` / steel blue / gold on near-black; fonts Syne · Cormorant Garamond · Space Grotesk.
+
+- **Edit the `.jsx`, not the `.js`** — the `.js` bundles are generated from `animations.jsx` / `LostTriangleVideoClean.jsx`. Re-transpile with `cd assets/lost-triangle && npm install --no-save @babel/standalone && node build.mjs` (see `assets/lost-triangle/README.md`).
+- The figure geometry is **computed** from one edge length, so every `1 : √2 : √3` relationship is exact by construction — don't "correct" it to eyeballed coordinates.
+- `?embed=1` hides the site nav so the page can be framed inside `construction.html`.
+- The mount picks the layout by viewport aspect ratio — `LostTriangleVideoCleanPortrait` (1080×1920) on portrait, `LostTriangleVideoClean` (1920×1080) otherwise. Both share one Stage `persistKey` (`animstage-clean`), so the playhead carries across an orientation flip automatically.
 
 ### Three.js r128 (older deep-dive pages)
 `cube-diagonals.html`, `dorman-luke.html`, `rhombic-dodecahedron.html`, `rhombic-system.html`, `fleishman-vector-system.html`, `vector-house.html` load Three.js r128 via `<script src="assets/vendor/three-r128/three.min.js">`. These use the global `THREE` object (not ESM).
