@@ -6,7 +6,7 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8080"],
       "port": 8080,
-      "cwd": "/Users/yuto/Workspace/01_ACTIVE_PROJECTS/gregg-fleishman-site"
+      "cwd": "/Users/yuto/Claude/gregg-fleishman-site"
     },
     {
       "name": "gregg-geometry",

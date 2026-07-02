@@ -6,6 +6,36 @@
 
   var cr = React.createElement;
 
+  // Model-true station rod vectors: derived from window.PROOF_MATH27 (Gregg's
+  // math27.3dm export, see assets/lost-triangle/fleishman-proof-data-math27.js)
+  // rather than typed as idealized constants. Each station's rod is its one
+  // "len":"200" (length-2) member centerline. Falls back to the exact unit-
+  // vector family if the proof data isn't loaded. Used by LostTriangleConstruction.
+  function ltRodsFromProof(PM) {
+    if (!PM || !PM.lines) return null;
+    var rods = PM.lines.filter(function(l){ return l.len === '200'; }).map(function(l){
+      var base = l.a[2] <= l.b[2] ? l.a : l.b, tip = l.a[2] <= l.b[2] ? l.b : l.a;
+      return [tip[0]-base[0], tip[1]-base[1], tip[2]-base[2]];
+    });
+    return rods.length === 3 ? rods : null;
+  }
+  // Preferred source: the cleaned per-station proof models (PROOF_STATIONS_CLEAN,
+  // 2026-07-02) — one explicit rod per beginning, matched by azimuth rather than
+  // line order. PROOF_MATH27 remains the second fallback.
+  function ltRodFromStations(PS, deg) {
+    if (!PS || !PS.stations) return null;
+    for (var i = 0; i < PS.stations.length; i++) {
+      var s = PS.stations[i];
+      if (s.rod && Math.abs(s.begin_deg - deg) < 0.5) {
+        var a = s.rod.a, b = s.rod.b;
+        return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+      }
+    }
+    return null;
+  }
+  function ltAz(v){ return Math.atan2(v[1], v[0]) * 180 / Math.PI; }
+  function ltAlt(v){ return Math.atan2(v[2], Math.hypot(v[0], v[1])) * 180 / Math.PI; }
+
   var CARD_BORDERS   = ['#4A90D9','#E0349E','rgba(240,237,232,.65)','#3CCB8E','#C8A96E','#E0349E'];
   var CARD_FSIZES    = ['19px','19px','19px','21px','21px','17px'];
   var CARD_BADGES    = ['1','2','3','σ','✸','2\xd7'];
@@ -32,7 +62,7 @@
   class LostTriangleDevice extends React.Component {
     constructor(props) {
       super(props);
-      this.END=60; this.S=300; this.cx=960; this.cy=560;
+      this.END=66; this.S=300; this.cx=960; this.cy=560;
       this.el=20*Math.PI/180; this.az0=-0.55; this.KEY='lt_device';
       this.C={ink:'#F0EDE8',blue:'#4A90D9',terra:'#E0349E',gold:'#C8A96E',green:'#3CCB8E'};
       this.CH=[0,9,18,27,39,51];
@@ -119,10 +149,10 @@
     fit(){
       if(!this.frameEl||!this.fitEl)return;
       var availW=window.innerWidth-28, availH=window.innerHeight-104;
-      var s=Math.min(availW/1180,availH/980,1);
+      var s=Math.min(availW/1180,availH/1020,1);
       this.frameEl.style.transform='scale('+s+')';
       this.fitEl.style.width=(1180*s)+'px';
-      this.fitEl.style.height=(980*s)+'px';
+      this.fitEl.style.height=(1020*s)+'px';
     }
 
     curCI(){var ci=0;for(var i=0;i<this.CH.length;i++){if(this.state.t>=this.CH[i]-0.001)ci=i;}return ci;}
@@ -165,9 +195,9 @@
       o=o||{}; if(op<=0)return null;
       return cr('text',{key:'x'+(this._k++),x,y,fill:color,opacity:op,fontSize:o.size||34,fontFamily:o.face||"'Cormorant Garamond',serif",fontStyle:o.italic?'italic':'normal',fontWeight:o.w||500,textAnchor:o.anchor||'middle',letterSpacing:o.ls||0,filter:o.glow?'url(#g)':undefined},s);
     }
-    rang(O3,A3,B3,c,op){
+    rang(O3,A3,B3,c,op,sc){
       if(op<=0)return null;
-      var D=this.proj(O3),A=this.proj(A3),B=this.proj(B3);
+      var D=this.proj(O3,sc),A=this.proj(A3,sc),B=this.proj(B3,sc);
       var v1=[A[0]-D[0],A[1]-D[1]],v2=[B[0]-D[0],B[1]-D[1]];
       var n1=Math.hypot(v1[0],v1[1])||1,n2=Math.hypot(v2[0],v2[1])||1,s=18;
       var a=[D[0]+v1[0]/n1*s,D[1]+v1[1]/n1*s],b=[D[0]+v2[0]/n2*s,D[1]+v2[1]/n2*s],cc=[a[0]+v2[0]/n2*s,a[1]+v2[1]/n2*s];
@@ -187,33 +217,34 @@
             cr('feMergeNode',{in:'b'}),
             cr('feMergeNode',{in:'SourceGraphic'})))));
 
+      var aSc=this.S+80*this.fio(t,17,22,28,32);
       var cubeOp=(showCube?1:0)*this.sm(t,0.3,2)*(1-this.sm(t,46,50)*0.7);
-      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]]),b=this.proj(this.cube[e[1]]);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
+      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]],aSc),b=this.proj(this.cube[e[1]],aSc);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
 
       var mainOp=1-this.sm(t,27.5,29.5)*0.55;
       var fillp=this.sm(t,18,20)*(1-this.sm(t,27.5,29.5)*0.4);
-      if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1));
+      if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1,aSc));
 
-      var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,null,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30}));
-      var ri=this.sm(t,9.5,13); push(this.seg(E,V,ri,C.terra,4,null,{op:mainOp})); if(ri>0.6)push(this.labP(this.mid(E,V),'1',C.terra,mainOp,{dx:30,size:30}));
-      var hy=this.sm(t,18.5,22); push(this.seg(O,V,hy,C.ink,4.4,null,{op:mainOp})); if(hy>0.6)push(this.labP(this.mid(O,V),'√3',C.ink,mainOp,{dx:-32,size:30}));
-      push(this.rang(E,O,V,'rgba(60,203,142,.9)',fillp));
+      var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,aSc,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30,sc:aSc}));
+      var ri=this.sm(t,9.5,13); push(this.seg(E,V,ri,C.terra,4,aSc,{op:mainOp})); if(ri>0.6)push(this.labP(this.mid(E,V),'1',C.terra,mainOp,{dx:30,size:30,sc:aSc}));
+      var hy=this.sm(t,18.5,22); push(this.seg(O,V,hy,C.ink,4.4,aSc,{op:mainOp})); if(hy>0.6)push(this.labP(this.mid(O,V),'√3',C.ink,mainOp,{dx:-32,size:30,sc:aSc}));
+      push(this.rang(E,O,V,'rgba(60,203,142,.9)',fillp,aSc));
 
-      if(showAngles&&this.sm(t,21,23)>0){
-        var apo=this.sm(t,21,23)*mainOp;
-        push(this.labP(O,'35.26°',C.gold,apo,{dx:54,dy:-26,size:22}));
-        push(this.labP(V,'54.74°',C.gold,apo,{dx:-6,dy:42,size:22}));
+      if(showAngles&&this.fio(t,20,24,30,33)>0){
+        var apo=this.fio(t,20,24,30,33)*mainOp;
+        push(this.labP(O,'35.25°',C.gold,apo,{dx:54,dy:-26,size:28,sc:aSc}));
+        push(this.labP(V,'54.75°',C.gold,apo,{dx:-6,dy:42,size:28,sc:aSc}));
       }
 
-      push(this.dot(O,7,C.ink,this.sm(t,0.3,2)));
-      push(this.dot(E,6,C.blue,fd));
-      push(this.dot(V,7,C.ink,hy));
+      push(this.dot(O,7,C.ink,this.sm(t,0.3,2),aSc));
+      push(this.dot(E,6,C.blue,fd,aSc));
+      push(this.dot(V,7,C.ink,hy,aSc));
 
       var lo=this.sm(t,0.3,2)*mainOp;
       if(lo>0.3){
-        push(this.labP(O,'O',C.ink,lo,{dx:-22,dy:6,size:21}));
-        if(fd>0.4)push(this.labP(E,'E',C.ink,fd*mainOp,{dx:20,dy:8,size:21}));
-        if(hy>0.4)push(this.labP(V,'V',C.ink,hy*mainOp,{dx:16,dy:-12,size:21}));
+        push(this.labP(O,'O',C.ink,lo,{dx:-22,dy:6,size:21,sc:aSc}));
+        if(fd>0.4)push(this.labP(E,'E',C.ink,fd*mainOp,{dx:20,dy:8,size:21,sc:aSc}));
+        if(hy>0.4)push(this.labP(V,'V',C.ink,hy*mainOp,{dx:16,dy:-12,size:21,sc:aSc}));
       }
 
       var rv=this.fio(t,27.5,29,50,51.5);
@@ -239,7 +270,7 @@
         this.RDV.forEach((p)=>push(this.dot(p,4.5,C.terra,wv*rd,this.S*0.62)));
       }
 
-      var dv=this.fio(t,51.5,53,60,61);
+      var dv=this.fio(t,51.5,53,66,67);
       if(dv>0){
         var pp=150,qq=150*Math.tan(35.264*Math.PI/180),C0=960,C1=560;
         push(cr('polygon',{key:'rh',points:C0+','+(C1-pp)+' '+(C0+qq)+','+C1+' '+C0+','+(C1+pp)+' '+(C0-qq)+','+C1,fill:'rgba(60,203,142,0.16)',stroke:C.green,strokeWidth:3,opacity:dv,filter:'url(#g)'}));
@@ -247,6 +278,7 @@
         push(this.txt(C0,C1+pp+34,'70.53°',C.gold,dv,{size:24,italic:true}));
         push(this.txt(C0-qq-14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'end',italic:true}));
         push(this.txt(C0+qq+14,C1+8,'109.47°',C.gold,dv,{size:22,anchor:'start',italic:true}));
+        push(this.txt(C0+qq/2+18,C1-pp/2+10,'120° dihedral',C.gold,dv*this.sm(t,53.5,56),{size:18,italic:true,anchor:'start'}));
       }
 
       return cr('svg',{viewBox:'500 100 920 920',width:'100%',height:'100%',preserveAspectRatio:'xMidYMid meet',role:'img',style:{position:'absolute',inset:0,display:'block',overflow:'visible'}},k);
@@ -263,6 +295,7 @@
       var stepLabel = ('0'+(ci+1)).slice(-2)+' \xb7 '+this.NAME[ci];
       var playIcon  = this.state.playing?'❚❚':'▶';
       var scrubVal  = Math.round(t/this.END*1000);
+      var tcMM=Math.floor(t/60); var tcSS=Math.floor(t%60); var tcStr=tcMM+':'+(tcSS<10?'0':'')+tcSS;
 
       var cards=[];
       for(var j=0;j<6;j++){
@@ -287,7 +320,7 @@
 
       return cr('div',{style:{display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'24px 14px',background:'#070707',minHeight:'100%',boxSizing:'border-box',fontFamily:"'Space Grotesk',sans-serif"}},
         cr('div',{ref:this._fitRef,style:{position:'relative',flex:'0 0 auto'}},
-          cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'980px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
+          cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'1020px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
 
             cr('div',{style:{position:'absolute',inset:0,background:'radial-gradient(ellipse 76% 70% at 52% 42%, #16140F 0%, #0E0E0D 56%, #0A0A0A 100%)'}}),
 
@@ -325,6 +358,7 @@
                 cr('button',{onClick:()=>this.toggle(),style:{flex:'0 0 auto',width:'40px',height:'40px',border:'none',borderRadius:'9px',background:'rgba(200,169,110,.18)',color:'#F0EDE8',fontSize:'13px',cursor:'pointer'}},playIcon),
                 cr('button',{onClick:()=>this.nextCh(),style:{flex:'0 0 auto',width:'34px',height:'34px',border:'none',borderRadius:'9px',background:'rgba(240,237,232,.06)',color:'#F0EDE8',fontSize:'15px',cursor:'pointer'}},'›'),
                 cr('input',{className:'lt-scrub',type:'range',min:0,max:1000,value:scrubVal,onChange:(e)=>this.onSeek(e),style:{flex:'1 1 auto',minWidth:'60px'}}),
+                cr('span',{style:{flex:'0 0 auto',fontFamily:"'Space Mono',monospace",fontSize:'10px',letterSpacing:'.08em',color:'rgba(240,237,232,.32)',minWidth:'36px',textAlign:'center',whiteSpace:'nowrap'}},tcStr),
                 cr('span',{style:{flex:'0 0 auto',fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.6)',minWidth:'96px',textAlign:'right',whiteSpace:'nowrap'}},stepLabel)
               ),
               cr('a',{href:'explore.html',style:{textDecoration:'none',padding:'13px 26px',border:'1px solid rgba(200,169,110,.55)',borderRadius:'4px',background:'rgba(200,169,110,.05)',boxShadow:'0 0 26px rgba(200,169,110,.12)',fontFamily:"'Space Mono',monospace",fontSize:'12px',letterSpacing:'.22em',color:'#C8A96E'}},'ENTER THE CUBE MODEL →')
@@ -361,7 +395,7 @@
           // Scroll chevron — leads to Construction Triangles below
           cr('div',{style:{position:'absolute',bottom:'18px',right:'36px',display:'flex',alignItems:'center',gap:'10px'}},
             cr('button',{
-              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el) el.scrollIntoView({behavior:'smooth'}); },
+              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el){ el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='lost-triangle-construction-triangles.html'; } },
               style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 16px',border:'1px solid rgba(240,237,232,.12)',borderRadius:'8px',background:'rgba(240,237,232,.04)',cursor:'pointer',fontFamily:"'Space Mono',monospace",fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.5)',transition:'all .2s'}
             },'CONSTRUCTION TRIANGLES ↓')
           )
@@ -381,10 +415,14 @@
       super(props);
       this.END=12; this.KEY='lt_optb_dark';
       var r2=Math.SQRT2;
+      var rods=ltRodsFromProof(window.PROOF_MATH27);
+      var rodA=ltRodFromStations(window.PROOF_STATIONS_CLEAN,45)   ||(rods?rods[0]:[1,1,r2]);
+      var rodB=ltRodFromStations(window.PROOF_STATIONS_CLEAN,35.26)||(rods?rods[1]:[r2,1,1]);
+      var rodC=ltRodFromStations(window.PROOF_STATIONS_CLEAN,54.74)||(rods?rods[2]:[1,r2,1]);
       this.V=[
-        {v:[r2,1,1], az:35.264, alt:30, run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'o', note:'= Lost Triangle small angle'},
-        {v:[1,1,r2], az:45,     alt:45, run:'√2', rise:'√2', tri:'45-45-90 · 1:1:√2', angT:'45°', hl:'b', note:'= bisector of the two LT angles'},
-        {v:[1,r2,1], az:54.736, alt:30, run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'v', note:'= Lost Triangle large angle'}
+        {v:rodB, az:ltAz(rodB), alt:ltAlt(rodB), run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'o', note:'= Lost Triangle small angle'},
+        {v:rodA, az:ltAz(rodA), alt:ltAlt(rodA), run:'√2', rise:'√2', tri:'45-45-90 · 1:1:√2', angT:'45°', hl:'b', note:'= bisector of the two LT angles'},
+        {v:rodC, az:ltAz(rodC), alt:ltAlt(rodC), run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'v', note:'= Lost Triangle large angle'}
       ];
       this.ACC=['#7FB2E6','#C8A96E','#E0349E'];
       this.TITLES=['#7FB2E6','#D8BE8F','#F05BB5'];
@@ -489,7 +527,7 @@
       var azp=sm(lt,1.3,3.4);s+=seg(O,foot,azp,runC,8.5);s+=azArc(azRad,1.6,azp,ANG,0.9*azp);
       if(azp>0.55){var am=proj([1.0*Math.cos(azRad/2),1.0*Math.sin(azRad/2),0]);s+=txXY(am[0],am[1]+12,V.az.toFixed(2)+'°  (xy)',ANGT,34,'600');}
       var altp=sm(lt,3.4,5.4);s+=seg(foot,v,altp,riseC,8.5);s+=altArc(fh,altRad,2.4,altp,ANG,0.9*altp);
-      if(altp>0.55){var hm=proj([1.2*Math.cos(altRad/2)*fh[0],1.2*Math.cos(altRad/2)*fh[1],1.2*Math.sin(altRad/2)]);s+=txXY(hm[0]+15,hm[1],V.alt+'°  (z-rise)',ANGT,32,'600','start');}
+      if(altp>0.55){var hm=proj([1.2*Math.cos(altRad/2)*fh[0],1.2*Math.cos(altRad/2)*fh[1],1.2*Math.sin(altRad/2)]);s+=txXY(hm[0]+15,hm[1],V.alt.toFixed(2)+'°  (z-rise)',ANGT,32,'600','start');}
       var trp=sm(lt,5.4,7);if(trp>0)s+=poly([O,foot,v],'rgba(60,203,142,'+(0.13*trp)+')',1);
       var vecp=sm(lt,5.2,7);s+=seg(O,v,vecp,hypC,10);s+=rang(foot,O,v,'rgba(60,203,142,.8)',trp);
       var lp=sm(lt,7,8.6);
