@@ -255,6 +255,75 @@
   }
 
   /* ================================================================
+     PHONE LAYOUT (≤600px) — The Cube scene
+     Goal: no horizontal page scroll at 360px; overlays shrink &
+     reposition so the canvas stays visible; panel docks as a compact
+     scrollable bottom sheet; tap targets stay ≥40px.
+     Only adds/overrides inside this media block — desktop untouched.
+     ================================================================ */
+  @media(max-width:600px){
+    /* No horizontal page scroll */
+    html, body{ max-width:100%; overflow-x:hidden; }
+
+    /* Top scene-tab bar: already scrollable at ≤540, ensure here too */
+    #explore-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #explore-tabs::-webkit-scrollbar{ display:none; }
+    .explore-tab-btn{ padding:0 12px; letter-spacing:.06em; flex-shrink:0; }
+
+    /* Masthead: shrink & keep clear of the panel/legend */
+    #masthead{ left:14px; top:14px; max-width:62vw; }
+    #masthead .sub{ font-size:9px; letter-spacing:.22em; }
+
+    /* Legend: smaller, sits above the docked panel + transport */
+    #legend{ left:14px; bottom:auto; top:54px; font-size:12px; }
+    #legend .row{ gap:8px; margin-top:7px; }
+    #legend .sw{ width:18px; }
+
+    /* Volume + spiral readouts: keep top-left, shrink */
+    #volume{ left:14px; top:auto; bottom:auto; font-size:12px; }
+    #spiral{ left:14px; right:14px; bottom:auto; top:84px; width:auto; max-width:calc(100% - 28px); }
+
+    /* Caption: shrink font, clear the docked panel/transport stack */
+    #caption{ bottom:96px; }
+    .cap{ font-size:12px; }
+    .capstack{ width:92vw; }
+
+    /* Transport bar: full-width compact strip at the very bottom */
+    #transport{ bottom:0; left:0; right:0; transform:none; width:100%;
+      border-radius:0; justify-content:center; gap:6px; padding:5px 8px;
+      box-sizing:border-box; flex-wrap:nowrap; overflow-x:auto;
+      -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #transport::-webkit-scrollbar{ display:none; }
+    #scrub{ width:auto; flex:1 1 60px; min-width:60px; }
+    #transport button, #transport select{ flex-shrink:0; }
+
+    /* ---- Control panel: compact scrollable bottom sheet ---- */
+    #panel{ left:0; right:0; top:auto; bottom:38px; width:100%; transform:none;
+      border-radius:6px 6px 0 0; box-sizing:border-box; max-height:42px; }
+    #panel.panel-open{ max-height:46vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    #panel .panel-body{ padding:0 14px 14px; gap:10px; }
+    #panel .hd{ min-height:44px; padding:10px 14px; }
+    #panel .lab{ font-size:12px; }
+
+    /* Inner Build/Math/Array tab-bar: allow horizontal scroll, no wrap-break */
+    #panel .tab-bar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #panel .tab-bar::-webkit-scrollbar{ display:none; }
+    #panel .tab-btn{ flex:1 0 auto; white-space:nowrap; padding:9px 10px; font-size:9.5px; }
+
+    /* Tap targets ≥40px: pad sliders' hit area (track stays thin & visible),
+       enlarge toggles & transport controls */
+    #panel input[type=range]{ padding:16px 0; background-clip:content-box; }
+    #panel input[type=range]::-webkit-slider-thumb{ width:18px; height:18px; }
+    #panel input[type=range]::-moz-range-thumb{ width:18px; height:18px; }
+    #panel .ctl{ gap:4px; }
+    #panel .tgbtn{ min-height:40px; padding:10px 12px; font-size:11px; }
+    #transport button, #transport select{ min-height:40px; }
+    #scrub{ padding:16px 0; background-clip:content-box; }
+    #scrub::-webkit-slider-thumb{ width:14px; height:14px; }
+    #scrub::-moz-range-thumb{ width:14px; height:14px; }
+  }
+
+  /* ================================================================
      VECTOR SYSTEM scene styles  (all IDs prefixed vs-)
      ================================================================ */
   #scene-vs{

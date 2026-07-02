@@ -60,7 +60,18 @@
     font-size:15px; margin:0 0 8px; color:var(--tx);
   }
   .step-text{ font-size:13px; line-height:1.7; color:var(--tx-dim); margin:0; }
-  @media(max-width:600px){ .how-row{ grid-template-columns:1fr; } }
+  @media(max-width:600px){
+    .how-row{ grid-template-columns:1fr; margin-bottom:48px; }
+    /* one product per row */
+    .product-grid{ grid-template-columns:1fr; }
+    /* product footer wraps so the buy button never overflows */
+    .product-footer{ flex-wrap:wrap; gap:10px; }
+    .page-header .lead{ font-size:18px; }
+    /* license + donate blocks: comfortable padding, donate stacks */
+    .license-box{ padding:24px 20px; }
+    .donate-block{ flex-direction:column; align-items:stretch; padding:28px 22px; gap:16px; }
+    .donate-block .buy-btn{ width:100%; text-align:center; box-sizing:border-box; }
+  }
 
   /* ── cat header ── */
   .cat-header{ margin-bottom:28px; }

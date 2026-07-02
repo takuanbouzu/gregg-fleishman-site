@@ -121,6 +121,15 @@
     font-family:var(--font-mono); font-size:13px; letter-spacing:.30em;
     text-transform:uppercase; color:var(--tx-dim);
   }
+
+  /* ---- MOBILE (≤600px) ---- */
+  @media (max-width:600px){
+    html,body{ overflow-x:hidden; max-width:100%; }
+    /* the 2D-construction iframe is the whole page below the nav — make sure it
+       fills the available width and height with no overflow on narrow screens */
+    .con-section{ width:100%; left:0; right:0; }
+    #c2d-frame{ width:100%; height:100%; }
+  }
 </style>
 </head>
 <body>
