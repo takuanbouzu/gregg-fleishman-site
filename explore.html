@@ -247,6 +247,81 @@
     #panel .hd{ min-height:44px; }
     #transport button{ min-height:36px; padding:8px 14px; }
   }
+  /* Very small phones: hide non-essential chrome to give canvas breathing room */
+  @media(max-width:400px){
+    #masthead{ display:none; }
+    #legend{ display:none; }
+    .explore-tab-btn{ font-size:9px; padding:0 9px; }
+  }
+
+  /* ================================================================
+     PHONE LAYOUT (≤600px) — The Cube scene
+     Goal: no horizontal page scroll at 360px; overlays shrink &
+     reposition so the canvas stays visible; panel docks as a compact
+     scrollable bottom sheet; tap targets stay ≥40px.
+     Only adds/overrides inside this media block — desktop untouched.
+     ================================================================ */
+  @media(max-width:600px){
+    /* No horizontal page scroll */
+    html, body{ max-width:100%; overflow-x:hidden; }
+
+    /* Top scene-tab bar: already scrollable at ≤540, ensure here too */
+    #explore-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #explore-tabs::-webkit-scrollbar{ display:none; }
+    .explore-tab-btn{ padding:0 12px; letter-spacing:.06em; flex-shrink:0; }
+
+    /* Masthead: shrink & keep clear of the panel/legend */
+    #masthead{ left:14px; top:14px; max-width:62vw; }
+    #masthead .sub{ font-size:9px; letter-spacing:.22em; }
+
+    /* Legend: smaller, sits above the docked panel + transport */
+    #legend{ left:14px; bottom:auto; top:54px; font-size:12px; }
+    #legend .row{ gap:8px; margin-top:7px; }
+    #legend .sw{ width:18px; }
+
+    /* Volume + spiral readouts: keep top-left, shrink */
+    #volume{ left:14px; top:auto; bottom:auto; font-size:12px; }
+    #spiral{ left:14px; right:14px; bottom:auto; top:84px; width:auto; max-width:calc(100% - 28px); }
+
+    /* Caption: shrink font, clear the docked panel/transport stack */
+    #caption{ bottom:96px; }
+    .cap{ font-size:12px; }
+    .capstack{ width:92vw; }
+
+    /* Transport bar: full-width compact strip at the very bottom */
+    #transport{ bottom:0; left:0; right:0; transform:none; width:100%;
+      border-radius:0; justify-content:center; gap:6px; padding:5px 8px;
+      box-sizing:border-box; flex-wrap:nowrap; overflow-x:auto;
+      -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #transport::-webkit-scrollbar{ display:none; }
+    #scrub{ width:auto; flex:1 1 60px; min-width:60px; }
+    #transport button, #transport select{ flex-shrink:0; }
+
+    /* ---- Control panel: compact scrollable bottom sheet ---- */
+    #panel{ left:0; right:0; top:auto; bottom:38px; width:100%; transform:none;
+      border-radius:6px 6px 0 0; box-sizing:border-box; max-height:42px; }
+    #panel.panel-open{ max-height:46vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    #panel .panel-body{ padding:0 14px 14px; gap:10px; }
+    #panel .hd{ min-height:44px; padding:10px 14px; }
+    #panel .lab{ font-size:12px; }
+
+    /* Inner Build/Math/Array tab-bar: allow horizontal scroll, no wrap-break */
+    #panel .tab-bar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #panel .tab-bar::-webkit-scrollbar{ display:none; }
+    #panel .tab-btn{ flex:1 0 auto; white-space:nowrap; padding:9px 10px; font-size:9.5px; }
+
+    /* Tap targets ≥40px: pad sliders' hit area (track stays thin & visible),
+       enlarge toggles & transport controls */
+    #panel input[type=range]{ padding:16px 0; background-clip:content-box; }
+    #panel input[type=range]::-webkit-slider-thumb{ width:18px; height:18px; }
+    #panel input[type=range]::-moz-range-thumb{ width:18px; height:18px; }
+    #panel .ctl{ gap:4px; }
+    #panel .tgbtn{ min-height:40px; padding:10px 12px; font-size:11px; }
+    #transport button, #transport select{ min-height:40px; }
+    #scrub{ padding:16px 0; background-clip:content-box; }
+    #scrub::-webkit-slider-thumb{ width:14px; height:14px; }
+    #scrub::-moz-range-thumb{ width:14px; height:14px; }
+  }
 
   /* ================================================================
      VECTOR SYSTEM scene styles  (all IDs prefixed vs-)
@@ -396,7 +471,6 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle.html">Animation</a>
   <a class="navlink active" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
@@ -431,6 +505,7 @@
     <div class="row"><span class="sw"></span> edge <b>= 1</b></div>
     <div class="row"><span class="sw"></span> face diagonal <b>√2</b></div>
     <div class="row"><span class="sw"></span> space diagonal <b>√3</b></div>
+    <div class="row" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(240,237,232,.07);color:var(--geo-angle);letter-spacing:.04em;font-size:10.5px;" title="35.2644° / 54.7356° exact">35.25° / 54.75° / 90°</div>
   </div>
 
   <div id="chapters" class="chrome">
@@ -572,7 +647,7 @@
       </div>
       <div class="ttl" style="margin-top:2px">Highlight</div>
       <div class="tgs">
-        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.26°</button>
+        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.25°</button>
         <button class="tgbtn off" id="vs-tg-frame">Single frame</button>
       </div>
       <div class="div"></div>
@@ -874,7 +949,7 @@ function addLabel(text,hex,pos){ const sp=labelSprite(text,hex); sp.position.cop
 addLabel('1',      HEX.bone, V(0.5,-0.05,-0.06));
 addLabel('√2',     HEX.blue, V(0.5,0.5,-0.11));
 addLabel('√3',     HEX.mag,  V(0.68,0.54,0.5));
-addLabel('35.26°', HEX.gold, V(0.27,0.15,0.30));
+addLabel('35.25°', HEX.gold, V(0.27,0.15,0.30));
 
 const capStack = document.getElementById('capstack');
 function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capStack.appendChild(d); return d; }
@@ -1044,7 +1119,7 @@ function goToChapter(i, opts={}){
   const toState = ch.state;
   userTookOver = false; controls.autoRotate = false;
   tween = { t:0, dur: opts.instant?0.0001:1.5, from, toState, goalPos:goal.pos, goalTgt:goal.tgt, killCam:false, onDone:opts.onDone };
-  tt = ch.tEnd; scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%';
+  tt = ch.tEnd; scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
 }
 function stepTween(dt){
   if(!tween) return;
@@ -1079,7 +1154,7 @@ let tt = 0, playing = true, speed = 1, last = performance.now();
 const DURATION = 30;
 function setPlaying(p){ playing = p; playBtn.textContent = p ? '❙❙' : '►'; }
 function setTour(v){ tt = clamp01(v); Object.assign(STATE, tourState(tt));
-  scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%'; markChapter(chapterForT(tt)); render(); syncSliders(); }
+  scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s'; markChapter(chapterForT(tt)); render(); syncSliders(); }
 
 playBtn.onclick = ()=>{ cancelCamTween(); tween=null; if(!userTookOver) controls.autoRotate=true; setPlaying(!playing); };
 speedSel.onchange = ()=> speed=parseFloat(speedSel.value);
@@ -1179,7 +1254,7 @@ function animate(now){
     tt += dt*speed/DURATION;
     if(tt>=1){ tt=1; setPlaying(false); }
     Object.assign(STATE, tourState(tt));
-    scrub.value=Math.round(tt*1000); tlabel.textContent=Math.round(tt*100)+'%';
+    scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
     markChapter(chapterForT(tt));
     render(); syncSliders();
   }
@@ -1323,7 +1398,7 @@ function addLabel(t,hex,p){ const s=labelSprite(t,hex); s.position.copy(p); proo
 addLabel('√2',    HEX.blue, new THREE.Vector3(0.5,0.5,-0.06));
 addLabel('1',     HEX.bone, new THREE.Vector3(1.12,1.0,0.5));
 addLabel('√3',    HEX.mag,  new THREE.Vector3(0.42,0.62,0.56));
-addLabel('35.26°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
+addLabel('35.25°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
 
 const STATE = { grid:2, gap:0, edge:1, face:1, space:1, proof:1, frame:0 };
 function extent(N,gap){ return (N-1)*(1+gap)+1; }

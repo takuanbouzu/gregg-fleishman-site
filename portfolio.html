@@ -19,6 +19,22 @@
   .sec{ padding:88px 0; }
   .sec + .sec{ border-top:1px solid var(--hairline); }
   @media(max-width:680px){ .wrap{ padding:0 24px; } .sec{ padding:56px 0; } }
+  @media(max-width:600px){
+    /* one item per row so names/sublines never get cramped */
+    .item-grid{ grid-template-columns:1fr; }
+    /* category header: stack title above the count */
+    .cat-header{ grid-template-columns:1fr; align-items:start; gap:8px; margin-bottom:28px; }
+    .cat-count{ padding-bottom:0; }
+    /* media + readability */
+    .cat-hero img{ max-width:100%; }
+    .lead, .cat-desc{ font-size:15px; }
+    .page-header .lead{ font-size:18px; }
+    /* collections note + store CTA stack with comfortable padding */
+    .collections-note{ padding:22px 20px; gap:14px; }
+    /* the inline-styled store-CTA panel (last .sec) → stack + full-width button */
+    .sec:last-of-type .wrap > div{ flex-direction:column; align-items:stretch !important; padding:28px 22px !important; }
+    .sec:last-of-type .gf-btn-fill{ width:100%; text-align:center; }
+  }
   @media(max-width:480px){ .page-header h1{ font-size:clamp(36px,9vw,48px); } .page-header{ padding:56px 0 40px; } }
 
   /* ── eyebrow ── */
@@ -58,6 +74,10 @@
     padding-bottom:6px;
   }
   .cat-desc{ font-size:15px; line-height:1.8; color:var(--tx-dim); max-width:600px; margin:0 0 40px; }
+  @media(max-width:480px){
+    .cat-header{ grid-template-columns:1fr; gap:4px; }
+    .cat-count{ padding-bottom:0; }
+  }
 
   /* ── hero image for each category ── */
   .cat-hero{
@@ -66,9 +86,9 @@
   }
   .cat-hero img{
     width:100%; height:100%; object-fit:cover; display:block;
-    filter:brightness(.85); transition:filter .5s;
+    transition:transform .5s cubic-bezier(.4,0,.2,1);
   }
-  .cat-hero:hover img{ filter:brightness(.95); }
+  .cat-hero:hover img{ transform:scale(1.02); }
 
   /* ── item grid ── */
   .item-grid{
@@ -117,6 +137,14 @@
 
   /* ── cta row ── */
   .cta-row{ display:flex; gap:14px; flex-wrap:wrap; margin-top:40px; }
+
+  /* ── store cta block ── */
+  .portfolio-cta{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:24px; flex-wrap:wrap; padding:40px;
+    background:var(--bg-surface); border:1px solid var(--border);
+  }
+  @media(max-width:480px){ .portfolio-cta{ padding:24px 20px; } }
 
   p{ font-size:15px; line-height:1.85; color:var(--tx-dim); margin:0 0 16px; }
   p:last-child{ margin-bottom:0; }
@@ -384,7 +412,7 @@
 <!-- Store CTA -->
 <section class="sec">
   <div class="wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:40px;background:var(--bg-surface);border:1px solid var(--border);">
+    <div class="portfolio-cta">
       <div>
         <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.24em;text-transform:uppercase;color:var(--accent);margin:0 0 10px;">All designs available as file downloads</p>
         <h3 style="font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-.02em;margin:0 0 8px;color:var(--tx);">Build one yourself</h3>

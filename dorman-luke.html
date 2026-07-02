@@ -95,7 +95,22 @@
     .wrap{padding:0 20px;}
     .research-note .inner{padding:14px 20px;flex-direction:column;gap:6px;}
     h1{font-size:44px;}
+    .intro{font-size:18px;}
     .sec{padding:56px 0;}
+    .fig-outer{height:320px;}
+  }
+  @media(max-width:480px){
+    h1{font-size:clamp(36px,9vw,44px);}
+    .intro{font-size:16px;}
+    .fig-outer{height:260px;}
+  }
+  @media(max-width:600px){
+    .fig-outer{height:380px;}
+    .fig-panel{padding:8px 10px;border-radius:var(--radius-md,9px);}
+    /* mode toggle: cap width, dock bottom-center, larger tap targets, wrap if needed */
+    .fig-mode{right:10px;left:10px;bottom:12px;justify-content:center;flex-wrap:wrap;
+      max-width:calc(100% - 20px);}
+    .fig-mode button{min-height:40px;padding:9px 12px;font-size:12px;}
   }
 </style>
 </head>
@@ -104,7 +119,6 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle.html">Animation</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink active" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

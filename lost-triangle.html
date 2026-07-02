@@ -36,6 +36,12 @@
   html.lt-embed #gfnav{ display:none; }
   html.lt-embed #lt-stage{ top:0; }
 
+  /* Scrub control thumb (from the design) */
+  .lt-scrub{ -webkit-appearance:none; appearance:none; height:4px; border-radius:3px; background:rgba(240,237,232,.14); outline:none; }
+  .lt-scrub::-webkit-slider-thumb{ -webkit-appearance:none; width:15px; height:15px; border-radius:50%; background:#C8A96E; cursor:pointer; box-shadow:0 0 0 4px rgba(200,169,110,.16); }
+  .lt-scrub::-moz-range-thumb{ width:15px; height:15px; border:none; border-radius:50%; background:#C8A96E; cursor:pointer; }
+  @keyframes pulse-glow { 0%,100%{ box-shadow:0 0 0 0 rgba(200,169,110,.0), 0 0 24px rgba(200,169,110,.18); } 50%{ box-shadow:0 0 0 8px rgba(200,169,110,.08), 0 0 40px rgba(200,169,110,.30); } }
+
   /* Loading / no-script states */
   #lt-fallback{
     position:absolute; inset:0; display:flex; flex-direction:column;
@@ -51,8 +57,7 @@
 
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

@@ -62,6 +62,26 @@
   #fallback h2{font-family:var(--font-display);font-weight:800;color:var(--tx);font-size:22px;margin:0 0 12px}
   #fallback p{font-size:14px;line-height:1.6;margin:0}
   #fallback a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+
+  /* ---- MOBILE (≤600px) ---- */
+  @media (max-width:600px){
+    html,body{overflow-x:hidden}
+    /* caption: smaller, narrower, lifted above the controls */
+    #capwrap{bottom:84px}
+    .capstack{width:92vw}
+    .cap{font-size:11px;letter-spacing:.04em}
+    /* transport bar: tighter padding/gap, smaller chrome, scrub keeps a tall tap target */
+    #controls{gap:8px;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
+    #controls button, #controls select{font-size:10px;letter-spacing:.04em;padding:7px 8px}
+    #controls select{padding:7px 6px}
+    #scrub{flex:1 1 100%;order:5;height:40px;background:transparent}
+    /* draw the visible track inside the 40px-tall hit area */
+    #scrub::-webkit-slider-runnable-track{height:3px;background:var(--border-strong);border-radius:3px}
+    #scrub::-moz-range-track{height:3px;background:var(--border-strong);border-radius:3px}
+    #scrub::-webkit-slider-thumb{width:16px;height:16px;margin-top:-6.5px}
+    #scrub::-moz-range-thumb{width:16px;height:16px}
+    .tlabel{font-size:10px;min-width:30px}
+  }
 </style>
 <script src="assets/vendor/gsap-3.12.5/gsap.min.js"></script>
 </head>
@@ -76,8 +96,7 @@
 
   <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

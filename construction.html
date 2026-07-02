@@ -121,14 +121,22 @@
     font-family:var(--font-mono); font-size:13px; letter-spacing:.30em;
     text-transform:uppercase; color:var(--tx-dim);
   }
+
+  /* ---- MOBILE (≤600px) ---- */
+  @media (max-width:600px){
+    html,body{ overflow-x:hidden; max-width:100%; }
+    /* the 2D-construction iframe is the whole page below the nav — make sure it
+       fills the available width and height with no overflow on narrow screens */
+    .con-section{ width:100%; left:0; right:0; }
+    #c2d-frame{ width:100%; height:100%; }
+  }
 </style>
 </head>
 <body>
 
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

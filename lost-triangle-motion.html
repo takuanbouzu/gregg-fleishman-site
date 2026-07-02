@@ -84,13 +84,22 @@
     color:var(--tx-dim);text-decoration:none;pointer-events:auto;transition:color .15s var(--ease);}
   .lt-walklinks a:hover{color:var(--accent);}
   html.gf-cover #gfnav,html.gf-cover .lt-progress,html.gf-cover .lt-walklinks,html.gf-cover .lt-idx,html.gf-cover .lt-cap,html.gf-cover .lt-state,html.gf-cover .lt-hint{display:none!important;}
+
+  /* ---- MOBILE (≤600px) ---- */
+  /* The 1920×1080 artifact is JS-scaled to fit (transform:scale), and all of its
+     chrome lives inside the stage so it scales with it — nothing to reflow there.
+     Only guard against horizontal overflow and keep the wall links compact. */
+  @media (max-width:600px){
+    html,body{overflow-x:hidden;max-width:100%;}
+    .lt-walklinks{gap:14px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));}
+    .lt-walklinks a{font-size:10.5px;letter-spacing:.12em;}
+  }
 </style>
 </head>
 <body>
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

@@ -107,6 +107,23 @@
     #capwrap{bottom:56px}
     #stage{touch-action:none}
   }
+  @media(max-width:600px){
+    /* masthead: fluid width, smaller, so it never runs off the left edge */
+    #masthead{left:14px;right:14px;top:62px;max-width:92vw}
+    #masthead h1{font-size:18px}
+    #masthead .sub{font-size:10px;letter-spacing:.28em}
+    /* docked control panel: sit above legend/caption, cap height + scroll */
+    #panel.panel-open{max-height:56vh}
+    #panel .ph{padding:13px 14px;font-size:10px}
+    /* tap targets: bigger toggle buttons and a taller slider hit area */
+    #panel .tgbtn{padding:11px 12px;min-height:40px}
+    #panel .tgs{gap:8px}
+    #panel input[type=range]{height:6px;padding:14px 0;background-clip:content-box}
+    /* keep legend + caption clear of the collapsed (44px) docked panel */
+    #legend{left:14px;bottom:60px;font-size:11px}
+    #capwrap{bottom:60px}
+    .cap{font-size:12px}
+  }
 </style>
 </head>
 <body>
@@ -114,7 +131,6 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle.html">Animation</a>
   <a class="navlink active" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>

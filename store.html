@@ -60,7 +60,18 @@
     font-size:15px; margin:0 0 8px; color:var(--tx);
   }
   .step-text{ font-size:13px; line-height:1.7; color:var(--tx-dim); margin:0; }
-  @media(max-width:600px){ .how-row{ grid-template-columns:1fr; } }
+  @media(max-width:600px){
+    .how-row{ grid-template-columns:1fr; margin-bottom:48px; }
+    /* one product per row */
+    .product-grid{ grid-template-columns:1fr; }
+    /* product footer wraps so the buy button never overflows */
+    .product-footer{ flex-wrap:wrap; gap:10px; }
+    .page-header .lead{ font-size:18px; }
+    /* license + donate blocks: comfortable padding, donate stacks */
+    .license-box{ padding:24px 20px; }
+    .donate-block{ flex-direction:column; align-items:stretch; padding:28px 22px; gap:16px; }
+    .donate-block .buy-btn{ width:100%; text-align:center; box-sizing:border-box; }
+  }
 
   /* ── cat header ── */
   .cat-header{ margin-bottom:28px; }
@@ -108,7 +119,8 @@
   }
   /* Buy button — replace href with real Gumroad or Stripe product link */
   .buy-btn{
-    display:inline-block; padding:8px 16px;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:10px 16px; min-height:44px; touch-action:manipulation;
     background:var(--accent); color:var(--accent-text);
     font-family:var(--font-mono); font-size:9px; letter-spacing:0.16em;
     text-transform:uppercase; text-decoration:none; white-space:nowrap;

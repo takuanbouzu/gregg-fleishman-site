@@ -74,6 +74,23 @@
     #stage{ width:min(88vmin,480px); }
   }
 
+  /* ---- PHONES (≤600px) — covers the 481–600 band too; fixes caption overflow ---- */
+  @media(max-width:600px){
+    html,body{ overflow-x:hidden; max-width:100%; }
+    header{ padding:10px 14px 6px; }
+    main{ padding:4px 12px; }
+    /* caption may be a long formula — let it wrap and stay inside the viewport
+       instead of forcing horizontal scroll with white-space:nowrap */
+    #caption{ white-space:normal; width:min(94vw,520px); font-size:11.5px; line-height:1.4; }
+    /* keep the controls compact and the scrub a comfortable tap target */
+    #controls{ padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px)); gap:8px 10px; }
+    button{ padding:9px 12px; font-size:11px; }
+    #scrub{ width:min(72vw,340px); height:4px; }
+    #scrub::-webkit-slider-thumb{ width:18px; height:18px; }
+    #scrub::-moz-range-thumb{ width:18px; height:18px; }
+    #stage{ width:min(86vmin,480px); }
+  }
+
   /* ---- CLEAN / RECORD MODE (?clean=1) ---- */
   body.clean{ background:var(--bg); display:block; }
   body.clean header, body.clean #controls{ display:none; }
@@ -88,8 +105,7 @@
 <body>
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
   <a class="navlink" href="rhombic-system.html">Rhombic System</a>
