@@ -6,6 +6,36 @@
 
   var cr = React.createElement;
 
+  // Model-true station rod vectors: derived from window.PROOF_MATH27 (Gregg's
+  // math27.3dm export, see assets/lost-triangle/fleishman-proof-data-math27.js)
+  // rather than typed as idealized constants. Each station's rod is its one
+  // "len":"200" (length-2) member centerline. Falls back to the exact unit-
+  // vector family if the proof data isn't loaded. Used by LostTriangleConstruction.
+  function ltRodsFromProof(PM) {
+    if (!PM || !PM.lines) return null;
+    var rods = PM.lines.filter(function(l){ return l.len === '200'; }).map(function(l){
+      var base = l.a[2] <= l.b[2] ? l.a : l.b, tip = l.a[2] <= l.b[2] ? l.b : l.a;
+      return [tip[0]-base[0], tip[1]-base[1], tip[2]-base[2]];
+    });
+    return rods.length === 3 ? rods : null;
+  }
+  // Preferred source: the cleaned per-station proof models (PROOF_STATIONS_CLEAN,
+  // 2026-07-02) — one explicit rod per beginning, matched by azimuth rather than
+  // line order. PROOF_MATH27 remains the second fallback.
+  function ltRodFromStations(PS, deg) {
+    if (!PS || !PS.stations) return null;
+    for (var i = 0; i < PS.stations.length; i++) {
+      var s = PS.stations[i];
+      if (s.rod && Math.abs(s.begin_deg - deg) < 0.5) {
+        var a = s.rod.a, b = s.rod.b;
+        return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+      }
+    }
+    return null;
+  }
+  function ltAz(v){ return Math.atan2(v[1], v[0]) * 180 / Math.PI; }
+  function ltAlt(v){ return Math.atan2(v[2], Math.hypot(v[0], v[1])) * 180 / Math.PI; }
+
   var CARD_BORDERS   = ['#4A90D9','#E0349E','rgba(240,237,232,.65)','#3CCB8E','#C8A96E','#E0349E'];
   var CARD_FSIZES    = ['19px','19px','19px','21px','21px','17px'];
   var CARD_BADGES    = ['1','2','3','σ','✸','2\xd7'];
@@ -385,10 +415,14 @@
       super(props);
       this.END=12; this.KEY='lt_optb_dark';
       var r2=Math.SQRT2;
+      var rods=ltRodsFromProof(window.PROOF_MATH27);
+      var rodA=ltRodFromStations(window.PROOF_STATIONS_CLEAN,45)   ||(rods?rods[0]:[1,1,r2]);
+      var rodB=ltRodFromStations(window.PROOF_STATIONS_CLEAN,35.26)||(rods?rods[1]:[r2,1,1]);
+      var rodC=ltRodFromStations(window.PROOF_STATIONS_CLEAN,54.74)||(rods?rods[2]:[1,r2,1]);
       this.V=[
-        {v:[r2,1,1], az:35.264, alt:30, run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'o', note:'= Lost Triangle small angle'},
-        {v:[1,1,r2], az:45,     alt:45, run:'√2', rise:'√2', tri:'45-45-90 · 1:1:√2', angT:'45°', hl:'b', note:'= bisector of the two LT angles'},
-        {v:[1,r2,1], az:54.736, alt:30, run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'v', note:'= Lost Triangle large angle'}
+        {v:rodB, az:ltAz(rodB), alt:ltAlt(rodB), run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'o', note:'= Lost Triangle small angle'},
+        {v:rodA, az:ltAz(rodA), alt:ltAlt(rodA), run:'√2', rise:'√2', tri:'45-45-90 · 1:1:√2', angT:'45°', hl:'b', note:'= bisector of the two LT angles'},
+        {v:rodC, az:ltAz(rodC), alt:ltAlt(rodC), run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'v', note:'= Lost Triangle large angle'}
       ];
       this.ACC=['#7FB2E6','#C8A96E','#E0349E'];
       this.TITLES=['#7FB2E6','#D8BE8F','#F05BB5'];
@@ -493,7 +527,7 @@
       var azp=sm(lt,1.3,3.4);s+=seg(O,foot,azp,runC,8.5);s+=azArc(azRad,1.6,azp,ANG,0.9*azp);
       if(azp>0.55){var am=proj([1.0*Math.cos(azRad/2),1.0*Math.sin(azRad/2),0]);s+=txXY(am[0],am[1]+12,V.az.toFixed(2)+'°  (xy)',ANGT,34,'600');}
       var altp=sm(lt,3.4,5.4);s+=seg(foot,v,altp,riseC,8.5);s+=altArc(fh,altRad,2.4,altp,ANG,0.9*altp);
-      if(altp>0.55){var hm=proj([1.2*Math.cos(altRad/2)*fh[0],1.2*Math.cos(altRad/2)*fh[1],1.2*Math.sin(altRad/2)]);s+=txXY(hm[0]+15,hm[1],V.alt+'°  (z-rise)',ANGT,32,'600','start');}
+      if(altp>0.55){var hm=proj([1.2*Math.cos(altRad/2)*fh[0],1.2*Math.cos(altRad/2)*fh[1],1.2*Math.sin(altRad/2)]);s+=txXY(hm[0]+15,hm[1],V.alt.toFixed(2)+'°  (z-rise)',ANGT,32,'600','start');}
       var trp=sm(lt,5.4,7);if(trp>0)s+=poly([O,foot,v],'rgba(60,203,142,'+(0.13*trp)+')',1);
       var vecp=sm(lt,5.2,7);s+=seg(O,v,vecp,hypC,10);s+=rang(foot,O,v,'rgba(60,203,142,.8)',trp);
       var lp=sm(lt,7,8.6);
