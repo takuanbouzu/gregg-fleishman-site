@@ -119,10 +119,10 @@
     fit(){
       if(!this.frameEl||!this.fitEl)return;
       var availW=window.innerWidth-28, availH=window.innerHeight-104;
-      var s=Math.min(availW/1180,availH/980,1);
+      var s=Math.min(availW/1180,availH/1020,1);
       this.frameEl.style.transform='scale('+s+')';
       this.fitEl.style.width=(1180*s)+'px';
-      this.fitEl.style.height=(980*s)+'px';
+      this.fitEl.style.height=(1020*s)+'px';
     }
 
     curCI(){var ci=0;for(var i=0;i<this.CH.length;i++){if(this.state.t>=this.CH[i]-0.001)ci=i;}return ci;}
@@ -187,12 +187,12 @@
             cr('feMergeNode',{in:'b'}),
             cr('feMergeNode',{in:'SourceGraphic'})))));
 
+      var aSc=this.S+80*this.fio(t,17,22,28,32);
       var cubeOp=(showCube?1:0)*this.sm(t,0.3,2)*(1-this.sm(t,46,50)*0.7);
-      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]]),b=this.proj(this.cube[e[1]]);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
+      this.edges.forEach((e)=>{var a=this.proj(this.cube[e[0]],aSc),b=this.proj(this.cube[e[1]],aSc);push(this.ln(a,b,'rgba(74,144,217,0.16)',1.2,cubeOp));});
 
       var mainOp=1-this.sm(t,27.5,29.5)*0.55;
       var fillp=this.sm(t,18,20)*(1-this.sm(t,27.5,29.5)*0.4);
-      var aSc=this.S+80*this.fio(t,17,22,28,32);
       if(fillp>0)push(this.poly([O,E,V],'rgba(60,203,142,'+(0.20*fillp)+')',1,aSc));
 
       var fd=this.sm(t,1,5); push(this.seg(O,E,fd,C.blue,4,aSc,{op:mainOp})); if(fd>0.6)push(this.labP(this.mid(O,E),'√2',C.blue,mainOp,{dy:34,size:30,sc:aSc}));
@@ -290,7 +290,7 @@
 
       return cr('div',{style:{display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'24px 14px',background:'#070707',minHeight:'100%',boxSizing:'border-box',fontFamily:"'Space Grotesk',sans-serif"}},
         cr('div',{ref:this._fitRef,style:{position:'relative',flex:'0 0 auto'}},
-          cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'980px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
+          cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'1020px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
 
             cr('div',{style:{position:'absolute',inset:0,background:'radial-gradient(ellipse 76% 70% at 52% 42%, #16140F 0%, #0E0E0D 56%, #0A0A0A 100%)'}}),
 
@@ -365,7 +365,7 @@
           // Scroll chevron — leads to Construction Triangles below
           cr('div',{style:{position:'absolute',bottom:'18px',right:'36px',display:'flex',alignItems:'center',gap:'10px'}},
             cr('button',{
-              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el) el.scrollIntoView({behavior:'smooth'}); },
+              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el){ el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='lost-triangle-construction-triangles.html'; } },
               style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 16px',border:'1px solid rgba(240,237,232,.12)',borderRadius:'8px',background:'rgba(240,237,232,.04)',cursor:'pointer',fontFamily:"'Space Mono',monospace",fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.5)',transition:'all .2s'}
             },'CONSTRUCTION TRIANGLES ↓')
           )
