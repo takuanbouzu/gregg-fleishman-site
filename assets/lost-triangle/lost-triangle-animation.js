@@ -19,6 +19,20 @@
     });
     return rods.length === 3 ? rods : null;
   }
+  // Preferred source: the cleaned per-station proof models (PROOF_STATIONS_CLEAN,
+  // 2026-07-02) — one explicit rod per beginning, matched by azimuth rather than
+  // line order. PROOF_MATH27 remains the second fallback.
+  function ltRodFromStations(PS, deg) {
+    if (!PS || !PS.stations) return null;
+    for (var i = 0; i < PS.stations.length; i++) {
+      var s = PS.stations[i];
+      if (s.rod && Math.abs(s.begin_deg - deg) < 0.5) {
+        var a = s.rod.a, b = s.rod.b;
+        return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+      }
+    }
+    return null;
+  }
   function ltAz(v){ return Math.atan2(v[1], v[0]) * 180 / Math.PI; }
   function ltAlt(v){ return Math.atan2(v[2], Math.hypot(v[0], v[1])) * 180 / Math.PI; }
 
@@ -402,7 +416,9 @@
       this.END=12; this.KEY='lt_optb_dark';
       var r2=Math.SQRT2;
       var rods=ltRodsFromProof(window.PROOF_MATH27);
-      var rodA=rods?rods[0]:[1,1,r2], rodB=rods?rods[1]:[r2,1,1], rodC=rods?rods[2]:[1,r2,1];
+      var rodA=ltRodFromStations(window.PROOF_STATIONS_CLEAN,45)   ||(rods?rods[0]:[1,1,r2]);
+      var rodB=ltRodFromStations(window.PROOF_STATIONS_CLEAN,35.26)||(rods?rods[1]:[r2,1,1]);
+      var rodC=ltRodFromStations(window.PROOF_STATIONS_CLEAN,54.74)||(rods?rods[2]:[1,r2,1]);
       this.V=[
         {v:rodB, az:ltAz(rodB), alt:ltAlt(rodB), run:'√3', rise:'1', tri:'30-60-90 · 1:√3:2', angT:'60°', hl:'o', note:'= Lost Triangle small angle'},
         {v:rodA, az:ltAz(rodA), alt:ltAlt(rodA), run:'√2', rise:'√2', tri:'45-45-90 · 1:1:√2', angT:'45°', hl:'b', note:'= bisector of the two LT angles'},
