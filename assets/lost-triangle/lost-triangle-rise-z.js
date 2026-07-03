@@ -124,21 +124,28 @@
 
       push(this.txt(960,930,"the same triangle is the cube’s characteristic triangle — centre · edge · vertex",C.ink,this.fio(t,24,25,30,30.6),{size:32,italic:true}));
 
+      // Caption opacity is scheduled separately from the geometry's own
+      // crossfade (rv/wv below) — the two captions are full sentences sharing
+      // one baseline, so they must swap cleanly rather than cross-dissolve
+      // (a geometry-linked crossfade left both fully opaque at once, garbling
+      // the text).
       var rv=this.fio(t,30.5,32,40.5,41.5);
+      var rvCap=this.fio(t,30.5,32,37.4,38.0);
       if(rv>0){ var N=Math.floor(48*this.sm(t,31.5,38.5));
         for(var i=0;i<N&&i<48;i++){ push(this.poly([this.Opc,this.TR[i][0],this.TR[i][1]],'rgba(60,203,142,0.07)',rv));
           push(this.ln(this.proj(this.Opc),this.proj(this.TR[i][0]),'rgba(74,144,217,0.55)',1.2,rv*0.7));
           push(this.ln(this.proj(this.TR[i][0]),this.proj(this.TR[i][1]),'rgba(224,52,158,0.55)',1.2,rv*0.7)); }
-        push(this.txt(960,966,'σ — reflect across its legs → '+Math.min(N,48)+' / 48 copies tile the cube (Oₕ)',C.terra,1,{size:28,face:"'Space Grotesk',sans-serif",glow:true})); }
+        if(rvCap>0) push(this.txt(960,966,'σ — reflect across its legs → '+Math.min(N,48)+' / 48 copies tile the cube (Oₕ)',C.terra,rvCap,{size:28,face:"'Space Grotesk',sans-serif",glow:true})); }
 
       var wv=this.fio(t,38,39.5,48,49);
+      var wvCap=this.fio(t,38.3,39.1,48,49);
       if(wv>0){ var seed=this.sm(t,38.5,39.8); push(this.dot(this.Epc,11*seed,C.gold,wv));
         var cloud=this.sm(t,39.5,42); this.CUBO.forEach((p)=>push(this.dot(p,6,C.gold,wv*cloud)));
         var ce2=this.sm(t,42,45); this.CUBOE.forEach((e)=>push(this.seg(this.CUBO[e[0]],this.CUBO[e[1]],ce2,C.gold,2.4,{op:wv})));
         var rd=this.sm(t,45,47.5); this.RDE.forEach((e)=>push(this.seg(this.RDV[e[0]],this.RDV[e[1]],rd,C.terra,2.8,{op:wv})));
         this.RDV.forEach((p)=>push(this.dot(p,4.5,C.terra,wv*rd)));
         var wlab=ce2<0.99?'Wythoff seed at the edge-midpoint → the cuboctahedron (12 verts)':'dual of the cuboctahedron → the rhombic dodecahedron';
-        push(this.txt(960,966,wlab,ce2<0.99?C.gold:C.terra,1,{size:28,face:"'Space Grotesk',sans-serif",glow:true})); }
+        if(wvCap>0) push(this.txt(960,966,wlab,ce2<0.99?C.gold:C.terra,wvCap,{size:28,face:"'Space Grotesk',sans-serif",glow:true})); }
 
       push(this.txt(64,162,this.CHAP[ci],this.CHCOLOR[ci],this.sm(t,this.CH[ci],this.CH[ci]+0.6),{size:50,anchor:'start',w:800,face:"'Syne',sans-serif",ls:-1.2,glow:true}));
 
