@@ -450,6 +450,10 @@
   /* ── VECTOR POD scene (iframe) ── */
   #scene-vp{ overflow:hidden; }
   #vp-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+
+  /* ── RHOMBIC SYSTEM scene (iframe) ── */
+  #scene-rs{ overflow:hidden; }
+  #rs-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 </style>
 
 <template id="__bundler_thumbnail" data-bg-color="#08080A">
@@ -473,15 +477,15 @@
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
   <a class="navlink active" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
-  <a class="navlink" href="rhombic-system.html">Rhombic System</a>
-  <a class="navlink" href="vector-pod/index.html">Vector Pod</a>
 </nav>
 
 <!-- Tab bar -->
 <div id="explore-tabs">
   <button class="explore-tab-btn active" data-tab="cube">The Cube</button>
-  <button class="explore-tab-btn" data-tab="cs">Cluster Structures</button>
+  <!-- Cluster Structures tab hidden for now (content kept below, just unreachable from the tab bar) -->
+  <!-- <button class="explore-tab-btn" data-tab="cs">Cluster Structures</button> -->
   <button class="explore-tab-btn" data-tab="vs">Vector System</button>
+  <button class="explore-tab-btn" data-tab="rs">Rhombic System</button>
   <button class="explore-tab-btn" data-tab="vp">Vector Pod</button>
 </div>
 
@@ -683,6 +687,19 @@
     </select>
   </div>
 </div><!-- /#scene-cs -->
+
+<!-- ================================================================
+     SCENE: RHOMBIC SYSTEM  (same-origin iframe — no CORS)
+     ================================================================ -->
+<div id="scene-rs" class="con-scene" style="display:none;">
+  <!-- Not loading="lazy": Chromium can permanently defer a lazy iframe whose
+       ancestor is display:none at parse time, even after it's later shown
+       (unlike vp-frame below, whose lighter Vue app isn't affected the same
+       way) — load it eagerly instead. -->
+  <iframe id="rs-frame" src="rhombic-system.html?embed=1"
+    title="Rhombic System"
+    aria-label="Rhombic System interactive model"></iframe>
+</div><!-- /#scene-rs -->
 
 <!-- ================================================================
      SCENE: VECTOR POD  (same-origin iframe — no CORS)
@@ -1797,7 +1814,7 @@ resize();
 <!-- Tab switcher -->
 <script>
 (function(){
-  const scenes = ['cube', 'cs', 'vs', 'vp'];
+  const scenes = ['cube', 'cs', 'vs', 'rs', 'vp'];
   const btns = document.querySelectorAll('.explore-tab-btn');
   function activate(id) {
     scenes.forEach(s => {

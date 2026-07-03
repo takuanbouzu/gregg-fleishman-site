@@ -69,12 +69,13 @@ gregg-fleishman-site/
 │   ├── index.html
 │   └── assets/
 ├── index.html                 # Landing page (outer site hub)
-├── explore.html               # THE CUBE — main interactive (4 tabs)
+├── explore.html               # THE CUBE — main interactive (5 tabs, 1 hidden — see below)
 ├── mathematics.html           # The Lost Triangle narrative
 ├── construction.html          # Full-bleed iframe → lost-triangle.html?embed=1 (Cluster Structures tab removed)
 ├── lost-triangle.html         # React motion graphic (1:√2:√3); ?embed=1 hides nav for iframe use
 ├── dorman-luke.html           # Research: Dorman-Luke unfolding
-├── rhombic-system.html        # Rhombic dodecahedron system
+├── rhombic-system.html        # Rhombic dodecahedron system; no longer a top-nav item — reachable via the
+│                               # explore.html "Rhombic System" tab (iframe, ?embed=1) or by direct URL
 ├── about.html                 # About Gregg Fleishman
 ├── portfolio.html             # Work / portfolio gallery
 ├── store.html                 # Store (placeholder, products disabled)
@@ -94,7 +95,7 @@ About · Work · Geometry · Store · Contact
 
 ### Geometry Exhibit Nav (all geometry pages)
 ```
-[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System · Vector Pod
+[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research
 ```
 - Present on all 15 geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
 - `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px.
@@ -103,17 +104,20 @@ About · Work · Geometry · Store · Contact
   - **"Animation" → `lost-triangle.html`** — the accurate React motion graphic.
   - **"The Cube" → `explore.html`** — the interactive 3D model.
 - There is no longer a "Construction" nav item; `construction.html` is an orphaned deep-dive (active context = Animation).
+- There is no longer a top-nav "Vector Pod" item (removed July 2026) — it was redundant with the "Vector Pod" tab already inside `explore.html`'s tab bar. `vector-pod/index.html` is still reachable via that tab, and via the "Vector Pod" link in `index.html`'s own content index.
+- There is no longer a top-nav "Rhombic System" item (removed July 2026) — it's now folded into `explore.html` as a "Rhombic System" tab (iframe of `rhombic-system.html?embed=1`), same pattern as the "Vector Pod" tab. `rhombic-system.html` still exists standalone and marks "The Cube" active in its own nav (it no longer has a nav item of its own).
 
 ### Orphaned Deep-Dive Pages
 These are accessible by URL only — not linked from any nav:
 - `fleishman-sequence.html` — cinematic sequence (active nav → Animation)
-- `cluster-structures.html` — now a tab inside `explore.html` (active nav → The Cube)
+- `cluster-structures.html` — a tab inside `explore.html`, currently **hidden** from the tab bar (active nav → The Cube)
 - `lost-triangle-construction.html` — 2D animated construction (active nav → Animation)
 - `lost-triangle-construction-3d.html` — 3D construction proof (active nav → Animation)
 - `cube-diagonals.html` — cube diagonal deep-dive (active nav → The Lost Triangle)
-- `rhombic-dodecahedron.html` — rhombic dodecahedron (active nav → Rhombic System)
+- `rhombic-system.html` — rhombic dodecahedron system, now a tab inside `explore.html` (active nav → The Cube)
+- `rhombic-dodecahedron.html` — rhombic dodecahedron (active nav → The Cube)
 - `fleishman-vector-system.html` — vector system (active nav → The Cube)
-- `vector-house.html` — vector house form (active nav → Rhombic System)
+- `vector-house.html` — vector house form (active nav → The Cube)
 - `lost-triangle-motion.html` — looping canvas animation (active nav → Animation), embedded as iframe in `index.html`
 
 ---
@@ -164,11 +168,12 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NoToneMapping;
 ```
 
-**explore.html** — 4 tabs, each its own `<script type="module">`:
+**explore.html** — 5 tabs (1 currently hidden from the tab bar), each its own `<script type="module">` or iframe:
 1. **The Cube** — characteristic tetrahedra assembly; fat lines (Line2/LineMaterial); OrbitControls; GSAP timeline
-2. **Cluster Structures** — GSAP animation sequence
+2. **Cluster Structures** — GSAP animation sequence. **Hidden as of July 2026** — the `<button data-tab="cs">` is commented out of the tab bar, but the `#scene-cs` markup/script and the `'cs'` entry in the tab-switcher's `scenes` array are untouched, so restoring it is a one-line uncomment.
 3. **Vector System** — tiled cube frame with assembly pattern
-4. **Vector Pod** — iframe to `vector-pod/index.html`
+4. **Rhombic System** — iframe to `rhombic-system.html?embed=1` (added July 2026, replacing its former top-nav slot)
+5. **Vector Pod** — iframe to `vector-pod/index.html`
 
 **construction.html** — no tab bar; full-bleed `<iframe src="lost-triangle.html?embed=1">` filling the space below the nav. The Cluster Structures tab (Three.js r160 + GSAP) was removed; its standalone page `cluster-structures.html` still exists by URL but is no longer linked from the nav.
 
@@ -194,7 +199,7 @@ This is the **"Clean" build** — a faithful port of the Claude Design file `Los
 
 ## `explore.html` Specifics
 
-The most complex page — four scenes in one file.
+The most complex page — five scenes in one file (one hidden from the tab bar, two of the five are iframes).
 
 **Tab switching**: `activate(id)` at the bottom of the file shows/hides `.con-scene` divs via `display:block/none`. The animate loop for each scene guards on `sceneCubeEl.style.display === 'none'` to pause when hidden.
 
