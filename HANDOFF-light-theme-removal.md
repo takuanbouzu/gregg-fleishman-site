@@ -8,8 +8,8 @@ This section is kept as a record; the spec below documents what was done.
 
 **Also done in this pass (nav restructure):** the geometry nav now follows the learning
 journey **scroll → animation → model**:
-`Gregg Fleishman · The Lost Triangle (→ mathematics.html) · Animation (→ lost-triangle.html) · The Cube (→ explore.html) · Research · Rhombic System · Vector Pod`,
-identical across all 15 geometry pages. Outer nav unified to "Geometry → index.html". See
+`Gregg Fleishman · The Lost Triangle (→ mathematics.html) · Animation (→ lost-triangle.html) · The Cube (→ explore.html) · Research · Rhombic System`,
+identical across geometry pages. Outer nav unified to "Geometry → index.html". See
 `CLAUDE.md` → "Two Navigation Systems" for the canonical reference.
 
 ## Goal (owner's words)

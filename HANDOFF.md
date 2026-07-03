@@ -59,7 +59,7 @@ galileo's scheme except `construction.html`, which still showed an orphan
 "Construction" tab and pointed Lost Triangle at `mathematics.html`.
 
 **Resolution (canonical, now consistent across all HTML pages):**
-- Geometry nav bar: `The Cube · The Lost Triangle (→ lost-triangle.html) · Research · Rhombic System · Vector Pod`
+- Geometry nav bar: `Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System`
 - `lost-triangle.html` is the canonical animated Lost Triangle page.
 - `mathematics.html` is the readable fallback, linked from prose/no-JS notices
   (index hero, fallback messages) — intentionally, not from the nav bar.

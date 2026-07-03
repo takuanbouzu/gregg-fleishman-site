@@ -94,9 +94,9 @@ About · Work · Geometry · Store · Contact
 
 ### Geometry Exhibit Nav (all geometry pages)
 ```
-[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System · Vector Pod
+[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System
 ```
-- Present on all 15 geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
+- Present on all geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
 - `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px.
 - **Order encodes the intended learning journey: scroll → animation → model.**
   - **"The Lost Triangle" → `mathematics.html`** — the long-form narrative **scroll** (the entry point of the journey).
