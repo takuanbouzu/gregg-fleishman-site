@@ -94,7 +94,7 @@ About · Work · Geometry · Store · Contact
 
 ### Geometry Exhibit Nav (all geometry pages)
 ```
-[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System · Vector Pod
+[brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research · Rhombic System
 ```
 - Present on all 15 geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
 - `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px.
@@ -103,6 +103,7 @@ About · Work · Geometry · Store · Contact
   - **"Animation" → `lost-triangle.html`** — the accurate React motion graphic.
   - **"The Cube" → `explore.html`** — the interactive 3D model.
 - There is no longer a "Construction" nav item; `construction.html` is an orphaned deep-dive (active context = Animation).
+- There is no longer a top-nav "Vector Pod" item (removed July 2026) — it was redundant with the "Vector Pod" tab already inside `explore.html`'s tab bar. `vector-pod/index.html` is still reachable via that tab, and via the "Vector Pod" link in `index.html`'s own content index.
 
 ### Orphaned Deep-Dive Pages
 These are accessible by URL only — not linked from any nav:
