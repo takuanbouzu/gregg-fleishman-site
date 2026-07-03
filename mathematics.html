@@ -16,6 +16,16 @@
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<!-- Three.js r160 ESM, for the Vector House epilogue scene (see #lt-root-house below) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
 <script>
   /* Embed mode (?embed): drop the site nav so the motion graphic can be framed
      inside another page as a full-bleed iframe. */
@@ -35,6 +45,36 @@
   }
   #lt-root{ height:100%; }
   #lt-root-0{ position:relative; height:100vh; }
+
+  /* Vector House epilogue — the built structure, orbitable */
+  #lt-root-house{ position:relative; height:100vh; background:#0B0B0B; overflow:hidden; }
+  #lt-house-chrome{ position:absolute; inset:0; pointer-events:none; z-index:2; }
+  #lt-house-chrome .house-eyebrow{
+    position:absolute; left:40px; top:36px;
+    font-family:'Space Grotesk',sans-serif; font-weight:400; font-size:12px; letter-spacing:.30em;
+    text-transform:uppercase; color:rgba(200,169,110,.72);
+  }
+  #lt-house-chrome h2{
+    position:absolute; left:40px; top:58px; margin:0;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:34px; letter-spacing:-0.01em;
+    color:#F0EDE8; text-shadow:0 0 40px rgba(200,169,110,.22);
+  }
+  #lt-house-chrome .house-caption{
+    position:absolute; left:40px; bottom:44px; max-width:52ch;
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:19px; line-height:1.5;
+    color:rgba(240,237,232,.82);
+  }
+  #lt-house-chrome .house-hint{
+    position:absolute; right:40px; bottom:44px;
+    font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.10em; text-transform:uppercase;
+    color:rgba(138,132,128,.55); text-align:right;
+  }
+  @media (max-width:720px){
+    #lt-house-chrome h2{ font-size:24px; left:20px; top:50px; }
+    #lt-house-chrome .house-eyebrow{ left:20px; top:30px; }
+    #lt-house-chrome .house-caption{ left:20px; right:20px; bottom:88px; font-size:15px; max-width:none; }
+    #lt-house-chrome .house-hint{ left:20px; right:20px; bottom:56px; text-align:left; }
+  }
 
   /* Embed mode — no nav, stage owns the whole frame. */
   html.lt-embed #gfnav{ display:none; }
@@ -73,6 +113,15 @@
         <rect x="20" y="64" width="16" height="16" fill="none" stroke="#6f7079" stroke-width="2"/>
       </svg>
       <div>preparing the construction…</div>
+    </div>
+  </div>
+  <div id="lt-root-house"><!-- The Vector House — the proof, built. Real scanned/modeled geometry,
+       orbitable, the epilogue to the Fleishman Sequence's "you end where you began." -->
+    <div id="lt-house-chrome">
+      <div class="house-eyebrow">Not theory — built</div>
+      <h2>The Vector House</h2>
+      <p class="house-caption">Every angle in the sequence above is cut into this plywood, fifty years running. This is the same geometry, standing.</p>
+      <p class="house-hint">drag to orbit · scroll to zoom</p>
     </div>
   </div>
   <div id="lt-root-0"><!-- Three Beginnings — three different constructions, one triangle -->
@@ -147,6 +196,13 @@
     }, 30);
   }
 })();
+</script>
+<!-- Vector House epilogue — real geometry, orbitable. Vanilla Three.js r160
+     ESM module (not React); mounts independently of the proof animations above. -->
+<script type="module">
+  import { mountVectorHouseScene } from './assets/lost-triangle/vector-house-scene.js';
+  var houseEl = document.getElementById('lt-root-house');
+  if (houseEl) mountVectorHouseScene(houseEl);
 </script>
 <script>
 (function(){
