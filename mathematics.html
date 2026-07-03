@@ -68,6 +68,15 @@
 </nav>
 
 <div id="lt-stage">
+  <div id="lt-root-proof"><!-- The Fleishman Sequence — full proof: three beginnings, one triangle, the cube's chamber, the double, the blossom -->
+    <div id="lt-fallback">
+      <svg class="lt-tri" width="120" height="96" viewBox="0 0 120 96" fill="none" aria-hidden="true">
+        <polygon points="20,80 100,80 20,16" fill="none" stroke="#db684d" stroke-width="3" stroke-linejoin="round"/>
+        <rect x="20" y="64" width="16" height="16" fill="none" stroke="#6f7079" stroke-width="2"/>
+      </svg>
+      <div>preparing the construction…</div>
+    </div>
+  </div>
   <div id="lt-root-0"><!-- Three Beginnings — three different constructions, one triangle -->
     <div id="lt-fallback">
       <svg class="lt-tri" width="120" height="96" viewBox="0 0 120 96" fill="none" aria-hidden="true">
@@ -110,6 +119,11 @@
      handoff "Lost Triangle - Three Beginnings v2.dc.html". Defines
      window.LostTriangleThreeBeginnings. -->
 <script src="assets/lost-triangle/three-beginnings.js"></script>
+<!-- The Fleishman Sequence — full proof (three pivots → shared √3 diagonal →
+     cube chamber wall → tetrahedral double → rhombic-dodecahedron blossom).
+     Ported from the design handoff "260702_Lost Triangle Proof.dc.html".
+     Defines window.LostTriangleProof. -->
+<script src="assets/lost-triangle/lost-triangle-proof.js"></script>
 <!-- The Lost Triangle motion graphic — single self-contained React component
      (plain React.createElement, no build step). Defines window.LostTriangleAnimation. -->
 <script src="assets/lost-triangle/lost-triangle-animation.js"></script>
@@ -117,6 +131,25 @@
 <!-- Clean animation runtime + scenes (Stage/Sprite + LostTriangleVideoClean) -->
 <script src="assets/lost-triangle/lt-clean-animations.js"></script>
 <script src="assets/lost-triangle/lt-clean-video.js"></script>
+<script>
+(function(){
+  "use strict";
+  var rootProof = null;
+  function renderProof(){
+    var el = document.getElementById('lt-root-proof');
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleProof) return false;
+    if (!rootProof) { el.innerHTML = ''; rootProof = ReactDOM.createRoot(el); }
+    rootProof.render(React.createElement(window.LostTriangleProof, { autoplay: true }));
+    return true;
+  }
+  if (!renderProof()) {
+    var triesProof = 0;
+    var idProof = setInterval(function(){
+      if (renderProof() || ++triesProof > 200) clearInterval(idProof);
+    }, 30);
+  }
+})();
+</script>
 <script>
 (function(){
   "use strict";
