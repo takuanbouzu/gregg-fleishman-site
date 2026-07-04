@@ -150,11 +150,6 @@
   const SVGNS="http://www.w3.org/2000/svg";
 
   /* ---------- geometry ---------- */
-  // unit square — axis-aligned; BL = rhombus left vertex, BR = rhombus centre (diagonal crossing)
-  // side ≈ 279 px  (distance from left vertex to centre of rhombus along x)
-  const SQ={ tl:[166,273], tr:[445,273], br:[445,552], bl:[166,552] };
-  // three equal construction arcs (r = ½ × face-diagonal ≈ 197 px), at square-centre / BR / right-vertex
-  const CIR=[ {c:[305,412],r:197}, {c:[445,552],r:197}, {c:[725,552],r:197} ];
   // blue √2-fold rhombus + white inner triangle
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];               // bone half-triangle

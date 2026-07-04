@@ -188,6 +188,15 @@
     background:var(--bg-surface);
     border:1px solid var(--border);
   }
+  /* Stacked CTA on phones. Declared AFTER the base rule so it wins the cascade
+     (the base align-items:center sits below the ≤600 block above and would
+     otherwise clobber the stretch, leaving the text block at min-content width
+     and overflowing). */
+  @media(max-width:600px){
+    .exhibit-link{ flex-direction:column; align-items:stretch; box-sizing:border-box; }
+    .exhibit-link > *{ min-width:0; max-width:100%; box-sizing:border-box; }
+    .exhibit-link .gf-btn-fill{ width:100%; text-align:center; }
+  }
   @media(max-width:480px){ .exhibit-link{ padding:24px 20px; } }
   .exhibit-link-text h3{
     font-family:var(--font-display); font-weight:800;
