@@ -84,12 +84,13 @@
   }
   #pv-hint.hidden{ opacity:0; }
 
-  /* Chrome-hide toggle (top-right, tiny) */
+  /* Chrome-hide toggle (rides in the bar, far right) */
   #pv-toggle{
-    position:fixed; right:16px; top:12px; z-index:30;
+    flex:0 0 auto; align-self:center;
     appearance:none; border:1px solid rgba(240,237,232,.14); background:rgba(11,11,11,.55);
     color:rgba(240,237,232,.6); font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em;
     text-transform:uppercase; padding:6px 10px; border-radius:9px; cursor:pointer; backdrop-filter:blur(6px);
+    white-space:nowrap;
   }
   #pv-toggle:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.3); }
 
@@ -100,8 +101,40 @@
   }
 
   @media (max-width:720px){
-    #pv-caption{ font-size:14px; max-width:70vw; }
-    .pv-chip{ font-size:12px; padding:6px 10px; }
+    /* Compact two-row bar: [brand … hide-chrome] over a single scrollable chip strip. */
+    #pv-bar{ gap:6px 10px; padding:8px 10px 10px; }
+    .pv-brand{ order:1; font-size:9px; }
+    #pv-toggle{ order:2; margin-left:auto; }
+    #pv-chips{
+      order:3; flex:1 1 100%;
+      flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden;
+      -webkit-overflow-scrolling:touch; scrollbar-width:none;
+      padding-bottom:2px; scroll-padding:0 12px;
+    }
+    #pv-chips::-webkit-scrollbar{ display:none; }
+    .pv-chip{ flex:0 0 auto; font-size:12.5px; padding:8px 12px; }
+    /* Caption rides at the top under the bar, clear of each animation's own
+       bottom controls; the letterboxed frame sits lower on a portrait phone. */
+    #pv-caption{
+      top:96px; bottom:auto; left:12px; right:12px; max-width:none;
+      font-size:13px; line-height:1.36; max-height:6.2em; overflow:hidden;
+    }
+    #pv-hint{ display:none; }
+  }
+  /* Short / landscape phone: height is scarce, so collapse to ONE row —
+     scrollable chips + toggle, no brand, no caption. Placed after the
+     max-width block so it wins when both match. */
+  @media (max-height:520px){
+    #pv-bar{ flex-wrap:nowrap; gap:10px; padding:6px 10px; }
+    .pv-brand{ display:none; }
+    #pv-chips{
+      order:0; flex:1 1 auto;
+      flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden;
+      -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:0;
+    }
+    #pv-chips::-webkit-scrollbar{ display:none; }
+    #pv-toggle{ order:0; margin-left:0; }
+    #pv-caption{ display:none; }
     #pv-hint{ display:none; }
   }
 </style>
@@ -113,8 +146,8 @@
 <div id="pv-bar">
   <span class="pv-brand">Gregg Fleishman<b>Animation Preview</b></span>
   <div id="pv-chips"></div>
+  <button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
 </div>
-<button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
 <div id="pv-caption"></div>
 <div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
 
@@ -239,7 +272,10 @@
 
     // Update chrome
     Array.prototype.forEach.call(chipsEl.children, function(c){
-      c.classList.toggle('active', c.dataset.id === item.id);
+      var on = c.dataset.id === item.id;
+      c.classList.toggle('active', on);
+      // keep the active chip visible in the mobile scroll strip
+      if (on && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (_) { c.scrollIntoView(); } }
     });
     capEl.innerHTML = '<b>' + item.label + '</b>' + item.caption;
     if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
