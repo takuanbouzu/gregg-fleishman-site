@@ -167,8 +167,6 @@
      The "Married Cut" option loads it in an isolated iframe instead. -->
 <script src="assets/lost-triangle/lt-clean-animations.js"></script>
 <script src="assets/lost-triangle/lt-clean-video.js"></script>
-<!-- Chapter VIII — The Cube Angle (az 35.25° + el 30° construction). window.LostTriangleCubeAngle -->
-<script src="assets/lost-triangle/cube-angle.js"></script>
 
 <script>
 (function(){
@@ -187,10 +185,6 @@
     { id:'beginnings', label:'Three Beginnings',
       caption:'Three pivot constructions (45°, 35.26°, 54.74°) that all arrive at the same 1 : √2 : √3 triangle.',
       kind:'react', get:function(){ return window.LostTriangleThreeBeginnings; }, props:{ autoplay:true, angleMode:'both' } },
-
-    { id:'cubeangle',  label:'The Cube Angle',
-      caption:'A unit ray at azimuth 35.26° (arctan 1/√2) tilted 30° lands on (√2, 1, 1) — building the construction (sundial) triangle 1 : √3 : 2, whose bearing is the Lost Triangle’s own angle.',
-      kind:'react', get:function(){ return window.LostTriangleCubeAngle; }, props:{ autoplay:true } },
 
     { id:'clean',      label:'The Clean Cut',
       caption:'The 7-scene cinematic cut — magenta / steel / gold on near-black. ~75s.',
