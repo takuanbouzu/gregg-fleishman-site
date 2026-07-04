@@ -149,7 +149,7 @@
     fit(){
       if(!this.frameEl||!this.fitEl)return;
       var availW=window.innerWidth-28, availH=window.innerHeight-104;
-      var s=Math.min(availW/1180,availH/1020,1);
+      var s=Math.min(availW/1180,availH/1020);
       this.frameEl.style.transform='scale('+s+')';
       this.fitEl.style.width=(1180*s)+'px';
       this.fitEl.style.height=(1020*s)+'px';
@@ -318,7 +318,7 @@
       }
       var chPicks=[2,3,4,5];
 
-      return cr('div',{style:{display:'flex',justifyContent:'center',alignItems:'flex-start',padding:'24px 14px',background:'#070707',minHeight:'100%',boxSizing:'border-box',fontFamily:"'Space Grotesk',sans-serif"}},
+      return cr('div',{style:{display:'flex',justifyContent:'center',alignItems:'center',padding:'20px 14px',background:'#070707',minHeight:'100%',boxSizing:'border-box',fontFamily:"'Space Grotesk',sans-serif"}},
         cr('div',{ref:this._fitRef,style:{position:'relative',flex:'0 0 auto'}},
           cr('div',{ref:this._frameRef,style:{position:'relative',width:'1180px',height:'1020px',transformOrigin:'top left',background:'#0B0B0B',border:'1px solid rgba(240,237,232,.06)',boxShadow:'0 30px 90px rgba(0,0,0,.6)',overflow:'hidden'}},
 
@@ -390,14 +390,15 @@
               }.bind(this),[])
             )
 
-          ),
-
-          // Scroll chevron — leads to Construction Triangles below
-          cr('div',{style:{position:'absolute',bottom:'18px',right:'36px',display:'flex',alignItems:'center',gap:'10px'}},
-            cr('button',{
-              onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el){ el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='lost-triangle-construction-triangles.html'; } },
-              style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 16px',border:'1px solid rgba(240,237,232,.12)',borderRadius:'8px',background:'rgba(240,237,232,.04)',cursor:'pointer',fontFamily:"'Space Mono',monospace",fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.5)',transition:'all .2s'}
-            },'CONSTRUCTION TRIANGLES ↓')
+            ,
+            // Scroll chevron — leads to Construction Triangles below.
+            // Inside the scaled frame so it shrinks with the rest of the layout.
+            cr('div',{style:{position:'absolute',bottom:'18px',right:'36px',display:'flex',alignItems:'center',gap:'10px'}},
+              cr('button',{
+                onClick:()=>{ var el=document.getElementById('lt-root-2'); if(el){ el.scrollIntoView({behavior:'smooth'}); } else { window.location.href='lost-triangle-construction-triangles.html'; } },
+                style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 16px',border:'1px solid rgba(240,237,232,.12)',borderRadius:'8px',background:'rgba(240,237,232,.04)',cursor:'pointer',fontFamily:"'Space Mono',monospace",fontSize:'11px',letterSpacing:'.16em',color:'rgba(240,237,232,.5)',transition:'all .2s'}
+              },'CONSTRUCTION TRIANGLES ↓')
+            )
           )
 
         )
