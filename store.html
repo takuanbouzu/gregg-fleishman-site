@@ -140,7 +140,8 @@
     border:none; cursor:pointer;
   }
   .buy-btn:hover{ opacity:.85; }
-  .buy-btn[href="#coming-soon"]{ background:var(--bg-elevated); color:var(--tx-faint); cursor:default; }
+  /* disabled placeholder: muted, and inert so a click can't jump the page to #coming-soon */
+  .buy-btn[href="#coming-soon"]{ background:var(--bg-elevated); color:var(--tx-faint); cursor:default; pointer-events:none; }
 
   /* ── license block ── */
   .license-box{
