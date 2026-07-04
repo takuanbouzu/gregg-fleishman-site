@@ -4,6 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0B0B0B">
+<!-- App-like behaviour when opened from a phone home screen -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lost Triangle">
+<link rel="apple-touch-icon" href="assets/drawings/lost-triangle-color.png">
 <title>Animation Preview — The Lost Triangle</title>
 <meta name="description" content="Flip through the candidate Lost Triangle animations one at a time, full-screen — the Fleishman Sequence, the interactive angle demo, the paper sequence, and the Vector House.">
 <meta name="robots" content="noindex">
@@ -41,24 +47,20 @@
   html,body{margin:0;height:100%;}
   body{background:#0B0B0B;color:var(--tx);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;overflow:hidden;}
 
-  /* Full-viewport stage; each animation renders its own 100vh root inside. */
+  /* Native-app feel on mobile browsers: no rubber-band overscroll or
+     pull-to-refresh under the animations, no double-tap-zoom delay on the
+     controls, no grey tap-highlight flash, no accidental text selection
+     of UI chrome. Pinch-zoom of the page stays available (accessibility). */
+  html,body{ overscroll-behavior:none; }
+  body{ -webkit-tap-highlight-color:transparent; }
+  button, input[type="range"]{ touch-action:manipulation; }
+  #pv-bar, #pv-hint, #pv-restore{ -webkit-user-select:none; user-select:none; }
+
+  /* Full-viewport stage; each animation renders its own 100vh root inside.
+     Slides always render upright — in portrait they scale to the width and
+     centre vertically (each slide's own stage handles the fitting). */
   #pv-stage{ position:fixed; inset:0; z-index:1; background:#0B0B0B; }
   #pv-stage > *{ height:100%; }
-
-  /* Mobile focus: the slides are landscape 16:9 compositions. On a portrait
-     screen, instead of a small letterboxed strip, rotate the slide 90° so it
-     fills the tall screen edge-to-edge (the YouTube-fullscreen pattern — no
-     prompt, the content simply uses the whole display). Pointer coordinates
-     map through the CSS transform, so playback and drag controls keep
-     working. The 3D Vector House fills any aspect natively and is exempt. */
-  #pv-stage.rot > *{
-    position:absolute; left:50%; top:50%;
-    width:100vh; height:100vw;
-    transform:translate(-50%,-50%) rotate(90deg);
-  }
-  @supports (width: 100dvh){
-    #pv-stage.rot > *{ width:100dvh; height:100dvw; }
-  }
 
   /* Floating selector bar over the top of the stage. */
   #pv-bar{
@@ -102,6 +104,13 @@
     transition:background .18s ease, color .18s ease, border-color .18s ease;
   }
   .pv-chip:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.28); background:rgba(240,237,232,.09); }
+  .pv-chip:active{ transform:scale(.96); }
+  /* Comfortable thumb targets on touch devices (Apple HIG ~44px) */
+  @media (pointer:coarse){
+    .pv-chip{ min-height:42px; padding:10px 15px; }
+    #pv-toggle{ min-height:38px; }
+    #pv-restore{ width:38px; height:38px; }
+  }
   .pv-chip.active{
     color:#0B0B0B; background:#C8A96E; border-color:#C8A96E; font-weight:500;
     box-shadow:0 4px 18px rgba(200,169,110,.28);
@@ -181,11 +190,9 @@
 (function(){
   "use strict";
 
-  function isPortrait(){ return window.matchMedia('(max-aspect-ratio: 1/1)').matches; }
-
   // Registry of candidate animations. Every 16:9 slide is iframe-hosted
-  // (preview-slide.html wraps the plain-React ones) so each gets a viewport
-  // the size of its box — that's what lets the portrait rotate-to-fill work.
+  // (preview-slide.html wraps the plain-React ones) so each is isolated and
+  // gets its own correctly-sized viewport.
   // `kind:'three'` mounts the Vector House module directly (any aspect).
   var REG = [
     { id:'intro',      label:'Three Angles',
@@ -236,9 +243,7 @@
 
     clearStage();
     var mount = document.createElement('div');
-    // sized by the stylesheet: #pv-stage > * { height:100% }, or the
-    // rotated 100dvh×100dvw box when .rot is on — no inline size here,
-    // an inline height would override the .rot rule.
+    mount.style.height = '100%';
     stage.appendChild(mount);
 
     if (item.kind === 'iframe'){
@@ -272,19 +277,7 @@
       if (on && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (_) { c.scrollIntoView(); } }
     });
     if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
-    updateFill();
   }
-
-  // Portrait rotate-to-fill: landscape-native (iframe) slides fill the tall
-  // screen; re-evaluated live as the device turns or the window resizes.
-  function updateFill(){
-    var item = null;
-    for (var i=0;i<REG.length;i++){ if (REG[i].id === curId) item = REG[i]; }
-    var rotatable = item && item.kind === 'iframe';
-    stage.classList.toggle('rot', !!(rotatable && isPortrait()));
-  }
-  window.addEventListener('resize', updateFill);
-  window.addEventListener('orientationchange', updateFill);
 
   // Build chips
   REG.forEach(function(item, i){
