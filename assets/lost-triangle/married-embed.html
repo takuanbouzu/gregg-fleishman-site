@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex">
+<title>The Married Cut — embed</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;} html,body{margin:0;height:100%;background:#0C0B0A;}
+  #m-root{height:100vh;}
+</style>
+</head>
+<body>
+<!-- Isolated host for the Married cut. It shares many top-level identifiers
+     (R3c, R2c, clc, Cc, …) with lt-clean-video.js, so the two bundles cannot
+     co-load in one document; an iframe keeps each in its own global scope.
+     Used by mathematics-preview.html's "Married Cut" option. -->
+<div id="m-root"></div>
+<script src="../vendor/react-18.3.1/react.production.min.js"></script>
+<script src="../vendor/react-18.3.1/react-dom.production.min.js"></script>
+<script src="lt-clean-animations.js"></script>
+<script src="lost-triangle-married.js"></script>
+<script>
+(function(){
+  "use strict";
+  var root = null, curPortrait = null;
+  function isPortrait(){ return window.matchMedia('(max-aspect-ratio: 1/1)').matches; }
+  function render(){
+    var el = document.getElementById('m-root');
+    if (!el || !window.React || !window.ReactDOM || !window.LostTriangleMarried) return false;
+    var portrait = isPortrait() && !!window.LostTriangleMarriedPortrait;
+    var Comp = portrait ? window.LostTriangleMarriedPortrait : window.LostTriangleMarried;
+    if (!root) root = ReactDOM.createRoot(el);
+    curPortrait = portrait;
+    root.render(React.createElement(Comp));
+    return true;
+  }
+  if (!render()) {
+    var tries = 0, id = setInterval(function(){ if (render() || ++tries > 200) clearInterval(id); }, 30);
+  }
+  var rt;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ if (root && isPortrait() !== curPortrait) render(); }, 150);
+  });
+})();
+</script>
+</body>
+</html>

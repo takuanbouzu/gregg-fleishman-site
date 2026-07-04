@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0B0B0B">
+<title>Animation Preview — The Lost Triangle</title>
+<meta name="description" content="Internal preview: flip through the candidate Lost Triangle animations one at a time.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-scene.js"></script>
+<!-- Three.js r160 ESM, for the Vector House option -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{background:#0B0B0B;color:var(--tx);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  /* Full-viewport stage; each animation renders its own 100vh root inside. */
+  #pv-stage{ position:fixed; inset:0; z-index:1; background:#0B0B0B; }
+  #pv-stage > *{ height:100%; }
+
+  /* Floating selector bar over the top of the stage. */
+  #pv-bar{
+    position:fixed; left:0; right:0; top:0; z-index:20;
+    display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+    padding:10px 18px;
+    background:linear-gradient(180deg, rgba(11,11,11,.86) 0%, rgba(11,11,11,.66) 62%, rgba(11,11,11,0) 100%);
+    backdrop-filter:blur(6px);
+    pointer-events:none; /* let clicks fall through the gradient; children re-enable */
+    transition:opacity .35s ease;
+  }
+  #pv-bar.hidden{ opacity:0; }
+  #pv-bar > *{ pointer-events:auto; }
+
+  .pv-brand{
+    font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(200,169,110,.72); white-space:nowrap; user-select:none;
+  }
+  .pv-brand b{ display:block; color:#F0EDE8; font-weight:700; letter-spacing:.14em; }
+
+  #pv-chips{ display:flex; gap:7px; flex-wrap:wrap; flex:1 1 auto; }
+  .pv-chip{
+    appearance:none; border:1px solid rgba(240,237,232,.12); background:rgba(240,237,232,.05);
+    color:rgba(240,237,232,.72); font-family:'Space Grotesk',sans-serif; font-size:12.5px; font-weight:400;
+    letter-spacing:.01em; padding:7px 13px; border-radius:11px; cursor:pointer; white-space:nowrap;
+    transition:background .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .pv-chip:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.28); background:rgba(240,237,232,.09); }
+  .pv-chip.active{
+    color:#0B0B0B; background:#C8A96E; border-color:#C8A96E; font-weight:500;
+    box-shadow:0 4px 18px rgba(200,169,110,.28);
+  }
+  .pv-chip .pv-num{ opacity:.5; font-size:10.5px; margin-right:5px; }
+  .pv-chip.active .pv-num{ opacity:.7; }
+
+  #pv-caption{
+    position:fixed; left:18px; bottom:14px; z-index:20; max-width:44ch;
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; line-height:1.45;
+    color:rgba(240,237,232,.62); pointer-events:none;
+    text-shadow:0 1px 20px rgba(0,0,0,.8); transition:opacity .35s ease;
+  }
+  #pv-caption b{ font-style:normal; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:12px;
+    letter-spacing:.06em; color:#F0EDE8; display:block; margin-bottom:2px; }
+  #pv-caption.hidden{ opacity:0; }
+
+  #pv-hint{
+    position:fixed; right:18px; bottom:14px; z-index:20;
+    font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.10em; text-transform:uppercase;
+    color:rgba(138,132,128,.5); pointer-events:none; text-align:right; transition:opacity .35s ease;
+  }
+  #pv-hint.hidden{ opacity:0; }
+
+  /* Chrome-hide toggle (top-right, tiny) */
+  #pv-toggle{
+    position:fixed; right:16px; top:12px; z-index:30;
+    appearance:none; border:1px solid rgba(240,237,232,.14); background:rgba(11,11,11,.55);
+    color:rgba(240,237,232,.6); font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; padding:6px 10px; border-radius:9px; cursor:pointer; backdrop-filter:blur(6px);
+  }
+  #pv-toggle:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.3); }
+
+  #pv-loading{
+    position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+    color:rgba(240,237,232,.4); font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; pointer-events:none;
+  }
+
+  @media (max-width:720px){
+    #pv-caption{ font-size:14px; max-width:70vw; }
+    .pv-chip{ font-size:12px; padding:6px 10px; }
+    #pv-hint{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="pv-stage"><div id="pv-loading">loading…</div></div>
+
+<div id="pv-bar">
+  <span class="pv-brand">Gregg Fleishman<b>Animation Preview</b></span>
+  <div id="pv-chips"></div>
+</div>
+<button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
+<div id="pv-caption"></div>
+<div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
+
+<!-- React runtime (vendored UMD globals window.React / window.ReactDOM) -->
+<script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
+<script src="assets/vendor/react-18.3.1/react-dom.production.min.js"></script>
+<!-- Model-true geometry used by some proof stations -->
+<script src="assets/lost-triangle/fleishman-proof-data-math27.js"></script>
+<script src="assets/lost-triangle/fleishman-proof-data-stations-clean.js"></script>
+<!-- Candidate animations, each defines a window.* global -->
+<script src="assets/lost-triangle/three-beginnings.js"></script>
+<script src="assets/lost-triangle/lost-triangle-proof.js"></script>
+<script src="assets/lost-triangle/lost-triangle-animation.js"></script>
+<script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
+<!-- NB: lost-triangle-married.js is NOT loaded here — it shares top-level
+     globals (R3c, R2c, clc, Cc, …) with lt-clean-video.js and would abort.
+     The "Married Cut" option loads it in an isolated iframe instead. -->
+<script src="assets/lost-triangle/lt-clean-animations.js"></script>
+<script src="assets/lost-triangle/lt-clean-video.js"></script>
+<!-- Chapter VIII — The Cube Angle (az 35.25° + el 30° construction). window.LostTriangleCubeAngle -->
+<script src="assets/lost-triangle/cube-angle.js"></script>
+
+<script>
+(function(){
+  "use strict";
+
+  var e = React.createElement;
+  function isPortrait(){ return window.matchMedia('(max-aspect-ratio: 1/1)').matches; }
+
+  // Registry of candidate animations. `get` returns the component (or a
+  // portrait-aware picker); `kind:'three'` mounts the Vector House module.
+  var REG = [
+    { id:'proof',      label:'The Fleishman Sequence',
+      caption:'The full proof — three beginnings, one triangle, the cube’s chamber, the double, the blossom. ~66s.',
+      kind:'react', get:function(){ return window.LostTriangleProof; }, props:{ autoplay:true } },
+
+    { id:'beginnings', label:'Three Beginnings',
+      caption:'Three pivot constructions (45°, 35.26°, 54.74°) that all arrive at the same 1 : √2 : √3 triangle.',
+      kind:'react', get:function(){ return window.LostTriangleThreeBeginnings; }, props:{ autoplay:true, angleMode:'both' } },
+
+    { id:'cubeangle',  label:'The Cube Angle',
+      caption:'A unit ray at azimuth 35.26° (arctan 1/√2) tilted 30° lands on (√2, 1, 1) — building the construction (sundial) triangle 1 : √3 : 2, whose bearing is the Lost Triangle’s own angle.',
+      kind:'react', get:function(){ return window.LostTriangleCubeAngle; }, props:{ autoplay:true } },
+
+    { id:'clean',      label:'The Clean Cut',
+      caption:'The 7-scene cinematic cut — magenta / steel / gold on near-black. ~75s.',
+      kind:'react', get:function(){ return isPortrait() && window.LostTriangleVideoCleanPortrait ? window.LostTriangleVideoCleanPortrait : window.LostTriangleVideoClean; }, props:{} },
+
+    { id:'device',     label:'The Device',
+      caption:'The single-scene motion graphic — the triangle unfolding from the cube.',
+      kind:'react', get:function(){ return window.LostTriangleAnimation; }, props:{ autoplay:true } },
+
+    { id:'risez',      label:'Rise-Z',
+      caption:'The rise-in-Z construction variant.',
+      kind:'react', get:function(){ return window.LostTriangleRiseZ; }, props:{ autoplay:true } },
+
+    { id:'married',    label:'The Married Cut',
+      caption:'The married edit — the Clean geometry as hero, with an editorial lower-third (kicker · headline · prose · Gregg’s original drawing) per chapter.',
+      kind:'iframe', src:'assets/lost-triangle/married-embed.html' },
+
+    { id:'house',      label:'The Vector House',
+      caption:'Not theory — built. The same geometry standing in plywood, orbitable. Drag to orbit, scroll to zoom.',
+      kind:'three' }
+  ];
+  // Drop any react entry whose component bundle failed to define its global.
+  REG = REG.filter(function(r){ return r.kind !== 'react' || typeof r.get() === 'function'; });
+
+  var stage   = document.getElementById('pv-stage');
+  var chipsEl = document.getElementById('pv-chips');
+  var capEl   = document.getElementById('pv-caption');
+  var bar     = document.getElementById('pv-bar');
+  var hint    = document.getElementById('pv-hint');
+  var toggle  = document.getElementById('pv-toggle');
+
+  var curRoot = null;     // active ReactDOM root
+  var curDispose = null;  // active Three.js dispose()
+  var curId = null;
+
+  function clearStage(){
+    if (curDispose){ try{ curDispose(); }catch(_){} curDispose = null; }
+    if (curRoot){ try{ curRoot.unmount(); }catch(_){} curRoot = null; }
+    stage.innerHTML = '';
+  }
+
+  function show(id){
+    var item = null;
+    for (var i=0;i<REG.length;i++){ if (REG[i].id === id) item = REG[i]; }
+    if (!item) item = REG[0];
+    if (item.id === curId) return;
+    curId = item.id;
+
+    clearStage();
+    var mount = document.createElement('div');
+    mount.style.height = '100%';
+    stage.appendChild(mount);
+
+    if (item.kind === 'iframe'){
+      var f = document.createElement('iframe');
+      f.src = item.src;
+      f.title = item.label;
+      f.style.cssText = 'width:100%;height:100%;border:0;display:block;background:#0B0B0B;';
+      mount.appendChild(f);
+    } else if (item.kind === 'three'){
+      var loading = document.createElement('div');
+      loading.id = 'pv-loading';
+      loading.textContent = 'loading model…';
+      stage.appendChild(loading);
+      import('./assets/lost-triangle/vector-house-scene.js')
+        .then(function(m){
+          if (curId !== item.id) return;      // switched away while loading
+          if (loading.parentNode) loading.parentNode.removeChild(loading);
+          curDispose = m.mountVectorHouseScene(mount);
+        })
+        .catch(function(err){
+          loading.textContent = 'model failed to load';
+          console.error('[preview] vector house:', err);
+        });
+    } else {
+      curRoot = ReactDOM.createRoot(mount);
+      curRoot.render(e(item.get(), item.props || {}));
+    }
+
+    // Update chrome
+    Array.prototype.forEach.call(chipsEl.children, function(c){
+      c.classList.toggle('active', c.dataset.id === item.id);
+    });
+    capEl.innerHTML = '<b>' + item.label + '</b>' + item.caption;
+    if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
+  }
+
+  // Build chips
+  REG.forEach(function(item, i){
+    var b = document.createElement('button');
+    b.className = 'pv-chip';
+    b.dataset.id = item.id;
+    b.innerHTML = '<span class="pv-num">' + (i+1) + '</span>' + item.label;
+    b.addEventListener('click', function(){ show(item.id); });
+    chipsEl.appendChild(b);
+  });
+
+  // Chrome hide/show
+  var chromeHidden = false;
+  function setChrome(hidden){
+    chromeHidden = hidden;
+    bar.classList.toggle('hidden', hidden);
+    capEl.classList.toggle('hidden', hidden);
+    hint.classList.toggle('hidden', hidden);
+    toggle.textContent = hidden ? 'show chrome' : 'hide chrome';
+  }
+  toggle.addEventListener('click', function(){ setChrome(!chromeHidden); });
+
+  // Keyboard: arrows switch, H toggles chrome, digits jump
+  window.addEventListener('keydown', function(ev){
+    if (ev.target && /^(INPUT|TEXTAREA)$/.test(ev.target.tagName)) return;
+    var idx = REG.findIndex(function(r){ return r.id === curId; });
+    if (ev.key === 'ArrowRight'){ show(REG[(idx+1) % REG.length].id); }
+    else if (ev.key === 'ArrowLeft'){ show(REG[(idx-1+REG.length) % REG.length].id); }
+    else if (ev.key === 'h' || ev.key === 'H'){ setChrome(!chromeHidden); }
+    else if (/^[1-9]$/.test(ev.key)){ var n = parseInt(ev.key,10)-1; if (REG[n]) show(REG[n].id); }
+  });
+
+  // Initial selection from the URL hash, else the first entry.
+  var start = location.hash.slice(1);
+  if (!REG.some(function(r){ return r.id === start; })) start = REG[0].id;
+  show(start);
+  window.addEventListener('hashchange', function(){
+    var h = location.hash.slice(1);
+    if (REG.some(function(r){ return r.id === h; })) show(h);
+  });
+})();
+</script>
+</body>
+</html>
