@@ -162,9 +162,6 @@
 <script src="assets/lost-triangle/lost-triangle-proof.js"></script>
 <script src="assets/lost-triangle/lost-triangle-animation.js"></script>
 <script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
-<!-- NB: the "Married Cut" option loads its bundle in an isolated iframe
-     (it shares top-level globals with the Clean bundle), so no Clean/Married
-     scripts are loaded in this parent document. -->
 
 <script>
 (function(){
@@ -195,10 +192,6 @@
     { id:'risez',      label:'Rise-Z',
       caption:'The rise-in-Z construction variant.',
       kind:'react', get:function(){ return window.LostTriangleRiseZ; }, props:{ autoplay:true } },
-
-    { id:'married',    label:'The Married Cut',
-      caption:'The married edit — the Clean geometry as hero, with an editorial lower-third (kicker · headline · prose · Gregg’s original drawing) per chapter.',
-      kind:'iframe', src:'assets/lost-triangle/married-embed.html' },
 
     { id:'house',      label:'The Vector House',
       caption:'Not theory — built. The same geometry standing in plywood, orbitable. Drag to orbit, scroll to zoom.',
