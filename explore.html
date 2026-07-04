@@ -251,7 +251,10 @@
     #chapters{display:none}
     #masthead{left:18px;top:18px;max-width:210px}
     #masthead .note{display:none}
-    #masthead .deepdive{display:none}
+    /* !important: the .deepdive element carries an inline display:flex that
+       otherwise wins over this rule and lets the buttons overlap the legend
+       (and they'd navigate the slide away from the preview if tapped). */
+    #masthead .deepdive{display:none!important}
     #volume{left:18px;top:58px}
     #transport{ bottom:0; transform:none; border-radius:0; width:100%; max-width:none; left:0; right:0; justify-content:center; padding:6px 14px; box-sizing:border-box; }
     #hint{ display:none; }
@@ -272,10 +275,10 @@
     #panel .hd{ min-height:44px; }
     #transport button{ min-height:36px; padding:8px 14px; }
   }
-  /* Very small phones: hide non-essential chrome to give canvas breathing room */
+  /* Very small phones: tighten the tab bar. The masthead/legend stay visible
+     (they stack cleanly now) down to the smallest common widths; only hide
+     them on genuinely tiny screens below. */
   @media(max-width:400px){
-    #masthead{ display:none; }
-    #legend{ display:none; }
     .explore-tab-btn{ font-size:9px; padding:0 9px; }
   }
 
@@ -295,18 +298,21 @@
     #explore-tabs::-webkit-scrollbar{ display:none; }
     .explore-tab-btn{ padding:0 12px; letter-spacing:.06em; flex-shrink:0; }
 
-    /* Masthead: shrink & keep clear of the panel/legend */
-    #masthead{ left:14px; top:14px; max-width:62vw; }
+    /* Top-left readouts stack as a single non-overlapping column:
+       masthead subtitle → assembled-volume → legend. The deep-dive buttons
+       are hidden on mobile (≤860 rule above), so nothing collides here. */
+    #masthead{ left:14px; top:12px; max-width:64vw; }
     #masthead .sub{ font-size:9px; letter-spacing:.22em; }
 
-    /* Legend: smaller, sits above the docked panel + transport */
-    #legend{ left:14px; bottom:auto; top:54px; font-size:12px; }
+    #volume{ left:14px; right:auto; top:52px; bottom:auto; font-size:11.5px; }
+
+    #legend{ left:14px; right:auto; top:82px; bottom:auto; font-size:11.5px; }
     #legend .row{ gap:8px; margin-top:7px; }
     #legend .sw{ width:18px; }
 
-    /* Volume + spiral readouts: keep top-left, shrink */
-    #volume{ left:14px; top:auto; bottom:auto; font-size:12px; }
-    #spiral{ left:14px; right:14px; bottom:auto; top:84px; width:auto; max-width:calc(100% - 28px); }
+    /* Spiral card only shows in the √2-system mode, where the legend is
+       hidden — so it can reuse the legend's top slot without collision. */
+    #spiral{ left:14px; right:14px; top:82px; bottom:auto; width:auto; max-width:calc(100% - 28px); }
 
     /* Caption: shrink font, clear the docked panel/transport stack */
     #caption{ bottom:96px; }
