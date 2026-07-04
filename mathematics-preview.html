@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0B0B0B">
 <title>Animation Preview — The Lost Triangle</title>
 <meta name="description" content="Flip through the candidate Lost Triangle animations one at a time, full-screen — the Fleishman Sequence, the interactive angle demo, the paper sequence, and the Vector House.">
@@ -45,11 +45,26 @@
   #pv-stage{ position:fixed; inset:0; z-index:1; background:#0B0B0B; }
   #pv-stage > *{ height:100%; }
 
+  /* Mobile focus: the slides are landscape 16:9 compositions. On a portrait
+     screen, instead of a small letterboxed strip, rotate the slide 90° so it
+     fills the tall screen edge-to-edge (the YouTube-fullscreen pattern — no
+     prompt, the content simply uses the whole display). Pointer coordinates
+     map through the CSS transform, so playback and drag controls keep
+     working. The 3D Vector House fills any aspect natively and is exempt. */
+  #pv-stage.rot > *{
+    position:absolute; left:50%; top:50%;
+    width:100vh; height:100vw;
+    transform:translate(-50%,-50%) rotate(90deg);
+  }
+  @supports (width: 100dvh){
+    #pv-stage.rot > *{ width:100dvh; height:100dvw; }
+  }
+
   /* Floating selector bar over the top of the stage. */
   #pv-bar{
     position:fixed; left:0; right:0; top:0; z-index:20;
     display:flex; align-items:center; gap:16px; flex-wrap:wrap;
-    padding:10px 18px;
+    padding:calc(10px + env(safe-area-inset-top, 0px)) calc(18px + env(safe-area-inset-right, 0px)) 10px calc(18px + env(safe-area-inset-left, 0px));
     background:linear-gradient(180deg, rgba(11,11,11,.86) 0%, rgba(11,11,11,.66) 62%, rgba(11,11,11,0) 100%);
     backdrop-filter:blur(6px);
     pointer-events:none; /* let clicks fall through the gradient; children re-enable */
@@ -119,7 +134,7 @@
 
   @media (max-width:720px){
     /* Compact two-row bar: [brand … hide-chrome] over a single scrollable chip strip. */
-    #pv-bar{ gap:6px 10px; padding:8px 10px 10px; }
+    #pv-bar{ gap:6px 10px; padding:calc(8px + env(safe-area-inset-top, 0px)) 10px 10px; }
     .pv-brand{ order:1; font-size:9px; }
     #pv-toggle{ order:2; margin-left:auto; }
     #pv-chips{
@@ -136,7 +151,7 @@
      scrollable chips + toggle, no brand, no caption. Placed after the
      max-width block so it wins when both match. */
   @media (max-height:520px){
-    #pv-bar{ flex-wrap:nowrap; gap:10px; padding:6px 10px; }
+    #pv-bar{ flex-wrap:nowrap; gap:10px; padding:6px calc(10px + env(safe-area-inset-right, 0px)) 6px calc(10px + env(safe-area-inset-left, 0px)); }
     .pv-brand{ display:none; }
     #pv-chips{
       order:0; flex:1 1 auto;
@@ -162,32 +177,22 @@
 <div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
 <button id="pv-restore" title="show chrome (H)" aria-label="show chrome">⋯</button>
 
-<!-- React runtime (vendored UMD globals window.React / window.ReactDOM) -->
-<script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
-<script src="assets/vendor/react-18.3.1/react-dom.production.min.js"></script>
-<!-- Model-true geometry used by some proof stations -->
-<script src="assets/lost-triangle/fleishman-proof-data-math27.js"></script>
-<script src="assets/lost-triangle/fleishman-proof-data-stations-clean.js"></script>
-<!-- Candidate animations, each defines a window.* global -->
-<script src="assets/lost-triangle/lost-triangle-proof.js"></script>
-<script src="assets/lost-triangle/lost-triangle-animation.js"></script>
-<script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
-
 <script>
 (function(){
   "use strict";
 
-  var e = React.createElement;
   function isPortrait(){ return window.matchMedia('(max-aspect-ratio: 1/1)').matches; }
 
-  // Registry of candidate animations. `get` returns the component (or a
-  // portrait-aware picker); `kind:'three'` mounts the Vector House module.
+  // Registry of candidate animations. Every 16:9 slide is iframe-hosted
+  // (preview-slide.html wraps the plain-React ones) so each gets a viewport
+  // the size of its box — that's what lets the portrait rotate-to-fill work.
+  // `kind:'three'` mounts the Vector House module directly (any aspect).
   var REG = [
     { id:'intro',      label:'Three Angles',
       kind:'iframe', src:'assets/lost-triangle/lt-intro.html' },
 
     { id:'proof',      label:'The Fleishman Sequence',
-      kind:'react', get:function(){ return window.LostTriangleProof; }, props:{ autoplay:true } },
+      kind:'iframe', src:'preview-slide.html?s=proof' },
 
     { id:'drawings',   label:'With Drawings',
       kind:'iframe', src:'fleishman-sequence-drawings.html?embed=1' },
@@ -196,16 +201,14 @@
       kind:'iframe', src:'assets/lost-triangle/lt-paper.html' },
 
     { id:'device',     label:'The Device',
-      kind:'react', get:function(){ return window.LostTriangleAnimation; }, props:{ autoplay:true } },
+      kind:'iframe', src:'preview-slide.html?s=device' },
 
     { id:'risez',      label:'Rise-Z',
-      kind:'react', get:function(){ return window.LostTriangleRiseZ; }, props:{ autoplay:true } },
+      kind:'iframe', src:'preview-slide.html?s=risez' },
 
     { id:'house',      label:'The Vector House',
       kind:'three' }
   ];
-  // Drop any react entry whose component bundle failed to define its global.
-  REG = REG.filter(function(r){ return r.kind !== 'react' || typeof r.get() === 'function'; });
 
   var stage   = document.getElementById('pv-stage');
   var chipsEl = document.getElementById('pv-chips');
@@ -233,7 +236,9 @@
 
     clearStage();
     var mount = document.createElement('div');
-    mount.style.height = '100%';
+    // sized by the stylesheet: #pv-stage > * { height:100% }, or the
+    // rotated 100dvh×100dvw box when .rot is on — no inline size here,
+    // an inline height would override the .rot rule.
     stage.appendChild(mount);
 
     if (item.kind === 'iframe'){
@@ -257,9 +262,6 @@
           loading.textContent = 'model failed to load';
           console.error('[preview] vector house:', err);
         });
-    } else {
-      curRoot = ReactDOM.createRoot(mount);
-      curRoot.render(e(item.get(), item.props || {}));
     }
 
     // Update chrome
@@ -270,7 +272,19 @@
       if (on && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (_) { c.scrollIntoView(); } }
     });
     if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
+    updateFill();
   }
+
+  // Portrait rotate-to-fill: landscape-native (iframe) slides fill the tall
+  // screen; re-evaluated live as the device turns or the window resizes.
+  function updateFill(){
+    var item = null;
+    for (var i=0;i<REG.length;i++){ if (REG[i].id === curId) item = REG[i]; }
+    var rotatable = item && item.kind === 'iframe';
+    stage.classList.toggle('rot', !!(rotatable && isPortrait()));
+  }
+  window.addEventListener('resize', updateFill);
+  window.addEventListener('orientationchange', updateFill);
 
   // Build chips
   REG.forEach(function(item, i){
