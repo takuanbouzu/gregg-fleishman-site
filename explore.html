@@ -79,6 +79,7 @@
   #masthead .sub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
   #masthead .note{margin:11px 0 0;font-family:"Space Mono",monospace;font-size:11px;line-height:1.5;color:var(--tx-dim)}
   #masthead .note b{color:var(--tx);font-weight:700}
+  #masthead .deepdive a:hover{border-color:var(--accent);color:var(--accent)}
 
   #loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
     background:var(--bg);transition:opacity .6s ease}
@@ -199,7 +200,7 @@
   #sortread .res{margin-top:7px;color:var(--gold,var(--accent));font-weight:700;letter-spacing:.05em}
   #sortread .res span{color:var(--dim,var(--tx-dim));font-weight:400}
 
-  #volume{left:40px;top:96px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));
+  #volume{left:40px;top:180px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));
     pointer-events:none}
   #volume.hide{display:none}
   #volume .big{color:var(--text,var(--tx));font-weight:700}
@@ -227,6 +228,7 @@
     #chapters{display:none}
     #masthead{left:18px;top:18px;max-width:210px}
     #masthead .note{display:none}
+    #masthead .deepdive{display:none}
     #volume{left:18px;top:58px}
     #transport{ bottom:0; transform:none; border-radius:0; width:100%; max-width:none; left:0; right:0; justify-content:center; padding:6px 14px; box-sizing:border-box; }
     #hint{ display:none; }
@@ -501,6 +503,10 @@
   <div id="masthead" class="chrome">
     <div class="sub">Six Parts · One Cube · The Whole of Space</div>
     <div class="note">Each part is the <b>proof triangle</b>, stood up in space.</div>
+    <div class="deepdive" style="margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:auto;">
+      <a href="fleishman-proof-3d.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ Proof Triangle · 3D</a>
+      <a href="fleishman-ground-angle.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ 35.25° Ground Angle</a>
+    </div>
   </div>
 
   <div id="loader"><div class="lt">Building the cube…</div></div>
