@@ -56,10 +56,11 @@
   button, input[type="range"]{ touch-action:manipulation; }
   #pv-bar, #pv-hint, #pv-restore{ -webkit-user-select:none; user-select:none; }
 
-  /* Full-viewport stage; each animation renders its own 100vh root inside.
-     Slides always render upright — in portrait they scale to the width and
-     centre vertically (each slide's own stage handles the fitting). */
-  #pv-stage{ position:fixed; inset:0; z-index:1; background:#0B0B0B; }
+  /* The stage sits BELOW the selector bar — its top is inset by the bar's
+     measured height (--pv-bar-h, kept current in JS), so no slide can ever
+     underlap the chips. When chrome is hidden the inset drops to 0 and the
+     slide goes full-bleed. Each slide fits itself to this box. */
+  #pv-stage{ position:fixed; top:var(--pv-bar-h, 52px); left:0; right:0; bottom:0; z-index:1; background:#0B0B0B; transition:top .35s ease; }
   #pv-stage > *{ height:100%; }
 
   /* Floating selector bar over the top of the stage. */
@@ -124,6 +125,9 @@
     color:rgba(138,132,128,.5); pointer-events:none; text-align:right; transition:opacity .35s ease;
   }
   #pv-hint.hidden{ opacity:0; }
+  /* Embedded full-app slides (The Cube, Vector Pod) carry their own on-screen
+     hints, so suppress the preview's bottom hint to avoid two stacked. */
+  #pv-hint.pv-off{ display:none; }
 
   /* Chrome-hide toggle (rides in the bar, far right) */
   #pv-toggle{
@@ -217,10 +221,10 @@
       kind:'three' },
 
     { id:'cube',       label:'The Cube',
-      kind:'iframe', src:'explore.html?embed=1' },
+      kind:'iframe', src:'explore.html?embed=1', ownChrome:true },
 
     { id:'pod',        label:'Vector Pod',
-      kind:'iframe', src:'vector-pod/index.html' }
+      kind:'iframe', src:'vector-pod/index.html', ownChrome:true }
   ];
 
   var stage   = document.getElementById('pv-stage');
@@ -276,6 +280,7 @@
     }
 
     // Update chrome
+    hint.classList.toggle('pv-off', !!item.ownChrome);   // suppress our hint over full-app slides
     Array.prototype.forEach.call(chipsEl.children, function(c){
       var on = c.dataset.id === item.id;
       c.classList.toggle('active', on);
@@ -295,6 +300,17 @@
     chipsEl.appendChild(b);
   });
 
+  // Keep the stage's top inset equal to the bar's height so nothing underlaps
+  // the chips. Zero it when chrome is hidden so the slide fills the screen.
+  // The bar wraps to 1–2 rows responsively, so measure rather than hard-code.
+  function measureBar(){
+    var h = chromeHidden ? 0 : bar.offsetHeight;
+    document.documentElement.style.setProperty('--pv-bar-h', h + 'px');
+  }
+  window.addEventListener('resize', measureBar);
+  window.addEventListener('orientationchange', measureBar);
+  window.addEventListener('load', measureBar);   // fonts can change bar height
+
   // Chrome hide/show
   var chromeHidden = false;
   function setChrome(hidden){
@@ -303,6 +319,7 @@
     hint.classList.toggle('hidden', hidden);
     restore.classList.toggle('show', hidden);   // small corner handle stays when chrome is hidden
     toggle.textContent = hidden ? 'show chrome' : 'hide chrome';
+    measureBar();
   }
   toggle.addEventListener('click', function(){ setChrome(!chromeHidden); });
   restore.addEventListener('click', function(){ setChrome(false); });
@@ -318,6 +335,7 @@
   });
 
   // Initial selection from the URL hash, else the first entry.
+  measureBar();
   var start = location.hash.slice(1);
   if (!REG.some(function(r){ return r.id === start; })) start = REG[0].id;
   show(start);
