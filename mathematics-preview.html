@@ -148,31 +148,6 @@
     #pv-hint{ display:none; }
   }
 
-  /* Portrait rotate affordance. The candidate animations are fixed 16:9
-     landscape canvases (no portrait layout), so on an upright phone they'd
-     shrink to an unreadable strip. Rather than show that, we cover them with
-     a calm "rotate" prompt; it's driven per-slide in JS (the 3D Vector House
-     fills any aspect, so it's exempt) and clears the instant the phone turns. */
-  #pv-rotate{
-    /* below the selector bar (z 20) so chips stay tappable in portrait */
-    position:fixed; inset:0; z-index:15; display:none;
-    flex-direction:column; align-items:center; justify-content:center; gap:20px;
-    background:#0B0B0B; text-align:center; padding:40px;
-  }
-  #pv-rotate.show{ display:flex; }
-  #pv-rotate .glyph{
-    font-size:46px; line-height:1; color:#C8A96E;
-    animation:pv-tip 2.6s ease-in-out infinite; transform-origin:50% 50%;
-  }
-  #pv-rotate .t{
-    font-family:'Space Grotesk',sans-serif; font-size:17px; letter-spacing:.01em; color:#F0EDE8;
-  }
-  #pv-rotate .s{
-    font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:.14em;
-    text-transform:uppercase; color:rgba(200,169,110,.72);
-  }
-  @keyframes pv-tip{ 0%,100%{ transform:rotate(-14deg); } 55%{ transform:rotate(76deg); } }
-  @media (prefers-reduced-motion:reduce){ #pv-rotate .glyph{ animation:none; } }
 </style>
 </head>
 <body>
@@ -186,11 +161,6 @@
 </div>
 <div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
 <button id="pv-restore" title="show chrome (H)" aria-label="show chrome">⋯</button>
-<div id="pv-rotate" aria-hidden="true">
-  <div class="glyph">⟳</div>
-  <div class="t">Rotate your device</div>
-  <div class="s">this piece is made for landscape</div>
-</div>
 
 <!-- React runtime (vendored UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
@@ -243,21 +213,6 @@
   var hint    = document.getElementById('pv-hint');
   var toggle  = document.getElementById('pv-toggle');
   var restore = document.getElementById('pv-restore');
-  var rotate  = document.getElementById('pv-rotate');
-
-  // Show the rotate prompt only when the active slide is a landscape-native
-  // fixed canvas AND we're on an upright phone-sized viewport. The 3D Vector
-  // House fills any aspect ratio, so it's exempt.
-  function wantsRotate(){
-    return window.matchMedia('(max-aspect-ratio: 1/1)').matches
-        && window.matchMedia('(max-width: 820px)').matches;
-  }
-  function updateRotate(){
-    var item = null;
-    for (var i=0;i<REG.length;i++){ if (REG[i].id === curId) item = REG[i]; }
-    var landscapeOnly = item && item.kind !== 'three';
-    rotate.classList.toggle('show', !!(landscapeOnly && wantsRotate()));
-  }
 
   var curRoot = null;     // active ReactDOM root
   var curDispose = null;  // active Three.js dispose()
@@ -315,12 +270,7 @@
       if (on && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (_) { c.scrollIntoView(); } }
     });
     if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
-    updateRotate();
   }
-
-  // Re-evaluate the rotate prompt live as the device turns / window resizes.
-  window.addEventListener('resize', updateRotate);
-  window.addEventListener('orientationchange', updateRotate);
 
   // Build chips
   REG.forEach(function(item, i){
