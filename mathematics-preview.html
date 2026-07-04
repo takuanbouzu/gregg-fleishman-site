@@ -178,6 +178,10 @@
   // Registry of candidate animations. `get` returns the component (or a
   // portrait-aware picker); `kind:'three'` mounts the Vector House module.
   var REG = [
+    { id:'intro',      label:'The Lost Triangle',
+      caption:'“It fits where nothing else does.” — the Lost Triangle opener (1 · √2 · √3).',
+      kind:'iframe', src:'assets/lost-triangle/lt-intro.html' },
+
     { id:'proof',      label:'The Fleishman Sequence',
       caption:'The full proof — three beginnings, one triangle, the cube’s chamber, the double, the blossom. ~66s.',
       kind:'react', get:function(){ return window.LostTriangleProof; }, props:{ autoplay:true } },
