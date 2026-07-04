@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0B0B0B">
+<title>The Proof Triangle · 3D — Gregg Fleishman</title>
+<meta name="description" content="Gregg Fleishman's proof triangle, parsed directly from his original Rhino 3DM drawing — every length a root of 2: edge 1, face diagonal √2, space diagonal √3, proof span 2.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Site chrome typeface -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- Motion-graphic typefaces -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script>if(new URLSearchParams(location.search).has('clean'))document.documentElement.classList.add('gf-clean');</script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);color:var(--tx);overflow:hidden;font-family:'Space Grotesk',sans-serif}
+  #stage{position:fixed;inset:0;cursor:grab}
+  #stage:active{cursor:grabbing}
+  #stage canvas{display:block}
+
+  /* nav inherits the canonical #gfnav from gf-tokens.css */
+
+  #sub{position:fixed;left:34px;top:66px;z-index:5;pointer-events:none;transition:opacity .6s ease}
+  #sub .tag{font-family:'Space Grotesk',sans-serif;font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+  #sub .note{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.02em;color:var(--tx-dim);margin-top:11px;opacity:.85}
+  #sub .note b{color:var(--tx);font-weight:700}
+
+  #sibnav{position:fixed;right:30px;top:66px;z-index:8;display:flex;gap:9px}
+  #sibnav a{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-dim);
+    text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:7px 11px;transition:border-color .2s,color .2s}
+  #sibnav a:hover{border-color:var(--accent);color:var(--accent)}
+
+  #legend{position:fixed;left:34px;bottom:104px;z-index:6;font-family:'Space Mono',monospace;font-size:12px;
+    letter-spacing:.04em;color:var(--tx-dim);transition:opacity .6s ease;pointer-events:none}
+  #legend .row{display:flex;align-items:center;gap:10px;margin-top:9px}
+  #legend .sw{width:22px;height:2px;border-radius:2px;flex:none}
+  #legend b{color:var(--tx);font-weight:700}
+
+  #controls{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+    padding:18px 30px 22px;background:linear-gradient(to top,var(--bg),transparent);transition:opacity .5s ease}
+  .tg{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;background:transparent;color:var(--tx);
+    border:1px solid var(--border-strong);border-radius:2px;padding:8px 13px;cursor:pointer;text-transform:uppercase;
+    transition:border-color .2s,color .2s,background .2s;user-select:none}
+  .tg:hover{border-color:var(--accent);color:var(--accent)}
+  .tg.off{opacity:.4}
+  .tg.solo{border-color:var(--accent);color:var(--accent)}
+
+  html.gf-clean #controls, html.gf-clean #sub, html.gf-clean #sibnav, html.gf-clean #legend, html.gf-clean #gfnav{opacity:0;pointer-events:none}
+
+  #hint{position:fixed;left:0;right:0;bottom:66px;z-index:6;text-align:center;font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-dim);opacity:0;transition:opacity .8s ease;pointer-events:none}
+  #hint.show{opacity:.55}
+  html.gf-clean #hint{display:none}
+
+  #fallback{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    padding:32px;text-align:center;background:var(--bg);color:var(--tx-dim);font-family:var(--font-ui)}
+</style>
+<script src="assets/lost-triangle/fleishman-proof-data.js"></script>
+</head>
+<body>
+
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink active" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+
+<div id="stage"></div>
+
+<div id="sub">
+  <div class="tag">The Proof Triangle · 3D</div>
+  <div class="note">Drawn in space · every length a root of <b>2</b></div>
+</div>
+
+<div id="sibnav">
+  <a href="fleishman-ground-angle.html">↳ 35.25° Ground</a>
+</div>
+
+<div id="legend">
+  <div class="row"><span class="sw" style="background:#F0EDE8"></span> edge <b>= 1</b></div>
+  <div class="row"><span class="sw" style="background:#4A90D9"></span> face diagonal <b>√2</b></div>
+  <div class="row"><span class="sw" style="background:#E0349E"></span> space diagonal <b>√3</b></div>
+  <div class="row"><span class="sw" style="background:#C8A96E"></span> proof span <b>2</b></div>
+</div>
+
+<div id="hint">Drag to orbit · scroll to zoom</div>
+
+<div id="controls">
+  <button class="tg" id="tg-angles">Angles</button>
+  <button class="tg" id="tg-nodes">Nodes</button>
+  <button class="tg" id="tg-fill">Proof fill</button>
+  <button class="tg" id="tg-spin">Auto-spin</button>
+  <button class="tg" id="tg-reset">Reset view</button>
+</div>
+
+<div id="fallback">This 3D model needs WebGL. Read <a href="mathematics.html" style="color:var(--accent)">The Lost Triangle</a> instead.</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+if (!window.WebGLRenderingContext) { document.getElementById('fallback').style.display = 'flex'; throw new Error('no webgl'); }
+
+const COL = { bg:0x0B0B0B, bone:0xF0EDE8, dim:0x8A8480, gold:0xC8A96E, blue:0x4A90D9, mag:0xE0349E, green:0x3CCB8E };
+
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true });
+renderer.setClearColor(COL.bg, 1);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 200);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.rotateSpeed = 0.8;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.85;
+
+let W=1, H=1;
+const lineMats = [];
+function resize(){
+  W = stage.clientWidth || stage.offsetWidth || window.innerWidth;
+  H = stage.clientHeight || stage.offsetHeight || window.innerHeight;
+  renderer.setSize(W,H);
+  camera.aspect = W/H; camera.updateProjectionMatrix();
+  lineMats.forEach(m => m.resolution.set(W,H));
+}
+window.addEventListener('resize', resize);
+if (window.ResizeObserver){ new ResizeObserver(()=>{
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (w && h && (w!==W || h!==H)) resize();
+}).observe(stage); }
+
+/* ---- coordinate transform: Rhino z-up -> three y-up, recentred on square corner O ---- */
+const O = [134.25934386330738, 42.543721722721486, 0];
+function TT(p){ return new THREE.Vector3(p[0]-O[0], p[2], -(p[1]-O[1])); }
+
+/* ---- colour by true edge length (the √2 system) ---- */
+function ratioColor(len){
+  const known = [
+    {v:1.0,    c:COL.bone, w:3.4},
+    {v:Math.SQRT2, c:COL.blue, w:3.8},   // √2
+    {v:Math.sqrt(3), c:COL.mag, w:3.8},  // √3
+    {v:2.0,    c:COL.gold, w:3.2},       // 2  (proof span)
+    {v:Math.SQRT1_2, c:COL.dim, w:2.2},  // √(1/2)
+    {v:Math.sqrt(1.5), c:COL.dim, w:2.2},
+    {v:Math.sqrt(2.5), c:COL.dim, w:2.2}
+  ];
+  let best=null, bd=1e9;
+  for (const k of known){ const d=Math.abs(len-k.v); if(d<bd){bd=d;best=k;} }
+  if (bd < 0.04) return best;
+  return {c:COL.dim, w:2.2};
+}
+
+const fadeMats = [];
+function makeLine(a, b, opacity){
+  const len = a.distanceTo(b);
+  const rc = ratioColor(len);
+  const g = new LineGeometry();
+  g.setPositions([a.x,a.y,a.z, b.x,b.y,b.z]);
+  const m = new LineMaterial({ color: rc.c, linewidth: rc.w, transparent:true, opacity:0 });
+  m.resolution.set(W,H);
+  const line = new Line2(g, m);
+  line.computeLineDistances(); line.frustumCulled=false;
+  scene.add(line); lineMats.push(m);
+  fadeMats.push({m, to: opacity ?? 0.95});
+  return line;
+}
+
+/* ---- cluster edges into separate proof figures, then lay them out cleanly ---- */
+const rk = p => p.map(v=>Math.round(v*1000)/1000).join(',');
+const parent = {};
+const find = x => (parent[x]=parent[x]??x, parent[x]===x ? x : (parent[x]=find(parent[x])));
+const uni = (a,b) => { parent[find(a)] = find(b); };
+PROOF.lines.forEach(L => uni(rk(L[0]), rk(L[1])));
+PROOF.polylines.forEach(pl => { for(let i=0;i<pl.length-1;i++) uni(rk(pl[i]), rk(pl[i+1])); });
+
+// per-figure: edge count + distinct vertices
+const fig = {};
+const F = r => (fig[r] = fig[r] || { edges:0, verts:{} });
+const addV = (r,p) => { F(r).verts[rk(p)] = p; };
+PROOF.lines.forEach(L => { const r=find(rk(L[0])); F(r).edges++; addV(r,L[0]); addV(r,L[1]); });
+PROOF.polylines.forEach(pl => { const r=find(rk(pl[0])); for(let i=0;i<pl.length-1;i++){ F(r).edges++; addV(r,pl[i]); addV(r,pl[i+1]); } });
+
+// FIG 4 = the open one (3 edges). Complete it: connect its three base vertices.
+const EXTRA = [];
+for (const r in fig){
+  if (fig[r].edges === 3){
+    const vs = Object.values(fig[r].verts);
+    const apex = vs.reduce((m,p)=> p[2]>m[2]?p:m, vs[0]);  // highest = apex
+    const base = vs.filter(p=>p!==apex);
+    if (base.length === 3){
+      EXTRA.push([base[0],base[1]],[base[1],base[2]],[base[2],base[0]]);
+      base.forEach(p=>addV(r,p));
+    }
+  }
+}
+
+// centroid per figure, then assign clean evenly-spaced slots along screen-x
+const CENT = {};
+for (const r in fig){
+  const vs = Object.values(fig[r].verts);
+  CENT[r] = [0,1,2].map(i => vs.reduce((s,p)=>s+p[i],0)/vs.length);
+}
+const roots = Object.keys(fig).sort((a,b)=>CENT[a][0]-CENT[b][0]);
+const SP = 1.85, depthRy = O[1] + 0.5;
+const startRx = O[0] - (roots.length-1)*SP/2;
+const OFFSET = {};
+roots.forEach((r,i)=>{ OFFSET[r] = [ startRx + i*SP - CENT[r][0], depthRy - CENT[r][1], 0 ]; });
+
+function rootOfRaw(p){
+  const k = rk(p);
+  if (k in parent) return find(k);
+  let best=roots[0], bd=1e9;
+  for (const r of roots){ const c=CENT[r]; const d=Math.hypot(p[0]-c[0],p[1]-c[1],p[2]-c[2]); if(d<bd){bd=d;best=r;} }
+  return best;
+}
+function P2(p){ const o=OFFSET[rootOfRaw(p)]||[0,0,0]; return TT([p[0]+o[0],p[1]+o[1],p[2]+o[2]]); }
+
+/* ---- build geometry ---- */
+const allPts = [];
+PROOF.lines.concat(EXTRA).forEach(L => { const a=P2(L[0]), b=P2(L[1]); allPts.push(a,b); makeLine(a,b); });
+
+// proof-triangle polyline: highlight fill + edges
+const fillMeshes = [];
+PROOF.polylines.forEach(PL => {
+  const v = PL.map(P2);
+  for (let i=0;i<v.length-1;i++) makeLine(v[i], v[i+1]);
+  // fill (fan)
+  const pos=[];
+  for (let i=1;i<v.length-1;i++){ pos.push(v[0].x,v[0].y,v[0].z, v[i].x,v[i].y,v[i].z, v[i+1].x,v[i+1].y,v[i+1].z); }
+  const fg=new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  const fm=new THREE.MeshBasicMaterial({color:COL.green, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false});
+  const mesh=new THREE.Mesh(fg,fm); mesh.renderOrder=-3; mesh.frustumCulled=false; scene.add(mesh);
+  fillMeshes.push(fm); fadeMats.push({m:fm, to:0.16, isFill:true});
+  v.forEach(p=>allPts.push(p));
+});
+
+/* ---- node dots ---- */
+function ringTexture(){
+  const s=128, c=document.createElement('canvas'); c.width=c.height=s;
+  const x=c.getContext('2d'); x.clearRect(0,0,s,s);
+  x.strokeStyle='#F0EDE8'; x.lineWidth=12; x.beginPath(); x.arc(s/2,s/2,s/2-16,0,7); x.stroke();
+  x.fillStyle='#0B0B0B'; x.beginPath(); x.arc(s/2,s/2,s/2-26,0,7); x.fill();
+  x.fillStyle='#F0EDE8'; x.beginPath(); x.arc(s/2,s/2,16,0,7); x.fill();
+  return new THREE.CanvasTexture(c);
+}
+const nodeGroup = new THREE.Group(); scene.add(nodeGroup);
+const ringTex = ringTexture();
+PROOF.points.forEach(p=>{
+  const v=P2(p); allPts.push(v);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:ringTex, transparent:true, opacity:0, depthWrite:false, depthTest:false}));
+  sp.position.copy(v); sp.scale.setScalar(0.075); sp.renderOrder=10; nodeGroup.add(sp);
+  fadeMats.push({m:sp.material, to:0.9});
+});
+
+/* ---- angle labels ---- */
+function labelSprite(text){
+  const font='700 92px "Space Mono", monospace';
+  const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
+  const pad=20, w=Math.ceil(meas.measureText(text).width)+pad*2, h=132;
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  const x=c.getContext('2d'); x.font=font; x.textBaseline='middle'; x.textAlign='center';
+  x.fillStyle='rgba(11,11,11,0.72)';
+  const r=14; x.beginPath();
+  x.moveTo(r,8); x.arcTo(w-2,8,w-2,h-8,r); x.arcTo(w-2,h-8,2,h-8,r); x.arcTo(2,h-8,2,8,r); x.arcTo(2,8,w-2,8,r); x.fill();
+  x.fillStyle='#C8A96E'; x.fillText(text, w/2, h/2+4);
+  const tex=new THREE.CanvasTexture(c); tex.minFilter=THREE.LinearFilter;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, opacity:0, depthWrite:false, depthTest:false}));
+  sp.scale.set(0.19*w/h, 0.19, 1);
+  return sp;
+}
+const labelGroup = new THREE.Group(); scene.add(labelGroup);
+// odd-angle labels that belonged to the malformed figure — drop them
+const ODD = new Set(['57.68°','32.32°','63.44°','26.56°','40.89°']);
+// dedupe near-coincident dim labels so they don't stack into a tangle
+const seen = new Set();
+PROOF.annos.forEach(a=>{
+  if (ODD.has(a.text)) return;
+  // dim-plane origins are stored at ~half world scale -> ×2 back to world
+  const wp=[a.pos[0]*2, a.pos[1]*2, a.pos[2]*2];
+  const v=P2(wp);
+  const key = a.text + '|' + Math.round(v.x/0.28) + ',' + Math.round(v.y/0.28) + ',' + Math.round(v.z/0.28);
+  if (seen.has(key)) return; seen.add(key);
+  const sp=labelSprite(a.text); sp.position.copy(v); sp.renderOrder=20; labelGroup.add(sp);
+  fadeMats.push({m:sp.material, to:0.92, isLabel:true});
+});
+labelGroup.visible = false;
+
+/* ---- faint ground grid for orientation ---- */
+const grid = new THREE.GridHelper(8, 16, 0x2a2826, 0x1c1b1a);
+grid.position.y = -0.001; grid.material.transparent=true; grid.material.opacity=0;
+scene.add(grid);
+fadeMats.push({m:grid.material, to:0.5});
+
+/* ---- frame the camera to the model ---- */
+const box = new THREE.Box3().setFromPoints(allPts);
+const sphere = box.getBoundingSphere(new THREE.Sphere());
+const center = sphere.center.clone();
+const fitDist = (sphere.radius / Math.sin((camera.fov*Math.PI/180)/2)) * 1.18;
+const dir = new THREE.Vector3(0.5, 0.5, 0.82).normalize();
+const HOME = {
+  target: center.clone(),
+  pos: center.clone().add(dir.multiplyScalar(fitDist))
+};
+function applyHome(){
+  controls.target.copy(HOME.target);
+  camera.position.copy(HOME.pos);
+  camera.near = fitDist/80; camera.far = fitDist*14; camera.updateProjectionMatrix();
+  controls.update();
+}
+resize(); applyHome();
+// paint once at full opacity so first frame is visible even if rAF is throttled
+fadeMats.forEach(f=>{ f.m.opacity = f.to; });
+renderer.render(scene, camera);
+
+/* ---- toggles ---- */
+let show = { angles:false, nodes:true, fill:true, spin:true };
+const btn = id => document.getElementById(id);
+function syncBtns(){
+  btn('tg-angles').classList.toggle('off', !show.angles);
+  btn('tg-nodes').classList.toggle('off', !show.nodes);
+  btn('tg-fill').classList.toggle('off', !show.fill);
+  btn('tg-spin').classList.toggle('off', !show.spin);
+  labelGroup.visible = show.angles;
+  btn('tg-angles').classList.toggle('solo', show.angles);
+  nodeGroup.visible = show.nodes;
+  fillMeshes.forEach(m=>m.visible = show.fill);
+  controls.autoRotate = show.spin;
+}
+btn('tg-angles').onclick = ()=>{ show.angles=!show.angles; syncBtns(); };
+btn('tg-nodes').onclick  = ()=>{ show.nodes=!show.nodes; syncBtns(); };
+btn('tg-fill').onclick   = ()=>{ show.fill=!show.fill; syncBtns(); };
+btn('tg-spin').onclick   = ()=>{ show.spin=!show.spin; syncBtns(); };
+btn('tg-reset').onclick  = ()=>{ applyHome(); show.spin=true; syncBtns(); };
+controls.addEventListener('start', ()=>{ if(show.spin){ show.spin=false; syncBtns(); } });
+syncBtns();
+
+/* ---- render loop (orbit + auto-spin) ---- */
+const hint = document.getElementById('hint');
+setTimeout(()=>hint.classList.add('show'), 1400);
+setTimeout(()=>hint.classList.remove('show'), 6200);
+stage.addEventListener('pointerdown', ()=>hint.classList.remove('show'), {once:true});
+
+function animate(){
+  // self-heal sizing: if the stage box changed (or started at 0), re-fit
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (w && h && (w!==W || h!==H)) resize();
+  if (W>1 && H>1){
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+// expose for clean-capture / debugging
+window.__view = { applyHome, controls, camera, scene, renderer };
+</script>
+</body>
+</html>

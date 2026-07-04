@@ -119,6 +119,8 @@ These are accessible by URL only — not linked from any nav:
 - `fleishman-vector-system.html` — vector system (active nav → The Cube)
 - `vector-house.html` — vector house form (active nav → The Cube)
 - `lost-triangle-motion.html` — looping canvas animation (active nav → Animation), embedded as iframe in `index.html`
+- `fleishman-ground-angle.html` — GSAP-timeline construction showing the Lost Triangle arrived at from a unit square tilted 35.25° off the ground, rather than built up from the cube (active nav → The Cube; linked from the "The Cube" tab's masthead and cross-links to `fleishman-proof-3d.html`)
+- `fleishman-proof-3d.html` — the proof triangle parsed directly from Gregg's original `proof triangle with angles.3dm` via `assets/lost-triangle/fleishman-proof-data.js` (a new data file, distinct from `fleishman-proof-data-math27.js` / `fleishman-proof-data-stations-clean.js`) (active nav → The Cube; linked from the "The Cube" tab's masthead and cross-links to `fleishman-ground-angle.html`)
 
 ---
 
