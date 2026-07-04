@@ -38,7 +38,18 @@
 }
 </script>
 
+<script>
+  // ?embed=1 — framed inside another page (e.g. the animation preview):
+  // hide the site nav and reclaim its height. The scene tab bar stays.
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.documentElement.classList.add('gf-embed');
+  }
+</script>
+
 <style>
+  html.gf-embed{ --nav-h:0px; }
+  html.gf-embed #gfnav{ display:none; }
+
   /* ---- tab bar ---- */
   #explore-tabs{
     position:fixed;top:var(--nav-h,52px);left:0;right:0;z-index:15;
