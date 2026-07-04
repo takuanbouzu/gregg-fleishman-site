@@ -44,7 +44,22 @@
     transition:opacity .35s ease;
   }
   #pv-bar.hidden{ opacity:0; }
+  #pv-bar.hidden, #pv-bar.hidden *{ pointer-events:none; } /* invisible bar mustn't intercept clicks */
   #pv-bar > *{ pointer-events:auto; }
+
+  /* When chrome is hidden the bar (and its toggle) vanish, so a small always-on
+     handle stays in the corner to bring the chrome back — otherwise the only way
+     back is the H key. */
+  #pv-restore{
+    position:fixed; right:14px; top:12px; z-index:40; display:none;
+    width:30px; height:30px; align-items:center; justify-content:center;
+    border:1px solid rgba(240,237,232,.16); border-radius:50%;
+    background:rgba(11,11,11,.5); backdrop-filter:blur(6px);
+    color:rgba(240,237,232,.5); font-size:15px; line-height:1; cursor:pointer;
+    transition:opacity .25s ease, color .18s ease, border-color .18s ease;
+  }
+  #pv-restore.show{ display:flex; }
+  #pv-restore:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.42); background:rgba(11,11,11,.7); }
 
   .pv-brand{
     font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.22em; text-transform:uppercase;
@@ -66,16 +81,6 @@
   }
   .pv-chip .pv-num{ opacity:.5; font-size:10.5px; margin-right:5px; }
   .pv-chip.active .pv-num{ opacity:.7; }
-
-  #pv-caption{
-    position:fixed; left:18px; bottom:14px; z-index:20; max-width:44ch;
-    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; line-height:1.45;
-    color:rgba(240,237,232,.62); pointer-events:none;
-    text-shadow:0 1px 20px rgba(0,0,0,.8); transition:opacity .35s ease;
-  }
-  #pv-caption b{ font-style:normal; font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:12px;
-    letter-spacing:.06em; color:#F0EDE8; display:block; margin-bottom:2px; }
-  #pv-caption.hidden{ opacity:0; }
 
   #pv-hint{
     position:fixed; right:18px; bottom:14px; z-index:20;
@@ -113,12 +118,6 @@
     }
     #pv-chips::-webkit-scrollbar{ display:none; }
     .pv-chip{ flex:0 0 auto; font-size:12.5px; padding:8px 12px; }
-    /* Caption rides at the top under the bar, clear of each animation's own
-       bottom controls; the letterboxed frame sits lower on a portrait phone. */
-    #pv-caption{
-      top:96px; bottom:auto; left:12px; right:12px; max-width:none;
-      font-size:13px; line-height:1.36; max-height:6.2em; overflow:hidden;
-    }
     #pv-hint{ display:none; }
   }
   /* Short / landscape phone: height is scarce, so collapse to ONE row —
@@ -134,7 +133,6 @@
     }
     #pv-chips::-webkit-scrollbar{ display:none; }
     #pv-toggle{ order:0; margin-left:0; }
-    #pv-caption{ display:none; }
     #pv-hint{ display:none; }
   }
 </style>
@@ -148,8 +146,8 @@
   <div id="pv-chips"></div>
   <button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
 </div>
-<div id="pv-caption"></div>
 <div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
+<button id="pv-restore" title="show chrome (H)" aria-label="show chrome">⋯</button>
 
 <!-- React runtime (vendored UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
@@ -158,7 +156,6 @@
 <script src="assets/lost-triangle/fleishman-proof-data-math27.js"></script>
 <script src="assets/lost-triangle/fleishman-proof-data-stations-clean.js"></script>
 <!-- Candidate animations, each defines a window.* global -->
-<script src="assets/lost-triangle/three-beginnings.js"></script>
 <script src="assets/lost-triangle/lost-triangle-proof.js"></script>
 <script src="assets/lost-triangle/lost-triangle-animation.js"></script>
 <script src="assets/lost-triangle/lost-triangle-rise-z.js"></script>
@@ -173,28 +170,19 @@
   // Registry of candidate animations. `get` returns the component (or a
   // portrait-aware picker); `kind:'three'` mounts the Vector House module.
   var REG = [
-    { id:'intro',      label:'The Lost Triangle',
-      caption:'Interactive starting-angle demo — begin at 45° / 36.86° / 54.74°, all arriving at 1 : √2 : √3. Drag to orbit.',
+    { id:'intro',      label:'Three Angles',
       kind:'iframe', src:'assets/lost-triangle/lt-intro.html' },
 
     { id:'proof',      label:'The Fleishman Sequence',
-      caption:'The full proof — three beginnings, one triangle, the cube’s chamber, the double, the blossom. ~66s.',
       kind:'react', get:function(){ return window.LostTriangleProof; }, props:{ autoplay:true } },
 
-    { id:'beginnings', label:'Three Beginnings',
-      caption:'Three pivot constructions (45°, 35.26°, 54.74°) that all arrive at the same 1 : √2 : √3 triangle.',
-      kind:'react', get:function(){ return window.LostTriangleThreeBeginnings; }, props:{ autoplay:true, angleMode:'both' } },
-
     { id:'device',     label:'The Device',
-      caption:'The single-scene motion graphic — the triangle unfolding from the cube.',
       kind:'react', get:function(){ return window.LostTriangleAnimation; }, props:{ autoplay:true } },
 
     { id:'risez',      label:'Rise-Z',
-      caption:'The rise-in-Z construction variant.',
       kind:'react', get:function(){ return window.LostTriangleRiseZ; }, props:{ autoplay:true } },
 
     { id:'house',      label:'The Vector House',
-      caption:'Not theory — built. The same geometry standing in plywood, orbitable. Drag to orbit, scroll to zoom.',
       kind:'three' }
   ];
   // Drop any react entry whose component bundle failed to define its global.
@@ -202,10 +190,10 @@
 
   var stage   = document.getElementById('pv-stage');
   var chipsEl = document.getElementById('pv-chips');
-  var capEl   = document.getElementById('pv-caption');
   var bar     = document.getElementById('pv-bar');
   var hint    = document.getElementById('pv-hint');
   var toggle  = document.getElementById('pv-toggle');
+  var restore = document.getElementById('pv-restore');
 
   var curRoot = null;     // active ReactDOM root
   var curDispose = null;  // active Three.js dispose()
@@ -262,7 +250,6 @@
       // keep the active chip visible in the mobile scroll strip
       if (on && c.scrollIntoView) { try { c.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (_) { c.scrollIntoView(); } }
     });
-    capEl.innerHTML = '<b>' + item.label + '</b>' + item.caption;
     if (location.hash.slice(1) !== item.id) history.replaceState(null, '', '#' + item.id);
   }
 
@@ -281,11 +268,12 @@
   function setChrome(hidden){
     chromeHidden = hidden;
     bar.classList.toggle('hidden', hidden);
-    capEl.classList.toggle('hidden', hidden);
     hint.classList.toggle('hidden', hidden);
+    restore.classList.toggle('show', hidden);   // small corner handle stays when chrome is hidden
     toggle.textContent = hidden ? 'show chrome' : 'hide chrome';
   }
   toggle.addEventListener('click', function(){ setChrome(!chromeHidden); });
+  restore.addEventListener('click', function(){ setChrome(false); });
 
   // Keyboard: arrows switch, H toggles chrome, digits jump
   window.addEventListener('keydown', function(ev){
