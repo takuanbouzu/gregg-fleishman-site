@@ -31,8 +31,15 @@
   </template>
   <div id="__bundler_loading">Unpacking...</div>
 
+  <!-- Pre-compiled Babel shim (77 KB): defines window.Babel with the two baked
+       .jsx transforms BEFORE the DC loader runs, so its ensureBabel() sees
+       window.Babel and never fetches the 3 MB @babel/standalone. Classic
+       (synchronous) script on purpose; window survives the unpacker's document
+       rewrite, so the stub is still there when the loader checks. -->
+  <script src="lt-paper-precompiled.js"></script>
+
   <script>
-    
+
 document.addEventListener('DOMContentLoaded', async function() {
   const loading = document.getElementById('__bundler_loading');
   function setStatus(msg) { if (loading) loading.textContent = msg; }
