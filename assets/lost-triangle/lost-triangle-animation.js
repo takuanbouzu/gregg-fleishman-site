@@ -148,7 +148,11 @@
 
     fit(){
       if(!this.frameEl||!this.fitEl)return;
-      var availW=window.innerWidth-28, availH=window.innerHeight-104;
+      // Embedded in a dedicated iframe (preview-slide.html) there's no host
+      // chrome to clear, so use the whole viewport; standalone hosts
+      // (mathematics.html) keep headroom for their sticky nav.
+      var pad=(window!==window.top)?28:104;
+      var availW=window.innerWidth-28, availH=window.innerHeight-pad;
       var s=Math.min(availW/1180,availH/1020);
       this.frameEl.style.transform='scale('+s+')';
       this.fitEl.style.width=(1180*s)+'px';

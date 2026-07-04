@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0B0B0B">
+<title>Slide Host — Gregg Fleishman</title>
+<meta name="description" content="Minimal iframe host for a single animation slide on the preview page.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;height:100%;background:#0B0B0B;overflow:hidden}
+  #root{height:100%}
+  #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;color:rgba(240,237,232,.4);font:12px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="err">slide failed to load</div>
+<script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
+<script src="assets/vendor/react-18.3.1/react-dom.production.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  // Which slide to host, by ?s= key. Each entry lists the scripts it needs
+  // (loaded in order) and the window global the last one defines.
+  var MAP = {
+    proof:  { scripts: ['assets/lost-triangle/fleishman-proof-data-math27.js',
+                        'assets/lost-triangle/fleishman-proof-data-stations-clean.js',
+                        'assets/lost-triangle/lost-triangle-proof.js'],
+              global: 'LostTriangleProof' },
+    device: { scripts: ['assets/lost-triangle/lost-triangle-animation.js'],
+              global: 'LostTriangleAnimation' },
+    risez:  { scripts: ['assets/lost-triangle/lost-triangle-rise-z.js'],
+              global: 'LostTriangleRiseZ' }
+  };
+  var key = new URLSearchParams(location.search).get('s');
+  var item = MAP[key];
+  if (!item){ document.getElementById('err').style.display = 'flex'; return; }
+
+  function load(i){
+    if (i >= item.scripts.length){ mount(); return; }
+    var s = document.createElement('script');
+    s.src = item.scripts[i];
+    s.onload = function(){ load(i+1); };
+    s.onerror = function(){ document.getElementById('err').style.display = 'flex'; };
+    document.body.appendChild(s);
+  }
+  function mount(){
+    var C = window[item.global];
+    if (typeof C !== 'function'){ document.getElementById('err').style.display = 'flex'; return; }
+    ReactDOM.createRoot(document.getElementById('root'))
+      .render(React.createElement(C, { autoplay: true }));
+  }
+  load(0);
+})();
+</script>
+</body>
+</html>
