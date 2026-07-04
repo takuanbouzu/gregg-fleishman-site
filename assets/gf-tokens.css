@@ -67,7 +67,12 @@
 }
 
 /* ---- base ---- */
-html{scroll-behavior:smooth;}
+/* overflow-x:clip stops any stray full-bleed / fixed off-canvas element
+   (e.g. the slide-down mobile menu, whose right:0 box is sized against the
+   scrollbar-inclusive containing block) from creating a sideways scroll,
+   without establishing a scroll container — so `position:sticky` still works. */
+html{scroll-behavior:smooth; overflow-x:clip;}
+body{ overflow-x:clip; }
 body{
   margin:0;
   background:var(--bg);

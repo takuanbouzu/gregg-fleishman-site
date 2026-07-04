@@ -3,7 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lost Triangle — Animated Construction · Gregg Fleishman</title>
+<title>Lost Triangle — Animated Construction — Gregg Fleishman</title>
+<meta name="description" content="A step-by-step 2D animation constructing the Lost Triangle — the 1 : √2 : √3 right triangle drawn from a unit square with compass-and-straightedge moves.">
+<!-- Social link previews. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Lost Triangle — Animated Construction — Gregg Fleishman">
+<meta property="og:description" content="A step-by-step 2D animation constructing the Lost Triangle — the 1 : √2 : √3 right triangle drawn from a unit square with compass-and-straightedge moves.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/lost-triangle-construction.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/lost-triangle-color.png">
+<meta property="og:image:alt" content="The Lost Triangle — 1 : √2 : √3 construction in color">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lost Triangle — Animated Construction — Gregg Fleishman">
+<meta name="twitter:description" content="A step-by-step 2D animation constructing the Lost Triangle — the 1 : √2 : √3 right triangle drawn from a unit square with compass-and-straightedge moves.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/lost-triangle-color.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,7 +118,8 @@
 <body>
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink active" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink active" href="lost-triangle.html">Animation</a>
   <a class="navlink" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
 </nav>
@@ -150,11 +164,6 @@
   const SVGNS="http://www.w3.org/2000/svg";
 
   /* ---------- geometry ---------- */
-  // unit square — axis-aligned; BL = rhombus left vertex, BR = rhombus centre (diagonal crossing)
-  // side ≈ 279 px  (distance from left vertex to centre of rhombus along x)
-  const SQ={ tl:[166,273], tr:[445,273], br:[445,552], bl:[166,552] };
-  // three equal construction arcs (r = ½ × face-diagonal ≈ 197 px), at square-centre / BR / right-vertex
-  const CIR=[ {c:[305,412],r:197}, {c:[445,552],r:197}, {c:[725,552],r:197} ];
   // blue √2-fold rhombus + white inner triangle
   const BLUE={ top:[444,351], left:[166,555], bottom:[447,753], right:[725,549] };
   const WHITE=[ [444,351],[166,555],[444,552] ];               // bone half-triangle

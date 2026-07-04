@@ -97,7 +97,7 @@ About · Work · Geometry · Store · Contact
 ```
 [brand] Gregg Fleishman · The Lost Triangle · Animation · The Cube · Research
 ```
-- Present on all 15 geometry pages via shared `<nav id="gfnav">`, identical order everywhere.
+- Present on all **18 geometry pages** via shared `<nav id="gfnav">`, identical order everywhere. (Re-unified July 2026: the `Animation → lost-triangle.html` entry had drifted out of 15 of the 18 pages, leaving a stale 4-item nav; it's now restored everywhere, with exactly one correct `active` item per page.)
 - `gf-nav.js` auto-enhances this nav with a responsive hamburger at ≤820px.
 - **Order encodes the intended learning journey: scroll → animation → model.**
   - **"The Lost Triangle" → `mathematics.html`** — the long-form narrative **scroll** (the entry point of the journey).
@@ -236,6 +236,22 @@ OG/Twitter meta image URLs use the full GitHub Pages URL — update these if the
 
 ---
 
+## Baseline Standards (every page must meet these — July 2026)
+
+These are the site-wide conventions to preserve and apply to any new page.
+
+### Responsive / legibility
+- **No horizontal scroll, ever.** `gf-tokens.css` sets `html, body { overflow-x: clip }` globally. `clip` (not `hidden`) is deliberate: it contains stray full-bleed / fixed off-canvas children (e.g. the slide-down mobile menu, whose `right:0` box is sized against the scrollbar-inclusive containing block) **without** establishing a scroll container, so `position:sticky` keeps working. Don't remove it; don't "fix" a page by adding another scroll container.
+- **content-box is the site default** (there is no global `* { box-sizing:border-box }` reset). When a flex/grid child can overflow its parent — typically a stacked CTA panel on phones — contain it explicitly: `min-width:0; max-width:100%; box-sizing:border-box`. Watch cascade order: a base rule placed *after* a `@media` block will clobber the responsive override (equal specificity → later source wins) — put the responsive override after the base, or bump its specificity.
+- **Portrait vs landscape.** Fixed 16:9 animation bundles have no portrait layout. Two accepted patterns: (a) ship a portrait variant (as `lost-triangle.html` does via `LostTriangleVideoCleanPortrait`, picked by aspect ratio), or (b) show a calm "rotate your device" affordance in portrait (as `mathematics-preview.html` does — per-slide, driven by `matchMedia('(max-aspect-ratio:1/1)')` + a resize/orientationchange listener; the 3D scene is exempt since it fills any aspect). Never leave a landscape-native canvas shrunk to an unreadable strip.
+
+### `<head>` metadata (every page)
+- Unique, specific `<title>` in the form `<Specific Name> — Gregg Fleishman`, **em-dash "—" as the top-level separator** (not a hyphen, not a middot).
+- A one-sentence `<meta name="description">` describing that page.
+- Open Graph + Twitter card block (template lives in `index.html`): `og:type/site_name/title/description/url/image/image:alt` + `twitter:card/title/description/image`. `og:url` is the page's own GitHub Pages URL; `og:image` is an **absolute** GitHub Pages URL (resolves from any host, incl. the Vercel previews).
+
+---
+
 ## Common Pitfalls
 
 1. **Gold background on WebGL pages** (historical, now impossible): was caused by `GF_SCENE.active()` returning a stored light palette for the clear color. The light palette is gone, so `.active()` and `.dark` both return dark. Still prefer `GF_SCENE.dark` for clarity in new code.
@@ -246,4 +262,4 @@ OG/Twitter meta image URLs use the full GitHub Pages URL — update these if the
 
 4. **Mobile menu**: `gf-nav.js` is idempotent — safe to include on any page with `<nav id="gfnav">`. It builds the `#gf-mobilemenu` at runtime.
 
-5. **No build step**: Editing JS in `vector-pod/` does nothing — that sub-app is pre-compiled. Its source lives in a separate repository.
+5. **No build step**: Editing JS in `vector-pod/` does nothing — that sub-app is pre-compiled. Its source lives in a separate repository. **One deliberate exception** (July 2026): the compiled bundle was hot-patched to fix a "VERTOR POD" typo → "VECTOR POD" (3 display strings, byte-length-preserving, `vertOriginX` SVG attributes untouched). If vector-pod is ever rebuilt from its source repo, make sure the typo is fixed upstream first or it will regress.

@@ -6,6 +6,18 @@
 <meta name="theme-color" content="#0B0B0B">
 <title>Work — Gregg Fleishman</title>
 <meta name="description" content="Furniture, pods, node structures, and Sky Portal installations — Gregg Fleishman's geometric building system in physical form.">
+<!-- Social link previews. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Work — Gregg Fleishman">
+<meta property="og:description" content="Furniture, pods, node structures, and Sky Portal installations — Gregg Fleishman's geometric building system in physical form.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/portfolio.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Work — Gregg Fleishman">
+<meta name="twitter:description" content="Furniture, pods, node structures, and Sky Portal installations — Gregg Fleishman's geometric building system in physical form.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +44,8 @@
     /* collections note + store CTA stack with comfortable padding */
     .collections-note{ padding:22px 20px; gap:14px; }
     /* the inline-styled store-CTA panel (last .sec) → stack + full-width button */
-    .sec:last-of-type .wrap > div{ flex-direction:column; align-items:stretch !important; padding:28px 22px !important; }
+    .sec:last-of-type .wrap > div{ flex-direction:column; align-items:stretch !important; padding:28px 22px !important; box-sizing:border-box; }
+    .sec:last-of-type .wrap > div > *{ min-width:0; max-width:100%; box-sizing:border-box; }
     .sec:last-of-type .gf-btn-fill{ width:100%; text-align:center; }
   }
   @media(max-width:480px){ .page-header h1{ font-size:clamp(36px,9vw,48px); } .page-header{ padding:56px 0 40px; } }

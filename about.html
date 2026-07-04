@@ -6,6 +6,18 @@
 <meta name="theme-color" content="#0B0B0B">
 <title>About — Gregg Fleishman</title>
 <meta name="description" content="Gregg Fleishman is a Los Angeles architect and designer who has spent fifty years building structures from geometric first principles — from MoMA-collected furniture to six-story festival temples.">
+<!-- Social link previews. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="About — Gregg Fleishman">
+<meta property="og:description" content="Gregg Fleishman is a Los Angeles architect and designer who has spent fifty years building structures from geometric first principles — from MoMA-collected furniture to six-story festival temples.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/about.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About — Gregg Fleishman">
+<meta name="twitter:description" content="Gregg Fleishman is a Los Angeles architect and designer who has spent fifty years building structures from geometric first principles — from MoMA-collected furniture to six-story festival temples.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -187,6 +199,15 @@
     padding:40px; margin-top:64px;
     background:var(--bg-surface);
     border:1px solid var(--border);
+  }
+  /* Stacked CTA on phones. Declared AFTER the base rule so it wins the cascade
+     (the base align-items:center sits below the ≤600 block above and would
+     otherwise clobber the stretch, leaving the text block at min-content width
+     and overflowing). */
+  @media(max-width:600px){
+    .exhibit-link{ flex-direction:column; align-items:stretch; box-sizing:border-box; }
+    .exhibit-link > *{ min-width:0; max-width:100%; box-sizing:border-box; }
+    .exhibit-link .gf-btn-fill{ width:100%; text-align:center; }
   }
   @media(max-width:480px){ .exhibit-link{ padding:24px 20px; } }
   .exhibit-link-text h3{
