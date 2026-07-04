@@ -260,4 +260,4 @@ These are the site-wide conventions to preserve and apply to any new page.
 
 4. **Mobile menu**: `gf-nav.js` is idempotent — safe to include on any page with `<nav id="gfnav">`. It builds the `#gf-mobilemenu` at runtime.
 
-5. **No build step**: Editing JS in `vector-pod/` does nothing — that sub-app is pre-compiled. Its source lives in a separate repository.
+5. **No build step**: Editing JS in `vector-pod/` does nothing — that sub-app is pre-compiled. Its source lives in a separate repository. **One deliberate exception** (July 2026): the compiled bundle was hot-patched to fix a "VERTOR POD" typo → "VECTOR POD" (3 display strings, byte-length-preserving, `vertOriginX` SVG attributes untouched). If vector-pod is ever rebuilt from its source repo, make sure the typo is fixed upstream first or it will regress.
