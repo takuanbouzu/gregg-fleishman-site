@@ -3,6 +3,7 @@
    Defines window.LostTriangleRiseZ, mounted by mathematics.html. */
 (function () {
   'use strict';
+  var MOB=(typeof matchMedia!=='undefined')&&matchMedia('(pointer: coarse)').matches;
   var cr = React.createElement;
 
   class LostTriangleRiseZ extends React.Component {
@@ -43,7 +44,7 @@
       else if(this.props.autoplay) this.setState({playing:true});
       this._fit=()=>this.fit(); window.addEventListener('resize',this._fit); this.fit();
       this._last=performance.now();
-      var loop=(now)=>{ var dt=(now-this._last)/1000; this._last=now;
+      var loop=(now)=>{ if(MOB&&(this._fskip=!this._fskip)){ this._raf=requestAnimationFrame(loop); return; } var dt=(now-this._last)/1000; this._last=now;
         if(this.state.playing){ var nt=this.state.t+dt; if(nt>=this.END){nt=this.END;this.setState({t:nt,playing:false});} else this.setState({t:nt});
           if(Math.floor(nt*4)!==this._sv){this._sv=Math.floor(nt*4);localStorage.setItem(this.KEY,nt.toFixed(2));} }
         this._raf=requestAnimationFrame(loop); };
@@ -73,13 +74,13 @@
     proj(p){ var a=this._az,ce=Math.cos(a),se=Math.sin(a); var x=p[0]-0.5,y=p[1]-0.5,z=p[2]-0.5; var xa=x*ce-y*se,ya=x*se+y*ce,za=z; var zb=ya*Math.sin(this.el)+za*Math.cos(this.el); return [this.cx+xa*this.S,this.cy-zb*this.S]; }
     L3(a,b,k){ return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,a[2]+(b[2]-a[2])*k]; }
 
-    seg(p0,p1,prog,color,w,o){ o=o||{}; if(prog<=0) return null; var A=this.proj(p0),B0=this.proj(p1),B=[A[0]+(B0[0]-A[0])*prog,A[1]+(B0[1]-A[1])*prog]; return cr('line',{key:'s'+(this._k++),x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:color,strokeWidth:w,strokeLinecap:'round',strokeDasharray:o.dash,opacity:o.op==null?1:o.op,filter:'url(#rzg)'}); }
+    seg(p0,p1,prog,color,w,o){ o=o||{}; if(prog<=0) return null; var A=this.proj(p0),B0=this.proj(p1),B=[A[0]+(B0[0]-A[0])*prog,A[1]+(B0[1]-A[1])*prog]; return cr('line',{key:'s'+(this._k++),x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:color,strokeWidth:w,strokeLinecap:'round',strokeDasharray:o.dash,opacity:o.op==null?1:o.op,filter:(MOB?undefined:'url(#rzg)')}); }
     ln(a,b,color,w,op){ return cr('line',{key:'L'+(this._k++),x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:color,strokeWidth:w,strokeLinecap:'round',opacity:op==null?1:op}); }
     poly(ps,fill,op){ var pts=ps.map((p)=>{var P=this.proj(p);return P[0].toFixed(1)+','+P[1].toFixed(1);}).join(' '); return cr('polygon',{key:'p'+(this._k++),points:pts,fill:fill,stroke:'none',opacity:op}); }
-    dot(p,rad,color,op){ if(op<=0) return null; var P=this.proj(p); return cr('circle',{key:'c'+(this._k++),cx:P[0],cy:P[1],r:rad,fill:color,opacity:op,filter:'url(#rzg)'}); }
-    labP(p,txt,color,op,o){ o=o||{}; if(op<=0) return null; var P=this.proj(p); return cr('text',{key:'l'+(this._k++),x:P[0]+(o.dx||0),y:P[1]+(o.dy||0),fill:color,opacity:op,fontSize:o.size||30,fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontWeight:o.w||600,textAnchor:'middle',filter:'url(#rzg)'},txt); }
-    txt(x,y,s,color,op,o){ o=o||{}; if(op<=0) return null; return cr('text',{key:'x'+(this._k++),x,y,fill:color,opacity:op,fontSize:o.size||34,fontFamily:o.face||"'Cormorant Garamond',serif",fontStyle:o.italic?'italic':'normal',fontWeight:o.w||500,textAnchor:o.anchor||'middle',letterSpacing:o.ls||0,filter:o.glow?'url(#rzg)':undefined},s); }
-    rang(O3,A3,B3,c,op){ if(op<=0) return null; var D=this.proj(O3),A=this.proj(A3),B=this.proj(B3); var v1=[A[0]-D[0],A[1]-D[1]],v2=[B[0]-D[0],B[1]-D[1]]; var n1=Math.hypot(v1[0],v1[1])||1,n2=Math.hypot(v2[0],v2[1])||1,s=15; var a=[D[0]+v1[0]/n1*s,D[1]+v1[1]/n1*s],b=[D[0]+v2[0]/n2*s,D[1]+v2[1]/n2*s],cc=[a[0]+v2[0]/n2*s,a[1]+v2[1]/n2*s]; return cr('path',{key:'r'+(this._k++),d:'M '+a[0]+' '+a[1]+' L '+cc[0]+' '+cc[1]+' L '+b[0]+' '+b[1],fill:'none',stroke:c,strokeWidth:2,opacity:op,filter:'url(#rzg)'}); }
+    dot(p,rad,color,op){ if(op<=0) return null; var P=this.proj(p); return cr('circle',{key:'c'+(this._k++),cx:P[0],cy:P[1],r:rad,fill:color,opacity:op,filter:(MOB?undefined:'url(#rzg)')}); }
+    labP(p,txt,color,op,o){ o=o||{}; if(op<=0) return null; var P=this.proj(p); return cr('text',{key:'l'+(this._k++),x:P[0]+(o.dx||0),y:P[1]+(o.dy||0),fill:color,opacity:op,fontSize:o.size||30,fontFamily:"'Cormorant Garamond',serif",fontStyle:'italic',fontWeight:o.w||600,textAnchor:'middle',filter:(MOB?undefined:'url(#rzg)')},txt); }
+    txt(x,y,s,color,op,o){ o=o||{}; if(op<=0) return null; return cr('text',{key:'x'+(this._k++),x,y,fill:color,opacity:op,fontSize:o.size||34,fontFamily:o.face||"'Cormorant Garamond',serif",fontStyle:o.italic?'italic':'normal',fontWeight:o.w||500,textAnchor:o.anchor||'middle',letterSpacing:o.ls||0,filter:o.glow?(MOB?undefined:'url(#rzg)'):undefined},s); }
+    rang(O3,A3,B3,c,op){ if(op<=0) return null; var D=this.proj(O3),A=this.proj(A3),B=this.proj(B3); var v1=[A[0]-D[0],A[1]-D[1]],v2=[B[0]-D[0],B[1]-D[1]]; var n1=Math.hypot(v1[0],v1[1])||1,n2=Math.hypot(v2[0],v2[1])||1,s=15; var a=[D[0]+v1[0]/n1*s,D[1]+v1[1]/n1*s],b=[D[0]+v2[0]/n2*s,D[1]+v2[1]/n2*s],cc=[a[0]+v2[0]/n2*s,a[1]+v2[1]/n2*s]; return cr('path',{key:'r'+(this._k++),d:'M '+a[0]+' '+a[1]+' L '+cc[0]+' '+cc[1]+' L '+b[0]+' '+b[1],fill:'none',stroke:c,strokeWidth:2,opacity:op,filter:(MOB?undefined:'url(#rzg)')}); }
 
     buildScene(){
       var t=this.state.t,C=this.C,k=[]; this._k=0; this._az=this.az0+0.12*t;

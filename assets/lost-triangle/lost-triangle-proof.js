@@ -8,6 +8,8 @@
 (function () {
   'use strict';
   var cr = React.createElement;
+  // Touch devices: skip the SVG glow filter (expensive on mobile GPUs)
+  var MOB = (typeof matchMedia !== 'undefined') && matchMedia('(pointer: coarse)').matches;
 
   class LostTriangleProof extends React.Component {
     constructor(props){
@@ -82,6 +84,7 @@
       window.addEventListener('keydown', this._key);
       this._last = performance.now();
       var loop = (now) => {
+        if (MOB && (this._fskip = !this._fskip)) { this._raf = requestAnimationFrame(loop); return; }
         var dt = (now - this._last) / 1000;
         this._last = now;
         if (this.state.playing) {
@@ -131,18 +134,18 @@
       const A = this.proj(p0), B0 = this.proj(p1), B = this.lerpP(A, B0, prog);
       return cr('line', { key: 's' + (this._k++), x1: A[0], y1: A[1], x2: B[0], y2: B[1],
         stroke: color, strokeWidth: w, strokeLinecap: 'round', strokeDasharray: o.dash, opacity: o.op == null ? 1 : o.op,
-        filter: o.glow === false ? undefined : 'url(#ltproofg)' });
+        filter: o.glow === false ? undefined : (MOB?undefined:'url(#ltproofg)') });
     }
     dot(p, rad, color, op) { if (op <= 0) return null; const P = this.proj(p);
-      return cr('circle', { key: 'c' + (this._k++), cx: P[0], cy: P[1], r: rad, fill: color, opacity: op, filter: 'url(#ltproofg)' }); }
+      return cr('circle', { key: 'c' + (this._k++), cx: P[0], cy: P[1], r: rad, fill: color, opacity: op, filter: (MOB?undefined:'url(#ltproofg)') }); }
     lab(p, txt, color, op, o) { o = o || {}; if (op <= 0) return null; const P = this.proj(p);
       return cr('text', { key: 'l' + (this._k++), x: P[0] + (o.dx || 0), y: P[1] + (o.dy || 0), fill: color, opacity: op,
         fontSize: o.size || 30, fontFamily: "'Cormorant Garamond',serif", fontStyle: o.italic ? 'italic' : 'normal', fontWeight: o.w || 600,
-        textAnchor: o.anchor || 'middle', filter: 'url(#ltproofg)' }, txt); }
+        textAnchor: o.anchor || 'middle', filter: (MOB?undefined:'url(#ltproofg)') }, txt); }
     txt(x, y, s, color, op, o) { o = o || {}; if (op <= 0) return null;
       return cr('text', { key: 'x' + (this._k++), x, y, fill: color, opacity: op, fontSize: o.size || 34,
         fontFamily: o.face || "'Cormorant Garamond',serif", fontStyle: o.italic ? 'italic' : 'normal', fontWeight: o.w || 500,
-        textAnchor: o.anchor || 'middle', filter: o.glow ? 'url(#ltproofg)' : undefined, letterSpacing: o.ls || 0 }, s); }
+        textAnchor: o.anchor || 'middle', filter: o.glow ? (MOB?undefined:'url(#ltproofg)') : undefined, letterSpacing: o.ls || 0 }, s); }
     poly(pts3, fill, op, o) { o = o || {}; if (op <= 0) return null;
       const pts = pts3.map((p) => this.proj(p));
       return cr('polygon', { key: 'p' + (this._k++), points: pts.map((p) => p[0] + ',' + p[1]).join(' '),
@@ -155,7 +158,7 @@
       const x0 = O[0] + rad * Math.cos(aA), y0 = O[1] + rad * Math.sin(aA);
       const x1 = O[0] + rad * Math.cos(aE), y1 = O[1] + rad * Math.sin(aE);
       return cr('path', { key: 'a' + (this._k++), d: `M${x0} ${y0} A${rad} ${rad} 0 0 ${d > 0 ? 1 : 0} ${x1} ${y1}`,
-        stroke: color, strokeWidth: o.sw || 2.4, fill: 'none', strokeDasharray: o.dash || '5 6', opacity: op, filter: 'url(#ltproofg)', strokeLinecap: 'round' }); }
+        stroke: color, strokeWidth: o.sw || 2.4, fill: 'none', strokeDasharray: o.dash || '5 6', opacity: op, filter: (MOB?undefined:'url(#ltproofg)'), strokeLinecap: 'round' }); }
 
     curCI() { let ci = 0; for (let i = 0; i < this.CHT.length; i++) { if (this.state.t >= this.CHT[i] - 0.001) ci = i; } return ci; }
     seekCh(i) { i = Math.max(0, Math.min(this.CHT.length - 1, i)); this.setState({ t: this.CHT[i] + 0.02, playing: true }); localStorage.setItem(this.KEY, this.CHT[i].toFixed(2)); }
@@ -263,7 +266,7 @@
         // unit box wireframe (faint)
         const boxOp = this.sm(t, 19.5, 21.0) * s3 * .5;
         this.cubeE.forEach((e, i) => { const A = this.proj(V(e[0][0]/2, e[0][1]/2, e[0][2]/2)), B = this.proj(V(e[1][0]/2, e[1][1]/2, e[1][2]/2));
-          push(cr('line', { key: 'bx' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.5)', strokeWidth: 1.2, opacity: boxOp, filter: 'url(#ltproofg)' })); });
+          push(cr('line', { key: 'bx' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.5)', strokeWidth: 1.2, opacity: boxOp, filter: (MOB?undefined:'url(#ltproofg)') })); });
         // Lost Triangle standing in the face: √2 base diag (gold) + 1 up edge (cyan) + √3 space diag (green)
         push(this.seg(O3, P3, this.sm(t, 21.2, 22.1), C.two, 2.6, { op: s3 }));
         push(this.lab(this.lerpP3(O3, P3, .5), '√2', C.twoL, this.sm(t, 21.9, 22.5) * s3, { dy: 26, size: 27, italic: true }));
@@ -299,7 +302,7 @@
         const boxOp = this.sm(t, 27.6, 29) * s4 * .35;
         this.cubeE.forEach((e, i) => {
           const A = this.proj([e[0][0] * 1.1, e[0][1] * 1.1, e[0][2] * 1.1]), B = this.proj([e[1][0] * 1.1, e[1][1] * 1.1, e[1][2] * 1.1]);
-          push(cr('line', { key: 'l4box' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.4)', strokeWidth: 1, opacity: boxOp, filter: 'url(#ltproofg)' }));
+          push(cr('line', { key: 'l4box' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.4)', strokeWidth: 1, opacity: boxOp, filter: (MOB?undefined:'url(#ltproofg)') }));
         });
         fans.forEach((f, i) => {
           const app = this.sm(t, f.t0, f.t0 + 1.0) * s4;
@@ -333,7 +336,7 @@
         // cube edges fade in
         const eOp = this.sm(t, 36.6, 38.2) * s5;
         this.cubeE.forEach((e, i) => { const A = this.proj(cubeScale(e[0])), B = this.proj(cubeScale(e[1]));
-          push(cr('line', { key: 'ce' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.42)', strokeWidth: 1.3, opacity: eOp, filter: 'url(#ltproofg)' })); });
+          push(cr('line', { key: 'ce' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.42)', strokeWidth: 1.3, opacity: eOp, filter: (MOB?undefined:'url(#ltproofg)') })); });
         // one hero chamber triangle labelled 1 · √2 · √3
         const heroF = this.flags[2];
         const O = V(0,0,0), Fc = V(heroF.fc[0], heroF.fc[1], heroF.fc[2]), Vt = V(heroF.v[0], heroF.v[1], heroF.v[2]);
@@ -366,7 +369,7 @@
       if (s6 > 0) {
         // dim cube
         this.cubeE.forEach((e, i) => { const A = this.proj(cubeScale(e[0])), B = this.proj(cubeScale(e[1]));
-          push(cr('line', { key: 'c6e' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.16)', strokeWidth: 1.1, opacity: s6, filter: 'url(#ltproofg)' })); });
+          push(cr('line', { key: 'c6e' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.16)', strokeWidth: 1.1, opacity: s6, filter: (MOB?undefined:'url(#ltproofg)') })); });
         const ctr = V(0,0,0);
         const d1a = V(1,1,1), d1b = V(-1,-1,-1), d2a = V(1,1,-1), d2b = V(-1,-1,1);
         const dp1 = this.sm(t, 48.0, 49.2), dp2 = this.sm(t, 48.8, 50.0);
@@ -394,7 +397,7 @@
         // dim cube shrinking into the solid
         const cubeFade = (1 - grow) * s7 * .5;
         if (cubeFade > 0.02) this.cubeE.forEach((e, i) => { const A = this.proj(cubeScale(e[0])), B = this.proj(cubeScale(e[1]));
-          push(cr('line', { key: 'c7e' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.4)', strokeWidth: 1.1, opacity: cubeFade, filter: 'url(#ltproofg)' })); });
+          push(cr('line', { key: 'c7e' + i, x1: A[0], y1: A[1], x2: B[0], y2: B[1], stroke: 'rgba(240,237,232,.4)', strokeWidth: 1.1, opacity: cubeFade, filter: (MOB?undefined:'url(#ltproofg)') })); });
         // 12 rhombic faces
         this.rdFaces.forEach((f, i) => {
           const apA = ap(f.apA), apB = ap(f.apB), vP = V(f.vP[0], f.vP[1], f.vP[2]), vN = V(f.vN[0], f.vN[1], f.vN[2]);
