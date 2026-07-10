@@ -551,7 +551,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
   const STAGES=[
     {id:'cell',  label:'The cell',  source:'computed geometry (24 signed permutations)'},
     {id:'pack',  label:'Packing',   source:'computed geometry &middot; BCC lattice, 14 neighbours'},
-    {id:'pod',   label:'The Pod',   source:'rhomi-pod.glb &middot; Gregg&rsquo;s Rhino STEP export', glb:'assets/models/rhomi-pod.glb',    gold:true},
+    {id:'pod',   label:'The Pod',   source:'rhomi-pod.glb &middot; Gregg&rsquo;s Rhino STEP export', glb:'assets/models/rhomi-pod.glb',    gold:true,
+      wireGlb:'assets/models/truncated-octahedron-detail.glb', wireRotX:Math.PI/2},
     {id:'house', label:'The House', source:'vector-house.glb &middot; the edge&rsquo;s 45&deg;/&#8730;2 fold, not the corner hexagons', glb:'assets/models/vector-house.glb', gold:false}
   ];
   const loadEl=document.getElementById('stepload');
@@ -585,30 +586,51 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
       m.traverse(function(o){
         if(!o.isMesh) return;
         if(st.gold){
-          o.material=new THREE.MeshStandardMaterial({color:0xc8a96e,metalness:.12,roughness:.5,side:THREE.DoubleSide});
+          // dark-stained plywood, per real close-up photos of the joint —
+          // not the flat gold placeholder this started as.
+          o.material=new THREE.MeshStandardMaterial({color:0x2b2228,metalness:.05,roughness:.7,side:THREE.DoubleSide});
         } else if(o.material){
           o.material.side=THREE.DoubleSide;   // keep authored glass/transmission
         }
         o.material.transparent=true;
         fillMats.push(o.material);
       });
-      // "shown in wireframe, then the panels turn on" — a ghost skeleton clone
-      // reveals first, echoing the Vector Pod app's own Assembly→Panels build;
-      // sharing geometry by reference costs nothing extra to render.
-      const wireClone=m.clone(true);
-      const wireMats=[];
-      wireClone.traverse(function(o){
-        if(!o.isMesh) return;
-        o.material=new THREE.MeshBasicMaterial({color:st.gold?0xf3dfae:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
-        wireMats.push(o.material);
-      });
-      m.add(wireClone);
       const box=new THREE.Box3().setFromObject(m);
       m.position.sub(box.getCenter(new THREE.Vector3()));
       m.visible=false; scene.add(m);
-      models[st.id]={obj:m,fillMats:fillMats,wireMats:wireMats};
+      models[st.id]={obj:m,fillMats:fillMats,wireMats:[]};
       loadEl.style.display='none';
       if(STAGES[stage].id===st.id) frameNow(m);   // still on this stage → frame it
+
+      function finishWire(wireObj){
+        const wireMats=[];
+        wireObj.traverse(function(o){
+          if(!o.isMesh) return;
+          o.material=new THREE.MeshBasicMaterial({color:st.gold?0xb99ee0:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
+          wireMats.push(o.material);
+        });
+        m.add(wireObj);
+        models[st.id].wireMats=wireMats;
+      }
+      if(st.wireGlb){
+        // a dedicated companion model (the exact computed geometry this built
+        // form shares its panels with) makes a far richer skeleton than cloning
+        // the built model's own coarse mesh — its bounding box was confirmed to
+        // match st.glb's almost exactly, just with a permuted axis convention.
+        loader.load(st.wireGlb,function(wg){
+          const w=wg.scene;
+          if(st.wireRotX) w.rotation.x=st.wireRotX;
+          finishWire(w);
+        },undefined,function(err){
+          console.error('[truncated-octahedron] wireframe companion load failed, falling back to self-clone:',err);
+          finishWire(m.clone(true));
+        });
+      } else {
+        // "shown in wireframe, then the panels turn on" — a ghost skeleton clone
+        // reveals first, echoing the Vector Pod app's own Assembly→Panels build;
+        // sharing geometry by reference costs nothing extra to render.
+        finishWire(m.clone(true));
+      }
     },function(xhr){
       if(xhr.total) loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'… '+Math.round(xhr.loaded/xhr.total*100)+'%';
     },function(err){
