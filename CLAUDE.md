@@ -69,7 +69,7 @@ gregg-fleishman-site/
 │   ├── index.html
 │   └── assets/
 ├── index.html                 # Landing page (outer site hub)
-├── explore.html               # THE CUBE — main interactive (5 tabs, 1 hidden — see below)
+├── explore.html               # THE CUBE — main interactive (6 tabs, 1 hidden — see below)
 ├── mathematics.html           # The Lost Triangle narrative
 ├── construction.html          # Full-bleed iframe → lost-triangle.html?embed=1 (Cluster Structures tab removed)
 ├── lost-triangle.html         # React motion graphic (1:√2:√3); ?embed=1 hides nav for iframe use
@@ -170,12 +170,13 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NoToneMapping;
 ```
 
-**explore.html** — 5 tabs (1 currently hidden from the tab bar), each its own `<script type="module">` or iframe:
+**explore.html** — 6 tabs (1 currently hidden from the tab bar), each its own `<script type="module">` or iframe:
 1. **The Cube** — characteristic tetrahedra assembly; fat lines (Line2/LineMaterial); OrbitControls; GSAP timeline
 2. **Cluster Structures** — GSAP animation sequence. **Hidden as of July 2026** — the `<button data-tab="cs">` is commented out of the tab bar, but the `#scene-cs` markup/script and the `'cs'` entry in the tab-switcher's `scenes` array are untouched, so restoring it is a one-line uncomment.
 3. **Vector System** — tiled cube frame with assembly pattern
 4. **Rhombic System** — iframe to `rhombic-system.html?embed=1` (added July 2026, replacing its former top-nav slot)
 5. **Vector Pod** — iframe to `vector-pod/index.html`
+6. **Rhombi Pod** — GLB assembly viewer for `assets/models/rhombi-pod.glb` (added July 2026). The GLB is a mesh export of Gregg's `Single Rhomi Pod STEP` Rhino model (65 CAD solids + 9 reference curves), **re-encoded from Draco to meshopt compression** so the already-vendored `meshopt_decoder.module.js` can decode it — the vendor dir has no DRACOLoader, so a Draco-compressed GLB will NOT load; re-encode any replacement with `npx gltf-transform meshopt in.glb out.glb`. Layer toggles map to the Rhino layer groups preserved in the node tree (`Panels`, `NODE PARTS/90`, `NODE PARTS/45`, `Source/0` ref curves), plus a radial explode slider (valid because all GLB node transforms are identity — geometry is baked in world coords). Inits lazily on first tab activation (~1.9 MB fetch). Rhino exports glTF metallic=1, which renders black — materials are overridden to metalness 0 at load.
 
 **construction.html** — no tab bar; full-bleed `<iframe src="lost-triangle.html?embed=1">` filling the space below the nav. The Cluster Structures tab (Three.js r160 + GSAP) was removed; its standalone page `cluster-structures.html` still exists by URL but is no longer linked from the nav.
 
@@ -201,7 +202,7 @@ This is the **"Clean" build** — a faithful port of the Claude Design file `Los
 
 ## `explore.html` Specifics
 
-The most complex page — five scenes in one file (one hidden from the tab bar, two of the five are iframes).
+The most complex page — six scenes in one file (one hidden from the tab bar, two of the six are iframes).
 
 **Tab switching**: `activate(id)` at the bottom of the file shows/hides `.con-scene` divs via `display:block/none`. The animate loop for each scene guards on `sceneCubeEl.style.display === 'none'` to pause when hidden.
 
