@@ -17,7 +17,7 @@ import {
   X,
 } from 'lucide-react'
 import { MODEL_DATA } from './modelData'
-import { RHOMBIC_DODECA } from './rhombicDodeca'
+import { TRUNCATED_OCTAHEDRON } from './truncatedOctahedron'
 
 type Mode = 'assembly' | 'exploded' | 'geometry'
 type ViewPreset = 'perspective' | 'top' | 'front' | 'right'
@@ -52,7 +52,7 @@ type VisibilityState = {
   assembly: boolean
   panels: boolean
   extension: boolean
-  rhombic: boolean
+  truncOcta: boolean
   axis: boolean
   cube: boolean
 }
@@ -64,7 +64,7 @@ type Runtime = {
   controls: OrbitControls
   partObjects: Map<string, THREE.LineSegments>
   referenceObjects: Map<string, THREE.LineSegments>
-  rhombicObject: THREE.LineSegments
+  truncOctaObject: THREE.LineSegments
   points: THREE.Points
   resizeObserver: ResizeObserver
   frame: number
@@ -94,7 +94,7 @@ const palette = {
   selected: new THREE.Color('#f8f3df'),
   axis: new THREE.Color('#7ba98b'),
   cube: new THREE.Color('#55748c'),
-  rhombic: new THREE.Color('#a99ac9'),
+  truncOcta: new THREE.Color('#a99ac9'),
 }
 
 function decodePositions(encoded: string, quantum: number) {
@@ -217,20 +217,20 @@ function PodScene({
       referenceObjects.set(layerIndex, object)
     })
 
-    // Rhombic dodecahedron — the space-filling dual of Gregg's vector system,
-    // baked as a feature-edge wireframe (see rhombicDodeca.ts). Toggled from the
+    // Truncated octahedron — the space-filling cell of Gregg's vector system,
+    // baked as a feature-edge wireframe (see truncatedOctahedron.ts). Toggled from the
     // part-system panel; centered at the origin like the cube-frame reference.
-    const rhombicGeometry = new THREE.BufferGeometry()
-    rhombicGeometry.setAttribute(
+    const truncOctaGeometry = new THREE.BufferGeometry()
+    truncOctaGeometry.setAttribute(
       'position',
-      new THREE.BufferAttribute(decodePositions(RHOMBIC_DODECA.positions, RHOMBIC_DODECA.quantum), 3),
+      new THREE.BufferAttribute(decodePositions(TRUNCATED_OCTAHEDRON.positions, TRUNCATED_OCTAHEDRON.quantum), 3),
     )
-    const rhombicObject = new THREE.LineSegments(
-      rhombicGeometry,
-      new THREE.LineBasicMaterial({ color: palette.rhombic, transparent: true, opacity: 0.7, depthWrite: false }),
+    const truncOctaObject = new THREE.LineSegments(
+      truncOctaGeometry,
+      new THREE.LineBasicMaterial({ color: palette.truncOcta, transparent: true, opacity: 0.7, depthWrite: false }),
     )
-    rhombicObject.visible = false
-    scene.add(rhombicObject)
+    truncOctaObject.visible = false
+    scene.add(truncOctaObject)
 
     const pointPositions = new Float32Array(data.points.flatMap((point) => point.position))
     const pointGeometry = new THREE.BufferGeometry()
@@ -302,7 +302,7 @@ function PodScene({
       controls,
       partObjects,
       referenceObjects,
-      rhombicObject,
+      truncOctaObject,
       points,
       resizeObserver,
       frame: 0,
@@ -339,8 +339,8 @@ function PodScene({
         object.geometry.dispose()
         ;(object.material as THREE.Material).dispose()
       })
-      rhombicObject.geometry.dispose()
-      ;(rhombicObject.material as THREE.Material).dispose()
+      truncOctaObject.geometry.dispose()
+      ;(truncOctaObject.material as THREE.Material).dispose()
       pointGeometry.dispose()
       ;(points.material as THREE.Material).dispose()
       haloGeometry.dispose()
@@ -391,8 +391,8 @@ function PodScene({
       cube.visible = visibility.cube
       ;(cube.material as THREE.LineBasicMaterial).opacity = mode === 'geometry' ? 0.62 : 0.3
     }
-    runtime.rhombicObject.visible = visibility.rhombic
-    ;(runtime.rhombicObject.material as THREE.LineBasicMaterial).opacity = mode === 'geometry' ? 0.82 : 0.62
+    runtime.truncOctaObject.visible = visibility.truncOcta
+    ;(runtime.truncOctaObject.material as THREE.LineBasicMaterial).opacity = mode === 'geometry' ? 0.82 : 0.62
     runtime.points.visible = visibility.axis
   }, [mode, selectedId, visibility])
 
@@ -454,7 +454,7 @@ function App() {
     assembly: true,
     panels: true,
     extension: false,
-    rhombic: false,
+    truncOcta: false,
     axis: false,
     cube: false,
   })
@@ -569,11 +569,11 @@ function App() {
           onClick={() => toggle('extension')}
         />
         <ToggleRow
-          label="Rhombic dodeca"
-          detail="space-filling dual overlay"
-          active={visibility.rhombic}
+          label="Truncated octahedron"
+          detail="space-filling cell · same panels"
+          active={visibility.truncOcta}
           color="#a99ac9"
-          onClick={() => toggle('rhombic')}
+          onClick={() => toggle('truncOcta')}
         />
         <div className="section-rule" />
         <ToggleRow
