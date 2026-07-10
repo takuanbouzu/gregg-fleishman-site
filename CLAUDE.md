@@ -65,9 +65,12 @@ gregg-fleishman-site/
 │       ├── three-r128/        # Three.js r128 minified (older deep-dive pages)
 │       ├── react-18.3.1/      # React + ReactDOM UMD (powers lost-triangle.html)
 │       └── gsap-3.12.5/       # GSAP 3.12.5 (animation timelines)
-├── vector-pod/                # Compiled Vite/Vue app (separate sub-project)
+├── vector-pod/                # Compiled build output of the Vector Pod part-study app (React/Vite)
 │   ├── index.html
 │   └── assets/
+├── vector-pod-src/            # EDITABLE SOURCE for vector-pod/ (React 19 + Vite + TS). Build → copy dist/ into vector-pod/
+│   ├── src/                   #   App.tsx, modelData.ts (baked NURBS edges), rhombicDodeca.ts (baked rhombic-dodeca edges)
+│   └── package.json           #   pnpm install && pnpm build
 ├── index.html                 # Landing page (outer site hub)
 ├── explore.html               # THE CUBE — main interactive (5 tabs, 1 hidden — see below)
 ├── mathematics.html           # The Lost Triangle narrative
@@ -262,4 +265,12 @@ These are the site-wide conventions to preserve and apply to any new page.
 
 4. **Mobile menu**: `gf-nav.js` is idempotent — safe to include on any page with `<nav id="gfnav">`. It builds the `#gf-mobilemenu` at runtime.
 
-5. **No build step**: Editing JS in `vector-pod/` does nothing — that sub-app is pre-compiled. Its source lives in a separate repository. **One deliberate exception** (July 2026): the compiled bundle was hot-patched to fix a "VERTOR POD" typo → "VECTOR POD" (3 display strings, byte-length-preserving, `vertOriginX` SVG attributes untouched). If vector-pod is ever rebuilt from its source repo, make sure the typo is fixed upstream first or it will regress.
+5. **`vector-pod/` is compiled output — edit `vector-pod-src/` instead.** The `vector-pod/` folder is Vite build output (minified JS/CSS); editing it directly is pointless. The **editable React 19 + Vite + TS source now lives in-repo at `vector-pod-src/`** (added July 2026 — previously it was an external package and the compiled bundle had to be hot-patched). To change the app:
+   ```bash
+   cd vector-pod-src && pnpm install && pnpm build
+   # then copy the fresh build into the served folder (filenames are content-hashed):
+   rm -f ../vector-pod/assets/index-*.js ../vector-pod/assets/index-*.css
+   cp dist/index.html ../vector-pod/index.html
+   cp dist/assets/index-*.js dist/assets/index-*.css ../vector-pod/assets/
+   ```
+   `vite.config.ts` sets `base: './'` so the served paths are relative (it lives under `/vector-pod/`). `vector-pod/favicon.svg` + `icons.svg` are not emitted by the build — preserve them across redeploys. The old "VERTOR POD" → "VECTOR POD" typo is now **fixed in source** (App.tsx masthead + aria-label, `index.html` title/description, and `modelData.ts` `meta.source`); don't reintroduce it. The app renders **baked NURBS edge wireframes** (`modelData.ts`), plus a toggle-able **rhombic-dodecahedron overlay** (`rhombicDodeca.ts`, feature-edges extracted from `Rhombic_dodeca.glb`); geometry is decoded from base64 Int16×quantum, not loaded from GLB at runtime.
