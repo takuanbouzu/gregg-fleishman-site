@@ -581,6 +581,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'…';
     loader.load(st.glb,function(gltf){
       const m=gltf.scene;
+      const fillMats=[];
       m.traverse(function(o){
         if(!o.isMesh) return;
         if(st.gold){
@@ -588,11 +589,24 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
         } else if(o.material){
           o.material.side=THREE.DoubleSide;   // keep authored glass/transmission
         }
+        o.material.transparent=true;
+        fillMats.push(o.material);
       });
+      // "shown in wireframe, then the panels turn on" — a ghost skeleton clone
+      // reveals first, echoing the Vector Pod app's own Assembly→Panels build;
+      // sharing geometry by reference costs nothing extra to render.
+      const wireClone=m.clone(true);
+      const wireMats=[];
+      wireClone.traverse(function(o){
+        if(!o.isMesh) return;
+        o.material=new THREE.MeshBasicMaterial({color:st.gold?0xf3dfae:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
+        wireMats.push(o.material);
+      });
+      m.add(wireClone);
       const box=new THREE.Box3().setFromObject(m);
       m.position.sub(box.getCenter(new THREE.Vector3()));
       m.visible=false; scene.add(m);
-      models[st.id]={obj:m};
+      models[st.id]={obj:m,fillMats:fillMats,wireMats:wireMats};
       loadEl.style.display='none';
       if(STAGES[stage].id===st.id) frameNow(m);   // still on this stage → frame it
     },function(xhr){
@@ -681,10 +695,21 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     rdGroup.children.forEach(function(l){ l.material.opacity += ((LAYERS.rd?.5:0)*pm-l.material.opacity)*.1; });
 
     // Gregg's built models: only the current stage's model is visible, and only
-    // once the math has begun to clear.
+    // once the math has begun to clear. Reveal choreography mirrors the Vector
+    // Pod app itself — the skeleton (wireframe clone) appears first, then the
+    // panels (the authored fill materials) turn on over it, both driven by the
+    // one builtWeight ease so switching stages fades the whole sequence in
+    // reverse just as naturally.
     for(const id in models){
       const rec=models[id]; if(!rec||!rec.obj) continue;
-      rec.obj.visible = (STAGES[stage].id===id) && builtWeight>0.03;
+      const isCurrent=(STAGES[stage].id===id);
+      rec.obj.visible = isCurrent && builtWeight>0.03;
+      if(isCurrent){
+        const wireOp=ease(builtWeight/0.3)*0.8;
+        const fillOp=ease((builtWeight-0.35)/0.55);
+        rec.wireMats.forEach(function(mt){ mt.opacity=wireOp; });
+        rec.fillMats.forEach(function(mt){ mt.opacity=fillOp; });
+      }
     }
 
     // framing — ease the orbit radius to the freshly-framed distance, then release
