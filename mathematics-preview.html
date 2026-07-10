@@ -197,7 +197,8 @@
   // Registry of candidate animations. Every 16:9 slide is iframe-hosted
   // (preview-slide.html wraps the plain-React ones) so each is isolated and
   // gets its own correctly-sized viewport.
-  // `kind:'three'` mounts the Vector House module directly (any aspect).
+  // `kind:'three'` mounts a Three.js scene module directly (any aspect) —
+  // `module` is the ES module path, `mountFn` the exported mount function name.
   var REG = [
     { id:'intro',      label:'Three Angles',
       kind:'iframe', src:'assets/lost-triangle/lt-intro.html' },
@@ -218,13 +219,16 @@
       kind:'iframe', src:'preview-slide.html?s=risez' },
 
     { id:'house',      label:'The Vector House',
-      kind:'three' },
+      kind:'three', module:'./assets/lost-triangle/vector-house-scene.js', mountFn:'mountVectorHouseScene' },
 
     { id:'cube',       label:'The Cube',
       kind:'iframe', src:'explore.html?embed=1', ownChrome:true },
 
     { id:'pod',        label:'Vector Pod',
-      kind:'iframe', src:'vector-pod/index.html', ownChrome:true }
+      kind:'iframe', src:'vector-pod/index.html', ownChrome:true },
+
+    { id:'rhomipod',   label:'Rhomi Pod',
+      kind:'three', module:'./assets/lost-triangle/rhomi-pod-scene.js', mountFn:'mountRhomiPodScene' }
   ];
 
   var stage   = document.getElementById('pv-stage');
@@ -267,15 +271,15 @@
       loading.id = 'pv-loading';
       loading.textContent = 'loading model…';
       stage.appendChild(loading);
-      import('./assets/lost-triangle/vector-house-scene.js')
+      import(item.module)
         .then(function(m){
           if (curId !== item.id) return;      // switched away while loading
           if (loading.parentNode) loading.parentNode.removeChild(loading);
-          curDispose = m.mountVectorHouseScene(mount);
+          curDispose = m[item.mountFn](mount);
         })
         .catch(function(err){
           loading.textContent = 'model failed to load';
-          console.error('[preview] vector house:', err);
+          console.error('[preview] ' + item.id + ':', err);
         });
     }
 
