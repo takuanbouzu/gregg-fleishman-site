@@ -299,6 +299,15 @@ canvas.addEventListener('wheel',function(e){trad=Math.max(4,Math.min(14,trad+e.d
 canvas.addEventListener('touchstart',function(e){var t=e.touches[0];dragging=true;px=t.clientX;py=t.clientY;},{passive:true});
 canvas.addEventListener('touchmove',function(e){if(!dragging)return;var t=e.touches[0];taz-=(t.clientX-px)*.01;tel=Math.max(.1,Math.min(1.3,tel+(t.clientY-py)*.008));px=t.clientX;py=t.clientY;e.preventDefault();},{passive:false});
 canvas.addEventListener('touchend',function(){dragging=false;});
+window.addEventListener('keydown',function(e){
+  var step=0.09;
+  if(e.key==='ArrowLeft'){taz-=step;e.preventDefault();}
+  else if(e.key==='ArrowRight'){taz+=step;e.preventDefault();}
+  else if(e.key==='ArrowUp'){tel=Math.max(.1,Math.min(1.3,tel-step*.75));e.preventDefault();}
+  else if(e.key==='ArrowDown'){tel=Math.max(.1,Math.min(1.3,tel+step*.75));e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){trad=Math.max(4,Math.min(14,trad-0.6));e.preventDefault();}
+  else if(e.key==='-'||e.key==='_'){trad=Math.max(4,Math.min(14,trad+0.6));e.preventDefault();}
+});
 
 // ---- clock ----
 var clock=new THREE.Clock(), paused=false, timeOffset=0, pauseAt=0;

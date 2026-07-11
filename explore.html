@@ -1592,7 +1592,12 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
 const SC = GF_SCENE.dark;
-const hex = (s) => parseInt(s.replace('#',''), 16);
+const hex = (s) => {
+  if (s[0] === '#') return parseInt(s.replace('#',''), 16);
+  const m = s.match(/rgba?\(([^)]+)\)/);
+  const [r,g,b] = m[1].split(',').map(Number);
+  return (r<<16) | (g<<8) | b;
+};
 const COL = {
   bg:hex(SC.bg[1]), bone:hex(SC.ink), dim:hex(SC.muted),
   gold:hex(SC.angle), face:hex(SC.face), space:hex(SC.space), green:hex(SC.tri)
