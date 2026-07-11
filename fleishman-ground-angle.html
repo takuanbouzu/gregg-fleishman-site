@@ -416,6 +416,7 @@ let scrubbing = false;
 
 /* ---------- free orbit, handed off when the video ends ---------- */
 const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.listenToKeyEvents(window);
 orbit.enableDamping = true; orbit.dampingFactor = 0.08;
 orbit.enablePan = false; orbit.rotateSpeed = 0.75;
 orbit.minDistance = 1.6; orbit.maxDistance = 9;

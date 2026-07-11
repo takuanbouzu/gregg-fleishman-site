@@ -20,6 +20,8 @@
     var nav = document.getElementById('gfnav');
     if (!nav || root.classList.contains('gf-nav-ready')) return;
 
+    if (!nav.hasAttribute('aria-label')) nav.setAttribute('aria-label', 'Primary');
+
     // 1 — collect the existing links (direct or already-wrapped)
     var links = Array.prototype.slice.call(nav.querySelectorAll('a.navlink'));
     if (!links.length) return;
