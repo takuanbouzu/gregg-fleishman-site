@@ -10,3 +10,10 @@
 # …except the full review cut: 126 MB, over GitHub's limit. Rebuild it with
 # 00_ADMIN/build_review_cut.sh (needs the source master + the six masters).
 05_RENDERS/review/REVIEW_CUT.mp4
+
+# 07_DELIVERY/: docs + the small graphics string-out ARE committed; the heavy
+# masters (ProRes) and the full timecode version are rebuild-only
+# (00_ADMIN/build_delivery.sh). Over GitHub's file limit otherwise.
+07_DELIVERY/masters_prores/
+07_DELIVERY/review_timecode/
+05_RENDERS/review/REVIEW_CUT_HD.mp4

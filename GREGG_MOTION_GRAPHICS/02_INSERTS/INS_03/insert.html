@@ -15,9 +15,9 @@
 import * as K from '../shared/insert-kit.js';
 const { THREE } = K;
 
-const FRAMES = 611, W = 848, H = 448;           // 01:52.145 → 02:12.532 — the hero
-const st = K.stage({ frames: FRAMES, width: W, height: H });
-const { scene, camera } = st;
+const FRAMES = 611;           // 01:52.145 → 02:12.532 — the hero
+const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
+const { scene, camera, width: W, height: H } = st;
 K.groundGrid(scene, -1.7, 22, 44);
 
 const A = new THREE.Vector3(-4.6, 0, 0), B = new THREE.Vector3(0, 0, 0), C = new THREE.Vector3(4.6, 0, 0);
