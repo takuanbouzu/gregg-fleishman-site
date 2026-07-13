@@ -4,6 +4,8 @@
 # committed: those are the blocking-animatic deliverables for review.
 05_RENDERS/previews/
 05_RENDERS/frames/
+# Vector (SVG) exports — rebuild-only via 00_ADMIN/svg_export.mjs.
+05_RENDERS/vector/
 05_RENDERS/**/*.mov
 05_RENDERS/**/*.mp4
 !05_RENDERS/review/*.mp4
