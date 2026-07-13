@@ -55,6 +55,9 @@ export function expose(st, pose, { fadeFrames = 10 } = {}) {
   const fonts = document.fonts ? document.fonts.ready.catch(() => {}) : Promise.resolve();
   window.INSERT = {
     fps: 30000 / 1001, frames, width, height, seek,
+    // scene/camera exposed for the SVG (vector) exporter — 00_ADMIN/svg_export.mjs
+    // walks these after each seek(); harmless extra props for the raster harness.
+    scene, camera, fadeFrames,
     ready: Promise.resolve(fonts).then(() => seek(0)),
   };
 }
@@ -210,6 +213,7 @@ export function truncationWirePositions(k, u) {
 export function domLabel(text, { size = 13, color = COL.unit, mono = true, tracking = '.12em', weight = 500 } = {}) {
   const el = document.createElement('div');
   el.textContent = text;
+  el.className = 'svgtxt'; el.dataset.svgAnchor = 'middle';
   el.style.cssText = `position:fixed;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;
     font-family:${mono ? "'Space Mono',monospace" : "'Hanken Grotesk',sans-serif"};
     font-size:${(size * _ui).toFixed(2)}px;font-weight:${weight};letter-spacing:${tracking};color:${color};
@@ -230,6 +234,7 @@ export function domLabel(text, { size = 13, color = COL.unit, mono = true, track
 
 export function caption(text) {
   const el = document.createElement('div');
+  el.className = 'svgtxt'; el.dataset.svgAnchor = 'middle';
   el.style.cssText = `position:fixed;left:50%;bottom:${(26 * _ui).toFixed(1)}px;transform:translateX(-50%);
     font-family:'Hanken Grotesk',sans-serif;font-size:${(16 * _ui).toFixed(2)}px;font-weight:500;color:${COL.unit};
     border-left:${Math.max(2, 2 * _ui).toFixed(1)}px solid ${COL.angle};padding:${(3*_ui).toFixed(1)}px 0 ${(3*_ui).toFixed(1)}px ${(12*_ui).toFixed(1)}px;opacity:0;z-index:10;white-space:nowrap`;
