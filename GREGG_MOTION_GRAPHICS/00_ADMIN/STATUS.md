@@ -13,12 +13,12 @@ Production tree created under `GREGG_MOTION_GRAPHICS/`. Source copied to
 - Six pre-black stills → `01_SOURCE/stills/`.
 - Reproducible driver: `00_ADMIN/extract_media.py`.
 
-## Phase 2 — Transcript + cue mapping ⏳ BLOCKED (this environment)
-Cue-sheet + transcript scaffolds exist (`cue_sheet.csv`,
-`01_SOURCE/transcripts/INS_0*.md`) but the **audio is not yet transcribed** —
-this sandbox has no Whisper model weights and the network blocks the CDNs that
-host them. Options: (a) transcribe on a machine with Whisper / an API using the
-extracted WAVs; (b) widen the network allowlist; (c) run Claude Code locally.
+## Phase 2 — Transcript + cue mapping ✅ (transcript supplied)
+Transcript supplied by Yuto (`01_SOURCE/transcripts/full_transcript.txt`).
+Mapped each black window to Gregg's actual words → `cue_sheet.csv` +
+per-insert transcripts. **Major finding:** the handoff storyboard's teaching
+goals do NOT match the audio — see `NARRATIVE_CORRECTION.md`. Corrected
+per-insert content needs sign-off before modeling.
 
 ## Phases 3–7 — NOT STARTED
 Blocked on transcription (Phase 2) and on renderer availability:
@@ -27,5 +27,5 @@ Blocked on transcription (Phase 2) and on renderer availability:
 - The site's existing HTML/Canvas Lost-Triangle engine is a viable alt renderer.
 
 ## Next recommended action
-Transcribe the six WAVs (outside this env) and fill `cue_sheet.csv`, then
-approve the INS_03 square-derivation geometry before any polished animation.
+Get sign-off on the corrected per-insert content (NARRATIVE_CORRECTION.md) and
+pick a render target (open_questions #3), then build the blocking animatic.

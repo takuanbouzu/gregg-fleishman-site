@@ -1,13 +1,17 @@
 # INS_05 — transcript & phrase map
 
-- Source clip: `01_SOURCE/clips/INS_05_handles.mp4` (±5 s handles)
-- Audio: `01_SOURCE/audio/INS_05_handles.wav` (mono 16 kHz)
-- Status: **NEEDS_TRANSCRIPTION** (no Whisper in this env)
+- Window (measured black): **02:38.492 → 02:44.765** (6.273s, 188 frames @ 29.97)
+- Clip: `01_SOURCE/clips/INS_05_handles.mp4` | Audio: `01_SOURCE/audio/INS_05_handles.wav`
+- Status: **MAPPED_FROM_TRANSCRIPT**
 
-## Transcript
-_(fill from the WAV — verbatim, timecoded to the source)_
+## What Gregg says during this window (verbatim)
+> those things translate into the Archimedean solids when you cut off all of their points
 
-## Phrase → operation map
-| source tc | exact phrase | spoken keyword (verb/noun) | proposed visual action | status |
-|---|---|---|---|---|
-| | | | | NEEDS_TRANSCRIPT |
+## Operative keyword
+`truncation -> Archimedean`
+
+## Proposed visual action
+A cube (or octahedron) has its corners sliced away; it resolves into a truncated (Archimedean) solid. The truncation operation itself. (site: truncated-octahedron.html is the end state of this cut)
+
+## Caption (plain language)
+> Cut the corners -> an Archimedean solid

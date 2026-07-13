@@ -1,0 +1,838 @@
+00:06 [music]
+00:15 
+
+00:15 [music]
+00:20 
+
+00:20 >> Ah, geometry.
+00:23 
+
+00:23 But, you know, it's always been a very
+00:25 
+
+00:25 slim book.
+00:27 
+
+00:27 And yet, it's been very uh it's very
+00:29 
+
+00:29 intimidating to people for some reason.
+00:33 
+
+00:33 We've been studying it
+00:36 
+
+00:36 enough to uh come up with a key lesson
+00:39 
+
+00:39 lately. And this lesson involves
+00:42 
+
+00:42 I'm I'm trying to reduce it to the
+00:44 
+
+00:44 simplest elements. And what it involves
+00:46 
+
+00:46 is the angles of of pieces when they
+00:49 
+
+00:49 come together.
+00:50 
+
+00:50 Three different uh situations. If you
+00:53 
+
+00:53 take two struts, two vectors, two lines,
+00:57 
+
+00:57 and at each end of those two lines, you
+00:59 
+
+00:59 have a 45° angle,
+01:02 
+
+01:02 and we bring those two things together,
+01:04 
+
+01:04 the resulting angle is 120°.
+01:09 
+
+01:09 And what that does is allows for our
+01:11 
+
+01:11 construction of multiple systems,
+01:16 
+
+01:16 primarily uh truncated octahedrons,
+01:19 
+
+01:19 which is new for me. I've spent uh 10
+01:21 
+
+01:21 years working with the rhombic
+01:23 
+
+01:23 dodecahedron.
+01:25 
+
+01:25 And
+01:26 
+
+01:26 uh a few years ago, we uh
+01:29 
+
+01:29 I found this uh simple connection
+01:31 
+
+01:31 system, and it opened up this uh wider
+01:34 
+
+01:34 range of uh
+01:36 
+
+01:36 of shapes that I can build.
+01:40 
+
+01:40 And these shapes are all about uh
+01:42 
+
+01:42 filling space. Something called space
+01:45 
+
+01:45 fillers. Space fillers, there's actually
+01:47 
+
+01:47 only three things that fill space
+01:49 
+
+01:49 infinitely on their own.
+01:52 
+
+01:52 One is a cube. That's pretty obvious.
+01:54 
+
+01:54 One is this thing called a rhombic
+01:56 
+
+01:56 dodecahedron,
+01:58 
+
+01:58 which in reality is like two cubes in a
+02:00 
+
+02:00 3D checkerboard of cubes.
+02:03 
+
+02:03 And the other one, oddly enough, is a
+02:04 
+
+02:04 truncated octahedron.
+02:07 
+
+02:07 And that's what we've spent the last
+02:10 
+
+02:10 couple years sort of focusing on. What
+02:13 
+
+02:13 that is is a
+02:15 
+
+02:15 It's one of the
+02:17 
+
+02:17 first of the Archimedean solids.
+02:20 
+
+02:20 When I start with geometry, we have the
+02:22 
+
+02:22 Platonic solids, which everybody might
+02:25 
+
+02:25 not know what those are. But I focus
+02:27 
+
+02:27 only on the cubic
+02:29 
+
+02:29 family within
+02:32 
+
+02:32 these Platonic solids. And those are the
+02:35 
+
+02:35 tetrahedron, octahedron, and the cube.
+02:39 
+
+02:39 And those things translate into the
+02:41 
+
+02:41 Archimedean solids when you cut off all
+02:43 
+
+02:43 of their points. They become some
+02:46 
+
+02:46 Archimedean solids. Truncated cube,
+02:49 
+
+02:49 truncated octahedron, truncated
+02:51 
+
+02:51 tetrahedron.
+02:53 
+
+02:53 And in three dimensions, these things
+02:57 
+
+02:57 are all related to one another, and they
+02:59 
+
+02:59 all fit together into different
+03:01 
+
+03:01 networks. And I've [snorts] been working
+03:03 
+
+03:03 with the rhombic dodecahedron, which is
+03:05 
+
+03:05 this cubic 3D cubic checkerboard
+03:07 
+
+03:07 network. And
+03:08 
+
+03:08 lately I've I've been able to work with
+03:10 
+
+03:10 the truncated octahedron.
+03:12 
+
+03:12 And both of them are in this effort to
+03:15 
+
+03:15 just fill space with small parts.
+03:18 
+
+03:18 >> [music]
+03:31 
+
+03:31 >> I've been fortunate enough to be here
+03:33 
+
+03:33 for 12 years now.
+03:36 
+
+03:36 And
+03:37 
+
+03:37 you know, it's a
+03:39 
+
+03:39 It's a warehouse. It's off of the
+03:41 
+
+03:41 street. I spent the the 20 years prior
+03:45 
+
+03:45 to this in a storefront on a downtown
+03:48 
+
+03:48 street corner in Culver City.
+03:51 
+
+03:51 And it was great for
+03:53 
+
+03:53 publicity and such, but uh
+03:55 
+
+03:55 I needed to uh move here to uh focus
+03:59 
+
+03:59 more on
+04:00 
+
+04:00 really getting the work along to where I
+04:03 
+
+04:03 could actually do more things uh with
+04:06 
+
+04:06 it.
+04:07 
+
+04:07 And uh that's what I have been able to
+04:09 
+
+04:09 do here. It's a movie studio, actually.
+04:12 
+
+04:12 We
+04:13 
+
+04:13 have uh you know, a rental studio all
+04:16 
+
+04:16 around us. I sort of have the whole
+04:18 
+
+04:18 place to myself.
+04:19 
+
+04:19 >> [music]
+04:19 
+
+04:19 >> This trailer is my my festival uh
+04:22 
+
+04:22 trailer. This is what we pull out to
+04:23 
+
+04:23 different events. We can uh carry stuff
+04:26 
+
+04:26 in it and then live in it
+04:28 
+
+04:28 when we're there.
+04:30 
+
+04:30 The
+04:32 
+
+04:32 So, I have a selection of uh chairs
+04:36 
+
+04:36 that that stay in here.
+04:39 
+
+04:39 And uh solar powered.
+04:41 
+
+04:41 Mostly Burning Man, you know, but we've
+04:42 
+
+04:42 been to the Texas Eclipse, the Oregon
+04:45 
+
+04:45 Eclipse. Used to go to a festival
+04:46 
+
+04:46 locally called Velocity. Just had it on
+04:49 
+
+04:49 the road. I drove it all the way up to
+04:50 
+
+04:50 Gerlach, uh
+04:52 
+
+04:52 2 weeks ago.
+04:55 
+
+04:55 I did something called the
+04:58 
+
+04:58 Burners Without Borders Summer Solstice
+05:02 
+
+05:02 symposium. So, I got this uh fiberglass
+05:05 
+
+05:05 roof which brings light into it and
+05:08 
+
+05:08 I have a collection of memorabilia here
+05:10 
+
+05:10 from
+05:12 
+
+05:12 from the trips all around. But, you also
+05:14 
+
+05:14 have some pieces of my math lesson in
+05:16 
+
+05:16 here.
+05:17 
+
+05:17 This uh
+05:19 
+
+05:19 an [clears throat] earlier version
+05:21 
+
+05:21 an earlier version of my lesson
+05:24 
+
+05:24 involved uh
+05:27 
+
+05:27 involved really the importance of uh
+05:30 
+
+05:30 of this diamond here.
+05:33 
+
+05:33 >> [clears throat]
+05:34 
+
+05:34 >> This uh this thing here shows a
+05:36 
+
+05:36 progression from a square to an
+05:37 
+
+05:37 equilateral triangle. And in between
+05:39 
+
+05:39 those, we have this other shape. What is
+05:42 
+
+05:42 this shape and what importance is it to
+05:44 
+
+05:44 us?
+05:46 
+
+05:46 And it turns out that uh for instance,
+05:48 
+
+05:48 let's start. I'll give you the lesson
+05:50 
+
+05:50 quickly.
+05:51 
+
+05:51 If this is a a one-unit square right
+05:54 
+
+05:54 here,
+05:55 
+
+05:55 this this diagonal through this one-unit
+05:58 
+
+05:58 square is a square root of two.
+06:00 
+
+06:00 We're taking that, rotating it down
+06:01 
+
+06:01 here, so this is a square root of two.
+06:04 
+
+06:04 This is still a one unit
+06:06 
+
+06:06 here, so
+06:08 
+
+06:08 right now we have a
+06:10 
+
+06:10 square root of two line here and a line
+06:12 
+
+06:12 one here.
+06:13 
+
+06:13 So, we can calculate the length of this
+06:15 
+
+06:15 line.
+06:16 
+
+06:16 >> [clears throat]
+06:17 
+
+06:17 >> Square root of two squared is two.
+06:20 
+
+06:20 One squared is one. One plus two is
+06:22 
+
+06:22 three. This line here is the length the
+06:24 
+
+06:24 square root of three.
+06:26 
+
+06:26 We're going to take that same line here
+06:28 
+
+06:28 and rotate it down this way.
+06:31 
+
+06:31 And so, now we have the square root of
+06:32 
+
+06:32 three here and a one here. Well, that's
+06:34 
+
+06:34 an equilateral triangle.
+06:36 
+
+06:36 So, we've gone from a square to an
+06:37 
+
+06:37 equilateral triangle. And we have this
+06:39 
+
+06:39 other thing in here, which hasn't uh
+06:41 
+
+06:41 it's not taught to us in schools. No.
+06:45 
+
+06:45 No. It tells us the importance of it.
+06:47 
+
+06:47 And yet, this thing here actually
+06:50 
+
+06:50 is the key to three-dimensional cubic
+06:53 
+
+06:53 geometry.
+06:55 
+
+06:55 It's the corner-to-corner
+06:56 
+
+06:56 diagonal through a cube.
+06:59 
+
+06:59 Uh
+07:01 
+
+07:01 is where we get that.
+07:03 
+
+07:03 Where we get this.
+07:05 
+
+07:05 Actually, yes. This this ratio here is
+07:07 
+
+07:07 the corner-to-corner diagonal of the
+07:09 
+
+07:09 cube.
+07:10 
+
+07:10 And it basically tells us everything
+07:12 
+
+07:12 about all of the cubic geometry
+07:15 
+
+07:15 in three-dimensional space.
+07:17 
+
+07:17 So, uh
+07:20 
+
+07:20 Yeah, I I stopped teaching it now. And
+07:22 
+
+07:22 I'm now I'm
+07:24 
+
+07:24 Now I'm going back to
+07:26 
+
+07:26 you know, the two pieces coming together
+07:28 
+
+07:28 and making a
+07:31 
+
+07:31 120 angle.
+07:46 
+
+07:46 >> Well, this was the foundation of my
+07:48 
+
+07:48 building systems
+07:51 
+
+07:51 again and I don't use them quite so much
+07:53 
+
+07:53 anymore, but it's strange to note that
+07:55 
+
+07:55 builds a tetrahedral octahedral space
+07:58 
+
+07:58 frame
+07:59 
+
+07:59 which is coincident with the rhombic
+08:02 
+
+08:02 dodecahedron and so this thing supported
+08:04 
+
+08:04 our pods
+08:05 
+
+08:05 or supports our pods. What it is is six
+08:08 
+
+08:08 identical plates and have a little bit
+08:11 
+
+08:11 of a longitudinal asymmetry.
+08:14 
+
+08:14 We can try to put them together here.
+08:18 
+
+08:18 We We have to organize them
+08:21 
+
+08:21 plates.
+08:54 
+
+08:54 They can be
+08:55 
+
+08:55 a little tighter and looser, you know.
+08:59 
+
+08:59 This one here is a little tight.
+09:05 
+
+09:05 Made out of this material and this is
+09:07 
+
+09:07 very strong. 3 to 5,000 lbs.
+09:14 
+
+09:14 >> [music]
+09:22 
+
+09:22 [music]
+09:35 
+
+09:35 >> This one here is uh
+09:38 
+
+09:38 is surround flame.
+09:40 
+
+09:40 And I first did this flame pattern on a
+09:42 
+
+09:42 chair like this in 1987.
+09:46 
+
+09:46 But I was making more of these you know
+09:49 
+
+09:49 in the 80s and 90s, early 2000s.
+09:53 
+
+09:53 But I sort of stopped
+09:55 
+
+09:55 working on chairs when I made more
+09:57 
+
+09:57 progress in structural work. We're
+10:00 
+
+10:00 showing it on these pedestals really
+10:03 
+
+10:03 to sort of give a give a sense of the
+10:06 
+
+10:06 value that I see in it you know you know
+10:09 
+
+10:09 in a collectible sense.
+10:11 
+
+10:11 You know I did most of my work with
+10:13 
+
+10:13 furniture in the 80s and 90s.
+10:17 
+
+10:17 >> [music]
+10:17 
+
+10:17 >> All this octo what I'm calling Victor
+10:20 
+
+10:20 houses the Victor system. Seems to me
+10:23 
+
+10:23 they have a lot of potential for actual
+10:25 
+
+10:25 building systems. These parts here are
+10:27 
+
+10:27 pretty short but they could be a lot
+10:29 
+
+10:29 longer and the panels get filled in with
+10:32 
+
+10:32 other materials. This chair is updated
+10:34 
+
+10:34 version of my very first chair design
+10:37 
+
+10:37 and this is also one of the bigger
+10:39 
+
+10:39 chairs.
+10:53 
+
+10:53 This [music] one here is
+10:55 
+
+10:55 sort of a smaller scale version of
+10:59 
+
+10:59 the same truncated octahedron assembly.
+11:02 
+
+11:02 And this one is
+11:03 
+
+11:03 a caterpillar. The curious thing about
+11:06 
+
+11:06 this part really is that the structure
+11:09 
+
+11:09 is all made from one piece.
+11:12 
+
+11:12 I know that sort of seems hard to
+11:13 
+
+11:13 believe but this square right here is
+11:16 
+
+11:16 pretty much the main structural part.
+11:19 
+
+11:19 And this piece right here
+11:20 
+
+11:20 is like this one edge of what would be
+11:23 
+
+11:23 another square here. So that's that's
+11:26 
+
+11:26 what happens when the squares and the
+11:28 
+
+11:28 squares are hitting at
+11:30 
+
+11:30 at 45 degrees to each other corner to
+11:33 
+
+11:33 corner.
+11:34 
+
+11:34 And this is doing what I described in my
+11:36 
+
+11:36 math lesson,
+11:38 
+
+11:38 is that these two pieces meeting at 45°
+11:41 
+
+11:41 to each other leave a leave a resulting
+11:44 
+
+11:44 angle of 120°,
+11:46 
+
+11:46 and that's what makes the hexagonal
+11:48 
+
+11:48 space.
+11:50 
+
+11:50 >> [music]
+11:55 
+
+11:55 >> Earlier I showed you the node, and this
+11:58 
+
+11:58 is where the node fits in this
+12:01 
+
+12:01 structure. It's a
+12:03 
+
+12:03 It's the connecting part in an
+12:04 
+
+12:04 octahedron tetrahedral space frame.
+12:06 
+
+12:06 This, for instance, right in here you
+12:08 
+
+12:08 can see is an octahedron, and this piece
+12:10 
+
+12:10 right in here is a
+12:12 
+
+12:12 tetrahedron. That's
+12:13 
+
+12:13 sort of the basic structure of space
+12:15 
+
+12:15 filling. And when I put together, you
+12:17 
+
+12:17 can see that they had extra specially
+12:19 
+
+12:19 large pins, and that was sort of the to
+12:22 
+
+12:22 keep it to keep it strong. We engineered
+12:24 
+
+12:24 it quite extensively.
+12:27 
+
+12:27 And uh
+12:29 
+
+12:29 you know, it it came through with flying
+12:32 
+
+12:32 colors.
+12:33 
+
+12:33 >> [music]
+12:38 
+
+12:38 [music]
+12:50 
+
+12:50 [music]
