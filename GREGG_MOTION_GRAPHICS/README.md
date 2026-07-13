@@ -21,6 +21,12 @@ Blender was ruled out — CPU-only headless render here isn't worth pursuing).
 The master video is git-ignored — re-drop it at `01_SOURCE/video/` and run
 `python3 00_ADMIN/extract_media.py` to reproduce all derived media.
 
+## Next: build the six inserts (Phases 3–7)
+**`00_ADMIN/HANDOFF-CODEX-EXECUTION.md`** is the execution handoff — per-insert
+frame ranges, quotes, which existing site scenes to re-stage, the render/
+capture method for exact-duration masters, and a verification checklist.
+Start there.
+
 ## Not the website
 This tree lives on branch `claude/gregg-motion-graphics-mediaprep` and is
 **not** part of the `gregg-fleishman-site` GitHub Pages deploy.

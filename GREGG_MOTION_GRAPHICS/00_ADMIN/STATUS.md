@@ -27,6 +27,13 @@ Blocked on sign-off of the corrected per-insert content (Phase 2 finding):
 - **Render target decided:** the site's existing HTML/Canvas Lost-Triangle
   engine. Every one of the six topics already exists as a computed scene.
 
+## Phase 3–7 execution handoff ✅
+Written up as `00_ADMIN/HANDOFF-CODEX-EXECUTION.md` — the per-insert build spec
+(exact frame ranges, quotes, which existing site scenes to re-stage, render/
+capture method for exact-duration masters, verification checklist) for
+whoever executes next.
+
 ## Next recommended action
-Get sign-off on the corrected per-insert content (NARRATIVE_CORRECTION.md),
-then build the blocking animatic against the HTML/Canvas engine.
+Follow `00_ADMIN/HANDOFF-CODEX-EXECUTION.md`. Build the blocking animatic
+first (rough geometry, correct timing/content) as the review artifact — get
+explicit sign-off on the six-insert content mapping before Phase 5–6 polish.
