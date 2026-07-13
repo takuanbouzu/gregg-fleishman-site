@@ -139,6 +139,15 @@ let mode='single',az=-2.1,el=.52,r=5.4,target={az:-2.1,el:.52,r:5.4};
 document.getElementById('single').onclick=function(){mode='single';root.visible=true;arrayGroup.visible=false;target={az:-2.1,el:.52,r:5.4};this.classList.add('active');document.getElementById('array').classList.remove('active')};
 document.getElementById('array').onclick=function(){mode='array';root.visible=true;arrayGroup.visible=true;target={az:-2.15,el:.62,r:7.4};this.classList.add('active');document.getElementById('single').classList.remove('active')};
 let drag=false,px=0,py=0;canvas.addEventListener('mousedown',e=>{drag=true;px=e.clientX;py=e.clientY});window.addEventListener('mouseup',()=>drag=false);window.addEventListener('mousemove',e=>{if(!drag)return;target.az-=(e.clientX-px)*.008;target.el=Math.max(.08,Math.min(1.35,target.el+(e.clientY-py)*.006));px=e.clientX;py=e.clientY});canvas.addEventListener('wheel',e=>{target.r=Math.max(3,Math.min(10,target.r+e.deltaY*.006))},{passive:true});
+window.addEventListener('keydown',function(e){
+  var step=0.09;
+  if(e.key==='ArrowLeft'){target.az-=step;e.preventDefault();}
+  else if(e.key==='ArrowRight'){target.az+=step;e.preventDefault();}
+  else if(e.key==='ArrowUp'){target.el=Math.max(.08,Math.min(1.35,target.el-step*.75));e.preventDefault();}
+  else if(e.key==='ArrowDown'){target.el=Math.max(.08,Math.min(1.35,target.el+step*.75));e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){target.r=Math.max(3,Math.min(10,target.r-0.5));e.preventDefault();}
+  else if(e.key==='-'||e.key==='_'){target.r=Math.max(3,Math.min(10,target.r+0.5));e.preventDefault();}
+});
 function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}new ResizeObserver(resize).observe(canvas);resize();
 const look=new THREE.Vector3(0,0,.45);
 function anim(){requestAnimationFrame(anim);az+=(target.az-az)*.05;el+=(target.el-el)*.05;r+=(target.r-r)*.05;root.rotation.z+=.001;camera.position.set(look.x+r*Math.cos(el)*Math.cos(az),look.y+r*Math.cos(el)*Math.sin(az),look.z+r*Math.sin(el));camera.lookAt(look);renderer.render(scene,camera)}anim();

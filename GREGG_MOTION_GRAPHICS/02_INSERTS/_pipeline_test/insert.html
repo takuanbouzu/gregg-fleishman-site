@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>pipeline test — deterministic insert</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 60, W = 848, H = 448;
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.6, 8, 16);
+
+const to = new THREE.Group();
+to.add(K.toWire(0.55, K.COL.unit), K.toFaces(0.55, { hexOp: 0.24, sqOp: 0.12 }));
+scene.add(to);
+
+function pose(t) {
+  to.rotation.y = 0.4 + t * 0.5;
+  K.setOp(to, 1);
+  K.orbit(camera, 0.55 + t * 0.5, 0.42, 4.4, new THREE.Vector3(0, -0.15, 0));
+}
+K.expose(st, pose, { fadeFrames: 8 });
+</script>
+</body>
+</html>

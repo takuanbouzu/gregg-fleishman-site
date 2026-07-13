@@ -118,6 +118,8 @@
   <a class="navlink" href="dorman-luke.html">Research</a>
 </nav>
 
+<h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">The Lost Triangle — the proof, scrolled</h1>
+
 <div id="lt-stage">
   <div id="lt-root-proof"><!-- The Fleishman Sequence — full proof: three beginnings, one triangle, the cube's chamber, the double, the blossom -->
     <div id="lt-fallback">
@@ -215,7 +217,20 @@
 <script type="module">
   import { mountVectorHouseScene } from './assets/lost-triangle/vector-house-scene.js';
   var houseEl = document.getElementById('lt-root-house');
-  if (houseEl) mountVectorHouseScene(houseEl);
+  if (houseEl) {
+    // defer the 4.5MB model fetch until the epilogue is actually about to scroll into view
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries.some(function (e) { return e.isIntersecting; })) {
+          io.disconnect();
+          mountVectorHouseScene(houseEl);
+        }
+      });
+      io.observe(houseEl);
+    } else {
+      mountVectorHouseScene(houseEl);
+    }
+  }
 </script>
 <script>
 (function(){

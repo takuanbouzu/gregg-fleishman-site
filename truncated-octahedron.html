@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Truncated Octahedron — Gregg Fleishman</title>
+<meta name="description" content="The truncated octahedron — Kelvin's space-filling cell. Eight hexagons on the cube's corner directions, six squares on its axes: the same panels as the Vector Pod, packed to fill space with no gaps.">
+<!-- Social link previews. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Truncated Octahedron — Gregg Fleishman">
+<meta property="og:description" content="The truncated octahedron — Kelvin's space-filling cell. Eight hexagons on the cube's corner directions, six squares on its axes: the same panels as the Vector Pod, packed to fill space with no gaps.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/truncated-octahedron.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold geometric study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Truncated Octahedron — Gregg Fleishman">
+<meta name="twitter:description" content="The truncated octahedron — Kelvin's space-filling cell. Eight hexagons on the cube's corner directions, six squares on its axes: the same panels as the Vector Pod, packed to fill space with no gaps.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+<style>
+  /* floating-panel chrome — dark (gf-tokens) */
+  :root{ --panel:rgba(20,20,20,.74); --panel-bd:var(--border-strong); --panel-sh:0 12px 34px rgba(0,0,0,.40); }  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{ color:var(--tx); font-family:var(--font-ui);
+        background:radial-gradient(circle at 50% 40%, var(--bg-elevated) 0%, var(--bg) 56%, var(--bg) 100%); }
+  /* nav: canonical #gfnav from gf-tokens.css */
+  /* #gfnav is sticky (56px, in normal flow) above this — size #wrap to the
+     remainder so its own bottom edge lands exactly at the viewport bottom;
+     otherwise anything bottom-anchored inside it renders 56px off-screen. */
+  #wrap{position:relative;width:100%;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:hidden;}
+  canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
+  .panel{position:absolute;z-index:10;background:rgba(10,11,10,.6);border:1px solid var(--panel-bd);
+         box-shadow:0 10px 28px rgba(0,0,0,.34);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+         border-radius:10px;padding:14px 16px;
+         transition:background .5s var(--ease), border-color .5s var(--ease);}
+  .cap{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx-faint);}
+  .crumb{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+  .crumb::before{content:'';width:15px;height:1px;background:var(--accent);flex:0 0 auto;}
+  /* title — floats directly on the canvas, no box, matches the Vector Pod masthead */
+  #title{position:absolute;z-index:10;left:24px;top:56px;max-width:560px;background:none;border:none;box-shadow:none;backdrop-filter:none;padding:0;}
+  #title h1{font-family:var(--font-display);font-size:clamp(26px,3.4vw,40px);line-height:1.02;margin:0 0 8px;
+            font-weight:800;letter-spacing:-.01em;color:var(--tx);text-transform:uppercase;}
+  #title .sub{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-dim);margin:0 0 14px;}
+  #title p{font-size:12.5px;line-height:1.46;margin:0;color:var(--tx-dim);max-width:480px;}
+  #title p b{color:var(--tx);}
+  /* mode panel — the walk from math to Gregg's built form, numbered like a menu */
+  #modepanel{left:24px;top:calc(56px + 220px);width:216px;padding:12px 10px;}
+  #modepanel .cap{padding:0 8px;margin-bottom:6px;display:block;}
+  .mode-row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:7px;cursor:pointer;
+            color:var(--tx-dim);border-left:2px solid transparent;transition:background .15s,color .15s,border-color .15s;}
+  .mode-row:hover{background:rgba(255,255,255,.045);color:var(--tx);}
+  .mode-row.active{color:var(--tx);border-left-color:var(--accent);background:rgba(255,255,255,.055);}
+  .mode-n{font-family:var(--font-mono);font-size:10px;color:var(--tx-faint);width:15px;flex:0 0 auto;}
+  .mode-tx{flex:1;font-size:13px;}
+  .mode-chev{font-size:14px;color:var(--tx-faint);opacity:0;transition:opacity .15s;}
+  .mode-row.active .mode-chev{opacity:1;color:var(--accent);}
+  /* layer panel — real toggles, eye icon per row (replaces the static legend) */
+  #legend{right:24px;top:56px;width:288px;padding:14px 14px 8px;}
+  .layer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+  .layer-sub{font-size:10.5px;color:var(--tx-faint);margin:2px 0 10px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-mono);}
+  .layer-row{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);}
+  .layer-row:last-child{border-bottom:none;}
+  .layer-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;}
+  .layer-tx{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .layer-tx b{font-size:12px;color:var(--tx);font-weight:600;}
+  .layer-tx span{font-size:10px;color:var(--tx-faint);}
+  .eye{width:15px;height:15px;flex:0 0 auto;color:var(--tx-dim);}
+  .layer-row.off{opacity:.42;}
+  .eye .eye-off{display:none;}
+  .layer-row.off .eye .eye-open{display:none;}
+  .layer-row.off .eye .eye-off{display:block;}
+  #formula{left:24px;bottom:66px;max-width:470px;font-size:12.5px;line-height:1.44;max-height:calc(46vh - 24px);overflow-y:auto;color:var(--tx-dim);}
+  #formula b{color:var(--tx);}
+  #formula table{border-collapse:collapse;margin:8px 0;font-size:12px;}
+  #formula td,#formula th{padding:3px 10px 3px 0;text-align:left;font-weight:400;}
+  #formula th{color:var(--tx);font-weight:700;border-bottom:1px solid var(--panel-bd);}
+  #note{right:24px;bottom:66px;width:288px;font-size:11.5px;line-height:1.4;color:var(--tx-dim);max-height:calc(46vh - 24px);overflow-y:auto;}
+  #note b{color:var(--tx);}
+  #note p{margin:0 0 9px;}
+  #note a{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--panel-bd);border-radius:2px;padding:5px 8px;display:inline-block;margin:4px 4px 0 0;transition:border-color .2s,color .2s;}
+  #note a:hover{color:var(--tx);border-color:var(--accent);}
+  /* on very short viewports #formula/#note may still need to scroll internally —
+     fade the last ~28px instead of hard-cutting a line of text mid-sentence */
+  .panel.scroll-fade{ -webkit-mask-image:linear-gradient(to bottom, black calc(100% - 28px), transparent 100%);
+                       mask-image:linear-gradient(to bottom, black calc(100% - 28px), transparent 100%); }
+  /* bottom instrument strip — view dock (center), status (left), source (right) */
+  #dock{left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;
+        padding:5px;border-radius:12px;flex-wrap:nowrap;justify-content:center;max-width:min(96vw,640px);}
+  #dock button{margin:0;padding:8px 13px;font-size:11.5px;border:none;background:transparent;border-radius:8px;
+              color:var(--tx-faint);}
+  #dock button:hover{color:var(--tx);border-color:transparent;}
+  #dock button.on{background:rgba(255,255,255,.07);color:var(--tx);}
+  #dock .dock-sep{width:1px;align-self:stretch;background:var(--panel-bd);margin:4px 3px;}
+  #status{position:absolute;z-index:10;left:24px;bottom:22px;display:flex;align-items:center;gap:9px;}
+  #status .live{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex:0 0 auto;}
+  #status .hint{color:var(--tx-faint);}
+  #source{position:absolute;z-index:10;right:24px;bottom:22px;text-align:right;}
+  #stepload{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);z-index:11;
+            font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+            color:var(--tx-dim);pointer-events:none;display:none;}
+  @media(max-width:960px){#modepanel{top:auto;bottom:78px;left:24px;width:auto;max-width:calc(100vw - 48px);
+    display:flex;gap:2px;padding:6px;flex-wrap:wrap;}
+    #modepanel .cap{display:none;}
+    .mode-row{border-left:none;border-top:2px solid transparent;padding:7px 10px;}
+    .mode-row.active{border-top-color:var(--accent);}
+    .mode-chev{display:none;}
+  }
+  @media(max-width:820px){#legend,#note{display:none;}#title{right:24px;max-width:none;}
+    #formula{bottom:130px;max-width:none;right:24px;}
+    /* bottom cluster simplifies to two rows: mode strip, then a compact dock —
+       the view presets and status/source line are desktop-only refinements. */
+    #dock button[data-view],#dock .dock-sep,#status,#source{display:none;}
+    #dock{bottom:14px;}
+    #modepanel{bottom:66px;}
+  }
+  @media(max-width:600px){
+    #title{left:10px;right:10px;top:56px;max-width:92vw;}
+    #title h1{font-size:20px;}
+    #title p{font-size:11.5px;}
+    #title .p-more{display:none;}
+    #modepanel{left:10px;right:10px;bottom:60px;}
+    #formula{left:10px;right:10px;bottom:14px;max-width:92vw;padding:10px 12px;
+      font-size:12px;max-height:34vh;display:none;}
+    #dock{bottom:12px;}
+  }
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+<div id="wrap">
+  <canvas id="scene"></canvas>
+
+  <div id="title">
+    <div class="crumb cap">Gregg Fleishman &middot; Space-Filling Geometry</div>
+    <h1>Truncated Octahedron</h1>
+    <div class="sub">a space-filling cell &middot; built from the same parts as the Vector Pod</div>
+    <p>8 hexagons on the cube&rsquo;s corner directions, 6 squares on its axes &mdash; it packs with copies of itself to fill space with <b>no gaps</b>.<span class="p-more"> Step through <b>Mode</b> to walk from the geometry to Gregg&rsquo;s built structures.</span></p>
+  </div>
+
+  <div id="modepanel" class="panel">
+    <span class="cap">Mode</span>
+    <div class="mode-row active" data-stage="0"><span class="mode-n">01</span><span class="mode-tx">The cell</span><span class="mode-chev">&rsaquo;</span></div>
+    <div class="mode-row" data-stage="1"><span class="mode-n">02</span><span class="mode-tx">Packing</span><span class="mode-chev">&rsaquo;</span></div>
+    <div class="mode-row" data-stage="2"><span class="mode-n">03</span><span class="mode-tx">The Pod</span><span class="mode-chev">&rsaquo;</span></div>
+    <div class="mode-row" data-stage="3"><span class="mode-n">04</span><span class="mode-tx">The House</span><span class="mode-chev">&rsaquo;</span></div>
+  </div>
+
+  <div id="legend" class="panel">
+    <div class="layer-head"><span class="cap">Geometry layers</span></div>
+    <div class="layer-sub">Layer visibility</div>
+    <div class="layer-row" data-layer="squares">
+      <span class="layer-dot" style="background:var(--geo-unit)"></span>
+      <span class="layer-tx"><b>Squares</b><span>axis &middot; length 1</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+    <div class="layer-row" data-layer="hexes">
+      <span class="layer-dot" style="background:var(--geo-space)"></span>
+      <span class="layer-tx"><b>Hexagons</b><span>corner &middot; &#8730;3</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+    <div class="layer-row" data-layer="angles">
+      <span class="layer-dot" style="background:var(--geo-angle)"></span>
+      <span class="layer-tx"><b>The three angles</b><span>45&deg; &middot; 35.26&deg; &middot; 54.74&deg;</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+    <div class="layer-row" data-layer="lt">
+      <span class="layer-dot" style="background:var(--geo-tri)"></span>
+      <span class="layer-tx"><b>The Lost Triangle</b><span>1 : &#8730;2 : &#8730;3</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+    <div class="layer-row off" data-layer="cube">
+      <span class="layer-dot" style="background:var(--geo-grid,#5b6b6f)"></span>
+      <span class="layer-tx"><b>Cube frame</b><span>axis reference</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+    <div class="layer-row off" data-layer="rd">
+      <span class="layer-dot" style="background:var(--geo-face)"></span>
+      <span class="layer-tx"><b>Rhombic dodeca</b><span>space-filling sibling</span></span>
+      <span class="eye"><svg class="eye-open" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.5 6.7C3.8 8.3 1 12 1 12s4 7 11 7c1.9 0 3.6-.5 5.1-1.2M17.9 17.9C20.6 16 23 12 23 12s-1.3-2.3-3.6-4.2"/></svg></span>
+    </div>
+  </div>
+
+  <div id="formula" class="panel">
+    <b>One cube, three directions, three cells.</b> Every solid in the system points its faces along one family of the cube&rsquo;s directions &mdash; the three lengths of the Lost Triangle:
+    <table>
+      <tr><th>Direction</th><th>Length</th><th>Space-filler with faces there</th></tr>
+      <tr><td style="color:var(--geo-unit)">axis &middot; (1,0,0)</td><td><b>1</b></td><td>the cube &middot; this cell&rsquo;s 6 squares</td></tr>
+      <tr><td style="color:var(--geo-face)">edge &middot; (1,1,0)</td><td><b>&#8730;2</b></td><td>rhombic dodecahedron (12 rhombi) &middot; the Vector House&rsquo;s 45&deg; fold</td></tr>
+      <tr><td style="color:var(--geo-space)">corner &middot; (1,1,1)</td><td><b>&#8730;3</b></td><td>this cell&rsquo;s 8 hexagons</td></tr>
+    </table>
+    Between those three directions sit <b>the three angles</b> &mdash; <b style="color:var(--geo-angle)">45&deg;</b> from axis to edge, <b style="color:var(--geo-angle)">35.26&deg;</b> from edge up to corner, <b style="color:var(--geo-angle)">54.74&deg; = arctan&#8730;2</b> from axis straight to corner. They are the Lost Triangle&rsquo;s own angles, and the axis reference drawn inside the Vector Pod.
+  </div>
+
+  <div id="note" class="panel">
+    <p><b>Space-filling:</b> this is Kelvin&rsquo;s cell &mdash; the truncated octahedron tiles 3D space by itself. Six neighbours meet it square-to-square along the axes; eight more meet it hexagon-to-hexagon along the corners. The animation packs all 14 around it.</p>
+    <p><b>Same parts:</b> Gregg&rsquo;s built cell shares its 8 corner-hexagon panels, at 1:1 part scale, with the Vector Pod &mdash; one kit of parts, two space-filling variations.</p>
+    <p><b>The family:</b> cube &middot; rhombic dodecahedron &middot; truncated octahedron &mdash; one space-filler per direction family, all generated by 1 : &#8730;2 : &#8730;3. Gregg&rsquo;s Vector House lives on that same edge direction: every panel folds at exactly 45&deg;, every level a multiple of &#8730;2 &mdash; the built form of the middle length.</p>
+    <p><b>The lineage:</b> Gregg is picking up directly where Peter Pearce&rsquo;s <i>Structure in Nature</i> and Robert Williams&rsquo; <i>Natural Structure</i> left off &mdash; this exact pair, the truncated octahedron and its dual the rhombic dodecahedron, is already named in their space-filling catalogues.</p>
+    <a href="vector-pod/index.html">&#8627; Vector Pod &middot; part study</a>
+    <a href="rhombic-system.html">&#8627; Rhombic System</a>
+  </div>
+
+  <div id="stepload">loading&hellip;</div>
+
+  <div id="dock" class="panel">
+    <button data-view="persp" class="on">Perspective</button>
+    <button data-view="top">Top</button>
+    <button data-view="front">Front</button>
+    <button data-view="right">Right</button>
+    <span class="dock-sep"></span>
+    <button id="dockrotate" class="on">Rotate</button>
+    <button id="replay">Replay</button>
+    <button id="pause">Pause</button>
+  </div>
+
+  <div id="status" class="cap"><span class="live"></span><span id="statustext">The cell</span><span class="hint">&nbsp;&mdash;&nbsp;drag to orbit &middot; scroll to zoom</span></div>
+  <div id="source" class="cap">Source &middot; <span id="sourcetext">computed geometry</span></div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+(function(){
+  const canvas = document.getElementById('scene');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setClearColor(0x000000,0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42,1,0.02,4000);
+  camera.up.set(0,1,0);
+
+  const colors = GF_SCENE.dark;
+
+  // Lighting rig — only touches Gregg's built models (the procedural cell uses
+  // MeshBasic and ignores lights entirely). Warm key + cool rim reads the glass.
+  scene.add(new THREE.AmbientLight(0xffffff,.42));
+  scene.add(new THREE.HemisphereLight(0xfff3df,0x14120e,.9));
+  const key = new THREE.DirectionalLight(0xfff0d8,2.1); key.position.set(6,10,7); scene.add(key);
+  const rim = new THREE.DirectionalLight(0x6f9bc4,.55); rim.position.set(-8,4,-6); scene.add(rim);
+  const target = new THREE.Vector3(0,0,0);
+
+  function v3(a){ return new THREE.Vector3(a[0],a[1],a[2]); }
+  function lmat(c,o){ return new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o}); }
+  function mmat(c,o){ return new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,side:THREE.DoubleSide,depthWrite:false}); }
+
+  // ── The truncated octahedron, computed exactly ─────────────────────────────
+  // Vertices are ALL signed permutations of (0,1,2) — 24 in total — so every
+  // ratio (edge √2, axis face-distance 2, corner face-distance √3·… ) is exact
+  // by construction. Squares sit at the 6 axis directions; hexagons at the 8
+  // corner directions. BCC packing: axis neighbours at distance 4, corner
+  // neighbours at (±2,±2,±2).
+  function squareFace(axis,s){        // axis 0/1/2, s = ±1
+    const f=[];
+    const perp=[[1,0],[0,1],[-1,0],[0,-1]];   // cycle around the square
+    const o1=(axis+1)%3, o2=(axis+2)%3;
+    perp.forEach(function(p){
+      const v=[0,0,0]; v[axis]=2*s; v[o1]=p[0]; v[o2]=p[1]; f.push(v);
+    });
+    return f;
+  }
+  function hexFace(sx,sy,sz){         // one hexagon per octant
+    // cycle of the 6 permutations of (0,1,2) — adjacent entries share two coords
+    const base=[[2,1,0],[1,2,0],[0,2,1],[0,1,2],[1,0,2],[2,0,1]];
+    return base.map(function(v){ return [v[0]*sx, v[1]*sy, v[2]*sz]; });
+  }
+  const SQUARES=[], HEXES=[];
+  for(let a=0;a<3;a++){ SQUARES.push(squareFace(a,1)); SQUARES.push(squareFace(a,-1)); }
+  [[1,1,1],[1,1,-1],[1,-1,1],[1,-1,-1],[-1,1,1],[-1,1,-1],[-1,-1,1],[-1,-1,-1]]
+    .forEach(function(s){ HEXES.push(hexFace(s[0],s[1],s[2])); });
+
+  function faceGroup(face, col, fillOp, lineOp){
+    const pts=face.map(v3);
+    const g=new THREE.Group();
+    // fan triangulation from centroid (safe for square + hexagon)
+    const c=new THREE.Vector3(); pts.forEach(function(p){c.add(p);}); c.multiplyScalar(1/pts.length);
+    const pos=[];
+    for(let i=0;i<pts.length;i++){
+      const A=pts[i],B=pts[(i+1)%pts.length];
+      pos.push(c.x,c.y,c.z, A.x,A.y,A.z, B.x,B.y,B.z);
+    }
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));
+    const mesh=new THREE.Mesh(geo,mmat(col,fillOp)); g.add(mesh);
+    const loop=pts.slice(); loop.push(pts[0]);
+    const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(loop),lmat(col,lineOp)); g.add(line);
+    g.userData={mesh:mesh,line:line};
+    return g;
+  }
+
+  // hero cell
+  const hero=new THREE.Group(); scene.add(hero);
+  const heroFaces=[];
+  SQUARES.forEach(function(f){ const g=faceGroup(f,colors.unit,0,0); hero.add(g); heroFaces.push(g); });
+  HEXES.forEach(function(f){ const g=faceGroup(f,colors.space,0,0); hero.add(g); heroFaces.push(g); });
+
+  // direction spokes + labels
+  function spoke(dir,len,col){
+    const d=v3(dir).normalize();
+    const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(0,0,0), d.clone().multiplyScalar(len)]), lmat(col,0));
+    scene.add(line); return line;
+  }
+  const spokes=[
+    spoke([1,0,0],3.1,colors.unit),
+    spoke([1,1,0],3.1,colors.face),
+    spoke([1,1,1],3.4,colors.space)
+  ];
+
+  // ── the angles — the crux of the system, swept as gold arcs ────────────────
+  // 45°    between axis (1,0,0) and edge (1,1,0)
+  // 35.26° between edge (1,1,0) and corner (1,1,1)   ( = arctan(1/√2) )
+  // 54.74° between axis (1,0,0) and corner (1,1,1)   ( = arctan √2 )
+  function arc(d1,d2,r,col,segs){
+    const a=v3(d1).normalize(), b=v3(d2).normalize();
+    const ang=a.angleTo(b), pts=[];
+    for(let i=0;i<=segs;i++){
+      const f=i/segs, s=Math.sin(ang);
+      const p=a.clone().multiplyScalar(Math.sin((1-f)*ang)/s)
+               .addScaledVector(b, Math.sin(f*ang)/s);
+      pts.push(p.multiplyScalar(r));
+    }
+    const geo=new THREE.BufferGeometry().setFromPoints(pts);
+    geo.setDrawRange(0,0);
+    const line=new THREE.Line(geo,lmat(col,0));
+    scene.add(line);
+    return {line:line, segs:segs, mid:pts[Math.floor(segs/2)].clone().multiplyScalar(1.18)};
+  }
+  const ARCS=[
+    {a:arc([1,0,0],[1,1,0],2.05,colors.angle,48), name:'45°'},
+    {a:arc([1,1,0],[1,1,1],2.35,colors.angle,48), name:'35.26°'},
+    {a:arc([1,0,0],[1,1,1],2.7,colors.angle,48),  name:'54.74°'}
+  ];
+  function lbl(text,pos,color,scale,wide){
+    const W=wide?1024:512, H=160;
+    const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+    const ctx=cv.getContext('2d');
+    ctx.font='700 64px Inter, Arial, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.lineWidth=9; ctx.strokeStyle=colors.halo; ctx.strokeText(text,W/2,80);
+    ctx.fillStyle=color; ctx.fillText(text,W/2,80);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false,opacity:0}));
+    sp.position.copy(pos); sp.scale.set(scale*(W/H),scale,1); scene.add(sp); return sp;
+  }
+  const labels=[
+    lbl('1',  v3([3.5,0,0]),     colors.unit,.42),
+    lbl('√2', v3([2.45,2.45,0]), colors.face,.44),
+    lbl('√3', v3([2.2,2.2,2.2]), colors.space,.44)
+  ];
+  const arcLabels=ARCS.map(function(A){ return lbl(A.name, A.a.mid, colors.angle, .38); });
+
+  // ── The Lost Triangle itself — the 1 : √2 : √3 right triangle, drawn inside ──
+  // the cell so its two acute angles ARE the arcs above. Legs: an edge (1) ⟂ a
+  // face diagonal (√2); hypotenuse = the space diagonal (√3). Scaled ×2 so its
+  // hypotenuse runs straight out through a hexagon face toward the corner cell.
+  const LT_O=v3([0,0,0]), LT_B=v3([0,0,2]), LT_C=v3([2,2,2]);
+  const ltGroup=new THREE.Group(); scene.add(ltGroup);
+  function seg(a,b,col){ const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),lmat(col,0)); ltGroup.add(l); return l; }
+  const ltLegs=[
+    seg(LT_O,LT_B,colors.unit),   // 1  — edge
+    seg(LT_B,LT_C,colors.face),   // √2 — face diagonal
+    seg(LT_O,LT_C,colors.space)   // √3 — space diagonal (hypotenuse)
+  ];
+  const ltFill=(function(){
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+      LT_O.x,LT_O.y,LT_O.z, LT_B.x,LT_B.y,LT_B.z, LT_C.x,LT_C.y,LT_C.z]),3));
+    const m=new THREE.Mesh(g,mmat(colors.tri,0)); ltGroup.add(m); return m;
+  })();
+  // right-angle marker at B (edge ⟂ face-diagonal)
+  const ltRight=(function(){
+    const dO=LT_O.clone().sub(LT_B).normalize().multiplyScalar(.4);
+    const dC=LT_C.clone().sub(LT_B).normalize().multiplyScalar(.4);
+    const p0=LT_B.clone().add(dO), p1=LT_B.clone().add(dO).add(dC), p2=LT_B.clone().add(dC);
+    const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([p0,p1,p2]),lmat(colors.angle,0));
+    ltGroup.add(l); return l;
+  })();
+  const ltLenLabels=[
+    lbl('1',  LT_O.clone().add(LT_B).multiplyScalar(.5).add(v3([-.4,0,0])), colors.unit,.34),
+    lbl('√2', LT_B.clone().add(LT_C).multiplyScalar(.5).add(v3([0,0,.4])),  colors.face,.34),
+    lbl('√3', LT_O.clone().add(LT_C).multiplyScalar(.5).add(v3([.42,-.25,0])),colors.space,.34)
+  ];
+  const ltName=lbl('the Lost Triangle', v3([1.3,1.05,1.3]), colors.tri, .30, true);
+
+  // ── neighbours: the BCC packing ────────────────────────────────────────────
+  // ghost wireframe copy of the cell (edges only)
+  function ghostCell(col,op){
+    const g=new THREE.Group();
+    SQUARES.concat(HEXES).forEach(function(f){
+      const pts=f.map(v3); pts.push(pts[0]);
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),lmat(col,op)));
+    });
+    return g;
+  }
+  const CORNER_CENTERS=[[2,2,2],[2,2,-2],[2,-2,2],[2,-2,-2],[-2,2,2],[-2,2,-2],[-2,-2,2],[-2,-2,-2]];
+  const AXIS_CENTERS=[[4,0,0],[-4,0,0],[0,4,0],[0,-4,0],[0,0,4],[0,0,-4]];
+  const neighbours=[];
+  CORNER_CENTERS.forEach(function(c){ const g=ghostCell(colors.space,0); g.userData={home:v3(c),kind:0}; scene.add(g); neighbours.push(g); });
+  AXIS_CENTERS.forEach(function(c){ const g=ghostCell(colors.unit,0); g.userData={home:v3(c),kind:1}; scene.add(g); neighbours.push(g); });
+
+  // ── family ghosts (toggled) ────────────────────────────────────────────────
+  // enclosing cube (side 4 — the lattice cell)
+  const cubeWire=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(4,4,4)),lmat(colors.grid,0));
+  scene.add(cubeWire);
+  // rhombic dodecahedron on the SAME frame (poles at ±2 on the axes, corners at (±1,±1,±1)·2? no —
+  // canonical: poles (±2,0,0)-family, corners (±1,±1,±1); scaled ×2 so its poles reach the
+  // squares' centers-family and its 12 faces sit on the (1,1,0) edge directions.
+  const RD_FACES=[
+    [[2,0,0],[1,1,1],[0,2,0],[1,1,-1]], [[2,0,0],[1,-1,1],[0,-2,0],[1,-1,-1]],
+    [[-2,0,0],[-1,1,1],[0,2,0],[-1,1,-1]], [[-2,0,0],[-1,-1,1],[0,-2,0],[-1,-1,-1]],
+    [[2,0,0],[1,1,1],[0,0,2],[1,-1,1]], [[2,0,0],[1,1,-1],[0,0,-2],[1,-1,-1]],
+    [[-2,0,0],[-1,1,1],[0,0,2],[-1,-1,1]], [[-2,0,0],[-1,1,-1],[0,0,-2],[-1,-1,-1]],
+    [[0,2,0],[1,1,1],[0,0,2],[-1,1,1]], [[0,2,0],[1,1,-1],[0,0,-2],[-1,1,-1]],
+    [[0,-2,0],[1,-1,1],[0,0,2],[-1,-1,1]], [[0,-2,0],[1,-1,-1],[0,0,-2],[-1,-1,-1]]
+  ];
+  const rdGroup=new THREE.Group(); scene.add(rdGroup);
+  RD_FACES.forEach(function(f){
+    const pts=f.map(function(v){ return v3(v).multiplyScalar(1.35); }); pts.push(pts[0]);
+    rdGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),lmat(colors.face,0)));
+  });
+
+  // ── layer visibility — one flag per row in the "Geometry layers" panel ─────
+  const LAYERS={squares:true,hexes:true,angles:true,lt:true,cube:false,rd:false};
+
+  // ── timeline / interaction (pattern from rhombic-dodecahedron.html) ───────
+  let clock=new THREE.Clock(), paused=false, timeOffset=0, pauseAt=0;
+  // Short phone portraits (e.g. iPhone SE/14 at 568-664pt tall) have too little
+  // vertical room between the title text and the hero cell's own labels, which
+  // sit well above the polyhedron itself — pull the camera back further so the
+  // whole scene shrinks clear of the text, rather than just reacting to width.
+  const shortPortrait = innerWidth<600 && innerHeight<720;
+  const defaultRad=(innerWidth<600?(shortPortrait?22:17):13.5);
+  // the direction spokes/labels reach well above the polyhedron itself along
+  // +Y — aim the camera slightly above world-origin so that whole cluster
+  // renders lower on screen, clear of the title text above it.
+  if(shortPortrait) target.y = 1.5;
+  let az=-1.85, el=0.44, rad=defaultRad, dragging=false, px=0, py=0;
+  let azTarget=null, elTarget=null, autoOn=true, lastRaw=0;
+  // framing + stage state (set up fully below, referenced by the render loop)
+  let targetRad=defaultRad, framing=false, builtWeight=0, neighGate=0, stage=0;
+
+  function resize(){
+    const w=canvas.clientWidth,h=canvas.clientHeight;
+    if(!w||!h) return;
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  // ── left/right column spacing — measured, not guessed ──────────────────────
+  // #formula sits below #modepanel and #note below #legend only when those are
+  // in their desktop (vertical) arrangement; below ~960/820px width the mobile
+  // media queries take over positioning and this leaves the CSS alone. Measuring
+  // the real rendered height (rather than assuming a fixed vh fraction) means a
+  // short viewport (a laptop in landscape, e.g. 1024×768) can never overlap the
+  // panel above it — the gap always reflects what's actually on screen.
+  function layoutColumns(){
+    const modeEl=document.getElementById('modepanel');
+    const formulaEl=document.getElementById('formula');
+    const legendEl=document.getElementById('legend');
+    const noteEl=document.getElementById('note');
+    if(innerWidth>960){
+      formulaEl.style.top=(modeEl.getBoundingClientRect().bottom+18)+'px';
+      formulaEl.style.maxHeight='none';
+    } else {
+      formulaEl.style.top=''; formulaEl.style.maxHeight='';
+    }
+    if(innerWidth>820){
+      noteEl.style.top=(legendEl.getBoundingClientRect().bottom+18)+'px';
+      noteEl.style.maxHeight='none';
+    } else {
+      noteEl.style.top=''; noteEl.style.maxHeight='';
+    }
+    [formulaEl,noteEl].forEach(function(el){
+      el.classList.toggle('scroll-fade', el.scrollHeight>el.clientHeight+1);
+    });
+  }
+  window.addEventListener('resize',layoutColumns);
+  layoutColumns();
+
+  function ease(x){ x=Math.max(0,Math.min(1,x)); return x*x*(3-2*x); }
+  function ph(t,s,d){ return ease((t-s)/d); }
+
+  function cancelOrient(){ azTarget=null; elTarget=null; document.querySelectorAll('#dock button[data-view]').forEach(function(b){ b.classList.remove('on'); }); }
+  canvas.addEventListener('mousedown',function(e){dragging=true;px=e.clientX;py=e.clientY;cancelOrient();});
+  window.addEventListener('mouseup',function(){dragging=false;});
+  window.addEventListener('mousemove',function(e){if(!dragging)return;az-=(e.clientX-px)*.008;el+=(e.clientY-py)*.006;el=Math.max(.1,Math.min(1.3,el));px=e.clientX;py=e.clientY;});
+  canvas.addEventListener('wheel',function(e){framing=false;rad=Math.max(targetRad*.35,Math.min(targetRad*2.6,rad+e.deltaY*.0016*targetRad));},{passive:true});
+  canvas.addEventListener('touchstart',function(e){const t=e.touches[0];dragging=true;px=t.clientX;py=t.clientY;cancelOrient();},{passive:true});
+  canvas.addEventListener('touchmove',function(e){if(!dragging)return;const t=e.touches[0];az-=(t.clientX-px)*.01;el+=(t.clientY-py)*.008;el=Math.max(.1,Math.min(1.3,el));px=t.clientX;py=t.clientY;e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchend',function(){dragging=false;});
+  window.addEventListener('keydown',function(e){
+    var step=0.09;
+    if(e.key==='ArrowLeft'){cancelOrient();az-=step;e.preventDefault();}
+    else if(e.key==='ArrowRight'){cancelOrient();az+=step;e.preventDefault();}
+    else if(e.key==='ArrowUp'){cancelOrient();el=Math.max(.1,Math.min(1.3,el-step*.75));e.preventDefault();}
+    else if(e.key==='ArrowDown'){cancelOrient();el=Math.max(.1,Math.min(1.3,el+step*.75));e.preventDefault();}
+    else if(e.key==='+'||e.key==='='){framing=false;rad=Math.max(targetRad*.35,Math.min(targetRad*2.6,rad-targetRad*.08));e.preventDefault();}
+    else if(e.key==='-'||e.key==='_'){framing=false;rad=Math.max(targetRad*.35,Math.min(targetRad*2.6,rad+targetRad*.08));e.preventDefault();}
+  });
+
+  document.getElementById('replay').onclick=function(){clock=new THREE.Clock();timeOffset=0;paused=false;document.getElementById('pause').textContent='Pause';};
+  document.getElementById('pause').onclick=function(){paused=!paused;if(paused){pauseAt=clock.getElapsedTime();}else{timeOffset+=clock.getElapsedTime()-pauseAt;}document.getElementById('pause').textContent=paused?'Resume':'Pause';};
+
+  // ── layer panel: click a row (or its eye) to toggle that geometry on/off ───
+  document.querySelectorAll('.layer-row').forEach(function(row){
+    row.onclick=function(){
+      const k=row.dataset.layer;
+      LAYERS[k]=!LAYERS[k];
+      row.classList.toggle('off',!LAYERS[k]);
+    };
+  });
+
+  // ── view dock: camera presets + autorotate toggle ──────────────────────────
+  const VIEWS={ persp:[-1.85,.44], top:[null,1.52], front:[0,.18], right:[Math.PI/2,.18] };
+  document.querySelectorAll('#dock button[data-view]').forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll('#dock button[data-view]').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      const v=VIEWS[b.dataset.view];
+      azTarget = v[0]===null ? az : v[0];
+      elTarget = v[1];
+    };
+  });
+  document.getElementById('dockrotate').onclick=function(){
+    autoOn=!autoOn; this.classList.toggle('on',autoOn);
+  };
+
+  // ── the walk from math to Gregg's built form ───────────────────────────────
+  // Stages 0/1 are the procedural cell (with / without the space-filling
+  // neighbours). Stages 2/3 dissolve the math and bring in Gregg's actual Rhino
+  // exports — the panel Pod and the glass Vector House — the built objects these
+  // same directions and angles govern. Each stage auto-frames the camera to the
+  // thing on screen, keeping the current orbit orientation ("aligned to this").
+  const STAGES=[
+    {id:'cell',  label:'The cell',  source:'computed geometry (24 signed permutations)'},
+    {id:'pack',  label:'Packing',   source:'computed geometry &middot; BCC lattice, 14 neighbours'},
+    {id:'pod',   label:'The Pod',   source:'rhomi-pod.glb &middot; Gregg&rsquo;s Rhino STEP export', glb:'assets/models/rhomi-pod.glb',    gold:true,
+      wireGlb:'assets/models/truncated-octahedron-detail.glb', wireRotX:Math.PI/2},
+    {id:'house', label:'The House', source:'vector-house.glb &middot; the edge&rsquo;s 45&deg;/&#8730;2 fold, not the corner hexagons', glb:'assets/models/vector-house.glb', gold:false}
+  ];
+  const loadEl=document.getElementById('stepload');
+  const statusTextEl=document.getElementById('statustext');
+  const sourceTextEl=document.getElementById('sourcetext');
+  const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  const models={};   // id → { obj:Group|null }
+
+  function frameNow(obj){
+    if(obj){
+      const box=new THREE.Box3().setFromObject(obj);
+      const sph=box.getBoundingSphere(new THREE.Sphere());
+      // shortPortrait needs the same extra clearance a built model gets here
+      // as the procedural cell gets from defaultRad, or it renders large enough
+      // to run behind the title text and the mode/dock panels below it.
+      targetRad=sph.radius/Math.sin(THREE.MathUtils.degToRad(camera.fov*0.5))*(shortPortrait?1.55:1.15);
+    } else {
+      targetRad=defaultRad;
+    }
+    framing=true;
+  }
+
+  // Collapse a multi-primitive GLTF scene into ONE geometry (baked into the
+  // root's local frame). rhomi-pod.glb and the wire companion each arrive as
+  // ~3,000 separate primitives — that's ~3,000 draw calls per frame apiece,
+  // which is what made this page lag. Merging them is visually identical.
+  function bakeMerged(root, withNormals){
+    root.updateMatrixWorld(true);
+    const rootInv=new THREE.Matrix4().copy(root.matrixWorld).invert();
+    const rel=new THREE.Matrix4();
+    const geos=[];
+    root.traverse(function(o){
+      if(!o.isMesh||!o.geometry||!o.geometry.getAttribute('position')) return;
+      let g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();
+      if(withNormals&&!g.getAttribute('normal')) g.computeVertexNormals();
+      const ng=new THREE.BufferGeometry();
+      ng.setAttribute('position',g.getAttribute('position'));
+      if(withNormals) ng.setAttribute('normal',g.getAttribute('normal'));
+      ng.applyMatrix4(rel.multiplyMatrices(rootInv,o.matrixWorld));
+      geos.push(ng);
+    });
+    if(geos.length<2) return null;      // single mesh already — nothing to gain
+    try{ return mergeGeometries(geos,false); }catch(e){ console.warn('[truncated-octahedron] merge skipped:',e); return null; }
+  }
+
+  function loadModel(st){
+    if(models[st.id]) return;           // already loading / loaded
+    models[st.id]={obj:null};
+    loadEl.style.display='block';
+    loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'…';
+    loader.load(st.glb,function(gltf){
+      let m=gltf.scene;
+      if(st.gold){
+        // pod panels all take the same plywood material anyway → one mesh
+        const merged=bakeMerged(m,true);
+        if(merged){ m=new THREE.Group(); m.add(new THREE.Mesh(merged,new THREE.MeshBasicMaterial())); }
+      }
+      const fillMats=[];
+      m.traverse(function(o){
+        if(!o.isMesh) return;
+        if(st.gold){
+          // dark-stained plywood, per real close-up photos of the joint —
+          // not the flat gold placeholder this started as.
+          o.material=new THREE.MeshStandardMaterial({color:0x2b2228,metalness:.05,roughness:.7,side:THREE.DoubleSide});
+        } else if(o.material){
+          o.material.side=THREE.DoubleSide;   // keep authored glass/transmission
+        }
+        o.material.transparent=true;
+        // transparent+DoubleSide renders every triangle twice in r160 (back pass
+        // then front pass). The fill settles at opacity 1 where that buys nothing
+        // visually — and the house is 931K triangles, so it halves its raster cost.
+        o.material.forceSinglePass=true;
+        fillMats.push(o.material);
+      });
+      const box=new THREE.Box3().setFromObject(m);
+      m.position.sub(box.getCenter(new THREE.Vector3()));
+      m.visible=false; scene.add(m);
+      models[st.id]={obj:m,fillMats:fillMats,wireMats:[]};
+      loadEl.style.display='none';
+      if(STAGES[stage].id===st.id) frameNow(m);   // still on this stage → frame it
+
+      function finishWire(wireObj){
+        // one merged mesh + one material — a multi-primitive skeleton would
+        // otherwise cost thousands of extra draw calls per frame. Geometry is
+        // baked into the wire root's local frame, so the holder sits at the
+        // parent's origin and overlays the fill exactly.
+        const mat=new THREE.MeshBasicMaterial({color:st.gold?0xb99ee0:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
+        const merged=bakeMerged(wireObj,false);
+        let holder;
+        if(merged){
+          holder=new THREE.Mesh(merged,mat);
+        } else {
+          let src=null;
+          wireObj.updateMatrixWorld(true);
+          wireObj.traverse(function(o){ if(!src&&o.isMesh) src=o; });
+          if(!src) return;
+          holder=new THREE.Mesh(src.geometry,mat);   // shares the fill's geometry by reference
+          holder.applyMatrix4(new THREE.Matrix4().copy(wireObj.matrixWorld).invert().multiply(src.matrixWorld));
+        }
+        if(st.wireRotX) holder.rotation.x=st.wireRotX;
+        m.add(holder);
+        models[st.id].wireMats=[mat];
+      }
+      if(st.wireGlb){
+        // a dedicated companion model (the exact computed geometry this built
+        // form shares its panels with) makes a far richer skeleton than cloning
+        // the built model's own coarse mesh — its bounding box was confirmed to
+        // match st.glb's almost exactly, just with a permuted axis convention.
+        loader.load(st.wireGlb,function(wg){
+          finishWire(wg.scene);
+        },undefined,function(err){
+          console.error('[truncated-octahedron] wireframe companion load failed, falling back to self-clone:',err);
+          finishWire(m);
+        });
+      } else {
+        // "shown in wireframe, then the panels turn on" — a ghost skeleton
+        // reveals first, echoing the Vector Pod app's own Assembly→Panels build;
+        // sharing geometry by reference costs nothing extra in memory.
+        finishWire(m);
+      }
+    },function(xhr){
+      if(xhr.total) loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'… '+Math.round(xhr.loaded/xhr.total*100)+'%';
+    },function(err){
+      loadEl.textContent='could not load the model.';
+      console.error('[truncated-octahedron] model load failed:',err);
+    });
+  }
+
+  function setStage(i){
+    stage=i;
+    document.querySelectorAll('.mode-row').forEach(function(b){ b.classList.toggle('active',+b.dataset.stage===i); });
+    const st=STAGES[i];
+    statusTextEl.textContent=st.label;
+    sourceTextEl.innerHTML=st.source;
+    if(st.glb){
+      const rec=models[st.id];
+      if(rec && rec.obj) frameNow(rec.obj);   // loaded → frame now
+      else loadModel(st);                       // loading → frame on arrival
+    } else {
+      frameNow(null);
+    }
+  }
+  document.querySelectorAll('.mode-row').forEach(function(b){
+    b.onclick=function(){ setStage(+b.dataset.stage); };
+  });
+
+  // When the math has fully yielded to a built model (pm≈0), stop DRAWING it —
+  // transparent objects at opacity 0 still cost a draw call each, every frame.
+  const mathBits=[hero,ltGroup,ltName].concat(spokes,labels,arcLabels,ltLenLabels,
+    ARCS.map(function(A){ return A.a.line; }));
+
+  function animate(){
+    requestAnimationFrame(animate);
+    const raw=paused?pauseAt:clock.getElapsedTime();
+    const t=(raw-timeOffset)%16;
+
+    // stage weights: pm fades ALL of the math out as we cross to the built form;
+    // neighGate reveals the packing only in the "Packing" stage.
+    const bw=STAGES[stage].glb?1:0;
+    builtWeight += (bw-builtWeight)*.08;
+    const pm=1-builtWeight;                                   // procedural master
+    neighGate += (((STAGES[stage].id==='pack')?1:0)-neighGate)*.08;
+
+    const mathOn=pm>0.015;
+    mathBits.forEach(function(o){ o.visible=mathOn; });
+    neighbours.forEach(function(g){ g.visible=mathOn&&neighGate>0.01; });
+    cubeWire.visible=cubeWire.material.opacity>0.004;
+    rdGroup.visible=rdGroup.children[0].material.opacity>0.004;
+
+    // 0–1.2s: hero cell appears
+    heroFaces.forEach(function(g,i){
+      const p=ph(t,.1+i*.05,.5);
+      const gate=(i<6?LAYERS.squares:LAYERS.hexes)?1:0;
+      g.userData.mesh.material.opacity=p*(i<6?.16:.22)*pm*gate;    // squares dimmer, hexes richer
+      g.userData.line.material.opacity=p*.92*pm*gate;
+    });
+
+    // 1.6–2.6s: direction spokes + length labels
+    const sp=ph(t,1.6,.8);
+    spokes.forEach(function(s){ s.material.opacity=sp*.85*pm; });
+    labels.forEach(function(l){ l.material.opacity=sp*pm; });
+
+    // 2.6–5s: THE ANGLES — gold arcs sweep open one by one (45° → 35.26° → 54.74°)
+    const angleGate=LAYERS.angles?1:0;
+    ARCS.forEach(function(A,i){
+      const p=ph(t,2.6+i*.75,.9);
+      A.a.line.geometry.setDrawRange(0, Math.round(p*A.a.segs)+ (p>0?1:0));
+      A.a.line.material.opacity = (p>0?.95:0)*pm*angleGate;
+      arcLabels[i].material.opacity = ph(t,3.1+i*.75,.5)*pm*angleGate;
+    });
+
+    // 5.0s+: the Lost Triangle draws in and stays — its two acute angles ARE the
+    // 54.74° (at the origin) and 35.26° (at the corner) arcs above.
+    const ltp=(LAYERS.lt?ph(t,5.0,.9):0)*pm;
+    ltLegs.forEach(function(l){ l.material.opacity += (ltp*.95 - l.material.opacity)*.15; });
+    ltFill.material.opacity += (ltp*.15 - ltFill.material.opacity)*.15;
+    ltRight.material.opacity += (ltp*.9 - ltRight.material.opacity)*.15;
+    ltLenLabels.forEach(function(l){ l.material.opacity += (ltp - l.material.opacity)*.15; });
+    ltName.material.opacity += (ltp*.92 - ltName.material.opacity)*.15;
+
+    // 5.4–9s: 8 corner neighbours glide in (hexagon-to-hexagon)
+    // 9.5–12s: 6 axis neighbours glide in (square-to-square)
+    neighbours.forEach(function(g,i){
+      const kind=g.userData.kind;
+      const s0 = kind===0 ? 5.4+ (i%8)*.28 : 9.5+(i%6)*.3;
+      const p=ph(t,s0,1.1);
+      const d=g.userData.home;
+      // glide from 1.9× home toward home
+      g.position.set(d.x*(1.9-.9*p), d.y*(1.9-.9*p), d.z*(1.9-.9*p));
+      g.children.forEach(function(l){ l.material.opacity=p*.30*neighGate*pm; });
+    });
+
+    // family ghosts (manual toggles, eased) — also fade with the math
+    cubeWire.material.opacity += ((LAYERS.cube?.30:0)*pm-cubeWire.material.opacity)*.1;
+    rdGroup.children.forEach(function(l){ l.material.opacity += ((LAYERS.rd?.5:0)*pm-l.material.opacity)*.1; });
+
+    // Gregg's built models: only the current stage's model is visible, and only
+    // once the math has begun to clear. Reveal choreography mirrors the Vector
+    // Pod app itself — the skeleton (wireframe clone) appears first, then the
+    // panels (the authored fill materials) turn on over it, both driven by the
+    // one builtWeight ease so switching stages fades the whole sequence in
+    // reverse just as naturally.
+    for(const id in models){
+      const rec=models[id]; if(!rec||!rec.obj) continue;
+      const isCurrent=(STAGES[stage].id===id);
+      rec.obj.visible = isCurrent && builtWeight>0.03;
+      if(isCurrent){
+        const wireOp=ease(builtWeight/0.3)*0.8;
+        const fillOp=ease((builtWeight-0.35)/0.55);
+        rec.wireMats.forEach(function(mt){ mt.opacity=wireOp; mt.visible=wireOp>0.008; });
+        rec.fillMats.forEach(function(mt){ mt.opacity=fillOp; mt.visible=fillOp>0.008; });
+      }
+    }
+
+    // framing — ease the orbit radius to the freshly-framed distance, then release
+    if(framing){
+      rad += (targetRad-rad)*0.12;
+      if(Math.abs(targetRad-rad) < targetRad*0.004){ rad=targetRad; framing=false; }
+    }
+    camera.near=Math.max(0.02, rad*0.02);
+    camera.far=rad*60;
+    camera.updateProjectionMatrix();
+
+    // autorotate accumulates into az directly (paused while dragging or orienting
+    // to a preset) so view presets and the drag orbit share one live azimuth.
+    const dt=Math.max(0,Math.min(.05,raw-lastRaw)); lastRaw=raw;
+    if(autoOn && !dragging && azTarget===null) az+=dt*.09;
+    if(azTarget!==null){ az+=(azTarget-az)*.1; if(Math.abs(azTarget-az)<.004){ az=azTarget; azTarget=null; } }
+    if(elTarget!==null){ el+=(elTarget-el)*.1; if(Math.abs(elTarget-el)<.004){ el=elTarget; elTarget=null; } }
+
+    camera.position.set(
+      rad*Math.cos(el)*Math.cos(az),
+      rad*Math.sin(el),
+      rad*Math.cos(el)*Math.sin(az)
+    );
+    camera.lookAt(target);
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

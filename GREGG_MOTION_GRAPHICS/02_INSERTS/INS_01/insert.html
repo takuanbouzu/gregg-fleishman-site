@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>INS_01 — the rule: 45° + 45° → 120°</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 230, W = 848, H = 448;           // 01:00.694 → 01:08.368
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.35, 9, 18);
+
+// Strut directions taken from two adjacent hexagon edges of the computed TO —
+// d1 and d2 meet at exactly 120° (cos = −½); flat-start dB0 makes exactly 90°.
+const d1  = new THREE.Vector3(1, -1, 0).normalize();
+const d2  = new THREE.Vector3(0, 1, -1).normalize();
+const dB0 = new THREE.Vector3(1, 1, 0).normalize();
+const L = 1.5;
+
+function strut() {
+  const g = new THREE.CylinderGeometry(0.05, 0.05, L, 20);
+  return new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: K.COL.face, transparent: true }));
+}
+const sA = strut(), sB = strut();
+scene.add(sA, sB);
+
+function poseStrut(m, dir, gap) {
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  m.position.copy(dir).multiplyScalar(L / 2 + gap);
+}
+
+// 45° mitre indicators at the join-facing tips: a short gold cut line + arc.
+function mitre() {
+  const grp = new THREE.Group();
+  const line = K.lineSegs([new THREE.Vector3(), new THREE.Vector3()], K.COL.angle, 1);
+  const a = K.arc();
+  grp.add(line, a.obj);
+  scene.add(grp);
+  return { line, a };
+}
+const mA = mitre(), mB = mitre();
+function poseMitre(m, dir, gap) {
+  const tip = dir.clone().multiplyScalar(gap);
+  const perp = new THREE.Vector3(0, 0, 1).cross(dir).normalize();
+  const cut = dir.clone().applyAxisAngle(perp, Math.PI / 4); // 45° to the axis
+  m.line.geometry.setFromPoints([tip.clone().sub(cut.clone().multiplyScalar(0.22)),
+                                 tip.clone().add(cut.clone().multiplyScalar(0.22))]);
+  m.a.update(tip, dir, cut, 0.26, 1);
+  return tip.clone().add(dir.clone().multiplyScalar(0.34)).add(cut.clone().multiplyScalar(0.2));
+}
+
+const joinArc = K.arc(); scene.add(joinArc.obj);
+
+const l45A = K.domLabel('45°', { color: K.COL.angle, size: 12, weight: 700 });
+const l45B = K.domLabel('45°', { color: K.COL.angle, size: 12, weight: 700 });
+const lAng = K.domLabel('90°', { color: K.COL.angle, size: 18, weight: 700 });
+const cap  = K.caption('45° + 45° meet — and leave 120°');
+
+function pose(t) {
+  const inO  = K.ease(K.seg(t, 0.15, 1.1));      // struts materialize
+  const gap  = 0.95 * (1 - K.ease(K.seg(t, 2.6, 4.5)));   // glide together
+  const fold = K.ease(K.seg(t, 2.8, 5.1));       // 90° (flat) → 120° (space)
+  const mOp  = inO * (1 - K.seg(t, 2.5, 3.4));   // mitre marks fade at approach
+  const arcG = K.ease(K.seg(t, 1.5, 2.4));       // join arc grows
+
+  const dB = dB0.clone().lerp(d2, fold).normalize();
+  poseStrut(sA, d1, gap);  poseStrut(sB, dB, gap);
+  sA.material.opacity = inO; sB.material.opacity = inO;
+
+  const pA = poseMitre(mA, d1, gap), pB = poseMitre(mB, dB, gap);
+  mA.line.material.opacity = mOp; mA.a.op(mOp);
+  mB.line.material.opacity = mOp; mB.a.op(mOp);
+
+  const ang = joinArc.update(new THREE.Vector3(), d1, dB, 0.55, arcG);
+  joinArc.op(arcG * inO);
+
+  const mid = d1.clone().lerp(dB, 0.5).normalize().multiplyScalar(0.92);
+  lAng.set(Math.round(ang * 180 / Math.PI) + '°');
+  lAng.at(mid, camera, W, H);  lAng.op(arcG * inO);
+  l45A.at(pA, camera, W, H);   l45A.op(mOp);
+  l45B.at(pB, camera, W, H);   l45B.op(mOp);
+  cap.op(K.seg(t, 5.2, 6.0));
+
+  K.orbit(camera, 0.85 + t * 0.10, 0.40 - t * 0.012, 4.0, new THREE.Vector3(0, 0.15, 0));
+}
+K.expose(st, pose);
+</script>
+</body>
+</html>

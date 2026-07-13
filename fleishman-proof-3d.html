@@ -6,6 +6,17 @@
 <meta name="theme-color" content="#0B0B0B">
 <title>The Proof Triangle · 3D — Gregg Fleishman</title>
 <meta name="description" content="Gregg Fleishman's proof triangle, parsed directly from his original Rhino 3DM drawing — every length a root of 2: edge 1, face diagonal √2, space diagonal √3, proof span 2.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="The Proof Triangle · 3D — Gregg Fleishman">
+<meta property="og:description" content="Gregg Fleishman's proof triangle, parsed directly from his original Rhino 3DM drawing — every length a root of 2: edge 1, face diagonal √2, space diagonal √3, proof span 2.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/fleishman-proof-3d.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Proof Triangle · 3D — Gregg Fleishman">
+<meta name="twitter:description" content="Gregg Fleishman's proof triangle, parsed directly from his original Rhino 3DM drawing — every length a root of 2: edge 1, face diagonal √2, space diagonal √3, proof span 2.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,6 +79,7 @@
 <nav id="gfnav">
   <a class="brand" href="index.html">Gregg Fleishman</a>
   <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle.html">Animation</a>
   <a class="navlink active" href="explore.html">The Cube</a>
   <a class="navlink" href="dorman-luke.html">Research</a>
 </nav>
@@ -131,6 +143,7 @@ stage.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, 1, 0.01, 200);
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.listenToKeyEvents(window);
 controls.enableDamping = true;
 controls.dampingFactor = 0.07;
 controls.rotateSpeed = 0.8;
