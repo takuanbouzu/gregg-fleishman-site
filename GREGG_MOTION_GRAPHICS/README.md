@@ -15,9 +15,10 @@ Production tree for the six black-screen motion-graphics inserts in
 - `00_ADMIN/cue_sheet.csv`, `01_SOURCE/transcripts/INS_0*.md` — scaffolds.
 
 ## What's blocked here (see STATUS.md)
-Transcription (no Whisper weights + network), and the render phases (After
-Effects can't run on Linux; Blender is installable but CPU-only). The master
-video is git-ignored — re-drop it at `01_SOURCE/video/` and run
+Transcription (no Whisper weights + network). Render target is decided:
+HTML/Canvas via the site's existing engine (After Effects can't run on Linux;
+Blender was ruled out — CPU-only headless render here isn't worth pursuing).
+The master video is git-ignored — re-drop it at `01_SOURCE/video/` and run
 `python3 00_ADMIN/extract_media.py` to reproduce all derived media.
 
 ## Not the website

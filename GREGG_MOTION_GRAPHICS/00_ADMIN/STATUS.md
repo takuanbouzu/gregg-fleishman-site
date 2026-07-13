@@ -21,11 +21,12 @@ goals do NOT match the audio — see `NARRATIVE_CORRECTION.md`. Corrected
 per-insert content needs sign-off before modeling.
 
 ## Phases 3–7 — NOT STARTED
-Blocked on transcription (Phase 2) and on renderer availability:
+Blocked on sign-off of the corrected per-insert content (Phase 2 finding):
 - After Effects **cannot** run in this Linux sandbox (proprietary Win/Mac).
-- Blender is apt-installable here but **CPU-only** (no GPU) — slow.
-- The site's existing HTML/Canvas Lost-Triangle engine is a viable alt renderer.
+- Blender ruled out — CPU-only headless render here isn't worth pursuing.
+- **Render target decided:** the site's existing HTML/Canvas Lost-Triangle
+  engine. Every one of the six topics already exists as a computed scene.
 
 ## Next recommended action
-Get sign-off on the corrected per-insert content (NARRATIVE_CORRECTION.md) and
-pick a render target (open_questions #3), then build the blocking animatic.
+Get sign-off on the corrected per-insert content (NARRATIVE_CORRECTION.md),
+then build the blocking animatic against the HTML/Canvas engine.
