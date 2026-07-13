@@ -102,7 +102,29 @@
   .totals .t .n{font-family:'Syne',var(--font-display);font-size:28px;font-weight:700;color:var(--tx);line-height:1;}
   .totals .t .l{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-faint);}
 
+  /* full-lesson arc */
+  .arc{border:1px solid var(--border);background:var(--bg-elevated);padding:22px 24px;margin-bottom:46px;}
+  .arc h2{font-family:'Syne',var(--font-display);font-size:19px;font-weight:700;margin-bottom:4px;}
+  .arc .sub{font-size:13.5px;color:var(--tx-dim);max-width:64ch;margin-bottom:16px;}
+  .arc .sub b{color:var(--tx);font-weight:600;}
+  .thesis{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;line-height:1.45;
+    color:var(--tx);border-left:2px solid var(--geo-angle);padding:2px 0 2px 16px;margin-bottom:18px;}
+  .thesis b{font-weight:600;font-style:normal;color:var(--accent);}
+  .arc table{width:100%;border-collapse:collapse;font-size:13px;}
+  .arc td{border-top:1px solid var(--border);padding:7px 10px 7px 0;vertical-align:top;color:var(--tx-dim);}
+  .arc td.t{font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;
+    color:var(--tx);white-space:nowrap;width:86px;}
+  .arc td.w{width:112px;}
+  .arc .chip{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;padding:2px 7px;border:1px solid var(--border-strong);color:var(--tx-dim);white-space:nowrap;}
+  .arc .chip.ins-c{color:var(--accent);border-color:var(--accent);}
+  .arc td.r{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--tx-faint);white-space:nowrap;width:120px;padding-right:0;text-align:right;}
+  .arc td b{color:var(--tx);font-weight:600;}
+
   @media(max-width:720px){
+    .arc td.r{display:none;}
+    .arc td.t{width:64px;}
     .ins{grid-template-columns:1fr;}
     .slate{flex-direction:row;flex-wrap:wrap;align-items:center;gap:18px;
       border-right:0;border-bottom:1px solid var(--border);}
@@ -117,7 +139,7 @@
 <body>
 <div class="wrap">
 
-  <p class="eyebrow">Storyboard · for review · v1</p>
+  <p class="eyebrow">Storyboard · for review · v2 — full-lesson concept</p>
   <h1>Six inserts for the <em>black windows</em></h1>
   <p class="lede">Gregg's studio film goes black six times in its first three and a half minutes.
     His voice keeps going. These are the teaching graphics that fill each gap —
@@ -132,6 +154,42 @@
     <p>Aligned to the audio, the six windows are one clean thread: <b>the cubic-family
       space-fillers</b>. Every idea below already exists as a computed scene on the site —
       so these are re-stagings, not new geometry.</p>
+  </div>
+
+  <!-- full lesson arc -->
+  <div class="arc">
+    <h2>The full lesson — &ldquo;The Slim Book&rdquo;</h2>
+    <p class="sub">The six windows aren't isolated fills — they're chapters of <b>one lesson</b>
+      that continues on camera after the last window. The inserts <b>plant</b> the geometry in
+      pure light; Gregg's hands <b>prove</b> it in plywood. Full concept:
+      <b>00_ADMIN/FULL_LESSON_CONCEPT.md</b>.</p>
+    <p class="thesis">Cut two pieces at 45° — the square's own angle — bring them together in
+      space, and you get 120° — the hexagon's. The ladder between the flat world and the
+      spatial one is <b>1 : √2 : √3</b> — the Lost Triangle.</p>
+    <table>
+      <tr><td class="t">1:00</td><td class="w"><span class="chip ins-c">Insert 01</span></td>
+        <td>45° + 45° → <b>120°</b> — the connection rule, stated abstractly</td><td class="r">the rule</td></tr>
+      <tr><td class="t">1:15</td><td class="w"><span class="chip ins-c">Insert 02</span></td>
+        <td>truncated octahedron (new) beside ten years of rhombic dodecahedron</td><td class="r">the protagonists</td></tr>
+      <tr><td class="t">1:52</td><td class="w"><span class="chip ins-c">Insert 03</span></td>
+        <td>the three cubic space-fillers: cube · RD as two-cube checkerboard · TO</td><td class="r">the family</td></tr>
+      <tr><td class="t">2:21</td><td class="w"><span class="chip ins-c">Insert 04</span></td>
+        <td>five Platonic solids → he keeps the cubic family: tetra, octa, cube</td><td class="r">the lineage</td></tr>
+      <tr><td class="t">2:38</td><td class="w"><span class="chip ins-c">Insert 05</span></td>
+        <td>cut off all their points → the Archimedean solids</td><td class="r">the operation</td></tr>
+      <tr><td class="t">3:01</td><td class="w"><span class="chip ins-c">Insert 06</span></td>
+        <td>both networks fill space with small parts — two-up finale</td><td class="r">the purpose</td></tr>
+      <tr><td class="t">5:51</td><td class="w"><span class="chip">on camera</span></td>
+        <td><b>the diamond lesson</b>: square → √2 → √3 → equilateral triangle — &ldquo;the
+          corner-to-corner diagonal through a cube&rdquo; — the Lost Triangle, drawn by hand</td><td class="r">the proof</td></tr>
+      <tr><td class="t">7:46</td><td class="w"><span class="chip">on camera</span></td>
+        <td>six identical plates → the space frame &ldquo;coincident with the rhombic dodecahedron&rdquo;</td><td class="r">payoff · ch 2–3</td></tr>
+      <tr><td class="t">11:38</td><td class="w"><span class="chip">on camera</span></td>
+        <td>the caterpillar: squares corner-to-corner at 45° — &ldquo;that's what makes the
+          hexagonal space&rdquo;</td><td class="r">payoff · ch 1</td></tr>
+      <tr><td class="t">11:55</td><td class="w"><span class="chip">on camera</span></td>
+        <td>the node: octahedron + tetrahedron — &ldquo;the basic structure of space filling&rdquo;</td><td class="r">payoff · ch 3, 6</td></tr>
+    </table>
   </div>
 
   <div class="key">

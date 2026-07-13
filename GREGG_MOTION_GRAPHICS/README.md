@@ -22,10 +22,12 @@ The master video is git-ignored — re-drop it at `01_SOURCE/video/` and run
 `python3 00_ADMIN/extract_media.py` to reproduce all derived media.
 
 ## Next: build the six inserts (Phases 3–7)
-**`00_ADMIN/HANDOFF-CODEX-EXECUTION.md`** is the execution handoff — per-insert
-frame ranges, quotes, which existing site scenes to re-stage, the render/
-capture method for exact-duration masters, and a verification checklist.
-Start there.
+**`00_ADMIN/FULL_LESSON_CONCEPT.md`** is the creative spine — the six inserts
+as chapters of one lesson, with the motif system and the plant/payoff links
+to Gregg's on-camera demos. **`00_ADMIN/HANDOFF-CODEX-EXECUTION.md`** is the
+execution handoff — per-insert frame ranges, quotes, which existing site
+scenes to re-stage, the render/capture method for exact-duration masters,
+and a verification checklist. Read the concept first, then the handoff.
 
 ## Not the website
 This tree lives on branch `claude/gregg-motion-graphics-mediaprep` and is

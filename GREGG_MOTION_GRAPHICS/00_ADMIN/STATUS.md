@@ -33,7 +33,17 @@ Written up as `00_ADMIN/HANDOFF-CODEX-EXECUTION.md` — the per-insert build spe
 capture method for exact-duration masters, verification checklist) for
 whoever executes next.
 
+## Full-lesson concept ✅ (needs sign-off)
+`00_ADMIN/FULL_LESSON_CONCEPT.md` — revises the six inserts from isolated
+fills into chapters of ONE lesson ("The Slim Book"). Maps the complete arc
+including Gregg's on-camera demos (the diamond/√-ladder lesson at 5:51, the
+caterpillar 45°→120° payoff at 11:38), verifies the math backbone numerically
+(all TO struts at exactly 45° to the axes; adjacent struts meet at exactly
+120°; √2²+1²=3), and defines the binding motif system (one world, √-ladder
+palette, gold arc, from-black/to-black, plant→payoff links). Timing unchanged.
+
 ## Next recommended action
-Follow `00_ADMIN/HANDOFF-CODEX-EXECUTION.md`. Build the blocking animatic
-first (rough geometry, correct timing/content) as the review artifact — get
-explicit sign-off on the six-insert content mapping before Phase 5–6 polish.
+Get sign-off on `FULL_LESSON_CONCEPT.md` + the six mappings, then follow
+`HANDOFF-CODEX-EXECUTION.md`: build the blocking animatic in sequence with
+Gregg's intervening audio (concept §8) as the review artifact before any
+Phase 5–6 polish.

@@ -4,7 +4,9 @@ For: whoever picks up execution next (Codex or otherwise).
 From: Claude, on `claude/gregg-motion-graphics-mediaprep` (PR #54, draft, not part of the Pages site).
 State as of this handoff: **media-prep + content mapping done. Nothing has been animated yet.**
 
-Read in this order before touching anything: this file → `NARRATIVE_CORRECTION.md` →
+Read in this order before touching anything: this file → `FULL_LESSON_CONCEPT.md`
+(the creative spine — arc, motif system, plant/payoff structure; its §4 continuity
+requirements and §8 execution deltas are binding) → `NARRATIVE_CORRECTION.md` →
 `cue_sheet.csv` → `../storyboard.html` (open it in a browser — it's the visual reference,
 built in the site's real design system) → `media_probe.md` → `black_frame_intervals.csv`.
 
@@ -54,7 +56,10 @@ that's a `cue_sheet.csv` edit, not a re-architecture.
 All quotes are verbatim from `01_SOURCE/transcripts/full_transcript.txt`. Full detail —
 per-insert transcript, proposed beats, caption text — is in
 `01_SOURCE/transcripts/INS_0*.md` and `cue_sheet.csv`; this table is the map, not the
-territory.
+territory. **The six are chapters of one lesson, not isolated fills** — arc roles,
+the shared motif system (one persistent world, √-ladder palette, recurring gold arc,
+from-black/to-black), and the plant/payoff links to Gregg's on-camera demos are
+specified in `FULL_LESSON_CONCEPT.md` §4–5 and are binding on the build.
 
 | # | Window (source tc) | Frames (29.97fps) | Dur | Gregg says | Build this | Nearest existing site scene(s) to re-stage |
 |---|---|---|---|---|---|---|
