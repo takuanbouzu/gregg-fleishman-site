@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>INS_02 — the protagonists</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 214, W = 848, H = 448;           // 01:15.375 → 01:22.516
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.55, 11, 22);
+
+const k = 0.62;
+// TO — edges are the √2 family (blue); hexagons on √3 (terracotta).
+const to = new THREE.Group();
+to.add(K.toWire(k, K.COL.face), K.toFaces(k));
+to.position.set(-1.6, 0.05, 0);
+scene.add(to);
+
+// RD — edges along ⟨111⟩ (√3, terracotta); faces on ⟨110⟩ (√2, blue).
+const rd = new THREE.Group();
+rd.add(K.rdWire(k, K.COL.space), K.rdFaces(k, K.COL.face, 0.10));
+rd.position.set(1.6, 0.05, 0);
+scene.add(rd);
+
+const lTO  = K.domLabel('truncated octahedron', { size: 12 });
+const lTOs = K.domLabel('— new', { size: 11, color: K.COL.angle });
+const lRD  = K.domLabel('rhombic dodecahedron', { size: 12 });
+const lRDs = K.domLabel('— 10 years', { size: 11, color: K.COL.angle });
+const cap  = K.caption('His new shape: the truncated octahedron');
+
+const up = new THREE.Vector3(0, 1.35, 0), up2 = new THREE.Vector3(0, 1.62, 0);
+function pose(t) {
+  const toIn = K.easeOut(K.seg(t, 0.2, 1.7));
+  const rdIn = K.ease(K.seg(t, 2.5, 3.9));
+
+  to.scale.setScalar(Math.max(0.001, toIn));
+  to.rotation.set(0.22, 0.5 + t * 0.34, 0);
+  K.setOp(to, toIn);
+  rd.rotation.set(0.15, -0.3 + t * 0.30, 0);
+  K.setOp(rd, rdIn);
+
+  lTO.at(up2.clone().add(to.position), camera, W, H);  lTO.op(K.seg(t, 1.2, 1.9));
+  lTOs.at(up.clone().add(to.position), camera, W, H);  lTOs.op(K.seg(t, 1.5, 2.2));
+  lRD.at(up2.clone().add(rd.position), camera, W, H);  lRD.op(K.seg(t, 3.4, 4.1));
+  lRDs.at(up.clone().add(rd.position), camera, W, H);  lRDs.op(K.seg(t, 3.7, 4.4));
+  cap.op(K.seg(t, 4.8, 5.6));
+
+  K.orbit(camera, 1.32 + t * 0.075, 0.30, 5.6);
+}
+K.expose(st, pose);
+</script>
+</body>
+</html>

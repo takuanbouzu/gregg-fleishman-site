@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Six Inserts — Storyboard — Gregg Fleishman</title>
+<meta name="description" content="Blocking storyboard for the six black-window motion-graphics inserts, mapped to Gregg Fleishman's verbatim narration and timed to the measured black windows." />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/gf-tokens.css" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--tx);font-family:var(--font-ui);line-height:1.62;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1060px;margin:0 auto;padding:clamp(30px,5vw,74px) clamp(18px,4vw,40px) 84px;}
+
+  .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:20px;}
+  h1{font-family:'Syne',var(--font-display);font-weight:800;letter-spacing:-.015em;line-height:1.0;
+    font-size:clamp(32px,6.4vw,62px);text-transform:none;margin-bottom:16px;text-wrap:balance;}
+  h1 em{font-style:normal;color:var(--accent);}
+  .lede{max-width:60ch;color:var(--tx-dim);font-size:clamp(15px,1.6vw,17px);margin-bottom:34px;}
+  .lede b{color:var(--tx);font-weight:600;}
+
+  /* correction callout */
+  .flag{border:1px solid var(--border);border-left:2px solid var(--geo-space);
+    background:var(--bg-elevated);padding:18px 22px;margin-bottom:42px;}
+  .flag .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--geo-space);margin-bottom:9px;}
+  .flag p{color:var(--tx);font-size:14.5px;}
+  .flag p+p{margin-top:8px;color:var(--tx-dim);}
+  .flag b{color:var(--tx);font-weight:600;}
+
+  /* reading key */
+  .key{display:flex;flex-wrap:wrap;gap:9px 22px;padding:15px 0;margin-bottom:46px;
+    border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .key .k{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11px;
+    letter-spacing:.02em;color:var(--tx-dim);text-transform:uppercase;}
+  .key .sw{width:18px;height:2px;flex:none;}
+  .key .sw.d{height:0;border-top:2px dashed currentColor;}
+
+  /* insert panel */
+  .ins{display:grid;grid-template-columns:152px 1fr;border:1px solid var(--border);
+    background:var(--bg-elevated);margin-bottom:20px;}
+  .slate{background:rgba(0,0,0,.28);border-right:1px solid var(--border);
+    padding:22px 18px;display:flex;flex-direction:column;gap:16px;}
+  .slate .no{font-family:'Syne',var(--font-display);font-size:38px;font-weight:800;color:var(--tx);
+    line-height:.9;}
+  .slate .no small{display:block;font-family:var(--font-mono);font-size:9px;font-weight:400;
+    letter-spacing:.24em;color:var(--tx-faint);margin-top:8px;}
+  .meta{font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);
+    font-variant-numeric:tabular-nums;display:flex;flex-direction:column;gap:2px;}
+  .meta .row{display:flex;justify-content:space-between;gap:8px;
+    border-bottom:1px solid var(--border);padding:2px 0;}
+  .meta .row span:first-child{color:var(--tx-faint);}
+  .meta .row span:last-child{color:var(--tx);}
+  .srcref{font-family:var(--font-mono);font-size:10px;color:var(--tx-faint);line-height:1.55;
+    border-top:1px solid var(--border);padding-top:11px;}
+  .srcref b{color:var(--geo-tri);font-weight:400;}
+
+  .body{padding:22px 24px;display:grid;grid-template-columns:1fr 244px;gap:24px;}
+  .goal{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:13px;}
+  .quote{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:500;
+    font-size:20px;line-height:1.4;color:var(--tx);padding-left:16px;
+    border-left:2px solid var(--border-strong);}
+  .quote .who{display:block;font-family:var(--font-mono);font-style:normal;font-size:10px;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--tx-faint);margin-top:10px;}
+  .beats{list-style:none;margin-top:18px;counter-reset:b;}
+  .beats li{position:relative;padding:5px 0 5px 30px;font-size:13.5px;color:var(--tx-dim);
+    border-top:1px solid var(--border);}
+  .beats li:first-child{border-top:0;}
+  .beats li::before{counter-increment:b;content:counter(b);position:absolute;left:0;top:5px;
+    font-family:var(--font-mono);font-size:10.5px;color:var(--accent);width:18px;height:18px;
+    border:1px solid var(--border-strong);display:grid;place-items:center;}
+  .beats b{color:var(--tx);font-weight:600;}
+  .cap{margin-top:18px;font-family:var(--font-ui);font-size:13.5px;color:var(--tx);
+    border:1px solid var(--border-strong);border-left:2px solid var(--accent);
+    padding:8px 14px;display:flex;gap:11px;align-items:baseline;}
+  .cap::before{content:"CAPTION";font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;
+    color:var(--accent);flex:none;}
+
+  .frame{border:1px solid var(--border);aspect-ratio:16/10;display:grid;place-items:center;
+    overflow:hidden;position:relative;
+    background:repeating-linear-gradient(45deg,var(--bg),var(--bg) 8px,#090c0d 8px,#090c0d 16px);}
+  .frame::after{content:"KEY FRAME";position:absolute;top:8px;left:10px;font-family:var(--font-mono);
+    font-size:8px;letter-spacing:.2em;color:var(--tx-faint);}
+  .frame svg{width:100%;height:100%;display:block;}
+
+  .foot{margin-top:48px;border-top:1px solid var(--border);padding-top:28px;
+    display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  .foot h3{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:14px;}
+  .foot p,.foot li{font-size:13.5px;color:var(--tx-dim);}
+  .foot ul{padding-left:18px;}
+  .foot b{color:var(--tx);font-weight:600;}
+  .totals{display:flex;gap:28px;flex-wrap:wrap;font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+  .totals .t{display:flex;flex-direction:column;gap:3px;}
+  .totals .t .n{font-family:'Syne',var(--font-display);font-size:28px;font-weight:700;color:var(--tx);line-height:1;}
+  .totals .t .l{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-faint);}
+
+  /* full-lesson arc */
+  .arc{border:1px solid var(--border);background:var(--bg-elevated);padding:22px 24px;margin-bottom:46px;}
+  .arc h2{font-family:'Syne',var(--font-display);font-size:19px;font-weight:700;margin-bottom:4px;}
+  .arc .sub{font-size:13.5px;color:var(--tx-dim);max-width:64ch;margin-bottom:16px;}
+  .arc .sub b{color:var(--tx);font-weight:600;}
+  .thesis{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;line-height:1.45;
+    color:var(--tx);border-left:2px solid var(--geo-angle);padding:2px 0 2px 16px;margin-bottom:18px;}
+  .thesis b{font-weight:600;font-style:normal;color:var(--accent);}
+  .arc table{width:100%;border-collapse:collapse;font-size:13px;}
+  .arc td{border-top:1px solid var(--border);padding:7px 10px 7px 0;vertical-align:top;color:var(--tx-dim);}
+  .arc td.t{font-family:var(--font-mono);font-size:11px;font-variant-numeric:tabular-nums;
+    color:var(--tx);white-space:nowrap;width:86px;}
+  .arc td.w{width:112px;}
+  .arc .chip{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;
+    text-transform:uppercase;padding:2px 7px;border:1px solid var(--border-strong);color:var(--tx-dim);white-space:nowrap;}
+  .arc .chip.ins-c{color:var(--accent);border-color:var(--accent);}
+  .arc td.r{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--tx-faint);white-space:nowrap;width:120px;padding-right:0;text-align:right;}
+  .arc td b{color:var(--tx);font-weight:600;}
+
+  @media(max-width:720px){
+    .arc td.r{display:none;}
+    .arc td.t{width:64px;}
+    .ins{grid-template-columns:1fr;}
+    .slate{flex-direction:row;flex-wrap:wrap;align-items:center;gap:18px;
+      border-right:0;border-bottom:1px solid var(--border);}
+    .slate .no{font-size:28px;}
+    .meta{flex:1;min-width:150px;}
+    .body{grid-template-columns:1fr;}
+    .frame{max-width:340px;}
+    .foot{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Storyboard · for review · v2 — full-lesson concept</p>
+  <h1>Six inserts for the <em>black windows</em></h1>
+  <p class="lede">Gregg's studio film goes black six times in its first three and a half minutes.
+    His voice keeps going. These are the teaching graphics that fill each gap —
+    blocked out from <b>his actual recorded words</b>, timed to the exact measured
+    length of every black window.</p>
+
+  <div class="flag">
+    <p class="tag">▲ note — this supersedes the original brief</p>
+    <p>The handoff storyboard was written before the transcript existed. Its lesson
+      (&ldquo;Lost Triangle → derive the square → into 3D&rdquo;) describes a passage that actually
+      airs at <b>5:51–6:37</b> — outside every black window.</p>
+    <p>Aligned to the audio, the six windows are one clean thread: <b>the cubic-family
+      space-fillers</b>. Every idea below already exists as a computed scene on the site —
+      so these are re-stagings, not new geometry.</p>
+  </div>
+
+  <!-- full lesson arc -->
+  <div class="arc">
+    <h2>The full lesson — &ldquo;The Slim Book&rdquo;</h2>
+    <p class="sub">The six windows aren't isolated fills — they're chapters of <b>one lesson</b>
+      that continues on camera after the last window. The inserts <b>plant</b> the geometry in
+      pure light; Gregg's hands <b>prove</b> it in plywood. Full concept:
+      <b>00_ADMIN/FULL_LESSON_CONCEPT.md</b>.</p>
+    <p class="thesis">Cut two pieces at 45° — the square's own angle — bring them together in
+      space, and you get 120° — the hexagon's. The ladder between the flat world and the
+      spatial one is <b>1 : √2 : √3</b> — the Lost Triangle.</p>
+    <table>
+      <tr><td class="t">1:00</td><td class="w"><span class="chip ins-c">Insert 01</span></td>
+        <td>45° + 45° → <b>120°</b> — the connection rule, stated abstractly</td><td class="r">the rule</td></tr>
+      <tr><td class="t">1:15</td><td class="w"><span class="chip ins-c">Insert 02</span></td>
+        <td>truncated octahedron (new) beside ten years of rhombic dodecahedron</td><td class="r">the protagonists</td></tr>
+      <tr><td class="t">1:52</td><td class="w"><span class="chip ins-c">Insert 03</span></td>
+        <td>the three cubic space-fillers: cube · RD as two-cube checkerboard · TO</td><td class="r">the family</td></tr>
+      <tr><td class="t">2:21</td><td class="w"><span class="chip ins-c">Insert 04</span></td>
+        <td>five Platonic solids → he keeps the cubic family: tetra, octa, cube</td><td class="r">the lineage</td></tr>
+      <tr><td class="t">2:38</td><td class="w"><span class="chip ins-c">Insert 05</span></td>
+        <td>cut off all their points → the Archimedean solids</td><td class="r">the operation</td></tr>
+      <tr><td class="t">3:01</td><td class="w"><span class="chip ins-c">Insert 06</span></td>
+        <td>both networks fill space with small parts — two-up finale</td><td class="r">the purpose</td></tr>
+      <tr><td class="t">5:51</td><td class="w"><span class="chip">on camera</span></td>
+        <td><b>the diamond lesson</b>: square → √2 → √3 → equilateral triangle — &ldquo;the
+          corner-to-corner diagonal through a cube&rdquo; — the Lost Triangle, drawn by hand</td><td class="r">the proof</td></tr>
+      <tr><td class="t">7:46</td><td class="w"><span class="chip">on camera</span></td>
+        <td>six identical plates → the space frame &ldquo;coincident with the rhombic dodecahedron&rdquo;</td><td class="r">payoff · ch 2–3</td></tr>
+      <tr><td class="t">11:38</td><td class="w"><span class="chip">on camera</span></td>
+        <td>the caterpillar: squares corner-to-corner at 45° — &ldquo;that's what makes the
+          hexagonal space&rdquo;</td><td class="r">payoff · ch 1</td></tr>
+      <tr><td class="t">11:55</td><td class="w"><span class="chip">on camera</span></td>
+        <td>the node: octahedron + tetrahedron — &ldquo;the basic structure of space filling&rdquo;</td><td class="r">payoff · ch 3, 6</td></tr>
+    </table>
+  </div>
+
+  <div class="key">
+    <span class="k"><span class="sw" style="background:var(--geo-unit)"></span>edge · 1</span>
+    <span class="k"><span class="sw" style="background:var(--geo-face)"></span>face diag · √2</span>
+    <span class="k"><span class="sw" style="background:var(--geo-space)"></span>space diag · √3</span>
+    <span class="k" style="color:var(--accent)"><span class="sw" style="background:var(--geo-angle)"></span>angle measure</span>
+    <span class="k"><span class="sw" style="background:var(--geo-tri)"></span>triangle / solid fill</span>
+    <span class="k" style="color:var(--tx-faint)"><span class="sw d"></span>construction / cut line</span>
+  </div>
+
+  <!-- INS 01 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">01<small>INSERT</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>01:00.694</span></div>
+        <div class="row"><span>OUT</span><span>01:08.368</span></div>
+        <div class="row"><span>DUR</span><span>7.674s</span></div>
+        <div class="row"><span>FRAMES</span><span>230</span></div>
+      </div>
+      <div class="srcref">source · <b>NEW</b> (angle rule; nearest ref: truncated-octahedron.html 45° arc)</div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">The connection rule</p>
+        <blockquote class="quote">&ldquo;…you have a 45-degree angle, and we bring those two things together — the resulting angle is 120 degrees.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>Two <b>struts</b> lie apart, each end cut at <b>45°</b> (ticked to a faint ground line).</li>
+          <li>On &ldquo;bring together,&rdquo; they <b>hinge to a shared vertex</b>.</li>
+          <li>A gold arc sweeps the join open and lands on <b>120°</b>.</li>
+        </ol>
+        <div class="cap">45° + 45° meet — and leave 120°</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 200 125" fill="none">
+          <line x1="20" y1="104" x2="180" y2="104" stroke="var(--tx-faint)" stroke-dasharray="3 4" stroke-width="1"/>
+          <line x1="100" y1="98" x2="44" y2="42" stroke="var(--geo-unit)" stroke-width="3" stroke-linecap="round"/>
+          <line x1="100" y1="98" x2="156" y2="42" stroke="var(--geo-unit)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M44 42 l16 6" stroke="var(--tx-dim)" stroke-width="1.2"/>
+          <path d="M156 42 l-16 6" stroke="var(--tx-dim)" stroke-width="1.2"/>
+          <text x="33" y="34" fill="var(--tx-dim)" font-family="'Space Mono',monospace" font-size="9">45°</text>
+          <text x="150" y="34" fill="var(--tx-dim)" font-family="'Space Mono',monospace" font-size="9">45°</text>
+          <path d="M78 76 A28 28 0 0 1 122 76" stroke="var(--geo-angle)" stroke-width="2"/>
+          <text x="85" y="70" fill="var(--geo-angle)" font-family="'Space Mono',monospace" font-size="11">120°</text>
+          <circle cx="100" cy="98" r="2.6" fill="var(--geo-angle)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- INS 02 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">02<small>INSERT</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>01:15.375</span></div>
+        <div class="row"><span>OUT</span><span>01:22.516</span></div>
+        <div class="row"><span>DUR</span><span>7.141s</span></div>
+        <div class="row"><span>FRAMES</span><span>214</span></div>
+      </div>
+      <div class="srcref">source · <b>truncated-octahedron.html + rhombic-dodecahedron.html</b></div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">A new solid</p>
+        <blockquote class="quote">&ldquo;…primarily truncated octahedrons — which is new for me. I've spent ten years working with the rhombic dodecahedron.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>The <b>truncated octahedron</b> rotates up, front and center.</li>
+          <li>Behind it, the <b>rhombic dodecahedron</b> fades in, dimmer — tagged &ldquo;10 years.&rdquo;</li>
+          <li>Hold both; the new solid stays brighter.</li>
+        </ol>
+        <div class="cap">His new shape: the truncated octahedron</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 200 125" fill="none">
+          <g opacity=".5" stroke="var(--geo-face)" stroke-width="1.6">
+            <polygon points="150,40 172,54 172,80 150,94 128,80 128,54"/>
+            <path d="M150 40 L150 67 M128 54 L150 67 L172 54 M128 80 L150 67 L172 80"/>
+          </g>
+          <text x="127" y="112" fill="var(--geo-face)" opacity=".6" font-family="'Space Mono',monospace" font-size="8">10 yrs</text>
+          <g stroke="var(--geo-space)" stroke-width="2.4" fill="rgba(219,104,77,.06)">
+            <polygon points="58,44 82,44 96,66 82,88 58,88 44,66"/>
+            <line x1="58" y1="44" x2="58" y2="88" opacity=".5"/>
+            <line x1="82" y1="44" x2="82" y2="88" opacity=".5"/>
+          </g>
+          <text x="45" y="108" fill="var(--geo-space)" font-family="'Space Mono',monospace" font-size="8.5">truncated oct.</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- INS 03 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">03<small>INSERT · hero</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>01:52.145</span></div>
+        <div class="row"><span>OUT</span><span>02:12.532</span></div>
+        <div class="row"><span>DUR</span><span>20.387s</span></div>
+        <div class="row"><span>FRAMES</span><span>611</span></div>
+      </div>
+      <div class="srcref">source · <b>rhombic-system.html + truncated-octahedron.html</b> packing</div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">Only three shapes fill space alone</p>
+        <blockquote class="quote">&ldquo;There's only three things that fill space… on their own. One is a cube. One is a rhombic dodecahedron — like two cubes in a 3-D checkerboard. And the other, oddly enough, is a truncated octahedron.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>The <b>cube</b> appears, tiles a step outward — &ldquo;pretty obvious.&rdquo;</li>
+          <li>The <b>rhombic dodecahedron</b> builds visibly as <b>two cubes checkerboarded</b>.</li>
+          <li>The <b>truncated octahedron</b> arrives — the surprising third.</li>
+          <li>All three, in a row, each hinting its own space-filling tiling.</li>
+        </ol>
+        <div class="cap">Only three shapes fill space alone</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 210 125" fill="none">
+          <g transform="translate(34,58)" stroke="var(--geo-unit)" stroke-width="2">
+            <polygon points="0,-24 21,-12 21,12 0,24 -21,12 -21,-12"/>
+            <path d="M0,-24 L0,0 M-21,-12 L0,0 L21,-12 M0,0 L0,24"/>
+          </g>
+          <text x="18" y="104" fill="var(--geo-unit)" font-family="'Space Mono',monospace" font-size="8">cube</text>
+          <g transform="translate(105,58)" stroke="var(--geo-face)" stroke-width="2">
+            <polygon points="0,-24 21,-12 21,12 0,24 -21,12 -21,-12"/>
+            <path d="M0,-24 L0,0 M-21,-12 L0,0 L21,-12 M0,0 L0,24 M-21,12 L0,0 L21,12"/>
+          </g>
+          <text x="76" y="104" fill="var(--geo-face)" font-family="'Space Mono',monospace" font-size="8">rhombic dodeca</text>
+          <g transform="translate(176,58)" stroke="var(--geo-space)" stroke-width="2">
+            <polygon points="-11,-24 11,-24 22,0 11,24 -11,24 -22,0"/>
+            <line x1="-11" y1="-24" x2="-11" y2="24" opacity=".5"/>
+            <line x1="11" y1="-24" x2="11" y2="24" opacity=".5"/>
+          </g>
+          <text x="150" y="104" fill="var(--geo-space)" font-family="'Space Mono',monospace" font-size="8">trunc. oct.</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- INS 04 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">04<small>INSERT</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>02:21.208</span></div>
+        <div class="row"><span>OUT</span><span>02:33.453</span></div>
+        <div class="row"><span>DUR</span><span>12.245s</span></div>
+        <div class="row"><span>FRAMES</span><span>367</span></div>
+      </div>
+      <div class="srcref">source · <b>explore.html</b> characteristic-tetrahedra</div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">He works one family only</p>
+        <blockquote class="quote">&ldquo;…we have the Platonic solids… But I focus only on the cubic family within these Platonic solids.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>All <b>five Platonic solids</b> line up across the frame.</li>
+          <li>The two he doesn't use (dodeca, icosa) <b>dim away</b>.</li>
+          <li>A bracket gathers the survivors: <b>tetrahedron · octahedron · cube</b>.</li>
+        </ol>
+        <div class="cap">The cubic family: tetrahedron, octahedron, cube</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 210 125" fill="none">
+          <g stroke="var(--geo-unit)" stroke-width="1.8">
+            <g transform="translate(30,52)"><polygon points="0,-16 15,10 -15,10"/><path d="M0,-16 L0,10"/></g>
+            <g transform="translate(72,52)"><polygon points="0,-17 15,0 0,17 -15,0"/><path d="M-15,0 L15,0"/></g>
+            <g transform="translate(114,52)"><polygon points="0,-16 14,-8 14,8 0,16 -14,8 -14,-8"/><path d="M0,-16 L0,0 M-14,-8 L0,0 L14,-8 M0,0 L0,16"/></g>
+          </g>
+          <g stroke="var(--tx-faint)" stroke-width="1.4" opacity=".5">
+            <circle cx="156" cy="52" r="15"/><polygon points="156,37 168,46 163,61 149,61 144,46"/>
+            <circle cx="192" cy="52" r="15"/><polygon points="192,38 205,52 192,66 179,52"/>
+          </g>
+          <path d="M14 78 L14 84 L130 84 L130 78" stroke="var(--geo-angle)" stroke-width="1.4"/>
+          <text x="33" y="100" fill="var(--geo-angle)" font-family="'Space Mono',monospace" font-size="8.5">cubic family</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- INS 05 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">05<small>INSERT</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>02:38.492</span></div>
+        <div class="row"><span>OUT</span><span>02:44.765</span></div>
+        <div class="row"><span>DUR</span><span>6.273s</span></div>
+        <div class="row"><span>FRAMES</span><span>188</span></div>
+      </div>
+      <div class="srcref">source · <b>truncated-octahedron.html</b> is this cut's end-state</div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">Cut the corners</p>
+        <blockquote class="quote">&ldquo;…those things translate into the Archimedean solids when you cut off all of their points.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>A clean <b>octahedron</b> holds center, corners live.</li>
+          <li>Dashed <b>cut planes</b> slice each point on the word &ldquo;cut.&rdquo;</li>
+          <li>Corners fall away → it resolves into the <b>truncated (Archimedean)</b> solid.</li>
+        </ol>
+        <div class="cap">Cut the corners → an Archimedean solid</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 200 125" fill="none">
+          <g transform="translate(74,62)">
+            <polygon points="0,-34 30,0 0,34 -30,0" stroke="var(--geo-unit)" stroke-width="2"/>
+            <line x1="-30" y1="0" x2="30" y2="0" stroke="var(--geo-unit)" stroke-width="1" opacity=".5"/>
+            <line x1="-9" y1="-24" x2="9" y2="-24" stroke="var(--tx-faint)" stroke-width="1.3" stroke-dasharray="3 3"/>
+            <line x1="-9" y1="24" x2="9" y2="24" stroke="var(--tx-faint)" stroke-width="1.3" stroke-dasharray="3 3"/>
+            <line x1="21" y1="-9" x2="21" y2="9" stroke="var(--tx-faint)" stroke-width="1.3" stroke-dasharray="3 3"/>
+            <line x1="-21" y1="-9" x2="-21" y2="9" stroke="var(--tx-faint)" stroke-width="1.3" stroke-dasharray="3 3"/>
+          </g>
+          <path d="M120 62 l20 0 m-7 -5 l7 5 l-7 5" stroke="var(--geo-angle)" stroke-width="1.6"/>
+          <g transform="translate(168,62)" stroke="var(--geo-space)" stroke-width="2" fill="rgba(219,104,77,.05)">
+            <polygon points="-8,-20 8,-20 18,0 8,20 -8,20 -18,0"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- INS 06 -->
+  <section class="ins">
+    <div class="slate">
+      <div class="no">06<small>INSERT</small></div>
+      <div class="meta">
+        <div class="row"><span>IN</span><span>03:01.982</span></div>
+        <div class="row"><span>OUT</span><span>03:17.464</span></div>
+        <div class="row"><span>DUR</span><span>15.482s</span></div>
+        <div class="row"><span>FRAMES</span><span>464</span></div>
+      </div>
+      <div class="srcref">source · <b>truncated-octahedron.html</b> 14-neighbour packing</div>
+    </div>
+    <div class="body">
+      <div>
+        <p class="goal">Both fill space — from small parts</p>
+        <blockquote class="quote">&ldquo;…the rhombic dodecahedron — this cubic checkerboard network. And lately, the truncated octahedron. Both of them, in this effort to just fill space with small parts.&rdquo;
+          <span class="who">Gregg · voice</span></blockquote>
+        <ol class="beats">
+          <li>The <b>rhombic-dodeca network</b> tiles out on the left.</li>
+          <li>The <b>truncated-octahedron packing</b> grows on the right.</li>
+          <li>Both fill their halves from <b>small repeated parts</b> — the thesis, restated.</li>
+        </ol>
+        <div class="cap">Both fill space from small repeated parts</div>
+      </div>
+      <div class="frame">
+        <svg viewBox="0 0 210 125" fill="none">
+          <g stroke="var(--geo-face)" stroke-width="1.4" opacity=".85">
+            <g transform="translate(52,62)">
+              <polygon points="0,-16 14,-8 14,8 0,16 -14,8 -14,-8"/>
+              <polygon points="-28,-16 -14,-8 -14,8 -28,16 -42,8 -42,-8" opacity=".5"/>
+              <polygon points="28,-16 42,-8 42,8 28,16 14,8 14,-8" opacity=".5"/>
+              <polygon points="0,-48 14,-40 14,-24 0,-16 -14,-24 -14,-40" opacity=".4"/>
+              <polygon points="0,16 14,24 14,40 0,48 -14,40 -14,24" opacity=".4"/>
+            </g>
+          </g>
+          <g stroke="var(--geo-space)" stroke-width="1.4" opacity=".85">
+            <g transform="translate(158,62)">
+              <polygon points="-8,-16 8,-16 16,0 8,16 -8,16 -16,0"/>
+              <polygon points="-8,-44 8,-44 16,-28 8,-12 -8,-12 -16,-28" opacity=".45"/>
+              <polygon points="-8,12 8,12 16,28 8,44 -8,44 -16,28" opacity=".45"/>
+              <polygon points="18,-8 34,-8 42,8 34,24 18,24 10,8" opacity=".4"/>
+              <polygon points="-34,-8 -18,-8 -10,8 -18,24 -34,24 -42,8" opacity=".4"/>
+            </g>
+          </g>
+          <line x1="105" y1="18" x2="105" y2="106" stroke="var(--border-strong)" stroke-width="1" stroke-dasharray="2 4"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div>
+      <h3>Runtime</h3>
+      <div class="totals">
+        <div class="t"><span class="n">6</span><span class="l">inserts</span></div>
+        <div class="t"><span class="n">69.20s</span><span class="l">total graphics</span></div>
+        <div class="t"><span class="n">29.97</span><span class="l">fps · exact</span></div>
+      </div>
+      <p style="margin-top:16px">Three stray sub-second blackouts (4:10, 4:18, 9:35) are treated as edit
+        artifacts — <b>not</b> graphics windows — pending your call.</p>
+    </div>
+    <div>
+      <h3>Before I animate — one call left</h3>
+      <ul>
+        <li><b>Sign off (or adjust)</b> the six mappings above. They replace the original brief.</li>
+        <li><b>Render path:</b> HTML/Canvas from the site's live engine — fast, previewable, and
+          every topic below already exists as a computed scene. (Blender ruled out — CPU-only
+          headless render here isn't worth pursuing.)</li>
+      </ul>
+      <p style="margin-top:12px;color:var(--tx-faint);font-family:var(--font-mono);font-size:11px">
+        windows measured via ffmpeg blackdetect · narration verbatim from gregg_1.txt</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
