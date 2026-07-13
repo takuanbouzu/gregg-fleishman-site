@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>INS_03 — the three space-fillers</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 611, W = 848, H = 448;           // 01:52.145 → 02:12.532 — the hero
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.7, 22, 44);
+
+const A = new THREE.Vector3(-4.6, 0, 0), B = new THREE.Vector3(0, 0, 0), C = new THREE.Vector3(4.6, 0, 0);
+
+// —— Station A: the cube, then it tiles.
+const cube = K.cubeWire(1.05, K.COL.unit); cube.position.copy(A); scene.add(cube);
+const cubeGhosts = [];
+for (const [dx, dz] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]) {
+  const g = K.cubeWire(1.05, K.COL.ghost, 0.55);
+  g.position.copy(A).add(new THREE.Vector3(dx * 1.05, 0, dz * 1.05));
+  scene.add(g); cubeGhosts.push(g);
+}
+const gUp = K.cubeWire(1.05, K.COL.ghost, 0.55);
+gUp.position.copy(A).add(new THREE.Vector3(0, 1.05, 0));
+scene.add(gUp); cubeGhosts.push(gUp);
+
+// —— Station B: two cubes in a 3D checkerboard → the rhombic dodecahedron.
+const checker = new THREE.Group();
+for (const sx of [0,1]) for (const sy of [0,1]) for (const sz of [0,1]) {
+  const even = (sx + sy + sz) % 2 === 0;
+  const c = K.cubeWire(1.0, even ? K.COL.unit : K.COL.face, even ? 0.85 : 0.55);
+  c.position.set(sx - 0.5, sy - 0.5, sz - 0.5);
+  checker.add(c);
+}
+checker.position.copy(B); scene.add(checker);
+const rdB = new THREE.Group();
+rdB.add(K.rdWire(0.5, K.COL.space), K.rdFaces(0.5, K.COL.face, 0.10));
+rdB.position.copy(B); scene.add(rdB);
+
+// —— Station C: the truncated octahedron with its 14 packing neighbours (BCC).
+const kTO = 0.55;
+const toC = new THREE.Group();
+toC.add(K.toWire(kTO, K.COL.face), K.toFaces(kTO));
+toC.position.copy(C); scene.add(toC);
+const toGhosts = [];
+const offs = [];
+for (const ax of [[4,0,0],[0,4,0],[0,0,4]]) for (const s of [1,-1]) offs.push(ax.map(c => c * s * kTO));
+for (const sx of [1,-1]) for (const sy of [1,-1]) for (const sz of [1,-1]) offs.push([2*sx*kTO, 2*sy*kTO, 2*sz*kTO]);
+offs.forEach((o, i) => {
+  const g = K.toWire(kTO, K.COL.ghost, 0.42);
+  g.userData.off = new THREE.Vector3(...o);
+  scene.add(g); toGhosts.push(g);
+});
+
+const lA = K.domLabel('cube', { size: 12 });
+const lB = K.domLabel('rhombic dodecahedron', { size: 12 });
+const lBs = K.domLabel('two cubes, checkerboarded', { size: 10, color: K.COL.angle });
+const lC = K.domLabel('truncated octahedron', { size: 12 });
+const cap = K.caption('the three cubic space-fillers');
+
+const target = new THREE.Vector3();
+function pose(t) {
+  // Station A: 0–4.5s
+  K.setOp(cube, K.ease(K.seg(t, 0.3, 1.2)));
+  cubeGhosts.forEach((g, i) => K.setOp(g, K.ease(K.seg(t, 1.4 + i * 0.28, 2.2 + i * 0.28)) * (1 - 0.6 * K.seg(t, 4.6, 5.6))));
+
+  // Station B: 4.5–12.5s
+  K.setOp(checker, K.ease(K.seg(t, 5.0, 6.6)) * (1 - 0.75 * K.seg(t, 9.6, 10.8)));
+  checker.rotation.y = 0.4 + t * 0.05;
+  rdB.rotation.y = 0.4 + t * 0.05;
+  K.setOp(rdB, K.ease(K.seg(t, 7.6, 9.4)));
+
+  // Station C: 12.5–20.4s
+  K.setOp(toC, K.ease(K.seg(t, 12.9, 14.1)));
+  toC.rotation.y = 0.3 + t * 0.04;
+  toGhosts.forEach((g, i) => {
+    const gl = K.ease(K.seg(t, 14.0 + i * 0.30, 15.4 + i * 0.30));
+    g.rotation.y = toC.rotation.y;
+    g.position.copy(C).add(g.userData.off.clone().applyAxisAngle(new THREE.Vector3(0,1,0), toC.rotation.y).multiplyScalar(1.6 - 0.6 * gl));
+    K.setOp(g, gl * 0.95);
+  });
+
+  lA.at(A.clone().setY(1.35), camera, W, H);  lA.op(K.seg(t, 0.9, 1.5) * (1 - K.seg(t, 4.8, 5.6)));
+  lB.at(B.clone().setY(1.5), camera, W, H);   lB.op(K.seg(t, 8.6, 9.3) * (1 - K.seg(t, 12.6, 13.4)));
+  lBs.at(B.clone().setY(1.22), camera, W, H); lBs.op(K.seg(t, 6.4, 7.1) * (1 - K.seg(t, 12.6, 13.4)));
+  lC.at(C.clone().setY(1.6), camera, W, H);   lC.op(K.seg(t, 13.6, 14.3));
+  cap.op(K.seg(t, 1.6, 2.4));
+
+  target.copy(A).lerp(B, K.ease(K.seg(t, 4.2, 5.4))).lerp(C, K.ease(K.seg(t, 12.3, 13.5)));
+  K.orbit(camera, 0.95 + t * 0.042, 0.33, 6.0, target);
+}
+K.expose(st, pose);
+</script>
+</body>
+</html>

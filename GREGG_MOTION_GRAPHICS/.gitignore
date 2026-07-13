@@ -1,0 +1,12 @@
+# The 30 MB master is provided separately; re-drop it here to reproduce extracts.
+01_SOURCE/video/
+# Heavy render outputs (regenerate locally) — but 05_RENDERS/review/ IS
+# committed: those are the blocking-animatic deliverables for review.
+05_RENDERS/previews/
+05_RENDERS/frames/
+05_RENDERS/**/*.mov
+05_RENDERS/**/*.mp4
+!05_RENDERS/review/*.mp4
+# …except the full review cut: 126 MB, over GitHub's limit. Rebuild it with
+# 00_ADMIN/build_review_cut.sh (needs the source master + the six masters).
+05_RENDERS/review/REVIEW_CUT.mp4
