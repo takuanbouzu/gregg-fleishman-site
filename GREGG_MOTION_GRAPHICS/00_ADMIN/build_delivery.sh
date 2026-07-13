@@ -10,19 +10,23 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Delivery resolution (default Full HD). The inserts are vector, so any size is
+# crisp; labels auto-scale via insert-kit's UI factor. Override: RES_W/RES_H env.
+RES_W=${RES_W:-1920}
+RES_H=${RES_H:-1080}
 BASE="http://localhost:8741/GREGG_MOTION_GRAPHICS/02_INSERTS"
 D=07_DELIVERY
 P=$D/masters_prores
 FONT=$(fc-list | grep -i "DejaVuSansMono-Bold" | head -1 | cut -d: -f1)
 mkdir -p "$P" "$D/graphics_stringout" "$D/review_timecode"
 
-# 1. ProRes 422 HQ masters (frame-exact) — one per insert.
+# 1. ProRes 422 HQ masters (frame-exact) — one per insert, at RES_W×RES_H.
 for i in 01 02 03 04 05 06; do
-  node 00_ADMIN/render_insert.mjs "$BASE/INS_$i/insert.html" "$P" --name "INS_$i" --prores
+  node 00_ADMIN/render_insert.mjs "$BASE/INS_$i/insert.html?w=$RES_W&h=$RES_H" "$P" --name "INS_$i" --prores
 done
 
 # 2. Graphics-only string-out: six masters back-to-back, 0.5 s black slugs between.
-ffmpeg -y -f lavfi -t 0.5 -i color=c=black:s=848x448:r=30000/1001 \
+ffmpeg -y -f lavfi -t 0.5 -i color=c=black:s=${RES_W}x${RES_H}:r=30000/1001 \
   -i "$P/INS_01_master.mov" -i "$P/INS_02_master.mov" -i "$P/INS_03_master.mov" \
   -i "$P/INS_04_master.mov" -i "$P/INS_05_master.mov" -i "$P/INS_06_master.mov" \
   -filter_complex "[0:v]setsar=1,split=5[b1][b2][b3][b4][b5];\

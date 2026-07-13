@@ -15,9 +15,9 @@
 import * as K from '../shared/insert-kit.js';
 const { THREE } = K;
 
-const FRAMES = 230, W = 848, H = 448;           // 01:00.694 → 01:08.368
-const st = K.stage({ frames: FRAMES, width: W, height: H });
-const { scene, camera } = st;
+const FRAMES = 230;           // 01:00.694 → 01:08.368
+const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
+const { scene, camera, width: W, height: H } = st;
 K.groundGrid(scene, -1.35, 9, 18);
 
 // Strut directions taken from two adjacent hexagon edges of the computed TO —

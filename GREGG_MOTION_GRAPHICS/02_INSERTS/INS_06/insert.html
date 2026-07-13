@@ -15,9 +15,9 @@
 import * as K from '../shared/insert-kit.js';
 const { THREE } = K;
 
-const FRAMES = 464, W = 848, H = 448;           // 03:01.982 → 03:17.464 — the finale
-const st = K.stage({ frames: FRAMES, width: W, height: H });
-const { scene, camera } = st;
+const FRAMES = 464;           // 03:01.982 → 03:17.464 — the finale
+const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
+const { scene, camera, width: W, height: H } = st;
 K.groundGrid(scene, -2.1, 24, 48);
 
 const PL = new THREE.Vector3(-3.1, 0, 0), PR = new THREE.Vector3(3.1, 0, 0);
@@ -63,8 +63,8 @@ legend.innerHTML =
   `<span style="color:${K.COL.unit}">1</span><span style="color:#56605b"> · </span>` +
   `<span style="color:${K.COL.face}">√2</span><span style="color:#56605b"> · </span>` +
   `<span style="color:${K.COL.space}">√3</span>`;
-legend.style.cssText = `position:fixed;left:50%;bottom:58px;transform:translateX(-50%);
-  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;letter-spacing:.3em;
+legend.style.cssText = `position:fixed;left:50%;bottom:${(58 * K.ui()).toFixed(1)}px;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:${(15 * K.ui()).toFixed(2)}px;font-weight:700;letter-spacing:.3em;
   opacity:0;z-index:10`;
 document.body.appendChild(legend);
 

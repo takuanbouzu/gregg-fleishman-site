@@ -15,9 +15,9 @@
 import * as K from '../shared/insert-kit.js';
 const { THREE } = K;
 
-const FRAMES = 214, W = 848, H = 448;           // 01:15.375 → 01:22.516
-const st = K.stage({ frames: FRAMES, width: W, height: H });
-const { scene, camera } = st;
+const FRAMES = 214;           // 01:15.375 → 01:22.516
+const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
+const { scene, camera, width: W, height: H } = st;
 K.groundGrid(scene, -1.55, 11, 22);
 
 const k = 0.62;

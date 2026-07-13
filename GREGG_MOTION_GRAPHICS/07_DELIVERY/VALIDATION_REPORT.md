@@ -9,12 +9,12 @@ construction; the values below are the ffprobe read-back.
 
 | Insert | Frames (measured / target) | Duration (s) | Resolution | Result |
 |---|---|---|---|---|
-| INS_01 | 230 / 230 | 7.674333 | 848×448 | ✅ EXACT |
-| INS_02 | 214 / 214 | 7.140467 | 848×448 | ✅ EXACT |
-| INS_03 | 611 / 611 | 20.387033 | 848×448 | ✅ EXACT |
-| INS_04 | 367 / 367 | 12.245567 | 848×448 | ✅ EXACT |
-| INS_05 | 188 / 188 | 6.272933 | 848×448 | ✅ EXACT |
-| INS_06 | 464 / 464 | 15.482133 | 848×448 | ✅ EXACT |
+| INS_01 | 230 / 230 | 7.674333 | 1920×1080 | ✅ EXACT |
+| INS_02 | 214 / 214 | 7.140467 | 1920×1080 | ✅ EXACT |
+| INS_03 | 611 / 611 | 20.387033 | 1920×1080 | ✅ EXACT |
+| INS_04 | 367 / 367 | 12.245567 | 1920×1080 | ✅ EXACT |
+| INS_05 | 188 / 188 | 6.272933 | 1920×1080 | ✅ EXACT |
+| INS_06 | 464 / 464 | 15.482133 | 1920×1080 | ✅ EXACT |
 
 Frame targets are `duration_frames` from `00_ADMIN/black_frame_intervals.csv`
 (ffmpeg `blackdetect`, cross-checked against PyAV).

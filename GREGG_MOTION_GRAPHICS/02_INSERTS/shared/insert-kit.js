@@ -16,7 +16,18 @@ export const COL = {
 };
 
 // ---------- stage ----------
+// UI (text/label) scale — set from the render height vs the 448 design height,
+// so fixed-px labels stay proportional at any resolution. Read by domLabel/caption.
+let _ui = 1;
+export const ui = () => _ui;
+
 export function stage({ frames, width = 848, height = 448 }) {
+  // Resolution can be overridden per-render via ?w=1920&h=1080 (defaults to the
+  // 848×448 source size). The scenes are computed/vector, so any size is crisp.
+  const q = new URLSearchParams(location.search);
+  width = parseInt(q.get('w')) || width;
+  height = parseInt(q.get('h')) || height;
+  _ui = height / 448;
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setSize(width, height);
   renderer.setPixelRatio(1);
@@ -201,7 +212,7 @@ export function domLabel(text, { size = 13, color = COL.unit, mono = true, track
   el.textContent = text;
   el.style.cssText = `position:fixed;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;
     font-family:${mono ? "'Space Mono',monospace" : "'Hanken Grotesk',sans-serif"};
-    font-size:${size}px;font-weight:${weight};letter-spacing:${tracking};color:${color};
+    font-size:${(size * _ui).toFixed(2)}px;font-weight:${weight};letter-spacing:${tracking};color:${color};
     text-transform:uppercase;opacity:0;pointer-events:none;z-index:10`;
   document.body.appendChild(el);
   const v = new THREE.Vector3();
@@ -219,9 +230,9 @@ export function domLabel(text, { size = 13, color = COL.unit, mono = true, track
 
 export function caption(text) {
   const el = document.createElement('div');
-  el.style.cssText = `position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
-    font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:500;color:${COL.unit};
-    border-left:2px solid ${COL.angle};padding:3px 0 3px 12px;opacity:0;z-index:10;white-space:nowrap`;
+  el.style.cssText = `position:fixed;left:50%;bottom:${(26 * _ui).toFixed(1)}px;transform:translateX(-50%);
+    font-family:'Hanken Grotesk',sans-serif;font-size:${(16 * _ui).toFixed(2)}px;font-weight:500;color:${COL.unit};
+    border-left:${Math.max(2, 2 * _ui).toFixed(1)}px solid ${COL.angle};padding:${(3*_ui).toFixed(1)}px 0 ${(3*_ui).toFixed(1)}px ${(12*_ui).toFixed(1)}px;opacity:0;z-index:10;white-space:nowrap`;
   el.textContent = text;
   document.body.appendChild(el);
   return { el, op(o) { el.style.opacity = String(clamp01(o)); }, set(t) { el.textContent = t; } };

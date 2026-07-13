@@ -5,7 +5,11 @@ narrated studio video (`gregg 1.publer.com.mp4`). Teaching content is drawn
 verbatim from Gregg's own narration; every geometry figure is computed exactly
 from the 1 : √2 : √3 "Lost Triangle" ratios.
 
-**Delivered at 848 × 448, 29.970 fps (30000/1001), over Gregg's untouched audio.**
+**Delivered at 1920 × 1080 (Full HD), 29.970 fps (30000/1001), over Gregg's untouched audio.**
+(The inserts are computed vector/3D — sharp at any size. They were re-rendered from
+848×448 to 1080p on request; re-render at any resolution with `?w=…&h=…`, below.
+Note: Gregg's *source footage* is natively 848×448 and can't be sharpened — only
+the graphics are resolution-independent.)
 
 ## What's in this package
 
@@ -49,12 +53,14 @@ bash GREGG_MOTION_GRAPHICS/00_ADMIN/build_review_cut.sh              # → REVIE
 bash GREGG_MOTION_GRAPHICS/00_ADMIN/build_delivery.sh               # → the whole 07_DELIVERY/ package
 ```
 
-Individual master (any insert), ProRes or H.264:
+Individual master (any insert), at any resolution via `?w=&h=`:
 ```bash
 node GREGG_MOTION_GRAPHICS/00_ADMIN/render_insert.mjs \
-  "http://localhost:8741/GREGG_MOTION_GRAPHICS/02_INSERTS/INS_03/insert.html" \
+  "http://localhost:8741/GREGG_MOTION_GRAPHICS/02_INSERTS/INS_03/insert.html?w=1920&h=1080" \
   GREGG_MOTION_GRAPHICS/05_RENDERS/review --name INS_03 --prores
 ```
+`build_delivery.sh` defaults to 1920×1080; override with `RES_W=2560 RES_H=1440 bash …`.
+Text labels auto-scale to the render height, so any size stays balanced.
 
 ## Notes for the editor
 

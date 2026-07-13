@@ -15,9 +15,9 @@
 import * as K from '../shared/insert-kit.js';
 const { THREE } = K;
 
-const FRAMES = 188, W = 848, H = 448;           // 02:38.492 → 02:44.765
-const st = K.stage({ frames: FRAMES, width: W, height: H });
-const { scene, camera } = st;
+const FRAMES = 188;           // 02:38.492 → 02:44.765
+const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
+const { scene, camera, width: W, height: H } = st;
 K.groundGrid(scene, -1.7, 10, 20);
 
 const k = 0.5;   // octahedron vertices at 3k = 1.5; truncation u=1 lands on the TO exactly
