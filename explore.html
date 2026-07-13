@@ -536,6 +536,7 @@
     <div class="deepdive" style="margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:auto;">
       <a href="fleishman-proof-3d.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ Proof Triangle · 3D</a>
       <a href="fleishman-ground-angle.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ 35.25° Ground Angle</a>
+      <a href="truncated-octahedron.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ Truncated Octahedron</a>
     </div>
   </div>
 
@@ -783,6 +784,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(COL.bg, 4.2, 11.5);
 const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 200);
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.listenToKeyEvents(window);
 controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.82;
 controls.autoRotate = true; controls.autoRotateSpeed = 0.55;
 const C = new THREE.Vector3(0.5, 0.5, 0.5);
@@ -1367,6 +1369,7 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(BG.getHex(), 0.05);
 const camera = new THREE.PerspectiveCamera(36, 1, 0.01, 400);
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.listenToKeyEvents(window);
 controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.82;
 controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
 
@@ -1589,7 +1592,12 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
 const SC = GF_SCENE.dark;
-const hex = (s) => parseInt(s.replace('#',''), 16);
+const hex = (s) => {
+  if (s[0] === '#') return parseInt(s.replace('#',''), 16);
+  const m = s.match(/rgba?\(([^)]+)\)/);
+  const [r,g,b] = m[1].split(',').map(Number);
+  return (r<<16) | (g<<8) | b;
+};
 const COL = {
   bg:hex(SC.bg[1]), bone:hex(SC.ink), dim:hex(SC.muted),
   gold:hex(SC.angle), face:hex(SC.face), space:hex(SC.space), green:hex(SC.tri)

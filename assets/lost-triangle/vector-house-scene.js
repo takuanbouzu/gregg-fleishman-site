@@ -1,8 +1,10 @@
 // Vector House — the built epilogue to The Fleishman Sequence.
-// Loads the real scanned/modeled structure (assets/models/vector-house.glb,
-// optimized from a 174MB Rhino/Grasshopper export down to ~9MB: fragmented
-// per-member Draco primitives deduped, joined into one mesh, recompressed
-// with meshopt) and lets the visitor orbit it. Vanilla Three.js r160 ESM,
+// Loads the real modeled structure (assets/models/vector-house.glb: a Rhino
+// STEP/glTF export tessellated and reprocessed from a 96MB Draco source down
+// to ~4.7MB — deduped, joined into one mesh per material, and recompressed
+// with meshopt) and lets the visitor orbit it. The model keeps its authored
+// materials (gold frame, translucent panels, lavender floors), so this scene
+// no longer overrides them with a flat colour. Vanilla Three.js r160 ESM,
 // no build step — matches the renderer-setup convention in CLAUDE.md.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -24,14 +26,18 @@ export function mountVectorHouseScene(container) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 500);
 
-  const hemi = new THREE.HemisphereLight(0xfff3df, 0x14120e, 1.15);
+  const hemi = new THREE.HemisphereLight(0xfff3df, 0x2a2620, 1.9);
   scene.add(hemi);
-  const key = new THREE.DirectionalLight(0xfff0d8, 2.4);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+  const key = new THREE.DirectionalLight(0xfff0d8, 2.6);
   key.position.set(6, 10, 7);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x6f9bc4, 0.55);
+  const rim = new THREE.DirectionalLight(0x6f9bc4, 0.9);
   rim.position.set(-8, 4, -6);
   scene.add(rim);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.6);
+  fill.position.set(0, -6, 4);
+  scene.add(fill);
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -68,14 +74,12 @@ export function mountVectorHouseScene(container) {
     (gltf) => {
       loadingEl.remove();
       model = gltf.scene;
+      // Keep the model's authored materials; just render both faces so the
+      // thin panels never drop out at grazing angles.
       model.traverse((o) => {
-        if (o.isMesh) {
-          o.material = new THREE.MeshStandardMaterial({
-            color: 0xc8a96e,
-            metalness: 0.08,
-            roughness: 0.62,
-            side: THREE.DoubleSide,
-          });
+        if (o.isMesh && o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach((m) => { m.side = THREE.DoubleSide; });
         }
       });
 

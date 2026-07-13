@@ -28,7 +28,7 @@
   /* ---- ink (warm parchment) ---- */
   --tx:#e5e0d4;                         /* primary */
   --tx-dim:#7e8581;                     /* secondary / muted */
-  --tx-faint:#56605b;                   /* tertiary / faint */
+  --tx-faint:#747e78;                   /* tertiary / faint — 4.7:1 on --bg (WCAG AA) */
 
   /* ---- accent: desert gold (chrome, active states, UI) ---- */
   --accent:#c9a24b;

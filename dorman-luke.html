@@ -409,6 +409,15 @@ canvas.addEventListener('mousedown',function(e){drag=true;px=e.clientX;py=e.clie
 window.addEventListener('mouseup',function(){drag=false;});
 window.addEventListener('mousemove',function(e){if(!drag)return;target.az-=(e.clientX-px)*.008;target.el=Math.max(.08,Math.min(1.35,target.el+(e.clientY-py)*.006));px=e.clientX;py=e.clientY;});
 canvas.addEventListener('wheel',function(e){target.r=Math.max(2.8,Math.min(8,target.r+e.deltaY*.006));},{passive:true});
+window.addEventListener('keydown',function(e){
+  var step=0.09;
+  if(e.key==='ArrowLeft'){target.az-=step;e.preventDefault();}
+  else if(e.key==='ArrowRight'){target.az+=step;e.preventDefault();}
+  else if(e.key==='ArrowUp'){target.el=Math.max(.08,Math.min(1.35,target.el-step*.75));e.preventDefault();}
+  else if(e.key==='ArrowDown'){target.el=Math.max(.08,Math.min(1.35,target.el+step*.75));e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){target.r=Math.max(2.8,Math.min(8,target.r-0.5));e.preventDefault();}
+  else if(e.key==='-'||e.key==='_'){target.r=Math.max(2.8,Math.min(8,target.r+0.5));e.preventDefault();}
+});
 var container=canvas.parentElement;
 function resize(){
   var w=container.clientWidth,h=container.clientHeight;

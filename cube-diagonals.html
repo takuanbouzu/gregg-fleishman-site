@@ -184,6 +184,15 @@ window.addEventListener('mousemove', function(e){
   mx=e.clientX; my=e.clientY;
 });
 canvas.addEventListener('wheel', function(e){tgt.r=Math.max(1.4,Math.min(8,tgt.r+e.deltaY*0.005));stopAuto();},{passive:true});
+window.addEventListener('keydown', function(e){
+  var step=0.09;
+  if(e.key==='ArrowLeft'){tgt.theta-=step;stopAuto();e.preventDefault();}
+  else if(e.key==='ArrowRight'){tgt.theta+=step;stopAuto();e.preventDefault();}
+  else if(e.key==='ArrowUp'){tgt.phi=Math.max(0.14,Math.min(Math.PI-0.14,tgt.phi+step*.75));stopAuto();e.preventDefault();}
+  else if(e.key==='ArrowDown'){tgt.phi=Math.max(0.14,Math.min(Math.PI-0.14,tgt.phi-step*.75));stopAuto();e.preventDefault();}
+  else if(e.key==='+'||e.key==='='){tgt.r=Math.max(1.4,Math.min(8,tgt.r-0.4));stopAuto();e.preventDefault();}
+  else if(e.key==='-'||e.key==='_'){tgt.r=Math.max(1.4,Math.min(8,tgt.r+0.4));stopAuto();e.preventDefault();}
+});
 
 let t0=null, pinchD=null;
 canvas.addEventListener('touchstart', function(e){
