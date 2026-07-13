@@ -67,7 +67,24 @@ on-camera passages and the stray blips untouched. The cut itself (126 MB) is
 NOT committed — over GitHub's file limit; rebuild with the script (needs the
 git-ignored source master re-dropped at `01_SOURCE/video/`).
 
-## Next recommended action
-Watch the review cut end-to-end. Then: any timing/design notes → iterate
-scenes → `render_insert.mjs --prores` for the six ProRes 422 HQ finals →
-final delivery package (Phase 7: finals + graphics string-out + manifest).
+## Phase 7 — Client delivery package ✅ (2026-07-13)
+Both branches (#52, #54) merged to `main`; this delivery work continues on a
+fresh branch off `main`. Full package assembled in `07_DELIVERY/`:
+- Six **ProRes 422 HQ** frame-exact finals (`masters_prores/`, rebuild-only).
+- **Graphics-only string-out** (`graphics_stringout/`, committed, 12 MB) —
+  six inserts back-to-back with black slugs, 71.70 s.
+- **Burned-in-timecode** review version (`review_timecode/`, rebuild-only).
+- `07_DELIVERY/README.md` (delivery index) + `VALIDATION_REPORT.md`
+  (all EXACT, endpoints black, review cut = source duration, brief-compliance
+  table). Reproducible via `00_ADMIN/build_delivery.sh`.
+
+## Codex A/B handoff ✅
+`00_ADMIN/HANDOFF-CODEX-BUILD-YOUR-OWN.md` — a self-contained brief for Codex
+to build an INDEPENDENT version (own staging/motion) against the same hard
+constraints, into `02_INSERTS_codex/` + `05_RENDERS/codex/`, reusing the same
+render harness. All source material pathed; math facts pre-verified.
+
+## Project status: COMPLETE (Phases 0–7)
+Nothing outstanding. Optional future work if requested: the standalone "Slim
+Book" recut for the site's Animation section (concept §7), and Codex's
+parallel A/B version.
