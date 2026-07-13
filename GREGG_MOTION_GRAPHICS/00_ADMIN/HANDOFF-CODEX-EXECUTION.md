@@ -31,6 +31,14 @@ built in the site's real design system) → `media_probe.md` → `black_frame_in
   graphics for them** — they read as edit artifacts, not intentional pauses. This is
   still nominally open (`open_questions.md` #4) but shouldn't block the six primary
   inserts; flag it back rather than guessing if it turns out to matter.
+- **Everything renders as true 3D, not flat 2D diagrams.** All six inserts are real
+  WebGL scenes with a perspective camera, depth, and (ideally) a slow orbit/parallax
+  drift — matching how every geometry page on this site already presents solids. This
+  applies even to shots that could be faked as a flat drawing: INS_01's 45°/120° strut
+  join is two 3D struts hinging in space with a ground grid under them, not a 2D line
+  diagram; INS_05's corner-truncation is a real solid getting its corners cut away in
+  3D, not a 2D cross-section animation. If a shot looks like an SVG/canvas illustration
+  rather than something you could orbit around, it's wrong — rebuild it as a scene.
 
 ## 2. What still needs a human yes before final render
 
@@ -50,7 +58,7 @@ territory.
 
 | # | Window (source tc) | Frames (29.97fps) | Dur | Gregg says | Build this | Nearest existing site scene(s) to re-stage |
 |---|---|---|---|---|---|---|
-| 01 | 1:00.69–1:08.37 | 1819–2049 | 230f / 7.67s | "you have a 45 degree angle, and we bring those two things together, the resulting angle is 120 degrees" | Two struts, each cut at 45°, hinge together; arc sweeps open to 120°. | New — small scene. Nearest ref for the 45° arc treatment: the angle-arc/label pattern in `truncated-octahedron.html`'s legend (`--geo-angle` gold arcs + label sprites). |
+| 01 | 1:00.69–1:08.37 | 1819–2049 | 230f / 7.67s | "you have a 45 degree angle, and we bring those two things together, the resulting angle is 120 degrees" | **3D scene**, not a 2D diagram: two solid struts in space, each end-cut at 45°, hinge together on a ground grid while an orbiting camera holds a 3/4 view; a gold arc sweeps open to 120° with a live angle-value label. | New — small scene. Nearest ref for the 45° arc treatment: the angle-arc/label pattern in `truncated-octahedron.html`'s legend (`--geo-angle` gold arcs + label sprites), and its camera/orbit rig. |
 | 02 | 1:15.38–1:22.52 | 2259–2473 | 214f / 7.14s | "primarily truncated octahedrons, which is new for me. I've spent 10 years working with the rhombic dodecahedron" | Truncated octahedron rotates in; rhombic dodecahedron fades in beside it, labeled "10 years". | `truncated-octahedron.html` (hero solid) + `rhombic-dodecahedron.html` (companion solid) — both already computed, r160 ESM. |
 | 03 | 1:52.15–2:12.53 | 3361–3972 | 611f / 20.39s | "there's only three things that fill space infinitely on their own. One is a cube. One is a rhombic dodecahedron, which is like two cubes in a 3D checkerboard. And the other is a truncated octahedron" | The three space-fillers appear one at a time: cube; rhombic dodeca built explicitly as two cubes in a checkerboard; truncated octahedron. Each shown tiling/packing. | `rhombic-system.html` (checkerboard framing) + `truncated-octahedron.html`'s 14-neighbour BCC packing animation (already built — literally this shot). |
 | 04 | 2:21.21–2:33.45 | 4232–4599 | 367f / 12.24s | "we have the Platonic solids... But I focus only on the cubic family within these Platonic solids" | Five Platonic solids in a row; three dim out, leaving the cubic family (tetrahedron, octahedron, cube) lit. | `explore.html`'s characteristic-tetrahedra assembly (The Cube tab) — has the tetrahedron/octahedron/cube family already built with fat-line edges. |
@@ -84,6 +92,12 @@ these inserts look and behave like the rest of the site, not like a bolt-on:
 - **Ground grid + labeled X/Y/Z axes** on every spatial scene, **beginner-friendly
   annotations** on every operation shown — both are hard requirements carried over from
   the original brief (`handoff_original/CLAUDE.md` rules 7–8) and still apply.
+- **Perspective camera + orbit/parallax, every insert.** Use `THREE.PerspectiveCamera`
+  (not orthographic, not a 2D canvas context) and give the camera a slow autorotate or
+  drift like the deep-dive pages already do (`rhombic-dodecahedron.html`'s `az/el/rad`
+  eased-lerp pattern is the reference). A viewer should read depth and be able to
+  imagine walking around the object — that's the whole reason this project reuses the
+  site's 3D engines instead of hand-drawing flat explainer graphics.
 - Each insert's timeline must be driven by a **deterministic clock**, not wall-clock time
   — i.e. `renderScene(frameIndex)` / `stage.seek(t)` rather than `requestAnimationFrame`
   reading `Date.now()`. This is what makes frame-accurate capture possible (§5) and is
@@ -132,6 +146,9 @@ The deterministic-clock pattern in §4 makes this mechanical:
 
 ## 6. Verification before calling an insert done
 
+- **Rendered as a real 3D perspective scene** — depth and parallax visible on camera
+  drift/orbit, not a flat 2D/orthographic illustration. If you can't tell the camera
+  moved between the first and last frame, that's a fail — reject and rebuild.
 - Frame count matches the table in §3 exactly.
 - No proprietary font files added — the site's Google Fonts links (Hanken Grotesk / Space
   Mono / Syne / Cormorant Garamond, per page) cover everything; if a new face is genuinely
