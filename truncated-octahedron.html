@@ -243,6 +243,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 (function(){
   const canvas = document.getElementById('scene');
@@ -584,13 +585,41 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     framing=true;
   }
 
+  // Collapse a multi-primitive GLTF scene into ONE geometry (baked into the
+  // root's local frame). rhomi-pod.glb and the wire companion each arrive as
+  // ~3,000 separate primitives — that's ~3,000 draw calls per frame apiece,
+  // which is what made this page lag. Merging them is visually identical.
+  function bakeMerged(root, withNormals){
+    root.updateMatrixWorld(true);
+    const rootInv=new THREE.Matrix4().copy(root.matrixWorld).invert();
+    const rel=new THREE.Matrix4();
+    const geos=[];
+    root.traverse(function(o){
+      if(!o.isMesh||!o.geometry||!o.geometry.getAttribute('position')) return;
+      let g=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();
+      if(withNormals&&!g.getAttribute('normal')) g.computeVertexNormals();
+      const ng=new THREE.BufferGeometry();
+      ng.setAttribute('position',g.getAttribute('position'));
+      if(withNormals) ng.setAttribute('normal',g.getAttribute('normal'));
+      ng.applyMatrix4(rel.multiplyMatrices(rootInv,o.matrixWorld));
+      geos.push(ng);
+    });
+    if(geos.length<2) return null;      // single mesh already — nothing to gain
+    try{ return mergeGeometries(geos,false); }catch(e){ console.warn('[truncated-octahedron] merge skipped:',e); return null; }
+  }
+
   function loadModel(st){
     if(models[st.id]) return;           // already loading / loaded
     models[st.id]={obj:null};
     loadEl.style.display='block';
     loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'…';
     loader.load(st.glb,function(gltf){
-      const m=gltf.scene;
+      let m=gltf.scene;
+      if(st.gold){
+        // pod panels all take the same plywood material anyway → one mesh
+        const merged=bakeMerged(m,true);
+        if(merged){ m=new THREE.Group(); m.add(new THREE.Mesh(merged,new THREE.MeshBasicMaterial())); }
+      }
       const fillMats=[];
       m.traverse(function(o){
         if(!o.isMesh) return;
@@ -602,6 +631,10 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
           o.material.side=THREE.DoubleSide;   // keep authored glass/transmission
         }
         o.material.transparent=true;
+        // transparent+DoubleSide renders every triangle twice in r160 (back pass
+        // then front pass). The fill settles at opacity 1 where that buys nothing
+        // visually — and the house is 931K triangles, so it halves its raster cost.
+        o.material.forceSinglePass=true;
         fillMats.push(o.material);
       });
       const box=new THREE.Box3().setFromObject(m);
@@ -612,14 +645,26 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
       if(STAGES[stage].id===st.id) frameNow(m);   // still on this stage → frame it
 
       function finishWire(wireObj){
-        const wireMats=[];
-        wireObj.traverse(function(o){
-          if(!o.isMesh) return;
-          o.material=new THREE.MeshBasicMaterial({color:st.gold?0xb99ee0:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
-          wireMats.push(o.material);
-        });
-        m.add(wireObj);
-        models[st.id].wireMats=wireMats;
+        // one merged mesh + one material — a multi-primitive skeleton would
+        // otherwise cost thousands of extra draw calls per frame. Geometry is
+        // baked into the wire root's local frame, so the holder sits at the
+        // parent's origin and overlays the fill exactly.
+        const mat=new THREE.MeshBasicMaterial({color:st.gold?0xb99ee0:0x9fc9e8,wireframe:true,transparent:true,opacity:0,depthWrite:false});
+        const merged=bakeMerged(wireObj,false);
+        let holder;
+        if(merged){
+          holder=new THREE.Mesh(merged,mat);
+        } else {
+          let src=null;
+          wireObj.updateMatrixWorld(true);
+          wireObj.traverse(function(o){ if(!src&&o.isMesh) src=o; });
+          if(!src) return;
+          holder=new THREE.Mesh(src.geometry,mat);   // shares the fill's geometry by reference
+          holder.applyMatrix4(new THREE.Matrix4().copy(wireObj.matrixWorld).invert().multiply(src.matrixWorld));
+        }
+        if(st.wireRotX) holder.rotation.x=st.wireRotX;
+        m.add(holder);
+        models[st.id].wireMats=[mat];
       }
       if(st.wireGlb){
         // a dedicated companion model (the exact computed geometry this built
@@ -627,18 +672,16 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
         // the built model's own coarse mesh — its bounding box was confirmed to
         // match st.glb's almost exactly, just with a permuted axis convention.
         loader.load(st.wireGlb,function(wg){
-          const w=wg.scene;
-          if(st.wireRotX) w.rotation.x=st.wireRotX;
-          finishWire(w);
+          finishWire(wg.scene);
         },undefined,function(err){
           console.error('[truncated-octahedron] wireframe companion load failed, falling back to self-clone:',err);
-          finishWire(m.clone(true));
+          finishWire(m);
         });
       } else {
-        // "shown in wireframe, then the panels turn on" — a ghost skeleton clone
+        // "shown in wireframe, then the panels turn on" — a ghost skeleton
         // reveals first, echoing the Vector Pod app's own Assembly→Panels build;
-        // sharing geometry by reference costs nothing extra to render.
-        finishWire(m.clone(true));
+        // sharing geometry by reference costs nothing extra in memory.
+        finishWire(m);
       }
     },function(xhr){
       if(xhr.total) loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'… '+Math.round(xhr.loaded/xhr.total*100)+'%';
@@ -666,6 +709,11 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     b.onclick=function(){ setStage(+b.dataset.stage); };
   });
 
+  // When the math has fully yielded to a built model (pm≈0), stop DRAWING it —
+  // transparent objects at opacity 0 still cost a draw call each, every frame.
+  const mathBits=[hero,ltGroup,ltName].concat(spokes,labels,arcLabels,ltLenLabels,
+    ARCS.map(function(A){ return A.a.line; }));
+
   function animate(){
     requestAnimationFrame(animate);
     const raw=paused?pauseAt:clock.getElapsedTime();
@@ -677,6 +725,12 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     builtWeight += (bw-builtWeight)*.08;
     const pm=1-builtWeight;                                   // procedural master
     neighGate += (((STAGES[stage].id==='pack')?1:0)-neighGate)*.08;
+
+    const mathOn=pm>0.015;
+    mathBits.forEach(function(o){ o.visible=mathOn; });
+    neighbours.forEach(function(g){ g.visible=mathOn&&neighGate>0.01; });
+    cubeWire.visible=cubeWire.material.opacity>0.004;
+    rdGroup.visible=rdGroup.children[0].material.opacity>0.004;
 
     // 0–1.2s: hero cell appears
     heroFaces.forEach(function(g,i){
@@ -738,8 +792,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
       if(isCurrent){
         const wireOp=ease(builtWeight/0.3)*0.8;
         const fillOp=ease((builtWeight-0.35)/0.55);
-        rec.wireMats.forEach(function(mt){ mt.opacity=wireOp; });
-        rec.fillMats.forEach(function(mt){ mt.opacity=fillOp; });
+        rec.wireMats.forEach(function(mt){ mt.opacity=wireOp; mt.visible=wireOp>0.008; });
+        rec.fillMats.forEach(function(mt){ mt.opacity=fillOp; mt.visible=fillOp>0.008; });
       }
     }
 
