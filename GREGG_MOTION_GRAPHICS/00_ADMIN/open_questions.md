@@ -17,3 +17,15 @@
    Assumed edit artifacts.
 5. **INS_04 / INS_06 durations** — masters should use the measured out-points
    (2:33.453 / 3:17.464), ~0.1 s longer than the handoff CSV.
+6. **[RESOLVED] "Only three space-fillers" — is Gregg's INS_03/06 claim
+   mathematically accurate?** Checked against Wolfram MathWorld
+   (`Parallelohedron.html`, `Space-FillingPolyhedron.html`): there are exactly
+   **five** primary parallelohedra overall (Fedorov, 1885) — cube, hexagonal
+   prism, rhombic dodecahedron, elongated dodecahedron, truncated octahedron.
+   Gregg's "three" is correct **for the cubic-symmetry family specifically**
+   — cube, rhombic dodecahedron, and truncated octahedron are exactly the
+   three of the five with cubic/octahedral symmetry; the other two
+   (hexagonal prism, elongated dodecahedron) belong to a hexagonal symmetry
+   family and fall outside the scope he states elsewhere ("I focus only on
+   the cubic family"). **No script/content change needed** — his statement is
+   precise once read in that scope. Don't "correct" it during modeling.

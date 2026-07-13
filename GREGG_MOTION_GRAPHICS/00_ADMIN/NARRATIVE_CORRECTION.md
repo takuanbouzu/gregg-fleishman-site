@@ -35,3 +35,17 @@ into a black section, revisit.)
 This is a real change of creative direction from the brief Yuto/Gregg were
 handed. Confirm the corrected per-insert content above before any animation
 is built.
+
+## Math check: is "only three space-fillers" (INS_03/06) actually true?
+Verified against Wolfram MathWorld (`Parallelohedron`, `Space-FillingPolyhedron`).
+There are exactly **five** primary parallelohedra overall (Fedorov, 1885): cube,
+hexagonal prism, rhombic dodecahedron, elongated dodecahedron, truncated
+octahedron. Gregg's "three" is accurate **scoped to the cubic-symmetry family**
+— cube, rhombic dodecahedron, and truncated octahedron are precisely the three
+of the five with cubic/octahedral symmetry. The other two (hexagonal prism,
+elongated dodecahedron) sit in a hexagonal symmetry family, outside the scope
+he names explicitly at INS_04 ("I focus only on the cubic family"). So his
+statement is exact, not a simplification — **do not "correct" it** when
+building INS_03/06. If a caption names the count, "three" (with an implicit
+"...in the cubic family") is correct as spoken; do not caption it as "the only
+three space-fillers" full stop, since that overstates it beyond his own scope.
