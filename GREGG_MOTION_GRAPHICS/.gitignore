@@ -1,0 +1,6 @@
+# The 30 MB master is provided separately; re-drop it here to reproduce extracts.
+01_SOURCE/video/
+# Heavy render outputs (regenerate locally)
+05_RENDERS/previews/
+05_RENDERS/**/*.mov
+05_RENDERS/**/*.mp4

@@ -1,0 +1,7 @@
+insert_id,source_timecode,transcript_phrase,spoken_keyword,visual_action,start_frame,end_frame,label_or_caption,hold_frames,status,notes
+INS_01,00:01:00.694,,,,1819,2049,,,NEEDS_TRANSCRIPT,teaching goal: Establish Lost Triangle
+INS_02,00:01:15.375,,,,2259,2473,,,NEEDS_TRANSCRIPT,teaching goal: Explain drawn sequence
+INS_03,00:01:52.145,,,,3361,3972,,,VERIFY_GEOMETRY,teaching goal: Derive the square
+INS_04,00:02:21.208,,,,4232,4599,,,NEEDS_TRANSCRIPT,teaching goal: Move from 2D into 3D
+INS_05,00:02:38.492,,,,4750,4938,,,NEEDS_TRANSCRIPT,teaching goal: Show correspondence
+INS_06,00:03:01.982,,,,5454,5918,,,NEEDS_TRANSCRIPT,teaching goal: Full process recap
