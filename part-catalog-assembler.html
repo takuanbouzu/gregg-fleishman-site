@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Part Catalog Assembler — Gregg Fleishman</title>
+<meta name="description" content="Upload 2D laser-cut panel profiles (SVG), extrude them to real plywood thickness, and assemble them into Gregg's node structures by specifying the dihedral angle at each shared edge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Part Catalog Assembler — Gregg Fleishman">
+<meta property="og:description" content="Upload 2D laser-cut panel profiles (SVG), extrude them to real plywood thickness, and assemble them into Gregg's node structures by specifying the dihedral angle at each shared edge.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/part-catalog-assembler.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold geometric study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Part Catalog Assembler — Gregg Fleishman">
+<meta name="twitter:description" content="Upload 2D laser-cut panel profiles (SVG), extrude them to real plywood thickness, and assemble them into Gregg's node structures by specifying the dihedral angle at each shared edge.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+<style>
+  :root{ --panel:rgba(20,20,20,.74); --panel-bd:var(--border-strong); }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{ color:var(--tx); font-family:var(--font-ui);
+        background:radial-gradient(circle at 50% 40%, var(--bg-elevated) 0%, var(--bg) 56%, var(--bg) 100%); }
+  #wrap{position:relative;width:100%;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:hidden;}
+  canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
+  .panel{position:absolute;z-index:10;background:rgba(10,11,10,.68);border:1px solid var(--panel-bd);
+         box-shadow:0 10px 28px rgba(0,0,0,.34);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+         border-radius:10px;padding:14px 15px;}
+  .cap{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-faint);display:block;margin-bottom:9px;}
+
+  #title{position:absolute;z-index:10;left:20px;top:64px;max-width:340px;pointer-events:none;padding:0;background:none;border:none;box-shadow:none;backdrop-filter:none;}
+  #title h1{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--tx);line-height:1.04;letter-spacing:-.01em;margin:0 0 8px;}
+  #title p{font-size:12px;line-height:1.5;color:var(--tx-dim);margin:0;}
+  #title .modebtns{margin-top:12px;display:flex;gap:6px;pointer-events:auto;}
+  #title button{padding:6px 12px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.06em;border-radius:2px;
+       background:rgba(255,255,255,.03);border:1px solid var(--panel-bd);color:var(--tx-faint);cursor:pointer;}
+  #title button.on{background:rgba(201,77,51,.14);border-color:rgba(201,77,51,.45);color:var(--accent);}
+
+  #upload{right:20px;top:20px;width:260px;}
+  #upload .drop{border:1px dashed var(--panel-bd);border-radius:4px;padding:14px 10px;text-align:center;cursor:pointer;}
+  #upload .drop:hover,#upload .drop.drag{border-color:var(--accent);background:rgba(201,77,51,.06);}
+  #upload .drop .tx{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:var(--tx-dim);}
+  #upload .drop .tx2{font-family:var(--font-mono);font-size:8px;color:var(--tx-faint);margin-top:3px;}
+  #upload input[type=file]{display:none;}
+  #upload button.demo{width:100%;margin-top:8px;padding:7px;font-family:var(--font-mono);font-size:9px;letter-spacing:.05em;
+       background:rgba(255,255,255,.03);border:1px solid var(--panel-bd);color:var(--tx-faint);border-radius:2px;cursor:pointer;}
+  #upload button.demo:hover{color:var(--tx);border-color:var(--accent);}
+
+  #catalog{right:20px;top:calc(20px + 168px);width:260px;max-height:34vh;overflow-y:auto;}
+  .part-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+  .part-row:last-child{border-bottom:none;}
+  .part-row i{width:11px;height:11px;border-radius:2px;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);}
+  .part-row .nm{flex:1;font-size:11px;color:var(--tx);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .part-row .ed{font-family:var(--font-mono);font-size:9px;color:var(--tx-faint);}
+  #catalog .empty{font-size:11px;color:var(--tx-faint);font-style:italic;}
+
+  #manifest{right:20px;bottom:20px;width:340px;max-height:52vh;display:flex;flex-direction:column;}
+  #manifest textarea{width:100%;flex:1;min-height:160px;background:rgba(0,0,0,.35);border:1px solid var(--panel-bd);
+       border-radius:4px;color:var(--tx);font-family:var(--font-mono);font-size:10.5px;line-height:1.5;padding:8px;
+       resize:vertical;}
+  #manifest .row{display:flex;gap:6px;margin-top:9px;}
+  #manifest button{flex:1;padding:8px;font-family:var(--font-mono);font-size:10px;letter-spacing:.05em;border-radius:3px;
+       cursor:pointer;border:1px solid var(--panel-bd);background:rgba(255,255,255,.03);color:var(--tx-dim);}
+  #manifest button.primary{background:rgba(201,77,51,.16);border-color:rgba(201,77,51,.5);color:var(--accent);}
+  #manifest button:hover{color:var(--tx);}
+  #manifest .status{margin-top:9px;font-family:var(--font-mono);font-size:9.5px;line-height:1.55;color:var(--tx-dim);
+       max-height:110px;overflow-y:auto;}
+  #manifest .status .err{color:#e07a5f;}
+  #manifest .status .ok{color:#7bbf8a;}
+
+  #hint{left:20px;bottom:20px;max-width:400px;font-size:11px;line-height:1.5;color:var(--tx-faint);}
+  #hint b{color:var(--tx-dim);}
+
+  @media(max-width:1100px){
+    #upload,#catalog,#manifest{width:230px;}
+    #hint{display:none;}
+  }
+  @media(max-width:760px){
+    #catalog{display:none;}
+    #manifest{position:static;width:auto;margin:12px;}
+    #title{max-width:none;right:20px;}
+  }
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+<div id="wrap">
+  <canvas id="scene"></canvas>
+
+  <div id="title">
+    <h1>Part Catalog Assembler</h1>
+    <p>Upload 2D laser-cut panel profiles, extrude to real plywood thickness, and hinge them together at the angles you specify — building Gregg's node structures from a part catalog instead of a pre-built model.</p>
+    <div class="modebtns">
+      <button id="btnInspect" class="on">Inspect catalog</button>
+      <button id="btnAssembly">3D assembly</button>
+    </div>
+  </div>
+
+  <div id="upload" class="panel">
+    <span class="cap">Upload part profiles (.svg)</span>
+    <div class="drop" id="dropZone">
+      <div class="tx">Drop SVGs, or click to browse</div>
+      <div class="tx2">filename becomes the part ID</div>
+      <input type="file" id="fileInput" accept=".svg" multiple>
+    </div>
+    <button class="demo" id="btnDemo">Load demo catalog (2 panels, 90°)</button>
+  </div>
+
+  <div id="catalog" class="panel">
+    <span class="cap">Catalog</span>
+    <div id="catalogList"><div class="empty">No parts uploaded yet.</div></div>
+  </div>
+
+  <div id="manifest" class="panel">
+    <span class="cap">Assembly manifest (JSON)</span>
+    <textarea id="manifestText" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="primary" id="btnBuild">Build assembly</button>
+      <button id="btnFlat">Back to flat</button>
+    </div>
+    <div class="status" id="buildStatus"></div>
+  </div>
+
+  <div id="hint" class="panel">
+    <b>Edge numbering:</b> each part's edges are numbered 0, 1, 2… in path order starting from the SVG's own start point — switch to "Inspect catalog" to read the numbers off each panel. <b>angle</b> in a joint is the dihedral angle between the two panel faces: 180° = flat/coplanar, 90° = a square fold, 45°/54.74°/35.26° = Gregg's own angle system.
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+(function(){
+  const canvas = document.getElementById('scene');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.setClearColor(0x0a0d0f,1);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0d0f, 0.008);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 4000);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.55));
+  const key = new THREE.DirectionalLight(0xfff4ea,1.0); key.position.set(9,15,11); scene.add(key);
+  const fillL = new THREE.DirectionalLight(0x2a4a60,0.5); fillL.position.set(-9,-4,-7); scene.add(fillL);
+  const rim = new THREE.DirectionalLight(0xc94d33,0.3); rim.position.set(-6,7,-11); scene.add(rim);
+
+  const group = new THREE.Group(); scene.add(group);
+
+  // ── nominal → actual plywood thickness (inches, converted to a generic
+  // "units" scale — treat 1 unit = 1 inch unless the manifest says otherwise) ──
+  const THICKNESS_TABLE = {
+    '1/4in':0.209, '3/8in':0.334, '1/2in':0.469, '3/4in':0.703,
+    '6mm':0.2047, '12mm':0.4528, '18mm':0.6890
+  };
+  function resolveThickness(nominal, override){
+    if(typeof override === 'number') return override;
+    if(THICKNESS_TABLE[nominal] !== undefined) return THICKNESS_TABLE[nominal];
+    const asNum = parseFloat(nominal);
+    return isFinite(asNum) ? asNum : 0.469;
+  }
+
+  // ── SVG profile → straight-edge polygon ────────────────────────────────
+  // Sample the path densely with the browser's own path geometry (handles
+  // M/L/C/Q/A uniformly), then reduce to corners by turn-angle — the result
+  // is a clean polygon whose edges are numbered in path order.
+  function parseSvgToPolygon(svgText){
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const svgEl = doc.querySelector('svg');
+    if(!svgEl) throw new Error('not a valid SVG document');
+    const pathEl = doc.querySelector('path');
+    if(!pathEl) throw new Error('no <path> element found');
+    // host the path in a detached (but measurable) SVG so getPointAtLength works
+    const host = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    host.style.position='absolute'; host.style.left='-99999px'; host.style.width='10px'; host.style.height='10px';
+    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', pathEl.getAttribute('d'));
+    host.appendChild(p); document.body.appendChild(host);
+    const len = p.getTotalLength();
+    const N = Math.max(64, Math.min(1200, Math.round(len/1.5)));
+    const raw = [];
+    for(let i=0;i<N;i++){ const pt = p.getPointAtLength((i/N)*len); raw.push([pt.x,-pt.y]); } // flip Y: SVG is y-down
+    document.body.removeChild(host);
+
+    // corner detection: simplify the dense sample cloud down to its straight
+    // edges via Ramer–Douglas–Peucker (perpendicular-distance error), not a
+    // per-sample turn-angle test — a turn spread across 2-3 adjacent uniform
+    // samples (the corner vertex rarely lands exactly on a sample) otherwise
+    // gets misread as multiple corners, e.g. a rectangle coming out as a hexagon.
+    function segDist(pt, a, b){
+      const vx=b[0]-a[0], vy=b[1]-a[1], len2=vx*vx+vy*vy;
+      if(len2<1e-12) return Math.hypot(pt[0]-a[0], pt[1]-a[1]);
+      let t=((pt[0]-a[0])*vx+(pt[1]-a[1])*vy)/len2; t=Math.max(0,Math.min(1,t));
+      const px=a[0]+t*vx, py=a[1]+t*vy;
+      return Math.hypot(pt[0]-px, pt[1]-py);
+    }
+    function rdp(pts, eps){
+      if(pts.length<3) return pts.slice();
+      let maxD=-1, idx=-1;
+      for(let i=1;i<pts.length-1;i++){ const d=segDist(pts[i],pts[0],pts[pts.length-1]); if(d>maxD){maxD=d;idx=i;} }
+      if(maxD>eps){
+        const left=rdp(pts.slice(0,idx+1),eps), right=rdp(pts.slice(idx),eps);
+        return left.slice(0,-1).concat(right);
+      }
+      return [pts[0], pts[pts.length-1]];
+    }
+    const xs0=raw.map(p=>p[0]), ys0=raw.map(p=>p[1]);
+    const diag = Math.hypot(Math.max(...xs0)-Math.min(...xs0), Math.max(...ys0)-Math.min(...ys0)) || 1;
+    const eps = diag*0.006;
+    // split the closed loop at two well-separated points so RDP (an open-chain
+    // algorithm) can run on each half, then rejoin into one closed polygon.
+    let farI=0, farD=-1;
+    for(let i=1;i<raw.length;i++){ const d=Math.hypot(raw[i][0]-raw[0][0], raw[i][1]-raw[0][1]); if(d>farD){farD=d;farI=i;} }
+    const chainA = raw.slice(0,farI+1);
+    const chainB = raw.slice(farI).concat([raw[0]]);
+    const simpA = rdp(chainA, eps), simpB = rdp(chainB, eps);
+    const poly = simpA.slice(0,-1).concat(simpB.slice(0,-1));
+    // dedupe near-identical consecutive points
+    const dedup = [];
+    poly.forEach(pt=>{
+      const last = dedup[dedup.length-1];
+      if(!last || Math.hypot(pt[0]-last[0], pt[1]-last[1]) > 1e-3) dedup.push(pt);
+    });
+    if(dedup.length>1 && Math.hypot(dedup[0][0]-dedup[dedup.length-1][0], dedup[0][1]-dedup[dedup.length-1][1])<1e-3) dedup.pop();
+    return dedup;
+  }
+
+  function edgesOf(poly){
+    const out = [];
+    for(let i=0;i<poly.length;i++){
+      const p0 = poly[i], p1 = poly[(i+1)%poly.length];
+      out.push({ index:i, p0, p1, length:Math.hypot(p1[0]-p0[0], p1[1]-p0[1]) });
+    }
+    return out;
+  }
+
+  // ── catalog state ───────────────────────────────────────────────────────
+  const PALETTE = ['#c94d33','#e0a04a','#6f9e6a','#4a86a8','#9b6bb0','#c98b3f','#5f7fbf','#b0555f'];
+  const parts = new Map(); // id -> { id, poly, edges, color, thicknessNominal }
+  let colorI = 0;
+
+  function addPart(id, svgText){
+    let poly, edges;
+    try{ poly = parseSvgToPolygon(svgText); edges = edgesOf(poly); }
+    catch(e){ logStatus('err', id+': '+e.message); return; }
+    parts.set(id, { id, poly, edges, color:PALETTE[colorI++ % PALETTE.length], thicknessNominal:'1/2in' });
+    renderCatalogList();
+    if(mode==='inspect') layoutFlat();
+  }
+
+  function renderCatalogList(){
+    const el = document.getElementById('catalogList');
+    if(!parts.size){ el.innerHTML = '<div class="empty">No parts uploaded yet.</div>'; return; }
+    el.innerHTML='';
+    parts.forEach(pt=>{
+      const row = document.createElement('div'); row.className='part-row';
+      row.innerHTML = `<i style="background:${pt.color}"></i><span class="nm">${pt.id}</span><span class="ed">${pt.edges.length} edges</span>`;
+      el.appendChild(row);
+    });
+  }
+
+  // ── file upload UI ──────────────────────────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  dropZone.addEventListener('click', ()=>fileInput.click());
+  function handleFiles(files){
+    Array.from(files).forEach(f=>{
+      if(!/\.svg$/i.test(f.name)) return;
+      const reader = new FileReader();
+      reader.onload = ()=>addPart(f.name.replace(/\.svg$/i,''), reader.result);
+      reader.readAsText(f);
+    });
+  }
+  fileInput.addEventListener('change', ()=>handleFiles(fileInput.files));
+  ['dragenter','dragover'].forEach(ev=>dropZone.addEventListener(ev, e=>{ e.preventDefault(); dropZone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev=>dropZone.addEventListener(ev, e=>{ e.preventDefault(); dropZone.classList.remove('drag'); }));
+  dropZone.addEventListener('drop', e=>handleFiles(e.dataTransfer.files));
+
+  // ── demo catalog: two rectangles hinged at 90° ─────────────────────────
+  function demoSvg(w,h){
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><path d="M0,0 L${w},0 L${w},${h} L0,${h} Z"/></svg>`;
+  }
+  document.getElementById('btnDemo').addEventListener('click', ()=>{
+    parts.clear(); colorI=0;
+    addPart('panel-A', demoSvg(200,120));
+    addPart('panel-B', demoSvg(200,120));
+    document.getElementById('manifestText').value = JSON.stringify({
+      thicknessNominal:'1/2in',
+      root:'panel-A',
+      joints:[ { a:{part:'panel-A', edge:1}, b:{part:'panel-B', edge:3}, angle:90 } ]
+    }, null, 2);
+    setMode('inspect');
+  });
+
+  document.getElementById('manifestText').value = JSON.stringify({
+    thicknessNominal:'1/2in',
+    root:'',
+    joints:[ ]
+  }, null, 2);
+
+  // ── flat "inspect" layout: lay every part on the XY plane, side by side,
+  // with its extruded thickness and edge-index labels — this is how you
+  // figure out which edge index to reference in the manifest. ─────────────
+  const labelSprites = [];
+  function makeLabel(text, color){
+    const cv = document.createElement('canvas'); cv.width=64; cv.height=64;
+    const ctx = cv.getContext('2d');
+    ctx.font='700 40px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(0,0,0,.55)'; ctx.beginPath(); ctx.arc(32,32,26,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=color; ctx.fillText(text,32,34);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv), depthTest:false, transparent:true}));
+    sp.scale.set(0.45,0.45,1);
+    return sp;
+  }
+
+  function extrudeGeo(poly, thickness){
+    const shape = new THREE.Shape(poly.map(p=>new THREE.Vector2(p[0],p[1])));
+    const geo = new THREE.ExtrudeGeometry(shape, { depth:thickness, bevelEnabled:false, curveSegments:1 });
+    geo.translate(0,0,-thickness/2); // centre thickness on the profile plane (mid-surface at z=0)
+    return geo;
+  }
+
+  function clearGroup(){
+    labelSprites.forEach(s=>scene.remove(s)); labelSprites.length=0;
+    while(group.children.length) { const c=group.children.pop(); group.remove(c); if(c.geometry) c.geometry.dispose(); if(c.material) c.material.dispose(); }
+  }
+
+  function layoutFlat(){
+    clearGroup();
+    let x = 0;
+    const gap = 1.2;
+    parts.forEach(pt=>{
+      const xs = pt.poly.map(p=>p[0]), ys = pt.poly.map(p=>p[1]);
+      const minX=Math.min(...xs), maxX=Math.max(...xs), minY=Math.min(...ys), maxY=Math.max(...ys);
+      const w = (maxX-minX)/72, h=(maxY-minY)/72; // treat SVG units as px @72dpi -> inches
+      const scaledPoly = pt.poly.map(p=>[ (p[0]-minX)/72, (p[1]-minY)/72 ]);
+      const thickness = resolveThickness(pt.thicknessNominal);
+      const geo = extrudeGeo(scaledPoly, thickness);
+      const mat = new THREE.MeshStandardMaterial({ color:pt.color, metalness:.05, roughness:.7, side:THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, 0, 0);
+      group.add(mesh);
+      const edgeGeo = new THREE.EdgesGeometry(geo);
+      group.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:.35})));
+      // edge index labels
+      pt.edges.forEach(e=>{
+        const mx = (e.p0[0]+e.p1[0])/2/72 - minX/72 + x, my=(e.p0[1]+e.p1[1])/2/72 - minY/72;
+        const sp = makeLabel(String(e.index), pt.color);
+        sp.position.set(mx, my, thickness/2+0.05);
+        scene.add(sp); labelSprites.push(sp);
+      });
+      const idSp = makeLabel(pt.id.slice(0,3), '#f0ece4');
+      idSp.scale.set(0.6,0.6,1);
+      idSp.position.set(x + w/2, -h/2-0.35, thickness/2+0.05);
+      scene.add(idSp); labelSprites.push(idSp);
+      x += w + gap;
+    });
+    frameAll();
+  }
+
+  // ── 3D assembly: hinge-solve each joint from a root part ──────────────
+  function logStatus(kind, msg){
+    const el = document.getElementById('buildStatus');
+    const row = document.createElement('div'); row.className = kind==='err'?'err':(kind==='ok'?'ok':'');
+    row.textContent = msg;
+    el.appendChild(row);
+  }
+
+  function buildAssembly(){
+    document.getElementById('buildStatus').innerHTML='';
+    let manifest;
+    try{ manifest = JSON.parse(document.getElementById('manifestText').value); }
+    catch(e){ logStatus('err','manifest JSON error: '+e.message); return; }
+
+    if(!parts.size){ logStatus('err','no parts uploaded yet.'); return; }
+    const thicknessDefault = manifest.thicknessNominal || '1/2in';
+    const rootId = manifest.root || parts.keys().next().value;
+    if(!parts.has(rootId)){ logStatus('err','root part "'+rootId+'" not found in catalog.'); return; }
+
+    // build adjacency from joints (undirected)
+    const joints = Array.isArray(manifest.joints) ? manifest.joints : [];
+    const adj = new Map(); // partId -> [{ toPart, myEdge, theirEdge, angle }]
+    parts.forEach((_,id)=>adj.set(id,[]));
+    let jointErrors = 0;
+    joints.forEach(j=>{
+      const A=j.a, B=j.b, angle = (typeof j.angle==='number') ? j.angle : 180;
+      if(!A||!B||!parts.has(A.part)||!parts.has(B.part)){ logStatus('err','joint references unknown part: '+JSON.stringify(j)); jointErrors++; return; }
+      const pa=parts.get(A.part), pb=parts.get(B.part);
+      if(A.edge<0||A.edge>=pa.edges.length){ logStatus('err','joint edge out of range on '+A.part+' (edge '+A.edge+')'); jointErrors++; return; }
+      if(B.edge<0||B.edge>=pb.edges.length){ logStatus('err','joint edge out of range on '+B.part+' (edge '+B.edge+')'); jointErrors++; return; }
+      const lenA = pa.edges[A.edge].length/72, lenB = pb.edges[B.edge].length/72;
+      if(Math.abs(lenA-lenB) > 0.05*Math.max(lenA,lenB)){
+        logStatus('', 'note: edge length mismatch on joint '+A.part+'#'+A.edge+' ↔ '+B.part+'#'+B.edge+' ('+lenA.toFixed(2)+' vs '+lenB.toFixed(2)+') — using '+A.part+' edge as the reference.');
+      }
+      adj.get(A.part).push({ toPart:B.part, myEdge:A.edge, theirEdge:B.edge, angle });
+      adj.get(B.part).push({ toPart:A.part, myEdge:B.edge, theirEdge:A.edge, angle });
+    });
+
+    // BFS placement from root
+    const placed = new Map(); // partId -> THREE.Matrix4 (world transform)
+    placed.set(rootId, new THREE.Matrix4());
+    const queue = [rootId];
+    while(queue.length){
+      const cur = queue.shift();
+      const curMat = placed.get(cur);
+      (adj.get(cur)||[]).forEach(link=>{
+        if(placed.has(link.toPart)) return;
+        const parentPart = parts.get(cur), childPart = parts.get(link.toPart);
+        const pe = parentPart.edges[link.myEdge], ce = childPart.edges[link.theirEdge];
+        const P0 = new THREE.Vector3(pe.p0[0]/72, pe.p0[1]/72, 0).applyMatrix4(curMat);
+        const P1 = new THREE.Vector3(pe.p1[0]/72, pe.p1[1]/72, 0).applyMatrix4(curMat);
+        const parentNormalLocal = new THREE.Vector3(0,0,1);
+        const N = parentNormalLocal.clone().transformDirection(curMat).normalize();
+        const E = P1.clone().sub(P0).normalize();
+        const B = new THREE.Vector3().crossVectors(N,E).normalize();
+
+        const Q0 = new THREE.Vector3(ce.p0[0]/72, ce.p0[1]/72, 0);
+        const Q1 = new THREE.Vector3(ce.p1[0]/72, ce.p1[1]/72, 0);
+        const e = Q1.clone().sub(Q0).normalize();
+        const n0 = new THREE.Vector3(0,0,1);
+        const b0 = new THREE.Vector3().crossVectors(n0,e).normalize();
+
+        // basis matrices (columns = e,b0,n0) and (E,B,N) — both orthonormal,
+        // so inverse == transpose. R_flat maps the child's local frame onto
+        // the parent's face (the fully unfolded / coplanar reference pose).
+        const Mchild = new THREE.Matrix4().makeBasis(e,b0,n0);
+        const Mparent = new THREE.Matrix4().makeBasis(E,B,N);
+        const Rflat = Mparent.clone().multiply(Mchild.clone().transpose());
+
+        // fold about the hinge axis E by (180° - angle) from the flat pose
+        const theta = THREE.MathUtils.degToRad(180 - link.angle);
+        const Rfold = new THREE.Matrix4().makeRotationAxis(E, theta);
+        const Rtotal = Rfold.clone().multiply(Rflat);
+
+        const Q0world = Q0.clone().applyMatrix4(Rtotal);
+        const T = P0.clone().sub(Q0world);
+        const childMat = new THREE.Matrix4().copy(Rtotal).setPosition(T);
+
+        placed.set(link.toPart, childMat);
+        queue.push(link.toPart);
+      });
+    }
+
+    const unplaced = Array.from(parts.keys()).filter(id=>!placed.has(id));
+    logStatus('ok', placed.size+' of '+parts.size+' parts placed'+(unplaced.length?(' — unplaced: '+unplaced.join(', ')):'.'));
+    if(jointErrors) logStatus('err', jointErrors+' joint(s) skipped due to errors above.');
+
+    clearGroup();
+    placed.forEach((mat, id)=>{
+      const pt = parts.get(id);
+      const xs = pt.poly.map(p=>p[0]/72), ys = pt.poly.map(p=>p[1]/72);
+      const minX=Math.min(...xs), minY=Math.min(...ys);
+      const localPoly = pt.poly.map(p=>[p[0]/72, p[1]/72]);
+      const thickness = resolveThickness(pt.thicknessNominal, undefined) || resolveThickness(thicknessDefault);
+      const geo = extrudeGeo(localPoly, thickness);
+      const mat3 = new THREE.MeshStandardMaterial({ color:pt.color, metalness:.05, roughness:.7, side:THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat3);
+      mesh.applyMatrix4(mat);
+      group.add(mesh);
+      const eg = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:.3}));
+      eg.applyMatrix4(mat);
+      group.add(eg);
+    });
+    // lay unplaced parts off to the side, flat, so they're never silently dropped
+    let ux = 0;
+    const bbox0 = new THREE.Box3().setFromObject(group);
+    const offsetX = isFinite(bbox0.max.x) ? bbox0.max.x + 2 : 0;
+    unplaced.forEach(id=>{
+      const pt = parts.get(id);
+      const xs = pt.poly.map(p=>p[0]/72), ys=pt.poly.map(p=>p[1]/72);
+      const minX=Math.min(...xs), minY=Math.min(...ys), maxX=Math.max(...xs);
+      const localPoly = pt.poly.map(p=>[p[0]/72-minX, p[1]/72-minY]);
+      const thickness = resolveThickness(pt.thicknessNominal);
+      const geo = extrudeGeo(localPoly, thickness);
+      const mat3 = new THREE.MeshStandardMaterial({ color:pt.color, metalness:.05, roughness:.7, side:THREE.DoubleSide, transparent:true, opacity:.5 });
+      const mesh = new THREE.Mesh(geo, mat3);
+      mesh.position.set(offsetX+ux, 0, 0);
+      group.add(mesh);
+      ux += (maxX-minX) + 1;
+    });
+
+    frameAll();
+  }
+
+  document.getElementById('btnBuild').addEventListener('click', buildAssembly);
+  document.getElementById('btnFlat').addEventListener('click', ()=>setMode('inspect'));
+
+  // ── mode switch ─────────────────────────────────────────────────────────
+  let mode = 'inspect';
+  function setMode(m){
+    mode = m;
+    document.getElementById('btnInspect').classList.toggle('on', m==='inspect');
+    document.getElementById('btnAssembly').classList.toggle('on', m==='assembly');
+    if(m==='inspect') layoutFlat(); else buildAssembly();
+  }
+  document.getElementById('btnInspect').addEventListener('click', ()=>setMode('inspect'));
+  document.getElementById('btnAssembly').addEventListener('click', ()=>setMode('assembly'));
+
+  // ── camera framing + orbit ──────────────────────────────────────────────
+  const sph = { theta:0.7, phi:1.0, radius:8 };
+  const orbitTarget = new THREE.Vector3(0,0,0);
+  function syncCam(){
+    const {theta,phi,radius}=sph;
+    camera.position.set(
+      orbitTarget.x + radius*Math.sin(phi)*Math.sin(theta),
+      orbitTarget.y + radius*Math.cos(phi),
+      orbitTarget.z + radius*Math.sin(phi)*Math.cos(theta));
+    camera.lookAt(orbitTarget);
+  }
+  function frameAll(){
+    const box = new THREE.Box3().setFromObject(group);
+    if(!isFinite(box.max.x)) return;
+    const sphb = box.getBoundingSphere(new THREE.Sphere());
+    orbitTarget.copy(sphb.center);
+    sph.radius = Math.max(3, sphb.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov*0.5)) * 1.25);
+    syncCam();
+  }
+  let dragging=false, lastX=0, lastY=0;
+  canvas.addEventListener('mousedown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    sph.theta-=dx*0.007; sph.phi=Math.max(0.12,Math.min(Math.PI-0.12,sph.phi+dy*0.007));
+    lastX=e.clientX; lastY=e.clientY; syncCam();
+  });
+  window.addEventListener('mouseup', ()=>{ dragging=false; });
+  canvas.addEventListener('wheel', e=>{
+    sph.radius=Math.max(1,Math.min(200,sph.radius+e.deltaY*0.01*Math.max(1,sph.radius*0.15))); syncCam(); e.preventDefault();
+  }, {passive:false});
+  canvas.addEventListener('touchstart', e=>{ const t=e.touches[0]; dragging=true; lastX=t.clientX; lastY=t.clientY; }, {passive:true});
+  canvas.addEventListener('touchmove', e=>{
+    if(!dragging) return; const t=e.touches[0];
+    sph.theta-=(t.clientX-lastX)*0.008; sph.phi=Math.max(0.12,Math.min(Math.PI-0.12,sph.phi+(t.clientY-lastY)*0.006));
+    lastX=t.clientX; lastY=t.clientY; syncCam(); e.preventDefault();
+  }, {passive:false});
+  canvas.addEventListener('touchend', ()=>{ dragging=false; });
+
+  function resize(){
+    const w=canvas.clientWidth, h=canvas.clientHeight;
+    if(!w||!h) return;
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+  syncCam();
+
+  function animate(){
+    requestAnimationFrame(animate);
+    labelSprites.forEach(s=>s.quaternion.copy(camera.quaternion));
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
