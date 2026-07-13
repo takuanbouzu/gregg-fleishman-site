@@ -42,8 +42,15 @@ caterpillar 45°→120° payoff at 11:38), verifies the math backbone numericall
 120°; √2²+1²=3), and defines the binding motif system (one world, √-ladder
 palette, gold arc, from-black/to-black, plant→payoff links). Timing unchanged.
 
+## Render path ✅ BUILT AND PROVEN
+`00_ADMIN/render_insert.mjs` + the deterministic-clock contract
+(`02_INSERTS/shared/insert-contract.md`) + reference implementation
+(`02_INSERTS/_pipeline_test/insert.html`). Validated end-to-end: 60-frame
+test master at exactly 30000/1001 fps, 848×448, `EXACT ✓` frame-count gate,
+pure-black endpoints, real-3D perspective mid-frame. See `render_manifest.md`.
+
 ## Next recommended action
-Get sign-off on `FULL_LESSON_CONCEPT.md` + the six mappings, then follow
-`HANDOFF-CODEX-EXECUTION.md`: build the blocking animatic in sequence with
-Gregg's intervening audio (concept §8) as the review artifact before any
-Phase 5–6 polish.
+Get sign-off on `FULL_LESSON_CONCEPT.md` + the six mappings, then build the
+six insert pages against the proven contract and render the blocking animatic
+in sequence with Gregg's intervening audio (concept §8) as the review
+artifact before any Phase 5–6 polish.

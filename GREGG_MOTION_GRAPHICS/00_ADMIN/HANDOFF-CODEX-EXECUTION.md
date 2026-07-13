@@ -127,27 +127,30 @@ means here (brief rule 9). The rendered video is a derived artifact, reproducibl
 the source the same way `01_SOURCE/clips` etc. are reproducible from
 `00_ADMIN/extract_media.py`.
 
-## 5. Rendering exact-duration masters
+## 5. Rendering exact-duration masters — BUILT AND PROVEN
 
-The deterministic-clock pattern in §4 makes this mechanical:
+The render path is no longer a plan; it's working code, validated end-to-end
+(see `render_manifest.md`, PIPELINE_TEST row — `EXACT ✓`, 60/60 frames,
+2.002000 s, pure-black endpoints, real-3D mid-frame):
 
-1. Serve the insert locally (`python3 -m http.server`, matches the rest of the repo).
-2. Drive it with a headless browser (Playwright is already available in this environment
-   — see the repo's other verification scripts for the pattern) stepping the deterministic
-   clock frame-by-frame at `1/29.97s` per step, screenshotting each frame to PNG.
-3. `ffmpeg -framerate 30000/1001 -i frame_%05d.png ... INS_0N_master.mov` (ProRes 4444 if
-   the insert needs alpha to composite over anything; otherwise ProRes 422 / high-bitrate
-   H.264 is fine for a review-cut master).
-4. **Frame count must exactly equal** the `duration_frames` column in
-   `black_frame_intervals.csv` (230 / 214 / 611 / 367 / 188 / 464) — no off-by-one, no
-   interpolation, clean first/last frame (brief rule: "No accidental black frames, flash
-   frames, or interpolation. First and last frames transition cleanly.").
-5. **Do not touch the source audio.** These are silent visual inserts that slot into the
-   already-black video sections; the narration audio underneath is untouched master audio
-   and is out of scope for this package.
-6. Record the render in `00_ADMIN/render_manifest.md` (source path, frame count, fps,
-   render date) — same spirit as `extract_media.py` being the reproducible record for
-   Phase 0–1.
+1. Implement the page against the deterministic-clock contract:
+   **`02_INSERTS/shared/insert-contract.md`** (`window.INSERT` with pure
+   `seek(frame)`, `preserveDrawingBuffer`, 848×448, black first/last frames).
+   Working reference implementation: `02_INSERTS/_pipeline_test/insert.html`
+   (a computed truncated octahedron on the ground grid — copy its skeleton).
+2. Serve the repo root (`python3 -m http.server 8741`) and run
+   **`00_ADMIN/render_insert.mjs`**: it steps the clock frame-by-frame via
+   Playwright, screenshots each frame, encodes with
+   `ffmpeg -framerate 30000/1001` (`--prores` → ProRes 422 HQ; default H.264
+   crf16 for review), then **gates on ffprobe**: any page error or frame-count
+   mismatch exits non-zero. A master without `EXACT ✓` does not ship.
+3. Frame counts per insert: 230 / 214 / 611 / 367 / 188 / 464
+   (`black_frame_intervals.csv`), resolution 848×448 to match the source
+   encode (`media_probe.md`).
+4. **Do not touch the source audio.** These are silent visual inserts; the
+   narration underneath is untouched master audio, out of scope here.
+5. Every render appends a row to `00_ADMIN/render_manifest.md` — same spirit
+   as `extract_media.py` being the reproducible record for Phase 0–1.
 
 ## 6. Verification before calling an insert done
 
