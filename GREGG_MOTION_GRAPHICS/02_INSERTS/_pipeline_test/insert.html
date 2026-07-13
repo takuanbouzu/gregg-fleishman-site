@@ -5,78 +5,28 @@
 <title>pipeline test — deterministic insert</title>
 <style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
 <script src="../../../assets/gf-scene.js"></script>
-<script type="importmap">
-{ "imports": { "three": "../../../assets/vendor/three-0.160.0/three.module.js" } }
-</script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
 </head>
 <body>
 <script type="module">
-import * as THREE from 'three';
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
 
-const W = 848, H = 448, FPS = 30000 / 1001, FRAMES = 60;
-const SC = GF_SCENE.dark;
+const FRAMES = 60, W = 848, H = 448;
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.6, 8, 16);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-renderer.setSize(W, H);
-renderer.setPixelRatio(1);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.NoToneMapping;
-renderer.setClearColor(0x000000, 1);
-document.body.appendChild(renderer.domElement);
+const to = new THREE.Group();
+to.add(K.toWire(0.55, K.COL.unit), K.toFaces(0.55, { hexOp: 0.24, sqOp: 0.12 }));
+scene.add(to);
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 100);
-
-// Truncated octahedron, computed: the 24 permutations of (0, ±1, ±2) · k.
-const k = 0.5;
-const verts = [];
-for (const p of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])
-  for (const sy of [1,-1]) for (const sz of [1,-1]) {
-    const v = [p[0], p[1]*sy, p[2]*sz];
-    if (!verts.some(u => u[0]===v[0] && u[1]===v[1] && u[2]===v[2])) verts.push(v);
-  }
-// Edges = vertex pairs at the minimal distance (√2·k after scaling).
-const pts = verts.map(v => new THREE.Vector3(v[0]*k, v[1]*k, v[2]*k));
-const eps = 1e-6, dmin = Math.SQRT2 * k;
-const epos = [];
-for (let i = 0; i < pts.length; i++) for (let j = i+1; j < pts.length; j++)
-  if (Math.abs(pts[i].distanceTo(pts[j]) - dmin) < eps) epos.push(pts[i], pts[j]);
-const eg = new THREE.BufferGeometry().setFromPoints(epos);
-const wire = new THREE.LineSegments(eg, new THREE.LineBasicMaterial({ color: SC.unit, transparent: true }));
-scene.add(wire);
-
-// Hexagon face hint: one ⟨111⟩ face filled, terracotta, to make orientation legible.
-const hexV = [[0,1,2],[1,0,2],[2,0,1],[2,1,0],[1,2,0],[0,2,1]].map(v => new THREE.Vector3(v[0]*k, v[1]*k, v[2]*k));
-const hexG = new THREE.BufferGeometry();
-const tri = [];
-for (let i = 1; i < 5; i++) tri.push(hexV[0], hexV[i], hexV[i+1]);
-hexG.setFromPoints(tri); hexG.computeVertexNormals();
-const hex = new THREE.Mesh(hexG, new THREE.MeshBasicMaterial({ color: SC.space, transparent: true, opacity: 0.28, side: THREE.DoubleSide }));
-scene.add(hex);
-
-const grid = new THREE.GridHelper(8, 16, 0x2a3230, 0x1a201e);
-grid.position.y = -1.6;
-scene.add(grid);
-
-const FADE = 8; // frames of fade at each end → frames 0 and FRAMES-1 are black
-function seek(frame) {
-  const t = frame * 1001 / 30000;
-  const az = 0.55 + t * 0.5, el = 0.42;             // slow deterministic orbit
-  const r = 4.4;
-  camera.position.set(r*Math.cos(el)*Math.cos(az), r*Math.sin(el), r*Math.cos(el)*Math.sin(az));
-  camera.lookAt(0, -0.15, 0);
-  const fade = Math.min(1, frame / FADE, (FRAMES - 1 - frame) / FADE);
-  wire.material.opacity = fade;
-  hex.material.opacity = 0.28 * fade;
-  grid.material.opacity = fade; grid.material.transparent = true;
-  renderer.render(scene, camera);
+function pose(t) {
+  to.rotation.y = 0.4 + t * 0.5;
+  K.setOp(to, 1);
+  K.orbit(camera, 0.55 + t * 0.5, 0.42, 4.4, new THREE.Vector3(0, -0.15, 0));
 }
-
-window.INSERT = {
-  fps: FPS, frames: FRAMES, width: W, height: H,
-  ready: Promise.resolve().then(() => seek(0)),
-  seek,
-};
+K.expose(st, pose, { fadeFrames: 8 });
 </script>
 </body>
 </html>

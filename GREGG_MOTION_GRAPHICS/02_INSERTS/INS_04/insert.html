@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>INS_04 — the cubic family</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 367, W = 848, H = 448;           // 02:21.208 → 02:33.453
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -1.35, 14, 28);
+
+// The five Platonic solids — the cubic family (tetra · cube · octa) on the left.
+const defs = [
+  { name: 'tetrahedron',  geo: new THREE.TetrahedronGeometry(0.82),  cubic: true  },
+  { name: 'cube',         geo: new THREE.BoxGeometry(1.1, 1.1, 1.1), cubic: true  },
+  { name: 'octahedron',   geo: new THREE.OctahedronGeometry(0.8),    cubic: true  },
+  { name: 'dodecahedron', geo: new THREE.DodecahedronGeometry(0.78), cubic: false },
+  { name: 'icosahedron',  geo: new THREE.IcosahedronGeometry(0.78),  cubic: false },
+];
+const solids = defs.map((d, i) => {
+  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(d.geo),
+    new THREE.LineBasicMaterial({ color: K.COL.unit, transparent: true }));
+  wire.position.set((i - 2) * 1.9, 0, 0);
+  scene.add(wire);
+  const label = K.domLabel(d.name, { size: 10 });
+  return { ...d, wire, label, i };
+});
+
+const cap = K.caption('the cubic family: tetrahedron · octahedron · cube');
+
+function pose(t) {
+  const keep = K.ease(K.seg(t, 5.2, 6.8));  // dodeca + icosa step back
+  for (const s of solids) {
+    const born = K.ease(K.seg(t, 0.3 + s.i * 0.5, 1.3 + s.i * 0.5));
+    const dim = s.cubic ? 1 : 1 - 0.85 * keep;
+    s.wire.material.opacity = born * dim;
+    s.wire.rotation.y = 0.3 + t * 0.28 + s.i * 0.55;
+    s.wire.rotation.x = 0.12;
+    s.wire.scale.setScalar(s.cubic ? 1 + 0.13 * keep : 1 - 0.08 * keep);
+    s.label.at(s.wire.position.clone().setY(-1.05), camera, W, H);
+    s.label.op(born * (s.cubic ? 1 : 1 - 0.7 * keep));
+  }
+  cap.op(K.seg(t, 6.6, 7.5));
+  K.orbit(camera, 1.42 + t * 0.022, 0.21, 7.0, new THREE.Vector3(0, -0.05, 0));
+}
+K.expose(st, pose);
+</script>
+</body>
+</html>

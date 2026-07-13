@@ -49,8 +49,17 @@ palette, gold arc, from-black/to-black, plant→payoff links). Timing unchanged.
 test master at exactly 30000/1001 fps, 848×448, `EXACT ✓` frame-count gate,
 pure-black endpoints, real-3D perspective mid-frame. See `render_manifest.md`.
 
+## Phase 3 — Blocking animatic ✅ RENDERED (sign-off received 2026-07-13)
+Yuto signed off the concept + six mappings. All six insert scenes built
+against the contract (`02_INSERTS/INS_01..06/insert.html`, shared
+`insert-kit.js` — computed TO/RD/cube geometry, parametric truncation,
+√-ladder palette, gold arcs, DOM captions, deterministic clocks) and all six
+masters rendered **EXACT ✓** at 30000/1001, 848×448, pure-black endpoints:
+230 / 214 / 611 / 367 / 188 / 464 frames. Review masters committed at
+`05_RENDERS/review/` (~16 MB); full log in `render_manifest.md`.
+
 ## Next recommended action
-Get sign-off on `FULL_LESSON_CONCEPT.md` + the six mappings, then build the
-six insert pages against the proven contract and render the blocking animatic
-in sequence with Gregg's intervening audio (concept §8) as the review
-artifact before any Phase 5–6 polish.
+Review the six masters in `05_RENDERS/review/` (or re-render locally).
+After visual notes come back: iterate the scenes, then `--prores` finals,
+then the full review cut (masters slotted into the black windows over the
+untouched source).

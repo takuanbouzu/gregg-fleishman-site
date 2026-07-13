@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>INS_06 — filling space with small parts</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../../../assets/gf-scene.js"></script>
+<script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
+</head>
+<body>
+<script type="module">
+import * as K from '../shared/insert-kit.js';
+const { THREE } = K;
+
+const FRAMES = 464, W = 848, H = 448;           // 03:01.982 → 03:17.464 — the finale
+const st = K.stage({ frames: FRAMES, width: W, height: H });
+const { scene, camera } = st;
+K.groundGrid(scene, -2.1, 24, 48);
+
+const PL = new THREE.Vector3(-3.1, 0, 0), PR = new THREE.Vector3(3.1, 0, 0);
+
+// Left: the rhombic-dodecahedron honeycomb (FCC) — 12 neighbours across the faces.
+const kRD = 0.5;
+const rdC = new THREE.Group();
+rdC.add(K.rdWire(kRD, K.COL.space), K.rdFaces(kRD, K.COL.face, 0.10));
+rdC.position.copy(PL); scene.add(rdC);
+const rdOffs = [];
+for (const p of [[1,1,0],[1,0,1],[0,1,1]]) for (const s1 of [1,-1]) for (const s2 of [1,-1]) {
+  const v = [...p]; let first = true;
+  for (let i = 0; i < 3; i++) if (v[i]) { v[i] *= first ? s1 : s2; first = false; }
+  rdOffs.push(new THREE.Vector3(...v).multiplyScalar(2 * kRD));
+}
+const rdGhosts = rdOffs.map(off => {
+  const g = K.rdWire(kRD, K.COL.ghost, 0.45);
+  g.userData.off = off; scene.add(g); return g;
+});
+
+// Right: the truncated-octahedron packing (BCC) — 6 axis + 8 corner neighbours.
+const kTO = 0.44;
+const toC = new THREE.Group();
+toC.add(K.toWire(kTO, K.COL.face), K.toFaces(kTO));
+toC.position.copy(PR); scene.add(toC);
+const toOffs = [];
+for (const ax of [[4,0,0],[0,4,0],[0,0,4]]) for (const s of [1,-1])
+  toOffs.push(new THREE.Vector3(...ax).multiplyScalar(s * kTO));
+for (const sx of [1,-1]) for (const sy of [1,-1]) for (const sz of [1,-1])
+  toOffs.push(new THREE.Vector3(2*sx, 2*sy, 2*sz).multiplyScalar(kTO));
+const toGhosts = toOffs.map(off => {
+  const g = K.toWire(kTO, K.COL.ghost, 0.42);
+  g.userData.off = off; scene.add(g); return g;
+});
+
+const lL = K.domLabel('rhombic dodecahedron', { size: 11 });
+const lR = K.domLabel('truncated octahedron', { size: 11 });
+const cap = K.caption('both fill space from small repeated parts');
+
+// The √-ladder legend — the one time the color code is stated on screen.
+const legend = document.createElement('div');
+legend.innerHTML =
+  `<span style="color:${K.COL.unit}">1</span><span style="color:#56605b"> · </span>` +
+  `<span style="color:${K.COL.face}">√2</span><span style="color:#56605b"> · </span>` +
+  `<span style="color:${K.COL.space}">√3</span>`;
+legend.style.cssText = `position:fixed;left:50%;bottom:58px;transform:translateX(-50%);
+  font-family:'Space Mono',monospace;font-size:15px;font-weight:700;letter-spacing:.3em;
+  opacity:0;z-index:10`;
+document.body.appendChild(legend);
+
+function pose(t) {
+  const born = K.ease(K.seg(t, 0.2, 1.4));
+  K.setOp(rdC, born); K.setOp(toC, born);
+  rdC.rotation.y = 0.35 + t * 0.05;
+  toC.rotation.y = 0.25 + t * 0.05;
+
+  rdGhosts.forEach((g, i) => {
+    const gl = K.ease(K.seg(t, 1.9 + i * 0.55, 3.3 + i * 0.55));
+    g.rotation.y = rdC.rotation.y;
+    g.position.copy(PL).add(g.userData.off.clone()
+      .applyAxisAngle(new THREE.Vector3(0,1,0), rdC.rotation.y).multiplyScalar(1.7 - 0.7 * gl));
+    K.setOp(g, gl);
+  });
+  toGhosts.forEach((g, i) => {
+    const gl = K.ease(K.seg(t, 2.2 + i * 0.48, 3.6 + i * 0.48));
+    g.rotation.y = toC.rotation.y;
+    g.position.copy(PR).add(g.userData.off.clone()
+      .applyAxisAngle(new THREE.Vector3(0,1,0), toC.rotation.y).multiplyScalar(1.7 - 0.7 * gl));
+    K.setOp(g, gl);
+  });
+
+  lL.at(PL.clone().setY(2.0), camera, W, H);  lL.op(K.seg(t, 1.6, 2.3));
+  lR.at(PR.clone().setY(2.0), camera, W, H);  lR.op(K.seg(t, 1.9, 2.6));
+  legend.style.opacity = String(K.seg(t, 10.8, 11.8));
+  cap.op(K.seg(t, 11.6, 12.5));
+
+  const r = 7.4 + 2.4 * K.ease(K.seg(t, 1.5, 13.5));
+  K.orbit(camera, 1.34 + t * 0.028, 0.30, r);
+}
+K.expose(st, pose);
+</script>
+</body>
+</html>

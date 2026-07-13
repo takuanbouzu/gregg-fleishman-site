@@ -4,10 +4,10 @@
    is naming the three space-fillers during INS_03's window, not deriving a
    square. The square/√2/√3 lesson is at 05:51–06:37, outside all six windows.
    See `NARRATIVE_CORRECTION.md`.
-2. **[NEEDS SIGN-OFF] Corrected per-insert content** — the handoff storyboard's
-   teaching goals don't match the audio. The transcript-derived content
-   (`cue_sheet.csv`, `NARRATIVE_CORRECTION.md`) supersedes it. Confirm before
-   modeling.
+2. **[RESOLVED] Corrected per-insert content** — signed off by Yuto
+   (2026-07-13, in session) together with the full-lesson concept
+   (`FULL_LESSON_CONCEPT.md`). The transcript-derived content supersedes the
+   original brief; animation proceeded on this basis.
 3. **[RESOLVED] Render target** — HTML/Canvas via the site's existing engine.
    Blender was ruled out (CPU-only headless render in this sandbox is not worth
    pursuing); After Effects can't run here at all. Building on the site's
