@@ -485,6 +485,142 @@
   /* ── RHOMBIC SYSTEM scene (iframe) ── */
   #scene-rs{ overflow:hidden; }
   #rs-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+
+  /* ── RHOMBI POD scene (GLB assembly viewer) ── */
+  #scene-rp{ --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
+  #rp-stage{position:absolute;inset:0;z-index:0;cursor:grab;touch-action:none;}
+  #rp-stage:active{cursor:grabbing}
+  #rp-stage canvas{display:block;width:100%;height:100%}
+
+  #rp-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);transition:opacity .6s ease}
+  #rp-loader.hide{opacity:0;pointer-events:none}
+  #rp-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+
+  #rp-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
+  #rp-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+  #rp-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
+    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
+  #rp-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
+  #rp-masthead .note b{color:var(--tx);font-weight:700}
+
+  #rp-panel{position:absolute;right:16px;top:8px;z-index:5;width:clamp(196px,19vw,236px);
+    display:flex;flex-direction:column;gap:0;padding:0;
+    max-height:44px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
+    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+    transition:max-height .32s cubic-bezier(.4,0,.2,1)}
+  #rp-panel.panel-open{max-height:440px;overflow-y:auto;}
+  #rp-panel .ph{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #rp-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
+  #rp-panel.panel-open .ph svg{transform:rotate(180deg)}
+  #rp-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
+  #rp-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #rp-panel .ctl{display:flex;flex-direction:column;gap:7px}
+  #rp-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
+    letter-spacing:.05em;color:var(--tx)}
+  #rp-panel .lab span{color:var(--accent)}
+  #rp-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
+    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
+  #rp-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
+    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #rp-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #rp-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
+  #rp-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
+    touch-action:manipulation;
+    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
+  #rp-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
+  #rp-panel .tgbtn.off{opacity:.34}
+  #rp-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
+
+  #rp-hint{position:absolute;right:16px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.08em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
+  #rp-src{position:absolute;left:34px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:9.5px;
+    letter-spacing:.1em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
+
+  @media(max-width:860px){
+    #rp-panel{right:0;left:0;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
+    #rp-panel.panel-open{max-height:65vh;overflow-y:auto;}
+    #rp-panel .tgbtn{min-height:40px;padding:10px 12px;}
+    #rp-panel .ph{min-height:44px;}
+    #rp-panel input[type=range]{padding:16px 0;background-clip:content-box;}
+    #rp-masthead{left:18px;top:16px;max-width:230px}
+    #rp-masthead .note{display:none}
+    #rp-hint{display:none}
+    #rp-src{left:18px;bottom:52px}
+    #rp-stage{touch-action:none}
+  }
+
+  /* ── VECTOR HOUSE scene (GLB assembly viewer) ── */
+  #scene-vh{ --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
+  #vh-stage{position:absolute;inset:0;z-index:0;cursor:grab;touch-action:none;}
+  #vh-stage:active{cursor:grabbing}
+  #vh-stage canvas{display:block;width:100%;height:100%}
+
+  #vh-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    background:var(--bg);transition:opacity .6s ease}
+  #vh-loader.hide{opacity:0;pointer-events:none}
+  #vh-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+
+  #vh-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
+  #vh-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
+  #vh-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
+    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
+  #vh-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
+  #vh-masthead .note b{color:var(--tx);font-weight:700}
+
+  #vh-panel{position:absolute;right:16px;top:8px;z-index:5;width:clamp(196px,19vw,236px);
+    display:flex;flex-direction:column;gap:0;padding:0;
+    max-height:44px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
+    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+    transition:max-height .32s cubic-bezier(.4,0,.2,1)}
+  #vh-panel.panel-open{max-height:520px;overflow-y:auto;}
+  #vh-panel .ph{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
+    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #vh-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
+  #vh-panel.panel-open .ph svg{transform:rotate(180deg)}
+  #vh-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
+  #vh-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
+  #vh-panel .ctl{display:flex;flex-direction:column;gap:7px}
+  #vh-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
+    letter-spacing:.05em;color:var(--tx)}
+  #vh-panel .lab span{color:var(--accent)}
+  #vh-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
+    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
+  #vh-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
+    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #vh-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  #vh-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
+  #vh-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
+    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
+    touch-action:manipulation;
+    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
+  #vh-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
+  #vh-panel .tgbtn.off{opacity:.34}
+  #vh-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
+
+  #vh-hint{position:absolute;right:16px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:.08em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
+  #vh-src{position:absolute;left:34px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:9.5px;
+    letter-spacing:.1em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
+
+  @media(max-width:860px){
+    #vh-panel{right:0;left:0;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
+    #vh-panel.panel-open{max-height:65vh;overflow-y:auto;}
+    #vh-panel .tgbtn{min-height:40px;padding:10px 12px;}
+    #vh-panel .ph{min-height:44px;}
+    #vh-panel input[type=range]{padding:16px 0;background-clip:content-box;}
+    #vh-masthead{left:18px;top:16px;max-width:230px}
+    #vh-masthead .note{display:none}
+    #vh-hint{display:none}
+    #vh-src{left:18px;bottom:52px}
+    #vh-stage{touch-action:none}
+  }
 </style>
 
 <template id="__bundler_thumbnail" data-bg-color="#08080A">
@@ -519,6 +655,8 @@
   <button class="explore-tab-btn" data-tab="vs">Vector System</button>
   <button class="explore-tab-btn" data-tab="rs">Rhombic System</button>
   <button class="explore-tab-btn" data-tab="vp">Vector Pod</button>
+  <button class="explore-tab-btn" data-tab="rp">Rhombi Pod</button>
+  <button class="explore-tab-btn" data-tab="vh">Vector House</button>
 </div>
 
 <!-- ================================================================
@@ -747,6 +885,98 @@
     loading="lazy"
     aria-label="Vector Pod interactive model"></iframe>
 </div><!-- /#scene-vp -->
+
+<!-- ================================================================
+     SCENE: RHOMBI POD  (CAD assembly · GLB viewer)
+     ================================================================ -->
+<div id="scene-rp" class="con-scene" style="display:none;">
+
+  <div id="rp-stage"></div>
+  <div id="rp-loader"><div class="lt">Loading the pod…</div></div>
+
+  <div id="rp-masthead">
+    <div class="sub">Current Exploration</div>
+    <h1>Rhombi Pod</h1>
+    <p class="note">A single <b>rhombic-dodecahedron pod</b> — 65 CAD parts, straight from the Rhino solids: hex panels seated on a node-and-strut frame. Toggle each layer of the assembly.</p>
+  </div>
+
+  <div id="rp-panel">
+    <div class="ph" id="rp-panel-ph">
+      Layers
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="panel-body">
+      <div class="ttl">Assembly layers</div>
+      <div class="tgs">
+        <button class="tgbtn" id="rp-tg-panels" title="9 hex panels">Hex panels</button>
+        <button class="tgbtn" id="rp-tg-n90" title="15 node parts · 90 layer">Nodes · 90</button>
+        <button class="tgbtn" id="rp-tg-n45" title="41 node parts · 45 layer">Nodes · 45</button>
+        <button class="tgbtn off" id="rp-tg-curves" title="9 reference curves">Ref curves</button>
+      </div>
+      <div class="div"></div>
+      <div class="ttl">Explode</div>
+      <div class="ctl"><div class="lab">Separation <span id="rp-v-sep">0%</span></div>
+        <input id="rp-s-sep" type="range" min="0" max="1" step="0.01" value="0" aria-label="Part separation" /></div>
+      <div class="div"></div>
+      <div class="tgs">
+        <button class="tgbtn" id="rp-tg-spin">Auto-rotate</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rp-src">source · Single Rhomi Pod · Rhino 8</div>
+  <div id="rp-hint">drag to orbit · scroll to zoom</div>
+
+</div><!-- /#scene-rp -->
+
+<!-- ================================================================
+     SCENE: VECTOR HOUSE  (CAD assembly · GLB viewer)
+     ================================================================ -->
+<div id="scene-vh" class="con-scene" style="display:none;">
+
+  <div id="vh-stage"></div>
+  <div id="vh-loader"><div class="lt">Loading the house…</div></div>
+
+  <div id="vh-masthead">
+    <div class="sub">Current Exploration</div>
+    <h1>Vector House</h1>
+    <p class="note">Gregg's <b>45° fold system</b> tiled to house scale — the same node-and-panel module as the Rhombi Pod, repeated across a full structure. 98,892 source triangles from the Rhino solids. Toggle each layer of the assembly.</p>
+  </div>
+
+  <div id="vh-panel">
+    <div class="ph" id="vh-panel-ph">
+      Layers
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="panel-body">
+      <div class="ttl">Assembly layers</div>
+      <div class="tgs">
+        <button class="tgbtn" id="vh-tg-panels" title="hex panels">Panels</button>
+        <button class="tgbtn" id="vh-tg-n90" title="flat connector nodes · 90 layer">Nodes · 90</button>
+        <button class="tgbtn" id="vh-tg-n45" title="45° sloped panels · 45 layer">Nodes · 45</button>
+        <button class="tgbtn" id="vh-tg-deck" title="deck structure">Deck</button>
+        <button class="tgbtn" id="vh-tg-frame" title="unlabeled structural layer">Frame</button>
+        <button class="tgbtn off" id="vh-tg-curves" title="reference curves">Ref curves</button>
+      </div>
+      <div class="div"></div>
+      <div class="ttl">Explode</div>
+      <div class="ctl"><div class="lab">Separation <span id="vh-v-sep">0%</span></div>
+        <input id="vh-s-sep" type="range" min="0" max="1" step="0.01" value="0" aria-label="Part separation" /></div>
+      <div class="div"></div>
+      <div class="tgs">
+        <button class="tgbtn" id="vh-tg-spin">Auto-rotate</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="vh-src">source · Vector House · Rhino 8 · 45°/90° system</div>
+  <div id="vh-hint">drag to orbit · scroll to zoom</div>
+
+</div><!-- /#scene-vh -->
 
 
 <!-- ================================================================
@@ -1855,10 +2085,453 @@ gsap.ticker.add((time,deltaTime)=>{
 resize();
 </script>
 
+<!-- ================================================================
+     SCRIPT: RHOMBI POD (lazy — inits on first tab activation, since the
+     GLB is ~2.9 MB and most visitors never open this tab)
+     ================================================================ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+const rpEl = document.getElementById('scene-rp');
+const rpStage = document.getElementById('rp-stage');
+let rpInited = false;
+
+function rpInit(){
+  if (rpInited) return;
+  rpInited = true;
+
+  const SC = GF_SCENE.dark;
+  const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
+
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setClearColor(BGc, 1);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  rpStage.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(BGc, 7.5, 16);
+
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 60);
+  camera.position.set(3.4, 2.2, 4.6);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 1.4;
+  controls.maxDistance = 12;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.6;
+
+  scene.add(new THREE.HemisphereLight(0xf2ead8, 0x14100c, 0.85));
+  const key = new THREE.DirectionalLight(0xffffff, 1.5);
+  key.position.set(3.5, 5, 2.5);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(new THREE.Color(SC.face), 0.35);
+  fill.position.set(-4, -1.5, -3);
+  scene.add(fill);
+
+  // ── layer groups (Rhino layer names preserved by the GLB export) ──
+  const groups = {};        // panels | n90 | n45 | curves
+  const exploders = [];     // { obj, dir } — radial explode directions
+
+  // The GLB is meshopt-compressed (re-encoded from the Draco original so the
+  // already-vendored meshopt decoder can read it — no DRACOLoader needed).
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.load('assets/models/rhombi-pod.glb', (gltf) => {
+    const root = gltf.scene;
+
+    // Rhino exports glTF's default metallic=1 → renders black. Rebuild
+    // the wood tones as dielectric.
+    root.traverse(o => {
+      if (o.isMesh && o.material && o.material.isMeshStandardMaterial) {
+        o.material.metalness = 0;
+        o.material.roughness = 0.82;
+      }
+      if ((o.isLine || o.isLineSegments) && o.material) {
+        o.material = new THREE.LineBasicMaterial({
+          color: new THREE.Color(SC.unit), transparent: true, opacity: 0.45 });
+      }
+    });
+
+    groups.panels = root.getObjectByName('Panels');
+    groups.n90    = root.getObjectByName('90');
+    groups.n45    = root.getObjectByName('45');
+    groups.curves = root.getObjectByName('0');   // 'Source::0' — reference curves
+    if (groups.curves) groups.curves.visible = false;
+
+    // Recentre + normalise scale so the pod sits at the origin ~1.5 units tall.
+    const box = new THREE.Box3().setFromObject(root);
+    const center = box.getCenter(new THREE.Vector3());
+    const radius = box.getSize(new THREE.Vector3()).length() / 2;
+    const holder = new THREE.Group();
+    const s = 1.55 / radius;
+    holder.scale.setScalar(s);
+    root.position.copy(center).negate();
+    holder.add(root);
+    scene.add(holder);
+
+    // Explode: every part slides out along its own radial from the centre.
+    // All node transforms in this GLB are identity (geometry baked in world
+    // coords), so a local-position offset is a world-space offset.
+    const solids = [groups.panels, groups.n90, groups.n45].filter(Boolean);
+    const c = new THREE.Vector3(), b = new THREE.Box3();
+    for (const g of solids) {
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        o.geometry.computeBoundingBox();
+        b.copy(o.geometry.boundingBox).getCenter(c).sub(center);
+        if (c.lengthSq() < 1e-8) return;
+        exploders.push({ obj: o, dir: c.clone().normalize() });
+      });
+    }
+
+    document.getElementById('rp-loader').classList.add('hide');
+    resize();
+  }, undefined, (err) => {
+    document.querySelector('#rp-loader .lt').textContent = 'Could not load the model';
+    console.error('Rhombi Pod GLB failed to load:', err);
+  });
+
+  // ── UI ──
+  const panel = document.getElementById('rp-panel');
+  document.getElementById('rp-panel-ph').addEventListener('click',
+    () => panel.classList.toggle('panel-open'));
+
+  function wireToggle(btnId, key){
+    const btn = document.getElementById(btnId);
+    btn.addEventListener('click', () => {
+      const g = groups[key];
+      if (!g) return;
+      g.visible = !g.visible;
+      btn.classList.toggle('off', !g.visible);
+    });
+  }
+  wireToggle('rp-tg-panels', 'panels');
+  wireToggle('rp-tg-n90', 'n90');
+  wireToggle('rp-tg-n45', 'n45');
+  wireToggle('rp-tg-curves', 'curves');
+
+  const sepSlider = document.getElementById('rp-s-sep');
+  const sepVal = document.getElementById('rp-v-sep');
+  sepSlider.addEventListener('input', () => {
+    const t = parseFloat(sepSlider.value);
+    sepVal.textContent = Math.round(t * 100) + '%';
+    for (const e of exploders) e.obj.position.copy(e.dir).multiplyScalar(t * 1.4);
+  });
+
+  const spinBtn = document.getElementById('rp-tg-spin');
+  spinBtn.addEventListener('click', () => {
+    controls.autoRotate = !controls.autoRotate;
+    spinBtn.classList.toggle('off', !controls.autoRotate);
+  });
+
+  function resize(){
+    const w = rpStage.clientWidth, h = rpStage.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  renderer.setAnimationLoop(() => {
+    if (rpEl.style.display === 'none') return;
+    controls.update();
+    renderer.render(scene, camera);
+  });
+}
+
+// Lazy init: the tab switcher dispatches a window resize after showing a
+// scene, so catching that (plus the tab click itself) covers activation.
+document.querySelectorAll('.explore-tab-btn[data-tab="rp"]')
+  .forEach(b => b.addEventListener('click', rpInit));
+window.addEventListener('resize', () => {
+  if (rpEl.style.display !== 'none') rpInit();
+});
+</script>
+
+<!-- ================================================================
+     SCRIPT: VECTOR HOUSE (lazy — inits on first tab activation, since the
+     GLB is ~25 MB. Unlike Rhombi Pod (65 solids), this model has 98,892
+     source triangle primitives — rendering each as its own THREE.Mesh
+     measured well under 1fps (98,892 draw calls). Every category layer is
+     merged into a single BufferGeometry at load (vertex colors carry each
+     part's original Rhino material so the merge stays visually faithful),
+     bringing the whole model down to ~6 draw calls. Explode is therefore
+     category-level (each layer pulls away from centre as one block), not
+     per original CAD part.
+     ================================================================ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const vhEl = document.getElementById('scene-vh');
+const vhStage = document.getElementById('vh-stage');
+let vhInited = false;
+
+function vhInit(){
+  if (vhInited) return;
+  vhInited = true;
+
+  const SC = GF_SCENE.dark;
+  const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
+
+  const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' });
+  renderer.setClearColor(BGc, 1);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  vhStage.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(BGc, 9, 22);
+
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 100);
+  camera.position.set(4.6, 3.0, 6.2);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 1.8;
+  controls.maxDistance = 20;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.5;
+
+  scene.add(new THREE.HemisphereLight(0xf2ead8, 0x14100c, 0.85));
+  const key = new THREE.DirectionalLight(0xffffff, 1.5);
+  key.position.set(5, 7, 4);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(new THREE.Color(SC.face), 0.3);
+  fill.position.set(-5, -2, -4);
+  scene.add(fill);
+
+  // ── layer groups (Rhino layer names preserved by the GLB export) ──
+  const LAYERS = [
+    { key: 'panels', name: 'Panels',  btn: 'vh-tg-panels', on: true  },
+    { key: 'n90',    name: '90',      btn: 'vh-tg-n90',    on: true  },
+    { key: 'n45',    name: '45',      btn: 'vh-tg-n45',    on: true  },
+    { key: 'deck',   name: 'DECK',    btn: 'vh-tg-deck',   on: true  },
+    { key: 'frame',  name: 'Layer1',  btn: 'vh-tg-frame',  on: true  },
+  ];
+  const meshes = {};   // key -> merged THREE.Mesh
+  const holder = new THREE.Group();
+  scene.add(holder);
+
+  function mergeBatches(geometries, batchSize = 700) {
+    if (geometries.length === 0) return null;
+    if (geometries.length === 1) return geometries[0];
+    const batches = [];
+    for (let i = 0; i < geometries.length; i += batchSize) {
+      const batch = geometries.slice(i, i + batchSize);
+      const merged = mergeGeometries(batch, false);
+      if (merged) batches.push(merged);
+      batch.forEach(g => { if (g !== merged) g.dispose(); });
+    }
+    if (batches.length === 1) return batches[0];
+    const final = mergeGeometries(batches, false);
+    batches.forEach(g => { if (g !== final) g.dispose(); });
+    return final;
+  }
+
+  // The GLB is meshopt-compressed (re-encoded from a Draco original so the
+  // already-vendored meshopt decoder can read it — no DRACOLoader/CDN needed).
+  const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.load('assets/models/vector-house-pod.glb', (gltf) => {
+    const root = gltf.scene;
+
+    let meshCount = 0, triCount = 0;
+    root.traverse(o => {
+      if (o.isMesh) {
+        meshCount++;
+        const pos = o.geometry.getAttribute('position');
+        if (pos) triCount += Math.floor((o.geometry.index ? o.geometry.index.count : pos.count) / 3);
+      }
+    });
+
+    const box = new THREE.Box3().setFromObject(root);
+    const center = box.getCenter(new THREE.Vector3());
+    const radius = box.getSize(new THREE.Vector3()).length() / 2;
+    const holderScale = 2.4 / radius;
+    holder.scale.setScalar(holderScale);
+
+    const color = new THREE.Color();
+    // This GLB stores position/normal as normalized Int16Array
+    // (KHR_mesh_quantization). BufferGeometry.applyMatrix4() round-trips
+    // through attribute getX/setX, which — for a *normalized* attribute —
+    // re-quantizes whatever it writes back into that same narrow int16
+    // range. Real world-space coordinates (tens of units) get clamped down
+    // to roughly ±1, collapsing the whole model. Converting to a plain
+    // (non-normalized) Float32 attribute first — reading via getX/getY/getZ,
+    // which correctly dequantizes — makes the later transform lossless.
+    function dequantize(geo) {
+      for (const name of ['position', 'normal']) {
+        const attr = geo.getAttribute(name);
+        if (!attr || !attr.normalized) continue;
+        const out = new Float32Array(attr.count * 3);
+        for (let i = 0; i < attr.count; i++) {
+          out[i*3] = attr.getX(i); out[i*3+1] = attr.getY(i); out[i*3+2] = attr.getZ(i);
+        }
+        geo.setAttribute(name, new THREE.BufferAttribute(out, 3, false));
+      }
+    }
+
+    function collectLayer(layerName) {
+      const node = root.getObjectByName(layerName);
+      if (!node) return null;
+      const geoms = [];
+      node.traverse(o => {
+        if (!o.isMesh) return;
+        const geo = o.geometry.clone();
+        dequantize(geo);
+        o.updateWorldMatrix(true, false);
+        geo.applyMatrix4(o.matrixWorld);
+        geo.translate(-center.x, -center.y, -center.z);
+        // Bake this part's original material colour as a per-vertex
+        // attribute so the merge keeps Gregg's wood/blue/lavender palette
+        // instead of collapsing to one flat colour per layer.
+        const baseColor = o.material && o.material.color ? o.material.color : color.set(0xd9d5c9);
+        const count = geo.getAttribute('position').count;
+        const colors = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+          colors[i*3] = baseColor.r; colors[i*3+1] = baseColor.g; colors[i*3+2] = baseColor.b;
+        }
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        Object.keys(geo.attributes).forEach(name => {
+          if (name !== 'position' && name !== 'normal' && name !== 'color') geo.deleteAttribute(name);
+        });
+        if (!geo.getAttribute('normal')) geo.computeVertexNormals();
+        const ni = geo.index ? geo.toNonIndexed() : geo;
+        if (ni !== geo) geo.dispose();
+        geoms.push(ni);
+      });
+      return geoms;
+    }
+
+    // 'Source::0' — reference curves; kept as native line geometry (only
+    // 47 line-strip primitives — cheap enough not to need merging).
+    const curvesNode = root.getObjectByName('0');
+    if (curvesNode) {
+      curvesNode.traverse(o => {
+        if (o.isLine || o.isLineSegments) {
+          o.material = new THREE.LineBasicMaterial({
+            color: new THREE.Color(SC.unit), transparent: true, opacity: 0.4 });
+        }
+      });
+      curvesNode.visible = false;
+      holder.add(curvesNode);
+    }
+
+    const worldPos = new THREE.Vector3();
+    for (const layer of LAYERS) {
+      const geoms = collectLayer(layer.name);
+      if (!geoms || !geoms.length) continue;
+      const merged = mergeBatches(geoms);
+      if (!merged) continue;
+      merged.computeBoundingSphere();
+      const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({
+        vertexColors: true, roughness: 0.82, metalness: 0, side: THREE.DoubleSide,
+      }));
+      mesh.name = layer.name;
+      holder.add(mesh);
+      meshes[layer.key] = mesh;
+      // Explode direction: this layer's own merged bounding-sphere centre,
+      // relative to the whole model's centre (already recentred above).
+      worldPos.copy(merged.boundingSphere.center);
+      mesh.userData.explodeDir = worldPos.lengthSq() > 1e-8 ? worldPos.clone().normalize() : new THREE.Vector3(0, 1, 0);
+    }
+
+    document.getElementById('vh-loader').classList.add('hide');
+    document.getElementById('vh-src').textContent =
+      `source · Vector House · Rhino 8 · 45°/90° system · ${triCount.toLocaleString()} tris / ${meshCount.toLocaleString()} parts → ${Object.keys(meshes).length + (curvesNode ? 1 : 0)} render groups`;
+    resize();
+  }, undefined, (err) => {
+    document.querySelector('#vh-loader .lt').textContent = 'Could not load the model';
+    console.error('Vector House GLB failed to load:', err);
+  });
+
+  // ── UI ──
+  const panel = document.getElementById('vh-panel');
+  document.getElementById('vh-panel-ph').addEventListener('click',
+    () => panel.classList.toggle('panel-open'));
+
+  function wireToggle(btnId, key){
+    const btn = document.getElementById(btnId);
+    btn.addEventListener('click', () => {
+      const m = meshes[key];
+      if (!m) return;
+      m.visible = !m.visible;
+      btn.classList.toggle('off', !m.visible);
+    });
+  }
+  for (const layer of LAYERS) wireToggle(layer.btn, layer.key);
+
+  const curvesBtn = document.getElementById('vh-tg-curves');
+  curvesBtn.addEventListener('click', () => {
+    const node = holder.children.find(c => c.name === '0');
+    if (!node) return;
+    node.visible = !node.visible;
+    curvesBtn.classList.toggle('off', !node.visible);
+  });
+
+  const sepSlider = document.getElementById('vh-s-sep');
+  const sepVal = document.getElementById('vh-v-sep');
+  sepSlider.addEventListener('input', () => {
+    const t = parseFloat(sepSlider.value);
+    sepVal.textContent = Math.round(t * 100) + '%';
+    for (const key in meshes) {
+      const m = meshes[key];
+      const dir = m.userData.explodeDir;
+      if (dir) m.position.copy(dir).multiplyScalar(t * 1.1);
+    }
+  });
+
+  const spinBtn = document.getElementById('vh-tg-spin');
+  spinBtn.addEventListener('click', () => {
+    controls.autoRotate = !controls.autoRotate;
+    spinBtn.classList.toggle('off', !controls.autoRotate);
+  });
+
+  function resize(){
+    const w = vhStage.clientWidth, h = vhStage.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  renderer.setAnimationLoop(() => {
+    if (vhEl.style.display === 'none') return;
+    controls.update();
+    renderer.render(scene, camera);
+  });
+}
+
+// Lazy init: the tab switcher dispatches a window resize after showing a
+// scene, so catching that (plus the tab click itself) covers activation.
+document.querySelectorAll('.explore-tab-btn[data-tab="vh"]')
+  .forEach(b => b.addEventListener('click', vhInit));
+window.addEventListener('resize', () => {
+  if (vhEl.style.display !== 'none') vhInit();
+});
+</script>
+
 <!-- Tab switcher -->
 <script>
 (function(){
-  const scenes = ['cube', 'cs', 'vs', 'rs', 'vp'];
+  const scenes = ['cube', 'cs', 'vs', 'rs', 'vp', 'rp', 'vh'];
   const btns = document.querySelectorAll('.explore-tab-btn');
   function activate(id) {
     scenes.forEach(s => {
