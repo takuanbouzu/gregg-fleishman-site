@@ -58,8 +58,16 @@ masters rendered **EXACT ✓** at 30000/1001, 848×448, pure-black endpoints:
 230 / 214 / 611 / 367 / 188 / 464 frames. Review masters committed at
 `05_RENDERS/review/` (~16 MB); full log in `render_manifest.md`.
 
+## Animatic approved ✅ · Review cut built ✅ (2026-07-13)
+Yuto approved the six masters ("these look great"). Full review cut built via
+`00_ADMIN/build_review_cut.sh`: the six inserts composited into their exact
+windows over the source, **audio stream-copied untouched**, duration
+identical to the source (770.7366 s). Verified: inserts land in-window,
+on-camera passages and the stray blips untouched. The cut itself (126 MB) is
+NOT committed — over GitHub's file limit; rebuild with the script (needs the
+git-ignored source master re-dropped at `01_SOURCE/video/`).
+
 ## Next recommended action
-Review the six masters in `05_RENDERS/review/` (or re-render locally).
-After visual notes come back: iterate the scenes, then `--prores` finals,
-then the full review cut (masters slotted into the black windows over the
-untouched source).
+Watch the review cut end-to-end. Then: any timing/design notes → iterate
+scenes → `render_insert.mjs --prores` for the six ProRes 422 HQ finals →
+final delivery package (Phase 7: finals + graphics string-out + manifest).

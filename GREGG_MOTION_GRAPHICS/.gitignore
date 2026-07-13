@@ -7,3 +7,6 @@
 05_RENDERS/**/*.mov
 05_RENDERS/**/*.mp4
 !05_RENDERS/review/*.mp4
+# …except the full review cut: 126 MB, over GitHub's limit. Rebuild it with
+# 00_ADMIN/build_review_cut.sh (needs the source master + the six masters).
+05_RENDERS/review/REVIEW_CUT.mp4
