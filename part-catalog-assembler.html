@@ -32,12 +32,21 @@
   }
 }
 </script>
+<script>
+  // ?embed=1 — framed inside another page (e.g. the animation preview):
+  // hide the site nav and reclaim its height. The panel chrome stays.
+  if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.documentElement.classList.add('gf-embed');
+  }
+</script>
 <style>
   :root{ --panel:rgba(20,20,20,.74); --panel-bd:var(--border-strong); }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
   body{ color:var(--tx); font-family:var(--font-ui);
         background:radial-gradient(circle at 50% 40%, var(--bg-elevated) 0%, var(--bg) 56%, var(--bg) 100%); }
+  html.gf-embed #gfnav{display:none;}
+  html.gf-embed #wrap{height:100vh;height:100dvh;}
   #wrap{position:relative;width:100%;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:hidden;}
   canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
   .panel{position:absolute;z-index:10;background:rgba(10,11,10,.68);border:1px solid var(--panel-bd);
