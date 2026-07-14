@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0B0B0B" />
+<title>The Fleishman Sequence — Gregg Fleishman</title>
+<meta name="description" content="A cinematic animation of the Fleishman Sequence — the root spiral of 1 : √2 : √3 unfolding from a grid of unit squares into Gregg Fleishman's geometry." />
+<!-- Social link previews. -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure" />
+<meta property="og:title" content="The Fleishman Sequence — Gregg Fleishman" />
+<meta property="og:description" content="A cinematic animation of the Fleishman Sequence — the root spiral of 1 : √2 : √3 unfolding from a grid of unit squares into Gregg Fleishman's geometry." />
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/fleishman-sequence.html" />
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/fleishman-sequence-poster.png" />
+<meta property="og:image:alt" content="The Fleishman Sequence — poster" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Fleishman Sequence — Gregg Fleishman" />
+<meta name="twitter:description" content="A cinematic animation of the Fleishman Sequence — the root spiral of 1 : √2 : √3 unfolding from a grid of unit squares into Gregg Fleishman's geometry." />
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/fleishman-sequence-poster.png" />
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<!-- GF design system: tokens + synchronous theme controller + WebGL palette -->
+<link rel="stylesheet" href="assets/gf-tokens.css" />
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<style>
+  /* Chrome themes from GF tokens; the geometry palette comes from GF_SCENE in
+     the module below, so canvas + chrome stay matched across the night/paper flip. */
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);color:var(--tx);overflow:hidden;font-family:var(--font-ui)}
+  #stage{position:fixed;inset:0;z-index:0;}
+  #stage canvas{display:block}
+
+  /* shared sticky nav, floated fixed over the fullscreen canvas */
+  /* nav: canonical #gfnav from gf-tokens.css */
+
+  /* caption */
+  #capwrap{position:fixed;left:0;right:0;bottom:96px;z-index:6;display:flex;justify-content:center;
+    pointer-events:none;height:30px}
+  .capstack{position:relative;width:min(86vw,760px);height:30px;text-align:center}
+  .cap{position:absolute;left:0;right:0;top:0;opacity:0;
+    font-family:var(--font-mono);font-size:14px;letter-spacing:.06em;color:var(--tx-dim);
+    text-wrap:balance;line-height:1.4}
+  .cap b{color:var(--accent);font-weight:700}
+
+  /* controls */
+  #controls{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:18px;
+    padding:18px 30px 22px;background:linear-gradient(to top,var(--bg),transparent);
+    transition:opacity .5s ease}
+  #controls button, #controls select{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;
+    background:transparent;color:var(--tx);border:1px solid var(--border-strong);
+    border-radius:2px;padding:8px 12px;cursor:pointer;text-transform:uppercase;
+    transition:border-color .2s,color .2s}
+  #controls button:hover, #controls select:hover{border-color:var(--accent);color:var(--accent)}
+  #controls select{padding:8px 8px}
+  #scrub{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:var(--border-strong);
+    border-radius:2px;cursor:pointer}
+  #scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;
+    background:var(--accent);cursor:pointer;border:none}
+  #scrub::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
+  .tlabel{font-family:var(--font-mono);font-size:11px;color:var(--tx-dim);min-width:38px;text-align:center}
+
+  body.clean #controls, body.clean #gfnav{opacity:0;pointer-events:none}
+  body.clean #capwrap{bottom:7vh}
+
+  /* graceful fallback — shown only if WebGL is unavailable or a dependency fails to load */
+  #fallback{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    padding:32px;text-align:center;background:var(--bg);color:var(--tx-dim);font-family:var(--font-ui)}
+  #fallback .in{max-width:440px}
+  #fallback h2{font-family:var(--font-display);font-weight:800;color:var(--tx);font-size:22px;margin:0 0 12px}
+  #fallback p{font-size:14px;line-height:1.6;margin:0}
+  #fallback a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+
+  /* ---- MOBILE (≤600px) ---- */
+  @media (max-width:600px){
+    html,body{overflow-x:hidden}
+    /* caption: smaller, narrower, lifted above the controls */
+    #capwrap{bottom:128px;height:48px}
+    .capstack{width:92vw;height:48px}
+    .cap{font-size:11px;letter-spacing:.04em}
+    /* transport bar: tighter padding/gap, smaller chrome, scrub keeps a tall tap target */
+    #controls{gap:8px;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px));flex-wrap:wrap}
+    #controls button, #controls select{font-size:10px;letter-spacing:.04em;padding:7px 8px}
+    #controls select{padding:7px 6px}
+    #scrub{flex:1 1 100%;order:5;height:40px;background:transparent}
+    /* draw the visible track inside the 40px-tall hit area */
+    #scrub::-webkit-slider-runnable-track{height:3px;background:var(--border-strong);border-radius:3px}
+    #scrub::-moz-range-track{height:3px;background:var(--border-strong);border-radius:3px}
+    #scrub::-webkit-slider-thumb{width:16px;height:16px;margin-top:-6.5px}
+    #scrub::-moz-range-thumb{width:16px;height:16px}
+    .tlabel{font-size:10px;min-width:30px}
+  }
+</style>
+<script src="assets/vendor/gsap-3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <div id="stage"></div>
+
+  <div id="fallback"><div class="in">
+    <h2>The Fleishman Sequence</h2>
+    <p>This animation needs a current browser with WebGL. Try the latest Chrome, Firefox, or Safari — or read <a href="mathematics.html">The Lost Triangle</a>.</p>
+  </div></div>
+  <noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:32px;text-align:center;color:var(--tx-dim);font-family:var(--font-ui)">This animation needs JavaScript. Read <a href="mathematics.html" style="color:var(--accent)">The Lost Triangle</a>.</div></noscript>
+
+  <nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink active" href="lost-triangle.html">Animation</a>
+  <a class="navlink" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+
+  <div id="capwrap"><div class="capstack" id="capstack"></div></div>
+
+  <div id="controls">
+    <button id="replay" title="Replay">↺ Replay</button>
+    <button id="play" title="Play / Pause">❙❙ Pause</button>
+    <input id="scrub" type="range" min="0" max="1000" value="0" />
+    <span class="tlabel" id="tlabel">0.0s</span>
+    <select id="speed" title="Speed">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected>1×</option>
+      <option value="1.5">1.5×</option>
+      <option value="2">2×</option>
+    </select>
+  </div>
+
+<script>
+  /* if the scene hasn't booted in 8s (e.g. a dependency failed to load), reveal the fallback */
+  window.__bootTimer = setTimeout(function(){
+    if (!window.__booted){ var f = document.getElementById('fallback'); if (f) f.style.display = 'flex'; }
+  }, 8000);
+</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+/* ---------- palette: shared GF night/paper scene colors ----------
+   Geometry roles are semantic and stable (face = √2 = blue in night /
+   warm-orange in paper, space = √3 = magenta — the signature, etc.); only
+   the hues adapt to the active theme. Reload rebuilds the scene on a flip. */
+const SC = GF_SCENE.active();
+const hex = (s) => parseInt(s.replace('#',''), 16);
+const COL = {
+  bg:hex(SC.bg[1]), bone:hex(SC.ink), dim:hex(SC.muted),
+  gold:hex(SC.angle), face:hex(SC.face), space:hex(SC.space), green:hex(SC.tri)
+};
+const HEX = { bone:SC.ink, dim:SC.muted, gold:SC.angle, face:SC.face, space:SC.space, green:SC.tri };
+const clean = new URLSearchParams(location.search).has('clean');
+if (clean) document.body.classList.add('clean');
+
+/* ---------- renderer / scene / camera rig ---------- */
+const stage = document.getElementById('stage');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:true }); }
+catch (e){ const f = document.getElementById('fallback'); if (f) f.style.display = 'flex'; throw e; }
+renderer.setClearColor(COL.bg, 1);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xfff4df, 0x172128, 1.25));
+const structureKey = new THREE.DirectionalLight(0xffdfad, 2.2);
+structureKey.position.set(5, 8, 7); scene.add(structureKey);
+
+// gimbal-free rig: pivot Group at look-at target, camera child at (0,0,R)
+const pivot = new THREE.Group();
+scene.add(pivot);
+const camera = new THREE.PerspectiveCamera(34, 1, 0.01, 100);
+camera.position.set(0, 0, 4.4);
+pivot.add(camera);
+
+const PLAN_CENTER = new THREE.Vector3(1.05, 0, 0.80);
+const CUBE_CENTER = new THREE.Vector3(0.5, 0.5, 0.5);
+
+let W = 1, H = 1;
+const strokes = [];
+function resize(){
+  W = stage.clientWidth; H = stage.clientHeight;
+  renderer.setSize(W, H);
+  const aspect = W / H, baseAspect = 16 / 9, baseFov = 34;
+  camera.aspect = aspect;
+  camera.fov = aspect < baseAspect
+    ? THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(baseFov / 2)) * baseAspect / aspect))
+    : baseFov;
+  camera.updateProjectionMatrix();
+  strokes.forEach(s => s.mat.resolution.set(W, H));
+}
+window.addEventListener('resize', resize);
+
+/* ---------- plan pixel-space → world mapping ---------- */
+// world = ((px-159)/287, y, (py-264)/287)
+function P(px, py, y=0){ return new THREE.Vector3((px-159)/287, y, (py-264)/287); }
+
+/* ---------- progressive polyline helper ---------- */
+function partial(pts, t){
+  if (t <= 0) return [pts[0].clone(), pts[0].clone()];
+  if (t >= 1) return pts.map(p => p.clone());
+  let total = 0; const seg = [];
+  for (let i=1;i<pts.length;i++){ const d = pts[i].distanceTo(pts[i-1]); seg.push(d); total += d; }
+  const target = t*total; const out = [pts[0].clone()]; let acc = 0;
+  for (let i=1;i<pts.length;i++){
+    if (acc + seg[i-1] < target){ out.push(pts[i].clone()); acc += seg[i-1]; }
+    else { const r = (target-acc)/Math.max(seg[i-1],1e-9); out.push(pts[i-1].clone().lerp(pts[i], r)); break; }
+  }
+  return out;
+}
+
+/* ---------- fat line stroke ---------- */
+class Stroke {
+  constructor(pts, color, width, opacity=1, ro=1, opts={}){
+    this.pts = pts;
+    this.geom = new LineGeometry();
+    const cfg = { color, linewidth:width, transparent:true, opacity };
+    if (opts.dashed){ cfg.dashed = true; cfg.dashSize = opts.dashSize; cfg.gapSize = opts.gapSize; }
+    this.mat = new LineMaterial(cfg);
+    this.mat.resolution.set(W, H);
+    this.line = new Line2(this.geom, this.mat);
+    this.line.renderOrder = ro;
+    this.line.frustumCulled = false;
+    if (opts.dashed){
+      // motion guide: static, full-length dashed line — shown/retired by opacity (fade),
+      // never by partial progress; distances computed once so dashes are stable.
+      const arr = []; this.pts.forEach(v => arr.push(v.x, v.y, v.z));
+      this.geom.setPositions(arr);
+      this.line.computeLineDistances();
+      this.line.visible = true; this._p = 1;
+    } else {
+      this.setProgress(0);
+    }
+    strokes.push(this);
+    scene.add(this.line);
+  }
+  setProgress(t){
+    this._p = t;
+    this.line.visible = t > 0.0008;
+    const p = partial(this.pts, t); const arr = [];
+    p.forEach(v => { arr.push(v.x, v.y, v.z); });
+    this.geom.setPositions(arr);
+  }
+}
+function S(pts, color, width, opacity, ro, bucket, opts){
+  const s = new Stroke(pts, color, width, opacity, ro, opts);
+  if (bucket) bucket.push(s.mat);
+  return s;
+}
+
+/* ---------- polygon fill ---------- */
+function F(pts, color, bucket){
+  const g = new THREE.BufferGeometry(); const v = [];
+  for (let i=1;i<pts.length-1;i++){
+    v.push(pts[0].x,pts[0].y,pts[0].z, pts[i].x,pts[i].y,pts[i].z, pts[i+1].x,pts[i+1].y,pts[i+1].z);
+  }
+  g.setAttribute('position', new THREE.Float32BufferAttribute(v,3));
+  const m = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
+  const mesh = new THREE.Mesh(g, m); mesh.renderOrder = -2;
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+  if (bucket) bucket.push(m);
+  return m;
+}
+
+/* ---------- sprite text label ---------- */
+function makeLabel(text, color, worldH=0.15){
+  const font = '700 110px "Space Mono", monospace';
+  const meas = document.createElement('canvas').getContext('2d'); meas.font = font;
+  const pad = 24;
+  const w = Math.ceil(meas.measureText(text).width) + pad*2;
+  const h = 110 + pad*2;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'); ctx.font = font; ctx.fillStyle = color;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, w/2, h/2);
+  const tex = new THREE.CanvasTexture(c); tex.anisotropy = 8; tex.minFilter = THREE.LinearFilter;
+  const mat = new THREE.SpriteMaterial({ map:tex, transparent:true, opacity:0, depthTest:false, depthWrite:false });
+  const sp = new THREE.Sprite(mat);
+  sp.scale.set(worldH * w/h, worldH, 1);
+  sp.renderOrder = 30;
+  return { sprite:sp, mat };
+}
+function L(text, color, pos, bucket, h=0.15){
+  const { sprite, mat } = makeLabel(text, color, h);
+  sprite.position.copy(pos); scene.add(sprite);
+  if (bucket) bucket.push(mat);
+  return mat;
+}
+
+/* ---------- material buckets (for act-level fades) ---------- */
+const M = { spiral:[], plan:[], cubeEdge:[], cubeBase:[], cubeExtra:[], cell:[], diamond:[], octa:[], octaFill:[], neigh:[],
+            standGhost:[], fdFlow:[], fillVec:[] };
+/* flowing-dash registry: {mat,rate,start,end} — dashOffset marches only inside the beat window
+   (gated to !paused/!scrubbing in the ticker) so still frames never drift on seek/pause. */
+const flows = [];
+const addFlow = (mat, rate, start, end) => flows.push({ mat, rate, start, end });
+
+/* ======================================================= *
+ *  GEOMETRY  (await fonts so label textures use Space Mono)
+ * ======================================================= */
+await document.fonts.ready;
+
+/* ---- Act 0: Gregg's root sequence (unit grid → √2 diamond → Lost Triangle) ---- */
+// faithful to root-sequence.png: 3×3 grid of unit modules; the unit-square diagonal
+// is √2 (blue diamond); swing arcs carry √2 then √3 onto the baseline; the green
+// Lost Triangle (legs 1 & √2, hypotenuse √3) is the signature.
+const rootGrid = [];     // faint grid
+const rootStrokes = [];  // construction lines + arcs
+const rootFills = [];    // diamond + triangle fills
+const rootLabels = [];
+(function buildRoot(){
+  const S2 = Math.SQRT2, S3 = Math.sqrt(3);
+  const s = 0.60, gx = 1.05 - s*1.5, gz = 0.80 - s*1.5;   // centre 3×3 on plan centre
+  const U = (u,v) => new THREE.Vector3(gx + s*u, 0, gz + s*v);   // u→right, v→down
+  const arc = (cu,cv,r,a0,a1,seg=40) => { const a=[]; for(let i=0;i<=seg;i++){ const t=a0+(a1-a0)*i/seg; a.push(U(cu+r*Math.cos(t), cv+r*Math.sin(t))); } return a; };
+  const O = U(1,2);                                    // construction origin (baseline v=2)
+  // 3×3 grid
+  for (let i=0;i<=3;i++){
+    rootGrid.push(S([U(i,0),U(i,3)], COL.bone, 1.2, 0.16, 1, M.spiral));
+    rootGrid.push(S([U(0,i),U(3,i)], COL.bone, 1.2, 0.16, 1, M.spiral));
+  }
+  // unit module square (1) + faint fill
+  rootStrokes.push(S([U(1,2),U(2,2),U(2,1),U(1,1),U(1,2)], COL.bone, 2.0, 0.85, 3, M.spiral));
+  // √2 : the rotated √2 diamond (edge = √2), centred on the origin, lower-left
+  const v2diamond = [U(1,1),U(0,2),U(1,3),U(2,2)];
+  rootFills.push(F([...v2diamond.map(p=>p.clone()), v2diamond[0].clone()], COL.face, M.spiral));
+  rootStrokes.push(S([...v2diamond, v2diamond[0]], COL.face, 2.2, 0.92, 3, M.spiral));
+  rootStrokes.push(S([O, U(2,1)], COL.face, 2.2, 0.95, 4, M.spiral));            // √2 radius/diagonal
+  rootStrokes.push(S(arc(1,2,S2, -Math.PI/4, 0), COL.gold, 1.8, 0.9, 4, M.spiral)); // √2 arc → baseline
+  // √3 : Lost Triangle (1, √2, √3) fill green + magenta hypotenuse + √3 arc
+  const ltri = [O, U(1+S2,2), U(1+S2,1)];
+  rootFills.push(F([...ltri.map(p=>p.clone()), ltri[0].clone()], COL.green, M.spiral));
+  rootStrokes.push(S([U(1+S2,2),U(1+S2,1)], COL.bone, 1.8, 0.8, 3, M.spiral));   // the "1" leg
+  rootStrokes.push(S([O, U(1+S2,1)], COL.space, 2.4, 1, 4, M.spiral));           // √3 hypotenuse
+  rootStrokes.push(S(arc(1,2,S3, -Math.atan2(1,S2), 0), COL.gold, 1.8, 0.9, 4, M.spiral)); // √3 arc
+  // labels
+  rootLabels.push(L('1',  HEX.bone,  U(0.5,2.5), M.spiral, 0.12));
+  rootLabels.push(L('√2', HEX.face,  U(0.78,1.62), M.spiral, 0.13));
+  rootLabels.push(L('√3', HEX.space, U(1.74,1.42), M.spiral, 0.13));
+})();
+
+/* ---- Act 1: Plan / Lost Triangle ---- */
+// construction circles (bone @0.40)
+const circA = S(planCircle(298,387,185), COL.bone, 2.0, 0.46, 1, M.plan);
+const circB = S(planCircle(409,552,195), COL.bone, 2.0, 0.46, 1, M.plan);
+const circC = S(planCircle(703,482,193), COL.bone, 2.0, 0.46, 1, M.plan);
+function planCircle(cx,cy,r,seg=96){ const a=[]; for(let i=0;i<=seg;i++){const t=i/seg*Math.PI*2; a.push(P(cx+r*Math.cos(t), cy+r*Math.sin(t)));} return a; }
+
+// unit square
+const sq = S([P(159,264),P(446,264),P(446,507),P(159,507),P(159,264)], COL.bone, 3.0, 1, 3, M.plan);
+// square diagonals (√2 face diagonals — blue)
+const dg1 = S([P(159,264),P(446,507)], COL.face, 2.4, 0.95, 3, M.plan);
+const dg2 = S([P(446,264),P(159,507)], COL.face, 2.4, 0.95, 3, M.plan);
+
+// blue √2 fold (rhombus) — fill + outline
+const foldPts = [P(444,351,-0.004),P(725,549,-0.004),P(447,753,-0.004),P(166,555,-0.004)];
+const foldFill = F([...foldPts, foldPts[0]], COL.face, M.plan);
+const foldLine = S([P(444,351),P(725,549),P(447,753),P(166,555),P(444,351)], COL.face, 2.4, 0.9, 3, M.plan);
+// white inner half-triangle (bone fill)
+const whiteFill = F([P(444,351,-0.003),P(166,555,-0.003),P(444,552,-0.003)], COL.bone, M.plan);
+// magenta Lost Triangle — fill + outline + internal divider
+const magPts = [P(453,360,-0.002),P(848,387,-0.002),P(617,715,-0.002)];
+const magFill = F([...magPts, magPts[0]], COL.space, M.plan);
+const magLine = S([P(453,360),P(848,387),P(617,715),P(453,360)], COL.space, 2.8, 1, 3, M.plan);
+const magDiv  = S([P(848,387),P(535,537)], COL.space, 2.0, 0.85, 3, M.plan);
+// plan labels
+const pl1 = L('1',  HEX.bone, P(300,238), M.plan, 0.14);
+const plv2= L('√2', HEX.face, P(250,400), M.plan, 0.14);
+const plv3= L('√3', HEX.space,P(690,520), M.plan, 0.14);
+
+/* ---- Act 3a: cube + Lost Triangle in space ---- */
+const O=new THREE.Vector3(0,0,0), X=new THREE.Vector3(1,0,0), Z=new THREE.Vector3(0,0,1), A=new THREE.Vector3(1,0,1);
+const B=new THREE.Vector3(1,1,1), O2=new THREE.Vector3(0,1,0), X2=new THREE.Vector3(1,1,0), Z2=new THREE.Vector3(0,1,1);
+// 12 ghost cube edges (these become the short diagonals of the rhombic cell)
+const cubeEdgePairs = [
+  [O,X],[X,A],[A,Z],[Z,O],            // bottom
+  [O2,X2],[X2,B],[B,Z2],[Z2,O2],      // top
+  [O,O2],[X,X2],[A,B],[Z,Z2]          // verticals
+];
+const cubeEdges = cubeEdgePairs.map(([a,b]) => S([a,b], COL.bone, 1.4, 0.16, 1, M.cubeEdge));
+// prominent base square
+const baseSq = S([O,X,A,Z,O], COL.bone, 2.6, 0.92, 2, M.cubeBase);
+// extras (fade before the cell): face-diag √2, lift, space-diag √3, proof fill, angle, labels
+const faceDiag = S([O,A], COL.face, 3.0, 1, 4, M.cubeExtra);   // √2
+const lift     = S([A,B], COL.bone, 2.6, 1, 4, M.cubeExtra);   // 1
+const spaceDiag= S([O,B], COL.space,3.2, 1, 4, M.cubeExtra);   // √3
+const proofFill= F([O,A,B], COL.green, M.cubeExtra);
+const angleArc = S(arcPts(O, A.clone(), B.clone(), 0.34, 44), COL.gold, 2.0, 0.95, 4, M.cubeExtra);
+function arcPts(c,u,v,rad,seg){ u=u.clone().normalize(); v=v.clone().normalize();
+  const ang=u.angleTo(v), axis=new THREE.Vector3().crossVectors(u,v).normalize(); const a=[];
+  for(let i=0;i<=seg;i++){ const q=new THREE.Quaternion().setFromAxisAngle(axis,ang*i/seg);
+    a.push(c.clone().add(u.clone().applyQuaternion(q).multiplyScalar(rad))); } return a; }
+const cl_v2 = L('√2', HEX.face,  O.clone().lerp(A,0.5).add(new THREE.Vector3(0,-0.13,0)), M.cubeExtra, 0.13);
+const cl_1  = L('1',  HEX.bone,  A.clone().lerp(B,0.5).add(new THREE.Vector3(0.14,0,0.02)), M.cubeExtra, 0.13);
+const cl_v3 = L('√3', HEX.space, O.clone().lerp(B,0.5).add(new THREE.Vector3(-0.16,0.02,0)), M.cubeExtra, 0.14);
+const cl_th = L('35.26°', HEX.gold, O.clone().add(new THREE.Vector3(0.46,0.16,0.30)), M.cubeExtra, 0.105);
+
+/* ---- Stand-up: the plan's magenta Lost Triangle lifts AND turns onto the
+   cube's space-diagonal proof triangle — same triangle, plan → space. A vertex
+   morph (driven by stand.p, rebuilt per frame so it seeks cleanly) carries the
+   three plan vertices onto [A, O, B] so its edges land exactly on the cube's
+   √2 leg (O–A), √3 hypotenuse (O–B) and the unit lift (A–B). ---- */
+const standPlan = [ P(453,360,-0.002), P(848,387,-0.002), P(617,715,-0.002) ];  // == magPts (plan Lost Triangle)
+const standCube = [ A.clone(), O.clone(), B.clone() ];                          // apex→O, so O–A=√2, O–B=√3, A–B=1
+const stand = { p:0 };
+const standAt = (i) => standPlan[i].clone().lerp(standCube[i], stand.p);
+const standFillGeom = new THREE.BufferGeometry();
+standFillGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(9), 3));
+const standFillMat = new THREE.MeshBasicMaterial({ color:COL.space, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
+const standFillMesh = new THREE.Mesh(standFillGeom, standFillMat);
+standFillMesh.renderOrder = -2; standFillMesh.frustumCulled = false; scene.add(standFillMesh);
+const standOutGeom = new LineGeometry();
+const standOutMat = new LineMaterial({ color:COL.space, linewidth:2.8, transparent:true, opacity:0 });
+standOutMat.resolution.set(W, H);
+const standOut = new Line2(standOutGeom, standOutMat);
+standOut.renderOrder = 5; standOut.frustumCulled = false; scene.add(standOut);
+strokes.push({ mat:standOutMat });                       // so resize() keeps its resolution current
+M.cubeExtra.push(standFillMat, standOutMat);             // declutters with the rest at the rhombic-cell beat
+function updateStand(){
+  const a = standAt(0), b = standAt(1), c = standAt(2);
+  const pos = standFillGeom.attributes.position;
+  pos.array.set([a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z]); pos.needsUpdate = true;
+  standOutGeom.setPositions([a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z, a.x,a.y,a.z]);
+}
+updateStand();
+
+/* ---- Motion guides (dashed) — express the geometric movements, subordinate to the solids ---- */
+// FL-1 · stand-up destination ghost: a faint magenta loop on the TARGET pose [A,O,B], held while
+//        the solid Lost Triangle lifts and turns onto it (same magenta = "same triangle, arriving").
+const standGhost = S([A.clone(), O.clone(), B.clone(), A.clone()], COL.space, 1.4, 0, 5, M.standGhost,
+                     { dashed:true, dashSize:0.045, gapSize:0.035 });
+// FL-2 · flowing legs: dashes march UNDER √2 (O→A, blue) then the unit lift (A→B, bone) as each draws.
+const yLift = new THREE.Vector3(0, 0.003, 0);   // tiny nudge to sit just off the solid edge (no z-fight)
+const fdFlowA = S([O.clone().add(yLift), A.clone().add(yLift)], COL.face, 1.3, 0, 4, M.fdFlow,
+                  { dashed:true, dashSize:0.06, gapSize:0.05 });
+const fdFlowB = S([A.clone().add(yLift), B.clone().add(yLift)], COL.bone, 1.3, 0, 4, M.fdFlow,
+                  { dashed:true, dashSize:0.06, gapSize:0.05 });
+addFlow(fdFlowA.mat, 0.9, 20.1, 21.5);
+addFlow(fdFlowB.mat, 0.9, 21.3, 22.8);
+// FL-3 · space-fill vector: one magenta ray from the cell centre out PAST the neighbour,
+//        marching outward — the "one module → the whole of space" gesture.
+const fillVec = S([new THREE.Vector3(0.5,0.5,0.5), new THREE.Vector3(2.0,2.0,0.5)], COL.space, 1.4, 0, 4, M.fillVec,
+                  { dashed:true, dashSize:0.06, gapSize:0.05 });
+addFlow(fillVec.mat, 1.2, 38.9, 43.2);
+
+/* ---- Act 3b: rhombic cell ---- */
+const corners = [];
+for (const x of [0,1]) for (const y of [0,1]) for (const z of [0,1]) corners.push(new THREE.Vector3(x,y,z));
+const apexes = [
+  new THREE.Vector3(1.5,.5,.5), new THREE.Vector3(-.5,.5,.5),
+  new THREE.Vector3(.5,1.5,.5), new THREE.Vector3(.5,-.5,.5),
+  new THREE.Vector3(.5,.5,1.5), new THREE.Vector3(.5,.5,-.5)
+];
+const cellPairs = [];
+for (const c of corners) for (const ap of apexes)
+  if (Math.abs(c.distanceTo(ap) - Math.sqrt(0.75)) < 1e-6) cellPairs.push([c, ap]);
+const cellEdges = cellPairs.map(([a,b]) => S([a,b], COL.bone, 1.6, 0.5, 2, M.cell));
+
+// highlighted √2 diamond face
+const dApex1 = new THREE.Vector3(1.5,.5,.5), dApex2 = new THREE.Vector3(.5,1.5,.5);
+const dCor1  = new THREE.Vector3(1,1,0),     dCor2  = new THREE.Vector3(1,1,1);
+const diamondFill = F([dApex1,dCor1,dApex2,dCor2], COL.green, M.diamond);
+const diamondOut  = S([dApex1,dCor1,dApex2,dCor2,dApex1], COL.bone, 2.4, 0.95, 5, M.diamond);
+const diamLong = S([dApex1,dApex2], COL.space, 3.0, 1, 6, M.diamond);    // √2
+const diamShort= S([dCor1,dCor2],   COL.bone,  2.6, 1, 6, M.diamond);    // 1
+const dl_v2 = L('√2', HEX.space, dApex1.clone().lerp(dApex2,0.5).add(new THREE.Vector3(0.06,0.12,0)), M.diamond, 0.13);
+const dl_1  = L('1',  HEX.bone,  dCor1.clone().lerp(dCor2,0.5).add(new THREE.Vector3(0.18,0,0.04)), M.diamond, 0.12);
+
+/* ---- Act 3c: the six apexes form an octahedron — every edge √2 ---- */
+// octahedron edges connect every apex pair except the three opposite (axis) pairs.
+const octaPairs = [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]];
+const octaEdges = octaPairs.map(([i,j]) => S([apexes[i],apexes[j]], COL.face, 2.2, 0.92, 5, M.octa));
+// faint octahedron faces for solidity
+const octaFaceTris = [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,2,4],[1,4,3],[1,3,5],[1,5,2]];
+const octaFills = octaFaceTris.map(([a,b,c]) => F([apexes[a],apexes[b],apexes[c]], COL.face, M.octaFill));
+const ol_v2 = L('√2', HEX.face, apexes[0].clone().lerp(apexes[2],0.5).add(new THREE.Vector3(0.10,0.10,0)), M.octa, 0.13);
+
+// neighbour cell (faint) — implies space-filling
+const neighStrokes = cellPairs.map(([a,b]) => {
+  const off = new THREE.Vector3(1,1,0);
+  return S([a.clone().add(off), b.clone().add(off)], COL.bone, 1.4, 0.13, 1, M.neigh);
+});
+
+/* ---- Extended reproduction: cell fields, mixed scales, built structure ---- */
+const EXT = {
+  cubeEdge:[], cubeSurface:[], rhombEdge:[], rhombSurface:[], nestedEdge:[], nestedSurface:[],
+  truncEdge:[], truncSurface:[], axisEdge:[], axisSurface:[], bodyEdge:[], bodySurface:[],
+  hybridEdge:[], hybridSurface:[], structureEdge:[], structureSurface:[]
+};
+
+function extFaceGeometry(faces){
+  const p=[];
+  for(const f of faces){
+    const c=f.reduce((s,v)=>s.add(new THREE.Vector3(...v)),new THREE.Vector3()).multiplyScalar(1/f.length);
+    for(let i=0;i<f.length;i++)p.push(c.x,c.y,c.z,...f[i],...f[(i+1)%f.length]);
+  }
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.computeVertexNormals();return g;
+}
+function extUniqueEdges(faces){
+  const map=new Map();
+  for(const f of faces)for(let i=0;i<f.length;i++){
+    const a=f[i],b=f[(i+1)%f.length],ka=a.join(','),kb=b.join(','),k=ka<kb?ka+'|'+kb:kb+'|'+ka;
+    if(!map.has(k))map.set(k,[a,b]);
+  }
+  return [...map.values()];
+}
+function extPoly(faces,color,scale,parent,edgeBucket,surfaceBucket){
+  const g=new THREE.Group();
+  const sm=new THREE.MeshStandardMaterial({color,transparent:true,opacity:0,roughness:.62,metalness:.04,side:THREE.DoubleSide,depthWrite:false});
+  const mesh=new THREE.Mesh(extFaceGeometry(faces),sm);mesh.renderOrder=-2;
+  const ep=[];extUniqueEdges(faces).forEach(([a,b])=>ep.push(...a,...b));
+  const em=new THREE.LineBasicMaterial({color,transparent:true,opacity:0,depthWrite:false});
+  const edge=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(ep,3)),em);edge.renderOrder=4;
+  g.add(mesh,edge);g.scale.setScalar(scale);parent.add(g);edgeBucket.push(em);surfaceBucket.push(sm);return g;
+}
+function extPrimitive(geo,color,scale,parent,edgeBucket,surfaceBucket){
+  const g=new THREE.Group();
+  const sm=new THREE.MeshStandardMaterial({color,transparent:true,opacity:0,roughness:.65,metalness:.03,side:THREE.DoubleSide,depthWrite:false});
+  const mesh=new THREE.Mesh(geo,sm);mesh.renderOrder=-2;
+  const em=new THREE.LineBasicMaterial({color,transparent:true,opacity:0,depthWrite:false});
+  const edge=new THREE.LineSegments(new THREE.EdgesGeometry(geo,18),em);edge.renderOrder=4;
+  g.add(mesh,edge);g.scale.setScalar(scale);parent.add(g);edgeBucket.push(em);surfaceBucket.push(sm);return g;
+}
+const RD_EXT=[[[2,0,0],[1,1,1],[0,2,0],[1,1,-1]],[[2,0,0],[1,-1,1],[0,-2,0],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,2,0],[-1,1,-1]],[[-2,0,0],[-1,-1,1],[0,-2,0],[-1,-1,-1]],[[2,0,0],[1,1,1],[0,0,2],[1,-1,1]],[[2,0,0],[1,1,-1],[0,0,-2],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,0,2],[-1,-1,1]],[[-2,0,0],[-1,1,-1],[0,0,-2],[-1,-1,-1]],[[0,2,0],[1,1,1],[0,0,2],[-1,1,1]],[[0,2,0],[1,1,-1],[0,0,-2],[-1,1,-1]],[[0,-2,0],[1,-1,1],[0,0,2],[-1,-1,1]],[[0,-2,0],[1,-1,-1],[0,0,-2],[-1,-1,-1]]];
+function truncFacesExt(){
+  const sq=[],hex=[];
+  for(let axis=0;axis<3;axis++)for(const s of [1,-1]){
+    const f=[],perp=[[1,0],[0,1],[-1,0],[0,-1]],o1=(axis+1)%3,o2=(axis+2)%3;
+    for(const p of perp){const v=[0,0,0];v[axis]=2*s;v[o1]=p[0];v[o2]=p[1];f.push(v)}sq.push(f);
+  }
+  const base=[[2,1,0],[1,2,0],[0,2,1],[0,1,2],[1,0,2],[2,0,1]];
+  for(const sx of [1,-1])for(const sy of [1,-1])for(const sz of [1,-1])hex.push(base.map(v=>[v[0]*sx,v[1]*sy,v[2]*sz]));
+  return sq.concat(hex);
+}
+const TR_EXT=truncFacesExt();
+function extTO(scale,parent,position,edgeBucket,surfaceBucket){
+  const g=new THREE.Group();g.position.copy(position||new THREE.Vector3());parent.add(g);
+  extPoly(TR_EXT.slice(0,6),COL.bone,scale,g,edgeBucket,surfaceBucket);
+  extPoly(TR_EXT.slice(6),COL.space,scale,g,edgeBucket,surfaceBucket);
+  return g;
+}
+
+const cubeField=new THREE.Group();scene.add(cubeField);
+for(let x=-1;x<=1;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){
+  const c=extPrimitive(new THREE.BoxGeometry(.78,.78,.78),x===0&&y===0&&z===0?COL.gold:COL.bone,1,cubeField,EXT.cubeEdge,EXT.cubeSurface);
+  c.position.set(x*.82,y*.82,z*.82);
+}
+
+const rhombField=new THREE.Group();scene.add(rhombField);
+extPoly(RD_EXT,COL.gold,.36,rhombField,EXT.rhombEdge,EXT.rhombSurface);
+const faceDirs=[];
+for(const zero of [0,1,2])for(const a of [-2,2])for(const b of [-2,2]){const p=[0,0,0];p[(zero+1)%3]=a;p[(zero+2)%3]=b;faceDirs.push(p)}
+faceDirs.forEach(p=>{const c=extPoly(RD_EXT,COL.face,.36,rhombField,EXT.rhombEdge,EXT.rhombSurface);c.position.set(p[0]*.36,p[1]*.36,p[2]*.36)});
+
+const nestedSystem=new THREE.Group();scene.add(nestedSystem);
+extPrimitive(new THREE.BoxGeometry(2.1,2.1,2.1),COL.bone,1,nestedSystem,EXT.nestedEdge,EXT.nestedSurface);
+extPrimitive(new THREE.OctahedronGeometry(1.55),COL.face,1,nestedSystem,EXT.nestedEdge,EXT.nestedSurface);
+extPoly(RD_EXT,COL.gold,.58,nestedSystem,EXT.nestedEdge,EXT.nestedSurface);
+
+const truncHero=new THREE.Group();scene.add(truncHero);extTO(.72,truncHero,new THREE.Vector3(),EXT.truncEdge,EXT.truncSurface);
+
+const truncCluster=new THREE.Group();scene.add(truncCluster);
+extTO(.34,truncCluster,new THREE.Vector3(),EXT.axisEdge,EXT.axisSurface);
+[[1.36,0,0],[-1.36,0,0],[0,1.36,0],[0,-1.36,0],[0,0,1.36],[0,0,-1.36]].forEach(p=>extTO(.34,truncCluster,new THREE.Vector3(...p),EXT.axisEdge,EXT.axisSurface));
+for(const x of [-.68,.68])for(const y of [-.68,.68])for(const z of [-.68,.68])extTO(.34,truncCluster,new THREE.Vector3(x,y,z),EXT.bodyEdge,EXT.bodySurface);
+
+const hybrid=new THREE.Group();scene.add(hybrid);
+const hrd=extPoly(RD_EXT,COL.face,.46,hybrid,EXT.hybridEdge,EXT.hybridSurface);hrd.position.x=-1.2;
+extTO(.38,hybrid,new THREE.Vector3(1.2,0,0),EXT.hybridEdge,EXT.hybridSurface);
+for(const p of [[0,0,0],[0,.9,0],[0,-.9,0],[0,0,.9],[0,0,-.9]]){const c=extPrimitive(new THREE.BoxGeometry(.48,.48,.48),COL.gold,1,hybrid,EXT.hybridEdge,EXT.hybridSurface);c.position.set(...p)}
+for(const p of [[-2.1,.8,0],[-2.1,-.8,0],[2.1,.8,0],[2.1,-.8,0]])extTO(.18,hybrid,new THREE.Vector3(...p),EXT.hybridEdge,EXT.hybridSurface);
+
+const structure=new THREE.Group();scene.add(structure);
+try{
+  const loader=new GLTFLoader();loader.setMeshoptDecoder(MeshoptDecoder);
+  const gltf=await loader.loadAsync('./assets/models/vector-house.glb');
+  const model=gltf.scene,meshes=[];model.traverse(n=>{if(n.isMesh)meshes.push(n)});
+  const box=new THREE.Box3().setFromObject(model),center=box.getCenter(new THREE.Vector3()),size=box.getSize(new THREE.Vector3()),s=4.6/Math.max(size.x,size.y,size.z);
+  model.scale.setScalar(s);model.position.copy(center).multiplyScalar(-s);
+  for(const mesh of meshes){
+    const src=Array.isArray(mesh.material)?mesh.material[0]:mesh.material,color=src?.color?.clone()||new THREE.Color(COL.gold);
+    const m=new THREE.MeshStandardMaterial({color,transparent:true,opacity:0,roughness:.7,metalness:.03,side:THREE.DoubleSide,depthWrite:false});mesh.material=m;EXT.structureSurface.push(m);
+  }
+  structure.add(model);
+}catch(error){console.warn('Vector House model unavailable.',error)}
+structure.rotation.set(-.18,-.8,.02);
+
+/* ======================================================= *
+ *  CAPTIONS
+ * ======================================================= */
+const capstack = document.getElementById('capstack');
+function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capstack.appendChild(d); return d; }
+const C = {
+  spiral: cap("Gregg's root sequence · <b>1 → √2 → √3</b>"),
+  circles:cap("Three circles · <b>1 : √2 : √3</b>"),
+  square: cap("The module · <b>the unit square</b>"),
+  diag:   cap("Its diagonal · <b>√2</b>"),
+  fold:   cap("The √2 fold"),
+  lost:   cap("<b>The Lost Triangle</b> · √3"),
+  orbit:  cap("Stand it up · <b>plan → space</b>"),
+  cube:   cap("The module becomes a <b>cube</b>"),
+  fd:     cap("Face diagonal · <b>√2</b>"),
+  liftc:  cap("Lift one unit"),
+  sd:     cap("Space diagonal · <b>√3 — the Lost Triangle in space</b>"),
+  ang:    cap("<b>θ = 35.264°</b>"),
+  intro:  cap("The Lost Triangle rises into space"),
+  raise:  cap("Raise a face on every plane of the cube"),
+  cell:   cap("The <b>rhombic cell</b> — every face a √2 diamond"),
+  ratio:  cap("<b>√2 : 1</b> — the ratio that packs space"),
+  octa1:  cap("Connect the six apexes — an <b>octahedron</b>"),
+  octa2:  cap("Every edge <b>√2</b> — the spiral, raised into space"),
+  fill:   cap("<b>One module → the whole of space</b>")
+};
+
+Object.assign(C,{
+  matrix: cap('The cube repeats into a <b>three-dimensional array</b>'),
+  rhombi: cap('Face-diagonal neighbors resolve the <b>rhombic field</b>'),
+  nested: cap('Cube, octahedron, and rhombic cell share <b>one directional system</b>'),
+  trunc:  cap('Six square faces and eight hexagons form the <b>truncated octahedron</b>'),
+  axis6:  cap('First: <b>six square-face neighbors</b> along the principal axes'),
+  body8:  cap('Then: <b>eight hex-face neighbors</b> along body diagonals'),
+  all14:  cap('Together: the exact <b>14-neighbor BCC cluster</b>'),
+  scales: cap('Different cells, different scales - <b>the same spatial rule</b>'),
+  build:  cap('The geometry becomes a joint; the joint becomes <b>architecture</b>'),
+  final:  cap('<b>THE FLEISHMAN SEQUENCE</b> - mathematics into structure')
+});
+
+/* ======================================================= *
+ *  MASTER TIMELINE
+ * ======================================================= */
+const tl = gsap.timeline({ paused:true });
+
+/* draw-on is driven from the render loop (scrub/seek-proof) rather than
+   proxy onUpdate tweens, which GSAP does not re-apply on a seek. */
+const draws = [];
+const easeFn = {};
+function getEase(name){ return easeFn[name] || (easeFn[name] = gsap.parseEase(name)); }
+function draw(stroke, start, dur=1.2, ease='power2.inOut'){
+  draws.push({ stroke, start, dur, ease:getEase(ease) });
+}
+function drawMany(arr, start, dur, stagger=0, ease='power2.inOut'){
+  arr.forEach((s,i)=>draw(s, start + i*stagger, dur, ease));
+}
+function updateDraws(t){
+  for (const d of draws){
+    let p = (t - d.start) / d.dur;
+    p = p <= 0 ? 0 : p >= 1 ? 1 : d.ease(p);
+    d.stroke.setProgress(p);
+  }
+}
+function fade(mats, to, start, dur=0.8, ease='power1.inOut'){
+  tl.to(mats,{opacity:to,duration:dur,ease},start);
+}
+function showCap(el, start, end){
+  tl.to(el,{opacity:1,duration:0.45,ease:'power1.out'},start);
+  tl.to(el,{opacity:0,duration:0.45,ease:'power1.in'},end-0.45);
+}
+
+/* lock initial camera state at t=0 so Replay/scrub-to-0 resets cleanly */
+tl.set(pivot.rotation, { x:-Math.PI/2, y:0, z:0 }, 0);
+tl.set(pivot.position, { x:PLAN_CENTER.x, y:PLAN_CENTER.y, z:PLAN_CENTER.z }, 0);
+tl.set(camera.position, { z:4.4 }, 0);
+tl.set(stand, { p:0 }, 0);                         // the Lost Triangle starts flat in the plan
+
+/* —— Act 0 : root sequence —— */
+drawMany(rootGrid, 0.3, 0.5, 0.035);                          // grid draws in
+draw(rootStrokes[0], 1.0, 0.6);                               // unit module
+draw(rootStrokes[1], 1.5, 0.7);                               // √2 diamond
+draw(rootStrokes[2], 1.7, 0.5);                               // √2 diagonal
+draw(rootStrokes[3], 2.0, 0.6);                               // √2 arc
+fade([rootFills[0]], 0.34, 1.9, 0.7);                         // blue diamond fill (kept light)
+draw(rootStrokes[4], 2.6, 0.4);                               // Lost-Triangle "1" leg
+draw(rootStrokes[5], 2.8, 0.6);                               // √3 hypotenuse
+draw(rootStrokes[6], 3.0, 0.6);                               // √3 arc
+fade([rootFills[1]], 0.5, 2.9, 0.7);                          // green Lost Triangle fill
+fade(rootLabels, 1, 2.4, 0.7);
+showCap(C.spiral, 0.5, 4.2);
+fade(M.spiral, 0, 3.8, 0.7);                                   // clear opener
+
+/* —— Act 1 : plan —— */
+draw(circA, 4.4, 1.0); draw(circB, 4.7, 1.0); draw(circC, 5.0, 1.0);
+showCap(C.circles, 4.5, 6.6);
+draw(sq, 6.7, 1.3);
+showCap(C.square, 6.7, 8.4);
+draw(dg1, 8.3, 0.8); draw(dg2, 8.5, 0.8);
+showCap(C.diag, 8.3, 9.6);
+draw(foldLine, 9.6, 1.0); fade([foldFill], 0.85, 10.0, 1.0);
+showCap(C.fold, 9.7, 11.0);
+fade([whiteFill], 1, 11.0, 0.8);
+draw(magLine, 11.6, 1.1); fade([magFill], 0.9, 12.0, 0.9); draw(magDiv, 12.4, 0.6);
+fade([pl1,plv2,plv3], 1, 12.0, 0.8);
+showCap(C.lost, 11.7, 13.8);
+
+/* —— Act 2 : the Lost Triangle stands up (plan → space) —— */
+tl.to(pivot.rotation, { x:0, duration:3.2, ease:'power2.inOut' }, 14.2);          // top-down → front
+tl.to(pivot.position, { x:CUBE_CENTER.x, y:CUBE_CENTER.y, z:CUBE_CENTER.z, duration:3.2, ease:'power2.inOut' }, 14.2);
+fade(M.plan, 0, 14.3, 1.5);                                                       // clear the flat drawing early…
+fade([standFillMat], 0.30, 14.4, 0.6);                                            // …hand the magenta Lost Triangle to the
+fade([standOutMat], 1, 14.4, 0.6);                                                //    morph (coincident with the plan at p=0)
+fade(M.standGhost, 0.34, 14.5, 0.6);                                              // guide: a dashed ghost marks the destination pose…
+fade(M.standGhost, 0, 16.8, 1.2);                                                 // …dissolving as the solid triangle lands on it
+tl.to(stand, { p:1, duration:3.6, ease:'power2.inOut' }, 14.6);                   // it lifts AND turns onto the cube's √3 diagonal
+showCap(C.orbit, 14.4, 18.0);
+// gentle azimuth + slight downward settle → solid 3/4 view the cube reads in
+tl.to(pivot.rotation, { y:0.62, x:-0.30, duration:2.2, ease:'power1.inOut' }, 17.2);
+
+/* —— Act 3a : the cube builds around the standing Lost Triangle —— */
+drawMany(cubeEdges, 18.4, 1.0, 0.025);
+draw(baseSq, 18.8, 1.2);
+showCap(C.cube, 18.6, 20.4);
+draw(faceDiag, 20.4, 0.9); fade([cl_v2], 1, 20.8, 0.6);          // √2 leg, on the triangle's O–A edge
+fade([fdFlowA.mat], 0.30, 20.1, 0.5); fade([fdFlowA.mat], 0, 20.9, 0.5);   // guide: dashes flow along √2
+showCap(C.fd, 20.4, 21.6);
+draw(lift, 21.6, 0.8); fade([cl_1], 1, 22.0, 0.6);              // the unit lift, on A–B
+fade([fdFlowB.mat], 0.30, 21.3, 0.5); fade([fdFlowB.mat], 0, 22.2, 0.5);   // guide: dashes rise along the lift
+showCap(C.liftc, 21.6, 22.6);
+fade([cl_v3], 1, 22.8, 0.6);                                    // √3 already stands — the morphed hypotenuse; just name it
+showCap(C.sd, 22.7, 24.2);
+draw(angleArc, 24.2, 0.8); fade([cl_th], 1, 24.6, 0.6);
+showCap(C.ang, 24.2, 25.4);
+
+/* —— Act 3b : rhombic cell —— */
+showCap(C.intro, 25.5, 27.0);
+fade(M.cubeExtra, 0, 26.2, 1.0);                       // declutter: drop triangle, fill, labels
+fade(M.cubeBase, 0.32, 26.2, 1.0);                     // dim base square
+fade(M.cubeEdge, 0.42, 26.2, 1.0);                     // cube edges become short diagonals
+drawMany(cellEdges, 27.0, 1.0, 0.05);
+showCap(C.raise, 27.0, 30.2);
+// highlight √2 diamond
+fade([diamondFill], 0.20, 30.3, 0.8);
+draw(diamondOut, 30.3, 0.9);
+draw(diamLong, 31.0, 0.8); draw(diamShort, 31.2, 0.8);
+fade([dl_v2,dl_1], 1, 31.4, 0.6);
+showCap(C.cell, 30.3, 32.4);
+showCap(C.ratio, 32.5, 34.0);
+// —— Act 3c: octahedron of apexes ——
+fade(M.cell, 0.22, 34.2, 1.0);                          // dim cell lattice so octahedron reads
+fade(M.diamond, 0.0, 34.2, 1.0);                        // clear the diamond highlight
+tl.to(camera.position, { z:6.0, duration:3.0, ease:'sine.inOut' }, 34.0);
+drawMany(octaEdges, 34.4, 0.9, 0.04);
+fade(M.octaFill, 0.085, 35.4, 1.2);
+fade([ol_v2], 1, 35.6, 0.6);
+showCap(C.octa1, 34.4, 36.6);
+showCap(C.octa2, 36.7, 38.6);
+// —— close: dissolve the octahedron solid, restore the cell, imply the tiling ——
+fade(M.octaFill, 0.0, 38.6, 1.2);                      // drop the blue solid
+fade(M.octa, 0.26, 38.6, 1.2);                         // keep a faint √2 cage
+fade(M.cell, 0.55, 38.6, 1.2);                         // restore the rhombic lattice
+drawMany(neighStrokes, 38.8, 0.9, 0.012);
+fade(M.fillVec, 0.30, 38.9, 0.6); fade(M.fillVec, 0, 42.8, 0.4);   // guide: a magenta ray marches out past the neighbour — "→ the whole of space"
+tl.to(pivot.rotation, { y:0.86, duration:3.4, ease:'sine.inOut' }, 38.6);
+tl.to(camera.position, { z:6.1, duration:3.4, ease:'sine.inOut' }, 38.6);
+showCap(C.fill, 39.6, 43.2);
+tl.to({}, { duration:0.6 }, 43.2);                     // tail
+
+/* ---- Act 4: the cubic field ---- */
+fade([...M.cell,...M.neigh,...M.octa,...M.cubeEdge,...M.cubeBase],0,43.2,1.2);
+tl.to(pivot.position,{x:0,y:0,z:0,duration:2.0,ease:'power2.inOut'},43.2);
+tl.to(pivot.rotation,{x:-.28,y:.55,z:0,duration:2.0,ease:'power2.inOut'},43.2);
+tl.to(camera.position,{z:7.4,duration:2.2,ease:'sine.inOut'},43.2);
+EXT.cubeEdge.forEach((m,i)=>tl.to(m,{opacity:i===13?.9:.22,duration:.75,ease:'power1.out'},44+i*.055));
+fade(EXT.cubeSurface,.055,47.2,1.4);showCap(C.matrix,44.2,54.8);
+tl.to(pivot.rotation,{y:1.12,duration:9.5,ease:'sine.inOut'},45.0);
+fade([...EXT.cubeEdge,...EXT.cubeSurface],0,54.2,1.2);
+
+/* ---- Act 5: cubes resolve into the rhombic array ---- */
+EXT.rhombEdge.forEach((m,i)=>tl.to(m,{opacity:i===0?.9:.32,duration:.8,ease:'power1.out'},55+i*.08));
+fade(EXT.rhombSurface,.10,57.5,1.4);showCap(C.rhombi,55.2,66.6);
+tl.to(camera.position,{z:6.8,duration:2.0,ease:'sine.inOut'},55.0);
+tl.to(pivot.rotation,{x:-.2,y:1.6,duration:10.5,ease:'sine.inOut'},55.0);
+fade([...EXT.rhombEdge,...EXT.rhombSurface],0,66.0,1.2);
+
+/* ---- Act 6: the shared cubic family ---- */
+fade(EXT.nestedEdge,.72,67.0,1.4);fade(EXT.nestedSurface,.075,69.0,1.4);showCap(C.nested,67.0,78.2);
+tl.to(camera.position,{z:6.9,duration:2.0,ease:'sine.inOut'},67.0);
+tl.to(pivot.rotation,{x:-.36,y:2.25,duration:10.5,ease:'sine.inOut'},67.0);
+fade([...EXT.nestedEdge,...EXT.nestedSurface],0,77.5,1.2);
+
+/* ---- Act 7: truncated octahedron ---- */
+fade(EXT.truncEdge,.92,78.2,1.1);fade(EXT.truncSurface,.24,80.2,1.5);showCap(C.trunc,78.2,91.5);
+tl.to(camera.position,{z:8.4,duration:2.0,ease:'sine.inOut'},78.0);
+tl.to(pivot.rotation,{x:-.22,y:3.0,duration:12.0,ease:'sine.inOut'},78.0);
+fade([...EXT.truncEdge,...EXT.truncSurface],0,91.0,1.0);
+
+/* ---- Act 8: exact face-sharing cluster, one family at a time ---- */
+fade(EXT.axisEdge,.88,92.0,1.0);fade(EXT.axisSurface,.18,94.0,1.2);showCap(C.axis6,92.0,98.4);
+fade(EXT.axisEdge,.26,98.0,1.0);fade(EXT.axisSurface,.04,98.0,1.0);
+fade(EXT.bodyEdge,.88,98.8,1.0);fade(EXT.bodySurface,.18,100.8,1.2);showCap(C.body8,98.8,104.5);
+fade(EXT.axisEdge,.62,104.0,1.0);fade(EXT.axisSurface,.10,104.0,1.0);fade(EXT.bodyEdge,.62,104.0,1.0);fade(EXT.bodySurface,.10,104.0,1.0);showCap(C.all14,104.2,109.8);
+tl.to(camera.position,{z:9.3,duration:2.0,ease:'sine.inOut'},92.0);
+tl.to(pivot.rotation,{x:-.4,y:3.8,duration:17.0,ease:'sine.inOut'},92.0);
+fade([...EXT.axisEdge,...EXT.axisSurface,...EXT.bodyEdge,...EXT.bodySurface],0,109.2,1.2);
+
+/* ---- Act 9: mixed cells and structural scales ---- */
+fade(EXT.hybridEdge,.82,110.0,1.2);fade(EXT.hybridSurface,.16,112.2,1.4);showCap(C.scales,110.0,123.8);
+tl.to(camera.position,{z:7.0,duration:2.0,ease:'sine.inOut'},110.0);
+tl.to(pivot.rotation,{x:-.25,y:4.7,duration:13.0,ease:'sine.inOut'},110.0);
+fade(EXT.hybridSurface,.06,122.8,1.5);fade(EXT.hybridEdge,.20,122.8,1.5);
+
+/* ---- Act 10: actual Vector House geometry ---- */
+fade(EXT.structureSurface,.74,125.2,2.0);showCap(C.build,123.6,144.8);
+fade([...EXT.hybridEdge,...EXT.hybridSurface],0,129.0,2.0);
+tl.to(pivot.rotation,{x:-.12,y:5.1,duration:2.5,ease:'power2.inOut'},123.2);
+tl.to(camera.position,{z:7.4,duration:2.5,ease:'sine.inOut'},123.2);
+tl.to(structure.rotation,{x:.02,y:.62,z:0,duration:21.0,ease:'sine.inOut'},124.0);
+showCap(C.final,144.8,153.33);
+tl.to(structure.rotation,{y:1.02,duration:8.33,ease:'sine.inOut'},145.0);
+tl.to({}, {duration:8.33},145.0);
+
+const DUR = tl.duration();
+window.__tl = tl;
+window.__seek = (t)=>{ tl.pause(); tl.time(t); updateDraws(t); updateStand(); renderer.render(scene, camera); };
+
+/* ======================================================= *
+ *  CONTROLS
+ * ======================================================= */
+const playBtn = document.getElementById('play');
+const replayBtn = document.getElementById('replay');
+const scrub = document.getElementById('scrub');
+const speedSel = document.getElementById('speed');
+const tlabel = document.getElementById('tlabel');
+let scrubbing = false;
+
+function setPlayIcon(){ playBtn.textContent = tl.paused() ? '▶ Play' : '❙❙ Pause'; }
+playBtn.addEventListener('click', ()=>{ tl.paused() ? tl.play() : tl.pause(); setPlayIcon(); });
+replayBtn.addEventListener('click', ()=>{ tl.restart(); setPlayIcon(); });
+scrub.addEventListener('input', ()=>{ scrubbing=true; tl.pause(); tl.progress(scrub.value/1000); setPlayIcon(); });
+scrub.addEventListener('change', ()=>{ scrubbing=false; });
+speedSel.addEventListener('change', ()=>{ tl.timeScale(parseFloat(speedSel.value)); });
+
+/* ======================================================= *
+ *  RENDER LOOP  (gsap ticker drives the timeline + render)
+ * ======================================================= */
+gsap.ticker.add((time, deltaTime)=>{
+  const tNow = tl.time();
+  updateDraws(tNow);
+  updateStand();                                         // morph the standing Lost Triangle each frame (seek-safe)
+  // flowing-dash guides: march dashOffset only while playing, inside each guide's beat window
+  if (!tl.paused() && !scrubbing){
+    const dt = Math.min(0.05, (deltaTime || 16) / 1000);
+    for (const f of flows){ if (tNow >= f.start && tNow < f.end) f.mat.dashOffset -= f.rate * dt; }
+  }
+  if (!scrubbing){ scrub.value = (tl.progress()*1000)|0; }
+  tlabel.textContent = (tl.time()).toFixed(1) + 's';
+  renderer.render(scene, camera);
+});
+
+/* ---------- boot ---------- */
+resize();
+tl.play();
+setPlayIcon();
+window.__booted = true; clearTimeout(window.__bootTimer);   // scene is up — keep the fallback hidden
+</script>
+</body>
+</html>

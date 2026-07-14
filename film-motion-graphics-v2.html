@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gregg Fleishman Film Motion Graphics</title>
+<link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"./assets/vendor/three-0.160.0/three.module.js"}}</script>
+<style>
+  :root{--bg:#000;--bone:#f2e9d8;--amber:#e8a33d;--ox:#9e3b2e;--slate:#5b8c9e;--space:#e8a33d;--green:#77a485;--dim:#6b6b6b;--faint:#56605b;--line:rgba(242,233,216,.16)}
+  *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--bone)}
+  body{font-family:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif}canvas{display:block;width:100%;height:100%}
+  #stage{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#0d1111 0,#050707 58%,#000 100%)}
+  body.alpha,body.alpha #stage{background:transparent}
+  #title{position:fixed;left:24px;top:52px;z-index:2;opacity:0;pointer-events:none;max-width:520px}
+  #title .kicker{font:500 10px/1.2 "Courier New",monospace;letter-spacing:.16em;color:var(--faint);margin-bottom:10px}
+  #title h1{font-size:clamp(27px,2.7vw,42px);line-height:1;margin:0 0 9px;letter-spacing:0;text-transform:uppercase}
+  #title .sub{font:10px/1.45 "Courier New",monospace;letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+  .panel{position:fixed;z-index:2;background:rgba(10,11,10,.62);border:1px solid var(--line);padding:12px 14px;color:var(--dim);font-size:11px;line-height:1.42;backdrop-filter:blur(7px)}
+  .cap{font:9px/1.3 "Courier New",monospace;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+  .panel b{color:var(--bone);font-weight:600}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px}.row{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.045)}
+  #modepanel{left:24px;top:30%;width:205px}#formula{left:24px;bottom:58px;width:390px}#legend{right:24px;top:52px;width:250px}#note{right:24px;bottom:58px;width:250px}
+  #formula table{width:100%;border-collapse:collapse;margin-top:7px}#formula th,#formula td{text-align:left;padding:3px 5px 3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  #labels{position:fixed;inset:0;z-index:3;pointer-events:none}
+  .label{position:absolute;transform:translate(-50%,-50%);font:600 clamp(11px,1.05vw,18px)/1 "Courier New",monospace;letter-spacing:.14em;white-space:nowrap;text-shadow:0 2px 12px #000;opacity:0}
+  #review{position:fixed;left:50%;bottom:18px;z-index:5;transform:translateX(-50%);display:flex;gap:5px;padding:5px;background:rgba(5,7,7,.82);border:1px solid #282a27}
+  #review button{border:1px solid transparent;background:transparent;color:#777;padding:7px 10px;font:11px "Courier New",monospace;cursor:pointer}
+  #review button.on{color:var(--amber);border-color:#5d4a22;background:#16130c}
+  #time{min-width:150px;color:#8b867b;padding:8px 9px;font:11px "Courier New",monospace}
+  #sourceAudio{width:220px;height:28px;align-self:center;opacity:.82;filter:grayscale(1) contrast(.9)}
+  #caption{position:fixed;z-index:4;left:50%;bottom:clamp(96px,20vh,220px);transform:translateX(-50%);width:min(88vw,900px);padding:8px 18px;text-align:center;font:italic 24px/1.3 Georgia,"Times New Roman",serif;color:rgba(229,224,212,.9);background:rgba(0,0,0,.4);text-shadow:0 2px 8px #000;opacity:0;transition:opacity 120ms linear;pointer-events:none}
+  #review button.audio-on{color:var(--green);border-color:#34503e}
+  body.clean #review,body.clean #modepanel,body.clean #legend,body.clean #formula,body.clean #note{display:none}
+  body.clean #caption{bottom:8%}
+  #editorMeta{display:none;position:fixed;inset:0;z-index:4;pointer-events:none}
+  #editorBeat{position:absolute;left:42px;top:34px;font:700 13px/1 "Courier New",monospace;letter-spacing:.14em;color:var(--amber)}
+  #editorTc{position:absolute;right:42px;top:34px;text-align:right;font:11px/1.45 "Courier New",monospace;color:var(--dim)}
+  .editor-note{position:absolute;bottom:118px;width:390px;padding:13px 15px;border-top:1px solid rgba(229,224,212,.28);background:rgba(4,6,6,.72)}
+  #editorMethod{left:42px}#editorNotice{right:42px}
+  .editor-note .eyebrow{margin-bottom:7px;font:700 10px/1 "Courier New",monospace;letter-spacing:.16em;color:var(--amber)}
+  .editor-note .copy{font:16px/1.38 Georgia,"Times New Roman",serif;color:rgba(229,224,212,.9)}
+  body.editor #modepanel,body.editor #legend,body.editor #formula,body.editor #note,body.editor #review{display:none}
+  body.editor #editorMeta{display:block}
+  body.editor #title{left:42px;top:64px;max-width:720px}
+  body.editor #title .kicker,body.editor #title .sub{display:none}
+  body.editor #title h1{font-size:34px}
+  body.editor #caption{bottom:38px;width:min(72vw,920px)}
+  @media(max-width:1100px){#formula,#note{display:none}#legend{width:220px}#modepanel{width:180px}}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="scene"></canvas></div>
+<div id="title"><div class="kicker">GREGG FLEISHMAN / SPACE-FILLING GEOMETRY</div><h1></h1><div class="sub">ONE CUBE / THREE DIRECTIONS / THREE CELLS</div></div>
+<aside id="modepanel" class="panel"><div class="cap">Film sequence</div><div class="row"><b>01</b>&nbsp;&nbsp;The rule</div><div class="row"><b>02</b>&nbsp;&nbsp;The solids</div><div class="row"><b>03</b>&nbsp;&nbsp;Space filling</div></aside>
+<aside id="legend" class="panel"><div class="cap">Geometry layers / layer visibility</div><div class="row"><span class="dot" style="background:#e5e0d4"></span><b>Axis family</b><br>&nbsp;&nbsp;&nbsp;&nbsp;edge / length 1</div><div class="row"><span class="dot" style="background:#6f9bc4"></span><b>Face family</b><br>&nbsp;&nbsp;&nbsp;&nbsp;edge direction / sqrt 2</div><div class="row"><span class="dot" style="background:#db684d"></span><b>Corner family</b><br>&nbsp;&nbsp;&nbsp;&nbsp;space direction / sqrt 3</div><div class="row"><span class="dot" style="background:#c9a24b"></span><b>The three angles</b><br>&nbsp;&nbsp;&nbsp;&nbsp;45 / 35.26 / 54.74 degrees</div></aside>
+<aside id="formula" class="panel"><b>One cube, three directions, three cells.</b> Every solid points its faces along one family of the cube's directions.
+<table><tr><th>Direction</th><th>Length</th><th>Space-filler</th></tr><tr><td>axis (1,0,0)</td><td>1</td><td>cube</td></tr><tr><td>edge (1,1,0)</td><td>sqrt 2</td><td>rhombic dodecahedron</td></tr><tr><td>corner (1,1,1)</td><td>sqrt 3</td><td>truncated octahedron</td></tr></table></aside>
+<aside id="note" class="panel"><b>Space-filling:</b> the cube, rhombic dodecahedron, and truncated octahedron each tile three-dimensional space with no gaps.<br><br><b>The rule becomes the whole:</b> a single exact cell repeats into an architectural lattice.</aside>
+<div id="labels"></div>
+<div id="caption" aria-live="polite"></div>
+<div id="editorMeta"><div id="editorBeat"></div><div id="editorTc"></div><div id="editorMethod" class="editor-note"><div class="eyebrow">METHOD</div><div class="copy"></div></div><div id="editorNotice" class="editor-note"><div class="eyebrow">WHAT TO NOTICE</div><div class="copy"></div></div></div>
+<div id="review"><button data-beat="1A">1A</button><button data-beat="1B">1B</button><button data-beat="2A">2A</button><button data-beat="2B">2B</button><button data-beat="2C">2C</button><button data-beat="2D">2D</button><button id="play">PAUSE</button><audio id="sourceAudio" preload="auto" controls></audio><span id="time"></span></div>
+<script type="module">
+import * as THREE from 'three';
+
+const FPS=30000/1001;
+let BEATS={
+  '1A':{sourceIn:60.694,sourceOut:68.368,duration:7.674,title:'THE RULE',method:'Two struts meet through paired 45° end conditions. Gregg’s joint resolves the assembly to a 120° spatial relationship.',notice:'This is a construction rule in three dimensions, not a flat 45° + 45° arithmetic sum.',captions:[[0,1.25,'a 45° angle'],[1.25,3.35,'bring those two things together'],[3.35,6.85,'the resulting angle is 120°']]},
+  '1B':{sourceIn:75.375,sourceOut:82.516,duration:7.141,title:'NEW CELL / TEN YEARS',method:'Gregg compares two space-filling systems: his newer truncated-octahedron work and a decade of rhombic-dodecahedron development.',notice:'Keep the solids distinct: 6 square + 8 hexagonal faces versus 12 rhombic faces.',captions:[[0,.9,'multiple systems'],[.9,3.7,'primarily truncated octahedrons'],[3.7,5.25,'which is new for me'],[5.25,7.141,"I've spent 10 years working with"]]},
+  '2A':{sourceIn:112.145,sourceOut:132.532,duration:20.387,title:'THREE SPACE-FILLERS',method:'Each cell repeats alone without gaps: cube, rhombic dodecahedron, and truncated octahedron.',notice:'Read them through cube directions: axis (1), face diagonal (√2), and body diagonal (√3).',captions:[[0,2.0,'One is a cube.'],[2,3.3,"That's pretty obvious."],[3.3,5.8,'One is a rhombic dodecahedron,'],[5.8,8.7,'like two cubes'],[8.7,10.8,'in a 3D checkerboard of cubes.'],[10.8,14.3,'The other is a truncated octahedron.'],[14.3,17.6,"That's what we've spent"],[17.6,20.387,'the last couple years focusing on.']]},
+  '2B':{sourceIn:141.208,sourceOut:153.453,duration:12.245,title:'THE CUBIC FAMILY',method:'Begin with all five Platonic solids, then isolate the tetrahedron, octahedron, and cube as Gregg’s working family.',notice:'The three names are carried by labels here because Gregg speaks them just after this black window closes.',captions:[[0,3.6,'We have the Platonic solids,'],[3.6,6.4,'which everybody might not know.'],[6.4,9.3,'I focus only on'],[9.3,12.245,'the cubic family within these solids.']]},
+  '2C':{sourceIn:158.492,sourceOut:164.765,duration:6.273,title:'TRUNCATION',method:'Cut every vertex at an equal depth; the original faces contract and new faces appear at the removed corners.',notice:'A standard uniform truncation is shown. Confirm Gregg’s preferred cut depth before final geometric sign-off.',captions:[[0,2.55,'Those things translate into'],[2.55,4.55,'the Archimedean solids'],[4.55,6.273,'when you cut off all their points.']]},
+  '2D':{sourceIn:181.982,sourceOut:197.464,duration:15.482,title:'SPACE-FILLING NETWORK',method:'A single exact cell propagates neighbor by neighbor until the repeated unit becomes an architectural field.',notice:'Rhombic cells describe Gregg’s 3D checkerboard; truncated-octahedron cells occupy a body-centered cubic lattice.',captions:[[0,1.15,"I've been working with"],[1.15,3.55,'the rhombic dodecahedron,'],[3.55,6.15,'this cubic 3D checkerboard network.'],[6.15,9.9,"Lately I've been able to work"],[9.9,11.3,'with the truncated octahedron.'],[11.3,13.55,'Both of them are in this effort'],[13.55,15.482,'to fill space with small parts.']]}
+};
+try{
+  const timing=await fetch('./assets/motion-graphics/beats.json').then(r=>r.ok?r.json():Promise.reject(new Error(`beats.json ${r.status}`)));
+  for(const item of timing.beats||[]){
+    if(BEATS[item.id])Object.assign(BEATS[item.id],{sourceIn:item.start,sourceOut:item.end,duration:item.duration,title:item.title,hero:item.hero});
+  }
+  window.GF_MG_TIMING=timing;
+}catch(error){
+  console.warn('Using embedded motion-graphics timing fallback.',error);
+}
+const C={bone:0xf2e9d8,amber:0xe8a33d,ox:0x9e3b2e,slate:0x5b8c9e,space:0xe8a33d,green:0x77a485,dim:0x6b6b6b,white:0xffffff};
+const q=new URLSearchParams(location.search);let beat=q.get('beat')||'2A';let clean=q.get('clean')==='1';let editor=q.get('editor')==='1';let forcedFrame=q.get('frame');
+if(clean)document.body.classList.add('clean');
+if(editor)document.body.classList.add('editor');
+if(q.get('alpha')==='1'){document.body.classList.add('alpha');document.documentElement.style.background='transparent'}
+const canvas=document.querySelector('#scene'),renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(42,16/9,.05,200);camera.position.set(9,6,12);
+scene.add(new THREE.AmbientLight(0xffffff,.32));const key=new THREE.DirectionalLight(0xfff0d8,2.1);key.position.set(7,10,8);scene.add(key);
+const rim=new THREE.DirectionalLight(0x5b8c9e,.6);rim.position.set(-8,4,-7);scene.add(rim);
+const root=new THREE.Group();scene.add(root);const clock=new THREE.Clock();let t=0,paused=false,last=0;
+const labels=document.querySelector('#labels'),title=document.querySelector('#title'),titleH=title.querySelector('h1');
+const caption=document.querySelector('#caption'),sourceAudio=document.querySelector('#sourceAudio'),playButton=document.querySelector('#play');
+const editorBeat=document.querySelector('#editorBeat'),editorTc=document.querySelector('#editorTc'),editorMethod=document.querySelector('#editorMethod .copy'),editorNotice=document.querySelector('#editorNotice .copy');
+let audioEnabled=q.get('audio')!=='0';
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));const smooth=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
+const windowPulse=(x,a,b,fade=.35)=>smooth(a,a+fade,x)*(1-smooth(b-fade,b,x));
+const clusterCaptions=[
+  {a:14.0,b:15.45,text:'Variation 1: axis neighbors extend the cell in six directions.'},
+  {a:15.45,b:16.9,text:'Variation 2: face-diagonal neighbors begin the checkerboard field.'},
+  {a:16.9,b:18.1,text:'Variation 3: body-diagonal neighbors lock the space-filling cluster.'},
+  {a:18.1,b:20.05,text:'Combination cluster: all variations read as one repeating system.'}
+];
+const clusterSets={
+  axis:new Set([0,1,2,3,4,5]),
+  face:new Set([6,7,8,9]),
+  body:new Set([10,11,12,13])
+};
+function mat(color,opacity=.18){return new THREE.MeshStandardMaterial({color,transparent:true,opacity,roughness:.58,metalness:.08,side:THREE.DoubleSide,depthWrite:false});}
+function lineMat(color,opacity=.85){return new THREE.LineBasicMaterial({color,transparent:true,opacity,depthWrite:false});}
+function dispose(){while(root.children.length){const o=root.children.pop();o.traverse(n=>{n.geometry?.dispose();if(n.material){(Array.isArray(n.material)?n.material:[n.material]).forEach(m=>m.dispose())}})}labels.replaceChildren();}
+function faceGeometry(faces){const p=[];for(const f of faces){const c=f.reduce((s,v)=>s.add(new THREE.Vector3(...v)),new THREE.Vector3()).multiplyScalar(1/f.length);for(let i=0;i<f.length;i++){const a=f[i],b=f[(i+1)%f.length];p.push(c.x,c.y,c.z,...a,...b)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.computeVertexNormals();return g}
+function uniqueEdges(faces){const map=new Map();for(const f of faces)for(let i=0;i<f.length;i++){const a=f[i],b=f[(i+1)%f.length],ka=a.join(','),kb=b.join(','),k=ka<kb?ka+'|'+kb:kb+'|'+ka;if(!map.has(k))map.set(k,[a,b])}return [...map.values()]}
+function solid(faces,color,scale=1){const g=new THREE.Group(),mesh=new THREE.Mesh(faceGeometry(faces),mat(color,.22));const ep=[];uniqueEdges(faces).forEach(e=>ep.push(...e[0],...e[1]));const lines=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(ep,3)),lineMat(color,.95));g.add(mesh,lines);g.scale.setScalar(scale);g.userData={mesh,lines};return g}
+function referenceCell(scale=1){
+  const all=truncFaces(),g=new THREE.Group(),squares=solid(all.slice(0,6),C.bone,1),hexes=solid(all.slice(6),C.space,1);
+  squares.userData.mesh.material.opacity=.12;squares.userData.lines.material.opacity=.82;hexes.userData.mesh.material.opacity=.24;hexes.userData.lines.material.opacity=.92;
+  g.add(squares,hexes);
+  g.scale.setScalar(scale);g.userData={squares,hexes};return g;
+}
+function primitive(geo,color,scale=1){const g=new THREE.Group(),m=new THREE.Mesh(geo,mat(color,.18)),l=new THREE.LineSegments(new THREE.EdgesGeometry(geo,18),lineMat(color,.9));g.add(m,l);g.scale.setScalar(scale);g.userData={mesh:m,lines:l};return g}
+function truncFaces(){const sq=[],hex=[];for(let axis=0;axis<3;axis++)for(const s of [1,-1]){const f=[],perp=[[1,0],[0,1],[-1,0],[0,-1]],o1=(axis+1)%3,o2=(axis+2)%3;for(const p of perp){const v=[0,0,0];v[axis]=2*s;v[o1]=p[0];v[o2]=p[1];f.push(v)}sq.push(f)}const base=[[2,1,0],[1,2,0],[0,2,1],[0,1,2],[1,0,2],[2,0,1]];for(const sx of [1,-1])for(const sy of [1,-1])for(const sz of [1,-1])hex.push(base.map(v=>[v[0]*sx,v[1]*sy,v[2]*sz]));return sq.concat(hex)}
+const RD=[[[2,0,0],[1,1,1],[0,2,0],[1,1,-1]],[[2,0,0],[1,-1,1],[0,-2,0],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,2,0],[-1,1,-1]],[[-2,0,0],[-1,-1,1],[0,-2,0],[-1,-1,-1]],[[2,0,0],[1,1,1],[0,0,2],[1,-1,1]],[[2,0,0],[1,1,-1],[0,0,-2],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,0,2],[-1,-1,1]],[[-2,0,0],[-1,1,-1],[0,0,-2],[-1,-1,-1]],[[0,2,0],[1,1,1],[0,0,2],[-1,1,1]],[[0,2,0],[1,1,-1],[0,0,-2],[-1,1,-1]],[[0,-2,0],[1,-1,1],[0,0,2],[-1,-1,1]],[[0,-2,0],[1,-1,-1],[0,0,-2],[-1,-1,-1]]];
+const CUBE_FACES=[[[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]],[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]],[[1,-1,-1],[1,1,-1],[1,1,1],[1,-1,1]],[[1,1,-1],[-1,1,-1],[-1,1,1],[1,1,1]],[[-1,1,-1],[-1,-1,-1],[-1,-1,1],[-1,1,1]]];
+const TETRA_FACES=[[[1,1,1],[-1,-1,1],[-1,1,-1]],[[1,1,1],[1,-1,-1],[-1,-1,1]],[[1,1,1],[-1,1,-1],[1,-1,-1]],[[-1,-1,1],[1,-1,-1],[-1,1,-1]]];
+function truncateFaces(source,r=1/3){
+  const result=[],neighbors=new Map();
+  const key=v=>v.join(',');
+  for(const face of source){
+    const cut=[];
+    for(let i=0;i<face.length;i++){
+      const a=face[i],b=face[(i+1)%face.length],ka=key(a),kb=key(b);
+      if(!neighbors.has(ka))neighbors.set(ka,new Map());if(!neighbors.has(kb))neighbors.set(kb,new Map());
+      neighbors.get(ka).set(kb,b);neighbors.get(kb).set(ka,a);
+      cut.push(a.map((n,j)=>n+(b[j]-n)*r),a.map((n,j)=>n+(b[j]-n)*(1-r)));
+    }
+    result.push(cut);
+  }
+  for(const [ks,near] of neighbors){
+    const v=ks.split(',').map(Number),normal=new THREE.Vector3(...v).normalize(),axis=Math.abs(normal.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0);
+    const u=new THREE.Vector3().crossVectors(axis,normal).normalize(),w=new THREE.Vector3().crossVectors(normal,u).normalize();
+    const ring=[...near.values()].map(n=>v.map((x,j)=>x+(n[j]-x)*r));
+    ring.sort((a,b)=>Math.atan2(new THREE.Vector3(...a).dot(w),new THREE.Vector3(...a).dot(u))-Math.atan2(new THREE.Vector3(...b).dot(w),new THREE.Vector3(...b).dot(u)));
+    result.push(ring);
+  }
+  return result;
+}
+function addLabel(text,color,x,y){const e=document.createElement('div');e.className='label';e.textContent=text;e.style.color='#'+color.toString(16).padStart(6,'0');e.style.left=x+'%';e.style.top=y+'%';labels.append(e);return e}
+function setOpacity(o,v){o.visible=v>.002;o.traverse(n=>{if(n.material)n.material.opacity=v*((n.isLine||n.isLineSegments)?0.9:0.22)})}
+function arc(a,b,r,color){a=a.clone().normalize();b=b.clone().normalize();const angle=a.angleTo(b),pts=[];for(let i=0;i<=64;i++){const f=i/64,s=Math.sin(angle);pts.push(a.clone().multiplyScalar(Math.sin((1-f)*angle)/s).addScaledVector(b,Math.sin(f*angle)/s).multiplyScalar(r))}const g=new THREE.BufferGeometry().setFromPoints(pts);g.setDrawRange(0,0);const l=new THREE.Line(g,lineMat(color,1));root.add(l);return l}
+function syncAudio(force=false){
+  if(!audioEnabled)return;
+  const target=t;
+  if(force||Math.abs(sourceAudio.currentTime-target)>.09)sourceAudio.currentTime=target;
+  if(paused)sourceAudio.pause();else sourceAudio.play().catch(()=>{});
+}
+function sourceTc(seconds){const m=Math.floor(seconds/60),s=seconds-m*60;return `${String(m).padStart(2,'0')}:${s.toFixed(3).padStart(6,'0')}`}
+function configure(id){dispose();beat=id;t=0;last=0;titleH.textContent=BEATS[id].title;title.style.opacity=0;document.querySelectorAll('[data-beat]').forEach(b=>b.classList.toggle('on',b.dataset.beat===id));
+  const spec=BEATS[id];editorBeat.textContent=`BEAT ${id} / ANNOTATED EDITOR MASTER`;editorTc.innerHTML=`SOURCE ${sourceTc(spec.sourceIn)} → ${sourceTc(spec.sourceOut)}<br>DURATION ${spec.duration.toFixed(3)} SEC`;editorMethod.textContent=spec.method;editorNotice.textContent=spec.notice;
+  sourceAudio.src=`../04_DELIVERABLES/production/audio/GF_MG_${id}_source_v002.wav`;sourceAudio.load();
+  const objects={},lab=[];camera.position.set(9,6,12);camera.lookAt(0,0,0);
+  if(id==='1A'){objects.a=primitive(new THREE.CylinderGeometry(.055,.055,4,10),C.bone);objects.a.rotation.z=Math.PI/2;objects.a.position.x=-2;objects.b=objects.a.clone();objects.b.position.x=2;objects.b.rotation.z=-Math.PI/3;root.add(objects.a,objects.b);objects.arc=arc(new THREE.Vector3(1,0,0),new THREE.Vector3(-.5,.866,0),2.2,C.white);lab.push(addLabel('120 DEG',C.white,50,31));}
+  if(id==='1B'){objects.to=solid(truncFaces(),C.amber,.9);objects.rd=solid(RD,C.ox,1.05);objects.to.position.x=-2.7;objects.rd.position.x=2.7;root.add(objects.to,objects.rd);lab.push(addLabel('NEW',C.amber,37,77),addLabel('10 YEARS',C.ox,63,77));}
+  if(id==='2A'){objects.cube=primitive(new THREE.BoxGeometry(3.4,3.4,3.4),C.slate);objects.rd=solid(RD,C.ox,1.18);objects.to=referenceCell(.9);root.add(objects.cube,objects.rd,objects.to);lab.push(addLabel('CUBE',C.slate,34,77),addLabel('RHOMBIC DODECAHEDRON',C.ox,50,77),addLabel('TRUNCATED OCTAHEDRON',C.space,68,77),addLabel('AXIS CLUSTER',C.bone,50,68),addLabel('FACE-DIAGONAL CLUSTER',C.slate,50,68),addLabel('BODY-DIAGONAL CLUSTER',C.amber,50,68),addLabel('COMBINATION CLUSTER',C.white,50,68));objects.pack=new THREE.Group();for(const [i,p] of [[4,0,0],[-4,0,0],[0,4,0],[0,-4,0],[0,0,4],[0,0,-4],[4,4,0],[-4,4,0],[4,-4,0],[-4,-4,0],[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2]].entries()){const n=referenceCell(.9);n.position.set(...p);n.userData.clusterIndex=i;objects.pack.add(n)}root.add(objects.pack)}
+  if(id==='2B'){const geos=[new THREE.TetrahedronGeometry(1.45),new THREE.OctahedronGeometry(1.55),new THREE.BoxGeometry(2.35,2.35,2.35),new THREE.DodecahedronGeometry(1.55),new THREE.IcosahedronGeometry(1.55)];objects.solids=geos.map((g,i)=>{const o=primitive(g,C.bone);o.position.x=(i-2)*3;root.add(o);return o});lab.push(addLabel('TETRAHEDRON',C.bone,34,76),addLabel('OCTAHEDRON',C.bone,50,76),addLabel('CUBE',C.slate,66,76));}
+  if(id==='2C'){objects.src=[solid(CUBE_FACES,C.bone,1.16),primitive(new THREE.OctahedronGeometry(1.65),C.bone),solid(TETRA_FACES,C.bone,.95)];objects.dst=[solid(truncateFaces(CUBE_FACES),C.slate,1.35),solid(truncFaces(),C.amber,.62),solid(truncateFaces(TETRA_FACES),C.bone,1.08)];objects.src.forEach((o,i)=>{o.position.x=(i-1)*3.6;root.add(o)});objects.dst.forEach((o,i)=>{o.position.x=(i-1)*3.6;root.add(o)});lab.push(addLabel('CUT PLANES',C.white,50,75));}
+  if(id==='2D'){objects.pack=new THREE.Group();const pts=[];for(let x=-2;x<=2;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){if((x+y+z)%2===0)pts.push([x*4,y*4,z*4]);}pts.forEach((p,i)=>{const n=solid(truncFaces(),i===Math.floor(pts.length/2)?C.amber:C.dim,.84);n.position.set(...p);n.userData.order=i;objects.pack.add(n)});root.add(objects.pack);objects.led=[];for(let i=0;i<18;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(.07,10,10),new THREE.MeshBasicMaterial({color:[0xb04a7e,0x65a57d,0x4f9daa][i%3],transparent:true,opacity:0}));const p=pts[i%pts.length];m.position.set(p[0]+(i%3-1)*.7,p[1]+((i*2)%3-1)*.7,p[2]);root.add(m);objects.led.push(m)}}
+  state={objects,lab};update(0);syncAudio(true);
+}
+let state={objects:{},lab:[]};
+function update(x){const d=BEATS[beat].duration,u=x/d,fade=windowPulse(x,0,d,.45);title.style.opacity=String(smooth(.25,.65,x)*(1-smooth(d-.75,d-.25,x)));root.rotation.y=-.35+smooth(.4,d-.8,x)*.16;root.rotation.x=-.08;
+  const O=state.objects,L=state.lab;state.lab.forEach(l=>l.style.opacity=0);
+  const clusterCue=beat==='2A'?clusterCaptions.find(c=>x>=c.a&&x<c.b):null;
+  const cue=clusterCue||BEATS[beat].captions.find(([a,b])=>x>=a&&x<b);
+  caption.textContent=cue?(Array.isArray(cue)?cue[2]:cue.text):'';
+  caption.style.opacity=cue&&(q.get('captions')==='1'||clusterCue)?String(fade):'0';
+  if(beat==='1A'){setOpacity(O.a,windowPulse(x,.3,6.9,.8));setOpacity(O.b,windowPulse(x,1.5,6.9,.8));const p=smooth(3.0,4.8,x);O.arc.geometry.setDrawRange(0,Math.floor(65*p));O.arc.material.opacity=p*fade;L[0].style.opacity=smooth(4.5,5,x)*fade;}
+  if(beat==='1B'){const a=windowPulse(x,.3,6.75,.8),b=windowPulse(x,2.7,6.75,.8);setOpacity(O.to,a);setOpacity(O.rd,b);L[0].style.opacity=smooth(2,2.4,x)*fade;L[1].style.opacity=smooth(4.5,4.9,x)*fade;}
+  if(beat==='2A'){const a=windowPulse(x,.3,5.7,.8),b=windowPulse(x,5.4,11.8,.8),c=windowPulse(x,11.4,20,.8);setOpacity(O.cube,a);setOpacity(O.rd,b);setOpacity(O.to,c);O.pack.children.forEach((o,i)=>{let v=0;if(clusterSets.axis.has(i))v=windowPulse(x,14.0,15.45,.18);if(clusterSets.face.has(i))v=Math.max(v,windowPulse(x,15.45,16.9,.18));if(clusterSets.body.has(i))v=Math.max(v,windowPulse(x,16.9,18.1,.18));v=Math.max(v,smooth(18.1,18.75,x)*c*.3);setOpacity(o,v)});const pull=1+smooth(13.4,14.2,x)*.9;camera.position.set(9*pull,6*pull,12*pull);O.cube.rotation.y=x*.16;O.rd.rotation.y=x*.12;O.to.rotation.y=x*.11;L.slice(0,3).forEach((l,i)=>l.style.opacity=smooth(16.8+i*.18,17.4+i*.18,x)*fade);L[3].style.opacity=windowPulse(x,14.0,15.45,.18)*fade;L[4].style.opacity=windowPulse(x,15.45,16.9,.18)*fade;L[5].style.opacity=windowPulse(x,16.9,18.1,.18)*fade;L[6].style.opacity=smooth(18.1,18.75,x)*fade;}
+  if(beat==='2B'){O.solids.forEach((o,i)=>{const v=windowPulse(x,.25,11.9,.75);setOpacity(o,v*(i<3?1:1-smooth(4.2,6.2,x)*.72));o.position.y=(i<3?smooth(4.2,6.3,x)*.7:0);o.rotation.y=x*.08});L.forEach((l,i)=>l.style.opacity=smooth(6.5+i*.18,7+i*.18,x)*fade);}
+  if(beat==='2C'){const cut=smooth(1.3,3.5,x);O.src.forEach(o=>setOpacity(o,(1-cut)*fade));O.dst.forEach(o=>setOpacity(o,cut*fade));L[0].style.opacity=(1-Math.abs(cut-.5)*2)*fade;}
+  if(beat==='2D'){O.pack.children.forEach((o,i)=>setOpacity(o,smooth(.35+i*.12,1.1+i*.12,x)*fade*(i%4?0.34:0.82)));O.led.forEach((o,i)=>o.material.opacity=smooth(10.4+i*.035,11.2+i*.035,x)*fade*.48);const pull=1+smooth(.5,13.5,x)*.35;camera.position.set(15*pull,10*pull,20*pull);}
+  key.intensity=2.1+(beat==='1B'||beat==='2A'||beat==='2C'||beat==='2D'?smooth(.5,1.1,x)*(1-smooth(1.45,1.9,x))*.65:0);root.visible=fade>.001;
+}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+function animate(now){requestAnimationFrame(animate);if(!paused){if(!sourceAudio.paused&&sourceAudio.readyState>=2){t=sourceAudio.currentTime}else{if(last)t+=(now-last)/1000}last=now;if(t>BEATS[beat].duration){t=0;if(!sourceAudio.paused)sourceAudio.currentTime=0}}else last=now;if(forcedFrame!==null)t=Number(forcedFrame)/FPS;update(t);camera.lookAt(0,0,0);renderer.render(scene,camera);document.querySelector('#time').textContent=`${beat} / ${t.toFixed(3)} / F${Math.round(t*FPS)}`}
+document.querySelectorAll('[data-beat]').forEach(b=>b.onclick=()=>{forcedFrame=null;history.replaceState(null,'',`?beat=${b.dataset.beat}${clean?'&clean=1':''}`);configure(b.dataset.beat)});
+playButton.onclick=()=>{paused=!paused;playButton.textContent=paused?'PLAY':'PAUSE';if(paused){sourceAudio.pause()}else{if(t>=BEATS[beat].duration-.1)t=0;sourceAudio.currentTime=t;sourceAudio.play().catch(()=>{})}};
+sourceAudio.addEventListener('play',()=>{paused=false;t=sourceAudio.currentTime;last=0;playButton.textContent='PAUSE'});
+sourceAudio.addEventListener('pause',()=>{if(!sourceAudio.ended&&sourceAudio.currentTime>0){paused=true;playButton.textContent='PLAY'}});
+sourceAudio.addEventListener('ended',()=>{paused=true;t=0;playButton.textContent='PLAY'});
+configure(beat);requestAnimationFrame(animate);window.GF_MG={configure,update,get beat(){return beat},get time(){return t},setFrame:f=>{paused=true;t=f/FPS;update(t);camera.lookAt(0,0,0);renderer.render(scene,camera)}};
+</script>
+</body></html>

@@ -9,3 +9,10 @@ node_modules/
 
 # design reference archives (not page assets)
 vector-pod/*.zip
+
+# Render output, capture scratch, and local agent dirs — never commit (multi-GB frame trees)
+GREGG_MOTION_GRAPHICS/
+output/
+.playwright-cli/
+.agents/
+.DS_Store

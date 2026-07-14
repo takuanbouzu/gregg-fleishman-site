@@ -515,7 +515,12 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
   canvas.addEventListener('touchmove',function(e){if(!dragging)return;const t=e.touches[0];az-=(t.clientX-px)*.01;el+=(t.clientY-py)*.008;el=Math.max(.1,Math.min(1.3,el));px=t.clientX;py=t.clientY;e.preventDefault();},{passive:false});
   canvas.addEventListener('touchend',function(){dragging=false;});
 
-  document.getElementById('replay').onclick=function(){clock=new THREE.Clock();timeOffset=0;paused=false;document.getElementById('pause').textContent='Pause';};
+  document.getElementById('replay').onclick=function(){
+    clock=new THREE.Clock();timeOffset=0;paused=false;stageStarted=0;
+    const st=STAGES[stage];
+    if(st&&st.glb&&models[st.id]) models[st.id].revealStart=0;
+    document.getElementById('pause').textContent='Pause';
+  };
   document.getElementById('pause').onclick=function(){paused=!paused;if(paused){pauseAt=clock.getElapsedTime();}else{timeOffset+=clock.getElapsedTime()-pauseAt;}document.getElementById('pause').textContent=paused?'Resume':'Pause';};
 
   // ── layer panel: click a row (or its eye) to toggle that geometry on/off ───
@@ -551,7 +556,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
   const STAGES=[
     {id:'cell',  label:'The cell',  source:'computed geometry (24 signed permutations)'},
     {id:'pack',  label:'Packing',   source:'computed geometry &middot; BCC lattice, 14 neighbours'},
-    {id:'pod',   label:'The Pod',   source:'rhomi-pod.glb &middot; Gregg&rsquo;s Rhino STEP export', glb:'assets/models/rhomi-pod.glb',    gold:true},
+    {id:'pod',   label:'The Pod',   source:'rhombi-pod.glb &middot; 65 Rhino CAD parts, grouped by assembly layer', glb:'assets/models/rhombi-pod.glb',    gold:true},
     {id:'house', label:'The House', source:'vector-house.glb &middot; the edge&rsquo;s 45&deg;/&#8730;2 fold, not the corner hexagons', glb:'assets/models/vector-house.glb', gold:false}
   ];
   const loadEl=document.getElementById('stepload');
@@ -559,6 +564,110 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
   const sourceTextEl=document.getElementById('sourcetext');
   const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const models={};   // id → { obj:Group|null }
+  let stageStarted=0;
+
+  function sceneTime(){
+    return (paused?pauseAt:clock.getElapsedTime())-timeOffset;
+  }
+
+  function materialList(mat){
+    return Array.isArray(mat)?mat:[mat];
+  }
+
+  function setMaterialOpacity(mat,op){
+    materialList(mat).forEach(function(m){
+      if(!m) return;
+      m.userData=m.userData||{};
+      if(m.userData.baseOpacity===undefined) m.userData.baseOpacity=m.opacity===undefined?1:m.opacity;
+      m.transparent=true;
+      m.opacity=(m.userData.baseOpacity===undefined?1:m.userData.baseOpacity)*op;
+      m.depthWrite=op>.96;
+      m.needsUpdate=true;
+    });
+  }
+
+  function prepareBuiltModel(root,st){
+    const rec={obj:root,parts:[],radius:1,explodeDistance:1,revealStart:sceneTime()};
+    const box=new THREE.Box3().setFromObject(root);
+    const sph=box.getBoundingSphere(new THREE.Sphere());
+    rec.radius=Math.max(.001,sph.radius);
+    rec.explodeDistance=rec.radius*(st.gold?.20:.14);
+    root.updateMatrixWorld(true);
+    root.traverse(function(o){
+      if((o.isLine||o.isLineSegments) && o.material){
+        materialList(o.material).forEach(function(mat){
+          if(!mat) return;
+          mat.userData=mat.userData||{};
+          mat.userData.baseOpacity=mat.opacity===undefined?1:mat.opacity;
+          mat.transparent=true;
+          mat.opacity=0;
+          mat.depthWrite=false;
+        });
+      }
+      if(!o.isMesh) return;
+      materialList(o.material).forEach(function(mat){
+        if(!mat) return;
+        mat.userData=mat.userData||{};
+        mat.userData.baseOpacity=mat.opacity===undefined?1:mat.opacity;
+        mat.transparent=true;
+        mat.opacity=0;
+        mat.depthWrite=false;
+      });
+      const partBox=new THREE.Box3().setFromObject(o);
+      const center=partBox.getCenter(new THREE.Vector3());
+      const dir=center.sub(sph.center);
+      if(dir.lengthSq()<.0001) dir.set(0,1,0);
+      dir.normalize();
+      const parentQuat=new THREE.Quaternion();
+      if(o.parent) o.parent.getWorldQuaternion(parentQuat);
+      parentQuat.invert();
+      const localDir=dir.clone().applyQuaternion(parentQuat).normalize();
+      const edges=new THREE.LineSegments(
+        new THREE.EdgesGeometry(o.geometry,28),
+        new THREE.LineBasicMaterial({
+          color:st.gold?0xf0d08d:0x9aa8bd,
+          transparent:true,
+          opacity:0,
+          depthWrite:false
+        })
+      );
+      edges.renderOrder=4;
+      o.add(edges);
+      rec.parts.push({
+        mesh:o,
+        wire:edges,
+        home:o.position.clone(),
+        dir:localDir,
+        delay:Math.min(.28,rec.parts.length*.035)
+      });
+    });
+    return rec;
+  }
+
+  function updateBuiltModelReveal(rec,active){
+    if(!rec||!rec.obj) return;
+    const age=Math.max(0,sceneTime()-(rec.revealStart||0));
+    const wireIn=active?ph(age,.04,.62):0;
+    const assemble=active?ph(age,.22,1.05):0;
+    const panels=active?ph(age,.82,1.15):0;
+    const wireHold=active?(.58-.32*panels):0;
+    rec.obj.visible=active&&(wireIn>0.01||panels>0.01);
+    rec.parts.forEach(function(p){
+      const localPanels=active?ph(age,.82+p.delay,1.0):0;
+      const localWire=active?ph(age,.04+p.delay*.45,.55):0;
+      const localAssemble=active?ph(age,.22+p.delay,.9):1;
+      p.mesh.position.copy(p.home).addScaledVector(p.dir,rec.explodeDistance*(1-localAssemble));
+      p.wire.material.opacity=localWire*wireHold;
+      setMaterialOpacity(p.mesh.material,localPanels);
+    });
+    if(!active){
+      rec.parts.forEach(function(p){
+        p.mesh.position.copy(p.home);
+        p.wire.material.opacity=0;
+        setMaterialOpacity(p.mesh.material,0);
+      });
+    }
+  }
 
   function frameNow(obj){
     if(obj){
@@ -581,6 +690,10 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'…';
     loader.load(st.glb,function(gltf){
       const m=gltf.scene;
+      if(st.gold){
+        const refCurves=m.getObjectByName('Source')||m.getObjectByName('0');
+        if(refCurves) refCurves.visible=false;
+      }
       m.traverse(function(o){
         if(!o.isMesh) return;
         if(st.gold){
@@ -592,9 +705,12 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
       const box=new THREE.Box3().setFromObject(m);
       m.position.sub(box.getCenter(new THREE.Vector3()));
       m.visible=false; scene.add(m);
-      models[st.id]={obj:m};
+      models[st.id]=prepareBuiltModel(m,st);
       loadEl.style.display='none';
-      if(STAGES[stage].id===st.id) frameNow(m);   // still on this stage → frame it
+      if(STAGES[stage].id===st.id){               // still on this stage → frame + reveal
+        models[st.id].revealStart=sceneTime();
+        frameNow(m);
+      }
     },function(xhr){
       if(xhr.total) loadEl.textContent='loading '+(st.gold?'the pod':'the house')+'… '+Math.round(xhr.loaded/xhr.total*100)+'%';
     },function(err){
@@ -605,13 +721,17 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
   function setStage(i){
     stage=i;
+    stageStarted=sceneTime();
     document.querySelectorAll('.mode-row').forEach(function(b){ b.classList.toggle('active',+b.dataset.stage===i); });
     const st=STAGES[i];
     statusTextEl.textContent=st.label;
     sourceTextEl.innerHTML=st.source;
     if(st.glb){
       const rec=models[st.id];
-      if(rec && rec.obj) frameNow(rec.obj);   // loaded → frame now
+      if(rec && rec.obj){
+        rec.revealStart=stageStarted;
+        frameNow(rec.obj);                    // loaded → frame now
+      }
       else loadModel(st);                       // loading → frame on arrival
     } else {
       frameNow(null);
@@ -680,11 +800,13 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
     cubeWire.material.opacity += ((LAYERS.cube?.30:0)*pm-cubeWire.material.opacity)*.1;
     rdGroup.children.forEach(function(l){ l.material.opacity += ((LAYERS.rd?.5:0)*pm-l.material.opacity)*.1; });
 
-    // Gregg's built models: only the current stage's model is visible, and only
-    // once the math has begun to clear.
+    // Gregg's built models: a short architectural reveal. Wireframe first,
+    // then available mesh bodies assemble inward and their panels/materials
+    // turn on. Some GLBs are already merged to a few bodies, so this remains a
+    // truthful reveal rather than a fake many-part explosion.
     for(const id in models){
       const rec=models[id]; if(!rec||!rec.obj) continue;
-      rec.obj.visible = (STAGES[stage].id===id) && builtWeight>0.03;
+      updateBuiltModelReveal(rec,STAGES[stage].id===id && builtWeight>0.03);
     }
 
     // framing — ease the orbit radius to the freshly-framed distance, then release

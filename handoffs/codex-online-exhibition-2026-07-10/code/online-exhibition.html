@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0B">
+<title>Online Exhibition — Gregg Fleishman</title>
+<meta name="description" content="A review-edition online exhibition for Gregg Fleishman's Lost Triangle: a warm, guided path through the proof, animations, cube system, Vector Pod, and built architectural work.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Online Exhibition — Gregg Fleishman">
+<meta property="og:description" content="A guided online exhibition through Gregg Fleishman's Lost Triangle, cube system, Vector Pod, and built architectural work.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/online-exhibition.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/fleishman-sequence-poster.png">
+<meta property="og:image:alt" content="Gregg Fleishman — Fleishman Sequence poster">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Online Exhibition — Gregg Fleishman">
+<meta name="twitter:description" content="A guided online exhibition through the Lost Triangle, cube system, Vector Pod, and built architectural work.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/fleishman-sequence-poster.png">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<style>
+  *{ box-sizing:border-box; }
+  html{ background:#070a0b; }
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 18% 10%, rgba(219,104,77,.15), transparent 30rem),
+      radial-gradient(circle at 88% 4%, rgba(119,164,133,.10), transparent 26rem),
+      linear-gradient(180deg, #0b0d0a 0%, #070a0b 36%, #0a0b09 100%);
+    color:var(--tx);
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(229,224,212,.035) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(229,224,212,.026) 1px, transparent 1px);
+    background-size:72px 72px;
+    mask-image:linear-gradient(to bottom, rgba(0,0,0,.8), transparent 78%);
+  }
+  a{ color:inherit; }
+  img{ display:block; max-width:100%; }
+  .page{
+    overflow:hidden;
+  }
+  .wrap{
+    width:min(1180px, calc(100% - 56px));
+    margin:0 auto;
+  }
+  .section{
+    padding:88px 0;
+    border-top:1px solid rgba(229,224,212,.10);
+  }
+  .section:first-of-type{ border-top:0; }
+  .eyebrow{
+    margin:0 0 14px;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--accent);
+  }
+  .section-title{
+    margin:0;
+    max-width:780px;
+    font-family:var(--font-display);
+    font-size:52px;
+    line-height:1;
+    letter-spacing:0;
+    font-weight:800;
+  }
+  .section-copy{
+    max-width:700px;
+    margin:22px 0 0;
+    color:rgba(229,224,212,.74);
+    font-size:18px;
+    line-height:1.64;
+  }
+  .quiet{
+    color:var(--tx-dim);
+  }
+
+  .hero{
+    min-height:calc(100vh - 56px);
+    min-height:calc(100svh - 56px);
+    display:grid;
+    align-items:end;
+    position:relative;
+    isolation:isolate;
+  }
+  .hero-media{
+    position:absolute;
+    inset:0;
+    z-index:-2;
+    overflow:hidden;
+    background:#070a0b;
+  }
+  .hero-media iframe{
+    width:100%;
+    height:100%;
+    border:0;
+    opacity:.74;
+    filter:saturate(1.08) contrast(1.02);
+    pointer-events:none;
+  }
+  .hero-media::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(90deg, rgba(7,10,11,.88) 0%, rgba(7,10,11,.58) 42%, rgba(7,10,11,.28) 100%),
+      linear-gradient(180deg, rgba(7,10,11,.20) 0%, rgba(7,10,11,.78) 78%, #070a0b 100%);
+  }
+  .hero-inner{
+    width:min(1180px, calc(100% - 56px));
+    margin:0 auto;
+    padding:88px 0 54px;
+  }
+  .hero-kicker{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    margin:0 0 24px;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:rgba(229,224,212,.68);
+  }
+  .hero-kicker span{
+    display:inline-flex;
+    min-height:28px;
+    align-items:center;
+    padding:0 10px;
+    border:1px solid rgba(229,224,212,.18);
+    background:rgba(7,10,11,.48);
+  }
+  .hero h1{
+    max-width:920px;
+    margin:0;
+    font-family:var(--font-display);
+    font-size:86px;
+    line-height:.94;
+    letter-spacing:0;
+    font-weight:800;
+  }
+  .hero-lede{
+    max-width:610px;
+    margin:26px 0 0;
+    color:rgba(229,224,212,.78);
+    font-size:21px;
+    line-height:1.55;
+  }
+  .hero-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:34px;
+  }
+  .ghost-btn{
+    display:inline-flex;
+    min-height:42px;
+    align-items:center;
+    justify-content:center;
+    padding:0 18px;
+    border:1px solid rgba(229,224,212,.22);
+    color:rgba(229,224,212,.78);
+    text-decoration:none;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    transition:border-color .16s var(--ease), color .16s var(--ease), background .16s var(--ease);
+  }
+  .ghost-btn:hover{
+    border-color:rgba(201,162,75,.72);
+    color:var(--tx);
+    background:rgba(201,162,75,.08);
+  }
+
+  .route{
+    display:grid;
+    grid-template-columns:320px minmax(0, 1fr);
+    gap:42px;
+    align-items:start;
+  }
+  .route-rail{
+    position:sticky;
+    top:78px;
+  }
+  .route-title{
+    margin:0 0 18px;
+    font-family:var(--font-display);
+    font-size:30px;
+    line-height:1.05;
+    letter-spacing:0;
+  }
+  .route-note{
+    margin:0;
+    color:var(--tx-dim);
+    font-size:15px;
+    line-height:1.7;
+  }
+  .route-list{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .chapter{
+    display:grid;
+    grid-template-columns:52px minmax(0, 1fr) auto;
+    gap:16px;
+    align-items:center;
+    min-height:92px;
+    padding:16px;
+    border:1px solid rgba(229,224,212,.14);
+    background:rgba(9,13,14,.54);
+    text-decoration:none;
+    transition:transform .16s var(--ease), border-color .16s var(--ease), background .16s var(--ease);
+  }
+  .chapter:hover{
+    transform:translateY(-2px);
+    border-color:rgba(201,162,75,.56);
+    background:rgba(16,19,17,.72);
+  }
+  .chapter-num{
+    display:grid;
+    place-items:center;
+    width:52px;
+    height:52px;
+    border:1px solid rgba(201,162,75,.42);
+    color:var(--accent);
+    font-family:var(--font-mono);
+    font-size:12px;
+  }
+  .chapter h3{
+    margin:0;
+    font-size:20px;
+    line-height:1.1;
+    letter-spacing:0;
+  }
+  .chapter p{
+    margin:7px 0 0;
+    color:var(--tx-dim);
+    font-size:14px;
+    line-height:1.45;
+  }
+  .chapter-tag{
+    color:rgba(229,224,212,.50);
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    white-space:nowrap;
+  }
+
+  .experience{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 340px;
+    min-height:640px;
+    border:1px solid rgba(229,224,212,.14);
+    background:rgba(7,10,11,.70);
+  }
+  .preview{
+    position:relative;
+    min-height:640px;
+    background:#070a0b;
+  }
+  .preview iframe{
+    width:100%;
+    height:100%;
+    min-height:640px;
+    border:0;
+    display:block;
+    background:#070a0b;
+  }
+  .preview-label{
+    position:absolute;
+    left:18px;
+    bottom:18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    pointer-events:none;
+  }
+  .preview-label span{
+    padding:8px 10px;
+    background:rgba(7,10,11,.82);
+    border:1px solid rgba(229,224,212,.18);
+    color:rgba(229,224,212,.72);
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+  .control-panel{
+    border-left:1px solid rgba(229,224,212,.14);
+    padding:22px;
+    background:rgba(12,17,18,.82);
+  }
+  .control-panel h3{
+    margin:0;
+    font-size:26px;
+    line-height:1.05;
+    letter-spacing:0;
+  }
+  .control-panel p{
+    margin:12px 0 0;
+    color:var(--tx-dim);
+    font-size:14px;
+    line-height:1.64;
+  }
+  .module-tabs{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:24px;
+  }
+  .module-tab{
+    width:100%;
+    min-height:52px;
+    padding:0 14px;
+    border:1px solid rgba(229,224,212,.15);
+    background:rgba(7,10,11,.28);
+    color:rgba(229,224,212,.66);
+    text-align:left;
+    cursor:pointer;
+    font-family:var(--font-ui);
+    transition:border-color .16s var(--ease), color .16s var(--ease), background .16s var(--ease);
+  }
+  .module-tab strong{
+    display:block;
+    color:inherit;
+    font-size:14px;
+    line-height:1.2;
+    letter-spacing:0;
+  }
+  .module-tab span{
+    display:block;
+    margin-top:3px;
+    font-family:var(--font-mono);
+    font-size:9px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:rgba(229,224,212,.40);
+  }
+  .module-tab.is-active{
+    border-color:rgba(201,162,75,.72);
+    color:var(--tx);
+    background:rgba(201,162,75,.10);
+  }
+  .module-open{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    margin-top:22px;
+    padding-top:18px;
+    border-top:1px solid rgba(229,224,212,.10);
+  }
+  .module-open a{
+    color:var(--accent);
+    text-decoration:none;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+
+  .image-band{
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:4px;
+    margin-top:38px;
+  }
+  .image-band figure{
+    margin:0;
+    position:relative;
+    overflow:hidden;
+    background:#10110e;
+  }
+  .image-band img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    min-height:360px;
+  }
+  .image-band figure:nth-child(2) img{ min-height:360px; }
+  .image-band figcaption{
+    position:absolute;
+    left:14px;
+    bottom:14px;
+    right:14px;
+    color:rgba(229,224,212,.72);
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    text-shadow:0 1px 18px rgba(0,0,0,.8);
+  }
+
+  .archive-grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:14px;
+    margin-top:36px;
+  }
+  .archive-card{
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    border:1px solid rgba(229,224,212,.14);
+    background:rgba(9,13,14,.60);
+    text-decoration:none;
+    overflow:hidden;
+  }
+  .archive-card img{
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:cover;
+    background:#10110e;
+  }
+  .archive-body{
+    padding:18px;
+  }
+  .archive-body .type{
+    display:block;
+    margin-bottom:10px;
+    color:var(--accent);
+    font-family:var(--font-mono);
+    font-size:9px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+  .archive-body h3{
+    margin:0;
+    font-size:20px;
+    line-height:1.12;
+    letter-spacing:0;
+  }
+  .archive-body p{
+    margin:10px 0 0;
+    color:var(--tx-dim);
+    font-size:14px;
+    line-height:1.55;
+  }
+
+  .build-grid{
+    display:grid;
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:1px;
+    margin-top:36px;
+    background:rgba(229,224,212,.12);
+    border:1px solid rgba(229,224,212,.12);
+  }
+  .build-step{
+    min-height:210px;
+    padding:22px;
+    background:#090d0e;
+  }
+  .build-step span{
+    display:block;
+    color:var(--accent);
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    margin-bottom:26px;
+  }
+  .build-step h3{
+    margin:0;
+    font-size:21px;
+    line-height:1.1;
+    letter-spacing:0;
+  }
+  .build-step p{
+    margin:12px 0 0;
+    color:var(--tx-dim);
+    font-size:14px;
+    line-height:1.58;
+  }
+
+  .footer-cta{
+    padding:72px 0 92px;
+  }
+  .footer-box{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto;
+    gap:32px;
+    align-items:center;
+    border-top:1px solid rgba(201,162,75,.40);
+    border-bottom:1px solid rgba(201,162,75,.40);
+    padding:30px 0;
+  }
+  .footer-box h2{
+    margin:0;
+    font-size:34px;
+    line-height:1.05;
+    letter-spacing:0;
+  }
+  .footer-box p{
+    max-width:640px;
+    margin:12px 0 0;
+    color:var(--tx-dim);
+    line-height:1.62;
+  }
+
+  @media(max-width:980px){
+    .hero h1{ font-size:68px; }
+    .section-title{ font-size:42px; }
+    .route{ grid-template-columns:1fr; }
+    .route-rail{ position:static; }
+    .experience{ grid-template-columns:1fr; }
+    .control-panel{ border-left:0; border-top:1px solid rgba(229,224,212,.14); }
+    .module-tabs{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    .archive-grid{ grid-template-columns:1fr 1fr; }
+    .build-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media(max-width:720px){
+    .wrap,
+    .hero-inner{ width:min(100% - 36px, 1180px); }
+    .hero{ min-height:auto; }
+    .hero-media iframe{ display:none; }
+    .hero-media{
+      background:
+        linear-gradient(180deg, rgba(7,10,11,.12), #070a0b 86%),
+        url("assets/drawings/fleishman-sequence-poster.png") center/cover no-repeat;
+    }
+    .hero-inner{ padding:72px 0 44px; }
+    .hero h1{ font-size:46px; line-height:1; }
+    .hero-lede{ font-size:18px; }
+    .section{ padding:64px 0; }
+    .section-title{ font-size:34px; }
+    .section-copy{ font-size:16px; }
+    .chapter{
+      grid-template-columns:42px minmax(0, 1fr);
+      min-height:0;
+    }
+    .chapter-num{ width:42px; height:42px; }
+    .chapter-tag{ grid-column:2; }
+    .preview,
+    .preview iframe{ min-height:420px; }
+    .image-band{ grid-template-columns:1fr; }
+    .archive-grid,
+    .build-grid,
+    .module-tabs{ grid-template-columns:1fr; }
+    .footer-box{ grid-template-columns:1fr; }
+  }
+  @media(max-width:460px){
+    .wrap,
+    .hero-inner{ width:min(100% - 28px, 1180px); }
+    .hero h1{ font-size:38px; }
+    .hero-actions{ flex-direction:column; align-items:stretch; }
+    .ghost-btn,
+    .gf-btn-fill{ width:100%; }
+    .control-panel{ padding:18px; }
+    .preview,
+    .preview iframe{ min-height:360px; }
+  }
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink active" href="online-exhibition.html">Exhibition</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle.html">Animation</a>
+  <a class="navlink" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+
+<main class="page">
+  <section class="hero" id="top">
+    <div class="hero-media" aria-hidden="true">
+      <iframe src="fleishman-sequence-drawings.html?embed&cover" title="Ambient Fleishman Sequence animation" tabindex="-1"></iframe>
+    </div>
+    <div class="hero-inner">
+      <p class="hero-kicker">
+        <span>Review edition</span>
+        <span>Online exhibition</span>
+        <span>Mobile wireframe</span>
+      </p>
+      <h1>The Lost Triangle, built into a living archive.</h1>
+      <p class="hero-lede">A self-contained exhibition path for Gregg Fleishman's work: warm enough to feel human, precise enough to honor the math, and modular enough for you to plug in better images, clips, drawings, and text as the project grows.</p>
+      <div class="hero-actions">
+        <a class="gf-btn-fill" href="#experience">Enter the Exhibition</a>
+        <a class="ghost-btn" href="#build">Build Plan</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="route">
+    <div class="wrap route">
+      <aside class="route-rail">
+        <p class="eyebrow">Visitor Path</p>
+        <h2 class="route-title">One route, six rooms, no dead ends.</h2>
+        <p class="route-note">The final version can keep Gregg's larger website wholesome and biographical while this page becomes the contemporary exhibition: an interactive proof, a cinematic sequence, then the built work.</p>
+      </aside>
+      <div class="route-list">
+        <a class="chapter" href="mathematics.html">
+          <span class="chapter-num">01</span>
+          <span>
+            <h3>The proof starts simply</h3>
+            <p>Begin with the cube's own lengths: 1, face diagonal, space diagonal.</p>
+          </span>
+          <span class="chapter-tag">read</span>
+        </a>
+        <a class="chapter" href="lost-triangle.html">
+          <span class="chapter-num">02</span>
+          <span>
+            <h3>The triangle starts moving</h3>
+            <p>Turn the proof into a motion sequence that makes the ratios legible.</p>
+          </span>
+          <span class="chapter-tag">watch</span>
+        </a>
+        <a class="chapter" href="explore.html">
+          <span class="chapter-num">03</span>
+          <span>
+            <h3>The cube becomes a system</h3>
+            <p>Let visitors rotate, test, and compare the geometric family.</p>
+          </span>
+          <span class="chapter-tag">orbit</span>
+        </a>
+        <a class="chapter" href="vector-pod/index.html">
+          <span class="chapter-num">04</span>
+          <span>
+            <h3>The part study gets tactile</h3>
+            <p>Shift from abstract math to an object visitors can inspect.</p>
+          </span>
+          <span class="chapter-tag">inspect</span>
+        </a>
+        <a class="chapter" href="truncated-octahedron.html">
+          <span class="chapter-num">05</span>
+          <span>
+            <h3>The system fills space</h3>
+            <p>Show the family relationship between the cell, Pod, and House.</p>
+          </span>
+          <span class="chapter-tag">assemble</span>
+        </a>
+        <a class="chapter" href="about.html">
+          <span class="chapter-num">06</span>
+          <span>
+            <h3>The archive returns to Gregg</h3>
+            <p>Close with the person, the built record, and the living legacy.</p>
+          </span>
+          <span class="chapter-tag">context</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="experience">
+    <div class="wrap">
+      <p class="eyebrow">Interactive Wireframe</p>
+      <h2 class="section-title">A preview console for the exhibition rooms.</h2>
+      <p class="section-copy">This is the part you can keep developing as a submission piece: each button swaps the live preview, and each room can later become its own polished sequence, video, or model embed.</p>
+      <div class="experience" aria-label="Exhibition preview console">
+        <div class="preview">
+          <iframe id="moduleFrame" src="fleishman-sequence-drawings.html?embed&cover" title="Selected exhibition module"></iframe>
+          <div class="preview-label" aria-hidden="true">
+            <span id="moduleType">Motion spine</span>
+            <span id="moduleLength">78 sec</span>
+          </div>
+        </div>
+        <aside class="control-panel">
+          <h3 id="moduleTitle">Fleishman Sequence</h3>
+          <p id="moduleCopy">A warm cinematic opening that makes the proof feel discovered instead of explained. Use this as the exhibition's first breath.</p>
+          <div class="module-tabs" role="tablist" aria-label="Choose exhibition module">
+            <button class="module-tab is-active" type="button" data-src="fleishman-sequence-drawings.html?embed&cover" data-title="Fleishman Sequence" data-type="Motion spine" data-length="78 sec" data-copy="A warm cinematic opening that makes the proof feel discovered instead of explained. Use this as the exhibition's first breath.">
+              <strong>Fleishman Sequence</strong>
+              <span>motion spine</span>
+            </button>
+            <button class="module-tab" type="button" data-src="lost-triangle.html?embed=1" data-title="Lost Triangle Animation" data-type="Canonical motion" data-length="75 sec" data-copy="The clean educational motion graphic: direct, accurate, and ready to become the main proof chapter.">
+              <strong>Lost Triangle</strong>
+              <span>canonical proof</span>
+            </button>
+            <button class="module-tab" type="button" data-src="explore.html?embed=1" data-title="The Cube" data-type="3D interactive" data-length="live" data-copy="The visitor turns the system over by hand. This is where the math stops being a diagram and becomes spatial.">
+              <strong>The Cube</strong>
+              <span>interactive model</span>
+            </button>
+            <button class="module-tab" type="button" data-src="vector-pod/index.html" data-title="Vector Pod" data-type="Part study" data-length="live" data-copy="The tactile object room: materials, panels, edges, and the handmade intelligence of the construction.">
+              <strong>Vector Pod</strong>
+              <span>object study</span>
+            </button>
+            <button class="module-tab" type="button" data-src="truncated-octahedron.html?embed=1" data-title="Space-Filling System" data-type="Assembly study" data-length="live" data-copy="A bridge from pure cell geometry into the Pod and House, useful as the contemporary technical centerpiece.">
+              <strong>Space Filling</strong>
+              <span>cell to architecture</span>
+            </button>
+          </div>
+          <div class="module-open">
+            <span class="quiet">Open the current room as a full page.</span>
+            <a id="moduleLink" href="fleishman-sequence-drawings.html">Open</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="look">
+    <div class="wrap">
+      <p class="eyebrow">Visual Direction</p>
+      <h2 class="section-title">Warmer than an instrument panel, sharper than a portfolio page.</h2>
+      <p class="section-copy">The palette can keep the existing dark geometry world, but the exhibition should add desert gold, terracotta, and human evidence: wood, dust, sunlight, drawings, and built structures.</p>
+      <div class="image-band">
+        <figure>
+          <img src="assets/arch/temple.jpg" alt="Gregg Fleishman temple structure in warm light">
+          <figcaption>Built work as first-class evidence</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/drawings/root-sequence.png" alt="Gregg Fleishman root sequence drawing">
+          <figcaption>Drawings carry the hand</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="archive">
+    <div class="wrap">
+      <p class="eyebrow">Archive Modules</p>
+      <h2 class="section-title">Reusable rooms for the materials you keep finding.</h2>
+      <p class="section-copy">These are placeholders with a real structure: swap in the strongest scans, CAD exports, video clips, storyboards, and source notes as you collect them.</p>
+      <div class="archive-grid">
+        <a class="archive-card" href="lost-triangle-construction-triangles.html">
+          <img src="assets/drawings/lost-triangle-color.png" alt="Lost Triangle color drawing">
+          <div class="archive-body">
+            <span class="type">Proof artifact</span>
+            <h3>Construction Triangles</h3>
+            <p>The angle studies can become a small interactive appendix instead of a buried technical note.</p>
+          </div>
+        </a>
+        <a class="archive-card" href="fleishman-sequence.html">
+          <img src="assets/drawings/fleishman-sequence-poster.png" alt="Fleishman Sequence poster">
+          <div class="archive-body">
+            <span class="type">Storyboard</span>
+            <h3>Sequence Studies</h3>
+            <p>Use motion boards to show how the exhibition was built, not just the final output.</p>
+          </div>
+        </a>
+        <a class="archive-card" href="portfolio.html">
+          <img src="assets/arch/skyportal.jpg" alt="Sky Portal architectural structure">
+          <div class="archive-body">
+            <span class="type">Built archive</span>
+            <h3>Festival Architecture</h3>
+            <p>Keep the warmth of Gregg's world visible beside the geometry and CAD work.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="build">
+    <div class="wrap">
+      <p class="eyebrow">Next Build Pass</p>
+      <h2 class="section-title">What to plug in next.</h2>
+      <p class="section-copy">To improve the result fastest, focus on the materials that make the site feel authored and alive: Gregg's voice, real artifact captions, and a small number of excellent visuals.</p>
+      <div class="build-grid">
+        <div class="build-step">
+          <span>01</span>
+          <h3>Choose the final spine</h3>
+          <p>Pick one primary opening sequence so the exhibition has a clear beginning instead of several competing intros.</p>
+        </div>
+        <div class="build-step">
+          <span>02</span>
+          <h3>Collect source captions</h3>
+          <p>For each drawing, scan, PDF, or model, add date, material, provenance, and confidence level.</p>
+        </div>
+        <div class="build-step">
+          <span>03</span>
+          <h3>Add Gregg's voice</h3>
+          <p>Short first-person notes will warm up the math and keep the exhibition from feeling clinical.</p>
+        </div>
+        <div class="build-step">
+          <span>04</span>
+          <h3>Stress test mobile</h3>
+          <p>Confirm every room works on a phone: no horizontal scroll, readable labels, and graceful iframe fallbacks.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer-cta">
+    <div class="wrap footer-box">
+      <div>
+        <p class="eyebrow">Submission shape</p>
+        <h2>A dedicated exhibition, not a replacement website.</h2>
+        <p>This lets the wholesome main site stay intact while the review submission becomes a contemporary digital work: guided, interactive, archival, and still very Gregg.</p>
+      </div>
+      <a class="gf-btn-fill" href="#top">Back to Top</a>
+    </div>
+  </section>
+</main>
+
+<script>
+  const frame = document.getElementById('moduleFrame');
+  const title = document.getElementById('moduleTitle');
+  const copy = document.getElementById('moduleCopy');
+  const type = document.getElementById('moduleType');
+  const length = document.getElementById('moduleLength');
+  const openLink = document.getElementById('moduleLink');
+  const tabs = Array.from(document.querySelectorAll('.module-tab'));
+
+  function baseUrl(url){
+    return url.replace(/[?&](embed|cover|clean)(=1)?/g, '').replace(/[?&]$/, '');
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((item) => item.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      frame.src = tab.dataset.src;
+      title.textContent = tab.dataset.title;
+      copy.textContent = tab.dataset.copy;
+      type.textContent = tab.dataset.type;
+      length.textContent = tab.dataset.length;
+      openLink.href = baseUrl(tab.dataset.src);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "fps": "30000/1001",
+  "width": 1920,
+  "height": 1080,
+  "handles": 4,
+  "beats": [
+    {"id":"1A","start":60.694,"end":68.368,"duration":7.674,"title":"THE RULE","hero":"120 DEG"},
+    {"id":"1B","start":75.375,"end":82.516,"duration":7.141,"title":"NEW CELL / TEN YEARS","hero":"TRUNCATED OCTAHEDRON"},
+    {"id":"2A","start":112.145,"end":132.532,"duration":20.387,"title":"THREE SPACE-FILLERS","hero":"CUBE / RHOMBIC / TRUNCATED"},
+    {"id":"2B","start":141.208,"end":153.453,"duration":12.245,"title":"THE CUBIC FAMILY","hero":"TETRAHEDRON / OCTAHEDRON / CUBE"},
+    {"id":"2C","start":158.492,"end":164.765,"duration":6.273,"title":"TRUNCATION","hero":"CUTTING THE CORNERS"},
+    {"id":"2D","start":181.982,"end":197.464,"duration":15.482,"title":"SPACE-FILLING NETWORK","hero":"THE UNIT BECOMES THE WHOLE"}
+  ]
+}

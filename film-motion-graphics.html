@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gregg Fleishman Film Motion Graphics</title>
+<link rel="icon" href="data:,">
+<script type="importmap">{"imports":{"three":"./assets/vendor/three-0.160.0/three.module.js"}}</script>
+<style>
+  :root{--bg:#000;--bone:#f2e9d8;--amber:#e8a33d;--ox:#9e3b2e;--slate:#5b8c9e;--dim:#6b6b6b}
+  *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:var(--bone)}
+  body{font-family:"Hanken Grotesk",Arial,sans-serif}canvas{display:block;width:100%;height:100%}
+  #stage{position:fixed;inset:0;background:radial-gradient(circle at 50% 45%,#0d1111 0,#050707 48%,#000 100%)}
+  body.alpha,body.alpha #stage{background:transparent}
+  #title{position:fixed;left:5vw;top:5.2vh;z-index:2;opacity:0;pointer-events:none}
+  #title .kicker{font:500 clamp(10px,1vw,15px)/1.2 "Courier New",monospace;letter-spacing:.18em;color:#887f70;margin-bottom:10px}
+  #title h1{font-size:clamp(22px,2.7vw,48px);line-height:1;margin:0;letter-spacing:0;text-transform:uppercase}
+  #labels{position:fixed;inset:0;z-index:3;pointer-events:none}
+  .label{position:absolute;transform:translate(-50%,-50%);font:600 clamp(11px,1.05vw,18px)/1 "Courier New",monospace;letter-spacing:.14em;white-space:nowrap;text-shadow:0 2px 12px #000;opacity:0}
+  #review{position:fixed;left:50%;bottom:18px;z-index:5;transform:translateX(-50%);display:flex;gap:5px;padding:5px;background:rgba(5,7,7,.82);border:1px solid #282a27}
+  #review button{border:1px solid transparent;background:transparent;color:#777;padding:7px 10px;font:11px "Courier New",monospace;cursor:pointer}
+  #review button.on{color:var(--amber);border-color:#5d4a22;background:#16130c}
+  #time{min-width:150px;color:#8b867b;padding:8px 9px;font:11px "Courier New",monospace}
+  body.clean #review{display:none}body.clean #title{left:5vw;top:6vh}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="scene"></canvas></div>
+<div id="title"><div class="kicker">GREGG FLEISHMAN / GEOMETRY IN SPACE</div><h1></h1></div>
+<div id="labels"></div>
+<div id="review"><button data-beat="1A">1A</button><button data-beat="1B">1B</button><button data-beat="2A">2A</button><button data-beat="2B">2B</button><button data-beat="2C">2C</button><button data-beat="2D">2D</button><button id="play">PAUSE</button><span id="time"></span></div>
+<script type="module">
+import * as THREE from 'three';
+
+const FPS=30000/1001;
+const BEATS={
+  '1A':{duration:7.674,title:'THE RULE'},'1B':{duration:7.141,title:'NEW CELL / TEN YEARS'},
+  '2A':{duration:20.387,title:'THREE SPACE-FILLERS'},'2B':{duration:12.245,title:'THE CUBIC FAMILY'},
+  '2C':{duration:6.273,title:'TRUNCATION'},'2D':{duration:15.482,title:'SPACE-FILLING NETWORK'}
+};
+const C={bone:0xf2e9d8,amber:0xe8a33d,ox:0x9e3b2e,slate:0x5b8c9e,dim:0x6b6b6b,white:0xffffff};
+const q=new URLSearchParams(location.search);let beat=q.get('beat')||'2A';let clean=q.get('clean')==='1';
+if(clean)document.body.classList.add('clean');
+if(q.get('alpha')==='1'){document.body.classList.add('alpha');document.documentElement.style.background='transparent'}
+const canvas=document.querySelector('#scene'),renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0x000000,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(42,16/9,.05,200);camera.position.set(9,6,12);
+scene.add(new THREE.AmbientLight(0xffffff,.32));const key=new THREE.DirectionalLight(0xfff0d8,2.1);key.position.set(7,10,8);scene.add(key);
+const rim=new THREE.DirectionalLight(0x5b8c9e,.6);rim.position.set(-8,4,-7);scene.add(rim);
+const root=new THREE.Group();scene.add(root);const clock=new THREE.Clock();let t=0,paused=false,last=0;
+const labels=document.querySelector('#labels'),title=document.querySelector('#title'),titleH=title.querySelector('h1');
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));const smooth=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
+const windowPulse=(x,a,b,fade=.35)=>smooth(a,a+fade,x)*(1-smooth(b-fade,b,x));
+function mat(color,opacity=.18){return new THREE.MeshStandardMaterial({color,transparent:true,opacity,roughness:.58,metalness:.08,side:THREE.DoubleSide,depthWrite:false});}
+function lineMat(color,opacity=.85){return new THREE.LineBasicMaterial({color,transparent:true,opacity,depthWrite:false});}
+function dispose(){while(root.children.length){const o=root.children.pop();o.traverse(n=>{n.geometry?.dispose();if(n.material){(Array.isArray(n.material)?n.material:[n.material]).forEach(m=>m.dispose())}})}labels.replaceChildren();}
+function faceGeometry(faces){const p=[];for(const f of faces){const c=f.reduce((s,v)=>s.add(new THREE.Vector3(...v)),new THREE.Vector3()).multiplyScalar(1/f.length);for(let i=0;i<f.length;i++){const a=f[i],b=f[(i+1)%f.length];p.push(c.x,c.y,c.z,...a,...b)}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.computeVertexNormals();return g}
+function uniqueEdges(faces){const map=new Map();for(const f of faces)for(let i=0;i<f.length;i++){const a=f[i],b=f[(i+1)%f.length],ka=a.join(','),kb=b.join(','),k=ka<kb?ka+'|'+kb:kb+'|'+ka;if(!map.has(k))map.set(k,[a,b])}return [...map.values()]}
+function solid(faces,color,scale=1){const g=new THREE.Group(),mesh=new THREE.Mesh(faceGeometry(faces),mat(color,.22));const ep=[];uniqueEdges(faces).forEach(e=>ep.push(...e[0],...e[1]));const lines=new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(ep,3)),lineMat(color,.95));g.add(mesh,lines);g.scale.setScalar(scale);g.userData={mesh,lines};return g}
+function primitive(geo,color,scale=1){const g=new THREE.Group(),m=new THREE.Mesh(geo,mat(color,.18)),l=new THREE.LineSegments(new THREE.EdgesGeometry(geo,18),lineMat(color,.9));g.add(m,l);g.scale.setScalar(scale);g.userData={mesh:m,lines:l};return g}
+function truncFaces(){const sq=[],hex=[];for(let axis=0;axis<3;axis++)for(const s of [1,-1]){const f=[],perp=[[1,0],[0,1],[-1,0],[0,-1]],o1=(axis+1)%3,o2=(axis+2)%3;for(const p of perp){const v=[0,0,0];v[axis]=2*s;v[o1]=p[0];v[o2]=p[1];f.push(v)}sq.push(f)}const base=[[2,1,0],[1,2,0],[0,2,1],[0,1,2],[1,0,2],[2,0,1]];for(const sx of [1,-1])for(const sy of [1,-1])for(const sz of [1,-1])hex.push(base.map(v=>[v[0]*sx,v[1]*sy,v[2]*sz]));return sq.concat(hex)}
+const RD=[[[2,0,0],[1,1,1],[0,2,0],[1,1,-1]],[[2,0,0],[1,-1,1],[0,-2,0],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,2,0],[-1,1,-1]],[[-2,0,0],[-1,-1,1],[0,-2,0],[-1,-1,-1]],[[2,0,0],[1,1,1],[0,0,2],[1,-1,1]],[[2,0,0],[1,1,-1],[0,0,-2],[1,-1,-1]],[[-2,0,0],[-1,1,1],[0,0,2],[-1,-1,1]],[[-2,0,0],[-1,1,-1],[0,0,-2],[-1,-1,-1]],[[0,2,0],[1,1,1],[0,0,2],[-1,1,1]],[[0,2,0],[1,1,-1],[0,0,-2],[-1,1,-1]],[[0,-2,0],[1,-1,1],[0,0,2],[-1,-1,1]],[[0,-2,0],[1,-1,-1],[0,0,-2],[-1,-1,-1]]];
+const CUBE_FACES=[[[-1,-1,-1],[-1,1,-1],[1,1,-1],[1,-1,-1]],[[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]],[[1,-1,-1],[1,1,-1],[1,1,1],[1,-1,1]],[[1,1,-1],[-1,1,-1],[-1,1,1],[1,1,1]],[[-1,1,-1],[-1,-1,-1],[-1,-1,1],[-1,1,1]]];
+const TETRA_FACES=[[[1,1,1],[-1,-1,1],[-1,1,-1]],[[1,1,1],[1,-1,-1],[-1,-1,1]],[[1,1,1],[-1,1,-1],[1,-1,-1]],[[-1,-1,1],[1,-1,-1],[-1,1,-1]]];
+function truncateFaces(source,r=1/3){
+  const result=[],neighbors=new Map();
+  const key=v=>v.join(',');
+  for(const face of source){
+    const cut=[];
+    for(let i=0;i<face.length;i++){
+      const a=face[i],b=face[(i+1)%face.length],ka=key(a),kb=key(b);
+      if(!neighbors.has(ka))neighbors.set(ka,new Map());if(!neighbors.has(kb))neighbors.set(kb,new Map());
+      neighbors.get(ka).set(kb,b);neighbors.get(kb).set(ka,a);
+      cut.push(a.map((n,j)=>n+(b[j]-n)*r),a.map((n,j)=>n+(b[j]-n)*(1-r)));
+    }
+    result.push(cut);
+  }
+  for(const [ks,near] of neighbors){
+    const v=ks.split(',').map(Number),normal=new THREE.Vector3(...v).normalize(),axis=Math.abs(normal.y)<.9?new THREE.Vector3(0,1,0):new THREE.Vector3(1,0,0);
+    const u=new THREE.Vector3().crossVectors(axis,normal).normalize(),w=new THREE.Vector3().crossVectors(normal,u).normalize();
+    const ring=[...near.values()].map(n=>v.map((x,j)=>x+(n[j]-x)*r));
+    ring.sort((a,b)=>Math.atan2(new THREE.Vector3(...a).dot(w),new THREE.Vector3(...a).dot(u))-Math.atan2(new THREE.Vector3(...b).dot(w),new THREE.Vector3(...b).dot(u)));
+    result.push(ring);
+  }
+  return result;
+}
+function addLabel(text,color,x,y){const e=document.createElement('div');e.className='label';e.textContent=text;e.style.color='#'+color.toString(16).padStart(6,'0');e.style.left=x+'%';e.style.top=y+'%';labels.append(e);return e}
+function setOpacity(o,v){o.visible=v>.002;o.traverse(n=>{if(n.material)n.material.opacity=v*((n.isLine||n.isLineSegments)?0.9:0.22)})}
+function arc(a,b,r,color){a=a.clone().normalize();b=b.clone().normalize();const angle=a.angleTo(b),pts=[];for(let i=0;i<=64;i++){const f=i/64,s=Math.sin(angle);pts.push(a.clone().multiplyScalar(Math.sin((1-f)*angle)/s).addScaledVector(b,Math.sin(f*angle)/s).multiplyScalar(r))}const g=new THREE.BufferGeometry().setFromPoints(pts);g.setDrawRange(0,0);const l=new THREE.Line(g,lineMat(color,1));root.add(l);return l}
+function configure(id){dispose();beat=id;t=0;last=0;titleH.textContent=BEATS[id].title;title.style.opacity=0;document.querySelectorAll('[data-beat]').forEach(b=>b.classList.toggle('on',b.dataset.beat===id));
+  const objects={},lab=[];camera.position.set(9,6,12);camera.lookAt(0,0,0);
+  if(id==='1A'){objects.a=primitive(new THREE.CylinderGeometry(.055,.055,4,10),C.bone);objects.a.rotation.z=Math.PI/2;objects.a.position.x=-2;objects.b=objects.a.clone();objects.b.position.x=2;objects.b.rotation.z=-Math.PI/3;root.add(objects.a,objects.b);objects.arc=arc(new THREE.Vector3(1,0,0),new THREE.Vector3(-.5,.866,0),2.2,C.white);lab.push(addLabel('120 DEG',C.white,50,31));}
+  if(id==='1B'){objects.to=solid(truncFaces(),C.amber,.9);objects.rd=solid(RD,C.ox,1.05);objects.to.position.x=-2.7;objects.rd.position.x=2.7;root.add(objects.to,objects.rd);lab.push(addLabel('NEW',C.amber,37,77),addLabel('10 YEARS',C.ox,63,77));}
+  if(id==='2A'){objects.cube=primitive(new THREE.BoxGeometry(3.4,3.4,3.4),C.slate);objects.rd=solid(RD,C.ox,1.18);objects.to=solid(truncFaces(),C.amber,.9);root.add(objects.cube,objects.rd,objects.to);lab.push(addLabel('CUBE',C.slate,34,77),addLabel('RHOMBIC DODECAHEDRON',C.ox,50,77),addLabel('TRUNCATED OCTAHEDRON',C.amber,68,77));objects.pack=new THREE.Group();for(const p of [[4,0,0],[-4,0,0],[0,4,0],[0,-4,0],[0,0,4],[0,0,-4],[2,2,2],[-2,2,2],[2,-2,2],[2,2,-2],[-2,-2,2],[-2,2,-2],[2,-2,-2],[-2,-2,-2]]){const n=solid(truncFaces(),C.dim,.9);n.position.set(...p);objects.pack.add(n)}root.add(objects.pack)}
+  if(id==='2B'){const geos=[new THREE.TetrahedronGeometry(1.45),new THREE.OctahedronGeometry(1.55),new THREE.BoxGeometry(2.35,2.35,2.35),new THREE.DodecahedronGeometry(1.55),new THREE.IcosahedronGeometry(1.55)];objects.solids=geos.map((g,i)=>{const o=primitive(g,C.bone);o.position.x=(i-2)*3;root.add(o);return o});lab.push(addLabel('TETRAHEDRON',C.bone,34,76),addLabel('OCTAHEDRON',C.bone,50,76),addLabel('CUBE',C.slate,66,76));}
+  if(id==='2C'){objects.src=[solid(CUBE_FACES,C.bone,1.16),primitive(new THREE.OctahedronGeometry(1.65),C.bone),solid(TETRA_FACES,C.bone,.95)];objects.dst=[solid(truncateFaces(CUBE_FACES),C.slate,1.35),solid(truncFaces(),C.amber,.62),solid(truncateFaces(TETRA_FACES),C.bone,1.08)];objects.src.forEach((o,i)=>{o.position.x=(i-1)*3.6;root.add(o)});objects.dst.forEach((o,i)=>{o.position.x=(i-1)*3.6;root.add(o)});lab.push(addLabel('CUT PLANES',C.white,50,75));}
+  if(id==='2D'){objects.pack=new THREE.Group();const pts=[];for(let x=-2;x<=2;x++)for(let y=-1;y<=1;y++)for(let z=-1;z<=1;z++){if((x+y+z)%2===0)pts.push([x*4,y*4,z*4]);}pts.forEach((p,i)=>{const n=solid(truncFaces(),i===Math.floor(pts.length/2)?C.amber:C.dim,.84);n.position.set(...p);n.userData.order=i;objects.pack.add(n)});root.add(objects.pack);objects.led=[];for(let i=0;i<18;i++){const m=new THREE.Mesh(new THREE.SphereGeometry(.07,10,10),new THREE.MeshBasicMaterial({color:[0xb04a7e,0x65a57d,0x4f9daa][i%3],transparent:true,opacity:0}));const p=pts[i%pts.length];m.position.set(p[0]+(i%3-1)*.7,p[1]+((i*2)%3-1)*.7,p[2]);root.add(m);objects.led.push(m)}}
+  state={objects,lab};update(0);
+}
+let state={objects:{},lab:[]};
+function update(x){const d=BEATS[beat].duration,u=x/d,fade=windowPulse(x,0,d,.45);title.style.opacity=String(smooth(.25,.65,x)*(1-smooth(d-.75,d-.25,x)));root.rotation.y=-.35+smooth(.4,d-.8,x)*.16;root.rotation.x=-.08;
+  const O=state.objects,L=state.lab;state.lab.forEach(l=>l.style.opacity=0);
+  if(beat==='1A'){setOpacity(O.a,windowPulse(x,.3,6.9,.8));setOpacity(O.b,windowPulse(x,1.5,6.9,.8));const p=smooth(3.0,4.8,x);O.arc.geometry.setDrawRange(0,Math.floor(65*p));O.arc.material.opacity=p*fade;L[0].style.opacity=smooth(4.5,5,x)*fade;}
+  if(beat==='1B'){const a=windowPulse(x,.3,6.75,.8),b=windowPulse(x,2.7,6.75,.8);setOpacity(O.to,a);setOpacity(O.rd,b);L[0].style.opacity=smooth(2,2.4,x)*fade;L[1].style.opacity=smooth(4.5,4.9,x)*fade;}
+  if(beat==='2A'){const a=windowPulse(x,.3,5.7,.8),b=windowPulse(x,5.4,11.8,.8),c=windowPulse(x,11.4,20,.8);setOpacity(O.cube,a);setOpacity(O.rd,b);setOpacity(O.to,c);setOpacity(O.pack,smooth(14,17,x)*c*.26);O.cube.rotation.y=x*.16;O.rd.rotation.y=x*.12;O.to.rotation.y=x*.11;L.forEach((l,i)=>l.style.opacity=smooth(16.8+i*.18,17.4+i*.18,x)*fade);}
+  if(beat==='2B'){O.solids.forEach((o,i)=>{const v=windowPulse(x,.25,11.9,.75);setOpacity(o,v*(i<3?1:1-smooth(4.2,6.2,x)*.72));o.position.y=(i<3?smooth(4.2,6.3,x)*.7:0);o.rotation.y=x*.08});L.forEach((l,i)=>l.style.opacity=smooth(6.5+i*.18,7+i*.18,x)*fade);}
+  if(beat==='2C'){const cut=smooth(1.3,3.5,x);O.src.forEach(o=>setOpacity(o,(1-cut)*fade));O.dst.forEach(o=>setOpacity(o,cut*fade));L[0].style.opacity=(1-Math.abs(cut-.5)*2)*fade;}
+  if(beat==='2D'){O.pack.children.forEach((o,i)=>setOpacity(o,smooth(.35+i*.12,1.1+i*.12,x)*fade*(i%4?0.34:0.82)));O.led.forEach((o,i)=>o.material.opacity=smooth(10.4+i*.035,11.2+i*.035,x)*fade*.48);const pull=1+smooth(.5,13.5,x)*.35;camera.position.set(15*pull,10*pull,20*pull);}
+  key.intensity=2.1+(beat==='1B'||beat==='2A'||beat==='2C'||beat==='2D'?smooth(.5,1.1,x)*(1-smooth(1.45,1.9,x))*.65:0);root.visible=fade>.001;
+}
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+function animate(now){requestAnimationFrame(animate);if(!paused){if(last)t+=(now-last)/1000;last=now;if(t>BEATS[beat].duration)t=0}else last=now;const forced=q.get('frame');if(forced!==null)t=Number(forced)/FPS;update(t);camera.lookAt(0,0,0);renderer.render(scene,camera);document.querySelector('#time').textContent=`${beat} / ${t.toFixed(3)} / F${Math.round(t*FPS)}`}
+document.querySelectorAll('[data-beat]').forEach(b=>b.onclick=()=>{history.replaceState(null,'',`?beat=${b.dataset.beat}${clean?'&clean=1':''}`);configure(b.dataset.beat)});document.querySelector('#play').onclick=e=>{paused=!paused;e.target.textContent=paused?'PLAY':'PAUSE'};
+configure(beat);requestAnimationFrame(animate);window.GF_MG={configure,update,get beat(){return beat},get time(){return t},setFrame:f=>{paused=true;t=f/FPS;update(t)}};
+</script>
+</body></html>
