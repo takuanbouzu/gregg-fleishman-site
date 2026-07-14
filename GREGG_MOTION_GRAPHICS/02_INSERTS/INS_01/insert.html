@@ -6,7 +6,7 @@
 <style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="../../../assets/gf-scene.js"></script>
 <script type="importmap">{"imports":{"three":"../../../assets/vendor/three-0.160.0/three.module.js"}}</script>
 </head>
@@ -18,80 +18,124 @@ const { THREE } = K;
 const FRAMES = 230;           // 01:00.694 → 01:08.368
 const st = K.stage({ frames: FRAMES, width: 848, height: 448 });
 const { scene, camera, width: W, height: H } = st;
-K.groundGrid(scene, -1.35, 9, 18);
+const S = H / 1080;           // chrome sized in 1080-reference px, scaled to render height
 
-// Strut directions taken from two adjacent hexagon edges of the computed TO —
-// d1 and d2 meet at exactly 120° (cos = −½); flat-start dB0 makes exactly 90°.
-const d1  = new THREE.Vector3(1, -1, 0).normalize();
-const d2  = new THREE.Vector3(0, 1, -1).normalize();
-const dB0 = new THREE.Vector3(1, 1, 0).normalize();
-const L = 1.5;
+// ---- lighting: the struts read as shaded plywood planks ----
+scene.add(new THREE.AmbientLight(0xffffff, 0.58));
+const key = new THREE.DirectionalLight(0xffffff, 0.85); key.position.set(-2.5, 3, 3); scene.add(key);
+const rim = new THREE.DirectionalLight(0x9fb8d6, 0.30); rim.position.set(3, 1.5, -2); scene.add(rim);
+K.groundGrid(scene, -2.0, 16, 18);
 
+// ---- 3-axis gnomon at the joint origin ----
+const axes = new THREE.Group();
+for (const a of [[1,0,0],[0,1,0],[0,0,1]])
+  axes.add(K.lineSegs([new THREE.Vector3(), new THREE.Vector3(...a).multiplyScalar(1.9)], 0x2b3946, 0.7));
+scene.add(axes);
+
+// ---- projection plane the joint is first drawn inside (XY plane, faces camera) ----
+const planeMat = new THREE.MeshBasicMaterial({ color: 0x16232f, transparent: true, opacity: 0.18,
+  side: THREE.DoubleSide, depthWrite: false });
+const plane = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 3.6), planeMat);
+plane.position.set(0.35, 0.15, -0.12);
+plane.add(new THREE.LineSegments(new THREE.EdgesGeometry(plane.geometry),
+  new THREE.LineBasicMaterial({ color: 0x33506a, transparent: true, opacity: 0.55 })));
+scene.add(plane);
+
+// ---- two beveled struts folding about a shared apex ----
+const L = 1.5, WI = 0.16, DE = 0.10;
 function strut() {
-  const g = new THREE.CylinderGeometry(0.05, 0.05, L, 20);
-  return new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: K.COL.face, transparent: true }));
+  const g = new THREE.BoxGeometry(WI, L, DE); g.translate(0, L / 2, 0);   // pivot at apex end
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+    color: K.COL.face, metalness: 0.0, roughness: 0.6, transparent: true }));
+  m.add(m.userData.edge = new THREE.LineSegments(new THREE.EdgesGeometry(g),
+    new THREE.LineBasicMaterial({ color: 0xc2d6ec, transparent: true, opacity: 0.5 })));
+  return m;
 }
-const sA = strut(), sB = strut();
-scene.add(sA, sB);
+const joint = new THREE.Group(); scene.add(joint);
+const sA = strut(), sB = strut(); joint.add(sA, sB);
+const Zt = new THREE.Vector3(0, 0, 1), Yt = new THREE.Vector3(0, 1, 0);
 
-function poseStrut(m, dir, gap) {
-  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-  m.position.copy(dir).multiplyScalar(L / 2 + gap);
+// arms are placed by an absolute in-plane angle (from +X, about Z).
+function armDir(angle) { return new THREE.Vector3(1, 0, 0).applyAxisAngle(Zt, angle); }
+function poseArm(m, dir, gap) {
+  m.quaternion.setFromUnitVectors(Yt, dir);
+  m.position.copy(dir).multiplyScalar(gap);
 }
+const joinArc = K.arc(); joint.add(joinArc.obj);
 
-// 45° mitre indicators at the join-facing tips: a short gold cut line + arc.
-function mitre() {
-  const grp = new THREE.Group();
-  const line = K.lineSegs([new THREE.Vector3(), new THREE.Vector3()], K.COL.angle, 1);
-  const a = K.arc();
-  grp.add(line, a.obj);
-  scene.add(grp);
-  return { line, a };
+// ---- 3-D tip labels + readout ----
+const cutA = K.domLabel('45° CUT', { color: K.COL.angle, size: 9, weight: 700, tracking: '.2em' });
+const cutB = K.domLabel('45° CUT', { color: K.COL.angle, size: 9, weight: 700, tracking: '.2em' });
+const lAng = K.domLabel('0°', { color: K.COL.angle, size: 17, weight: 700 });
+
+// ---- fixed instrument chrome (DOM; also captured by the SVG exporter) ----
+function chrome(html, css) {
+  const el = document.createElement('div');
+  el.className = 'svgtxt'; el.dataset.svgAnchor = 'start';
+  el.innerHTML = html;
+  el.style.cssText = 'position:fixed;pointer-events:none;z-index:10;white-space:nowrap;opacity:0;' + css;
+  document.body.appendChild(el); return el;
 }
-const mA = mitre(), mB = mitre();
-function poseMitre(m, dir, gap) {
-  const tip = dir.clone().multiplyScalar(gap);
-  const perp = new THREE.Vector3(0, 0, 1).cross(dir).normalize();
-  const cut = dir.clone().applyAxisAngle(perp, Math.PI / 4); // 45° to the axis
-  m.line.geometry.setFromPoints([tip.clone().sub(cut.clone().multiplyScalar(0.22)),
-                                 tip.clone().add(cut.clone().multiplyScalar(0.22))]);
-  m.a.update(tip, dir, cut, 0.26, 1);
-  return tip.clone().add(dir.clone().multiplyScalar(0.34)).add(cut.clone().multiplyScalar(0.2));
-}
-
-const joinArc = K.arc(); scene.add(joinArc.obj);
-
-const l45A = K.domLabel('45°', { color: K.COL.angle, size: 12, weight: 700 });
-const l45B = K.domLabel('45°', { color: K.COL.angle, size: 12, weight: 700 });
-const lAng = K.domLabel('90°', { color: K.COL.angle, size: 18, weight: 700 });
-const cap  = K.caption('45° + 45° meet — and leave 120°');
+const p = n => (n * S).toFixed(1) + 'px';
+const eyebrow = chrome('PROJECTION', `left:${p(64)};top:${p(30)};font-family:'Space Mono',monospace;`
+  + `font-size:${p(12)};letter-spacing:.36em;color:#c9a24b;font-weight:700`);
+const chapter = chrome('CHAPTER 01 / MEASURED JOINT', `left:${p(64)};top:${p(58)};`
+  + `font-family:'Space Mono',monospace;font-size:${p(13)};letter-spacing:.32em;color:#7d8894;font-weight:700`);
+const title = chrome('The fold makes 120°', `left:${p(63)};top:${p(78)};`
+  + `font-family:'Hanken Grotesk',sans-serif;font-size:${p(34)};color:#eef1f4;font-weight:600`);
+const counter = chrome('01 / 06', `right:${p(64)};top:${p(58)};font-family:'Space Mono',monospace;`
+  + `font-size:${p(13)};letter-spacing:.32em;color:#5c6672;font-weight:700`);
+const legend = chrome('FACE DIAGONAL / 45°<br>SPATIAL JOINT / 120°', `left:${p(64)};bottom:${p(52)};`
+  + `font-family:'Space Mono',monospace;font-size:${p(12)};letter-spacing:.26em;color:#5c6672;line-height:2.0`);
+const cap = K.caption('Two 45° cuts align in the plane');
+const op = (el, o) => { el.style.opacity = String(K.clamp01(o)); };
+const midV = new THREE.Vector3();
 
 function pose(t) {
-  const inO  = K.ease(K.seg(t, 0.15, 1.1));      // struts materialize
-  const gap  = 0.95 * (1 - K.ease(K.seg(t, 2.6, 4.5)));   // glide together
-  const fold = K.ease(K.seg(t, 2.8, 5.1));       // 90° (flat) → 120° (space)
-  const mOp  = inO * (1 - K.seg(t, 2.5, 3.4));   // mitre marks fade at approach
-  const arcG = K.ease(K.seg(t, 1.5, 2.4));       // join arc grows
+  const inO   = K.ease(K.seg(t, 0.25, 1.3));            // struts materialize
+  // Two stages: in the plane the two 45° cuts open to 90° (flat right angle),
+  // then the joint LEAVES the plane and the same angle resolves to 120° in space.
+  const s1    = K.ease(K.seg(t, 0.5, 2.15));            // 0 → 90° (in-plane)
+  const s2    = K.ease(K.seg(t, 3.2, 5.35));            // 90° → 120° (into space)
+  const leave = K.ease(K.seg(t, 3.2, 5.0));             // plane fades, joint tilts out
+  const outO  = 1 - K.seg(t, 7.25, 7.62);               // global fade at the tail
+  const gap   = 0.42 * (1 - K.ease(K.seg(t, 0.6, 2.0)));// early apex separation
 
-  const dB = dB0.clone().lerp(d2, fold).normalize();
-  poseStrut(sA, d1, gap);  poseStrut(sB, dB, gap);
-  sA.material.opacity = inO; sB.material.opacity = inO;
+  // bisector swings +Y (vertical, arms overlapping) → +X (apex left, V opens right)
+  // as the in-plane angle opens; interior angle = 90°·s1 + 30°·s2, exact 120° target.
+  const bis   = (Math.PI / 2) * (1 - s1);               // 90° → 0°
+  const theta = (90 * s1 + 30 * s2) * Math.PI / 180;    // 0 → 90 → 120°
+  const dA = armDir(bis + theta / 2), dB = armDir(bis - theta / 2);
+  poseArm(sA, dA, gap); poseArm(sB, dB, gap);
+  sA.material.opacity = sB.material.opacity = inO;
+  sA.userData.edge.material.opacity = sB.userData.edge.material.opacity = 0.5 * inO;
 
-  const pA = poseMitre(mA, d1, gap), pB = poseMitre(mB, dB, gap);
-  mA.line.material.opacity = mOp; mA.a.op(mOp);
-  mB.line.material.opacity = mOp; mB.a.op(mOp);
+  planeMat.opacity = 0.18 * inO * (1 - leave);
+  plane.children[0].material.opacity = 0.55 * inO * (1 - leave);
+  joint.rotation.y = -0.5 * leave; axes.rotation.y = joint.rotation.y;
 
-  const ang = joinArc.update(new THREE.Vector3(), d1, dB, 0.55, arcG);
-  joinArc.op(arcG * inO);
+  const arcG = K.ease(K.seg(t, 0.9, 1.7));
+  const ang = joinArc.update(new THREE.Vector3(), dA, dB, 0.6, arcG);
+  joinArc.op(inO * K.seg(t, 1.0, 1.7));
+  lAng.set(Math.round(theta * 180 / Math.PI) + '°');
+  midV.copy(dA).lerp(dB, 0.5).setLength(0.95).applyAxisAngle(Yt, joint.rotation.y);
+  lAng.at(midV, camera, W, H); lAng.op(inO);
 
-  const mid = d1.clone().lerp(dB, 0.5).normalize().multiplyScalar(0.92);
-  lAng.set(Math.round(ang * 180 / Math.PI) + '°');
-  lAng.at(mid, camera, W, H);  lAng.op(arcG * inO);
-  l45A.at(pA, camera, W, H);   l45A.op(mOp);
-  l45B.at(pB, camera, W, H);   l45B.op(mOp);
-  cap.op(K.seg(t, 5.2, 6.0));
+  const cutOp = inO * (1 - K.seg(t, 3.4, 4.5));
+  cutA.at(dA.clone().multiplyScalar(L + 0.12).applyAxisAngle(Yt, joint.rotation.y), camera, W, H); cutA.op(cutOp);
+  cutB.at(dB.clone().multiplyScalar(L + 0.12).applyAxisAngle(Yt, joint.rotation.y), camera, W, H); cutB.op(cutOp);
 
-  K.orbit(camera, 0.85 + t * 0.10, 0.40 - t * 0.012, 4.0, new THREE.Vector3(0, 0.15, 0));
+  op(chapter, K.seg(t, 0.5, 1.4) * outO);
+  op(title,   K.seg(t, 0.7, 1.6) * outO);
+  op(counter, K.seg(t, 0.7, 1.6) * outO);
+  op(legend,  K.seg(t, 1.0, 1.9) * outO);
+  eyebrow.textContent = leave < 0.5 ? 'PROJECTION' : 'INTO SPACE';
+  op(eyebrow, K.seg(t, 0.6, 1.5) * outO);
+  cap.set(leave < 0.5 ? 'Two 45° cuts align in the plane' : 'The joint leaves the plane and resolves at 120°');
+  cap.op(K.seg(t, 1.4, 2.2) * outO);
+
+  // near-static camera, faces the plane straight-on with a slight angle for depth
+  K.orbit(camera, 1.28 - 0.05 * K.ease(K.seg(t, 0, 7)), 0.16, 5.7, new THREE.Vector3(0.3, 0.15, 0));
 }
 K.expose(st, pose);
 </script>
