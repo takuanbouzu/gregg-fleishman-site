@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Space-Filling Cube Family — Gregg Fleishman</title>
+<meta name="description" content="Cube, rhombic dodecahedron, truncated octahedron — the cube's own space-filling family, packed with zero gaps. Explode the lattice, or load one of Gregg's real node structures (a GLB) to see his built modules tile the same lattice.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
+<meta property="og:title" content="Space-Filling Cube Family — Gregg Fleishman">
+<meta property="og:description" content="Cube, rhombic dodecahedron, truncated octahedron — the cube's own space-filling family, packed with zero gaps. Explode the lattice, or load one of Gregg's real node structures to see his built modules tile the same lattice.">
+<meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/space-filling-cube-family.html">
+<meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<meta property="og:image:alt" content="Gregg Fleishman — gold geometric study">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Space-Filling Cube Family — Gregg Fleishman">
+<meta name="twitter:description" content="Cube, rhombic dodecahedron, truncated octahedron — the cube's own space-filling family, packed with zero gaps. Explode the lattice, or load one of Gregg's real node structures to see his built modules tile the same lattice.">
+<meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
+<script src="assets/gf-scene.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./assets/vendor/three-0.160.0/three.module.js",
+    "three/addons/": "./assets/vendor/three-0.160.0/addons/"
+  }
+}
+</script>
+<style>
+  :root{ --panel:rgba(20,20,20,.74); --panel-bd:var(--border-strong); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{ color:var(--tx); font-family:var(--font-ui);
+        background:radial-gradient(circle at 50% 40%, var(--bg-elevated) 0%, var(--bg) 56%, var(--bg) 100%); }
+  #wrap{position:relative;width:100%;height:calc(100vh - 56px);height:calc(100dvh - 56px);overflow:hidden;}
+  canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
+  .panel{position:absolute;z-index:10;background:rgba(10,11,10,.62);border:1px solid var(--panel-bd);
+         box-shadow:0 10px 28px rgba(0,0,0,.34);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+         border-radius:10px;}
+  .cap{font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-faint);}
+
+  /* header strip */
+  #hdr{position:absolute;top:0;left:0;right:0;z-index:10;height:52px;display:flex;align-items:center;
+       padding:0 20px;gap:11px;pointer-events:none;
+       background:linear-gradient(180deg, rgba(8,9,9,.85), rgba(8,9,9,0));}
+  #hdr .brand-mark{display:flex;align-items:center;gap:10px;}
+  #hdr .diamond{width:14px;height:14px;border:1.5px solid var(--accent);transform:rotate(45deg);
+       display:flex;align-items:center;justify-content:center;}
+  #hdr .diamond i{width:4px;height:4px;background:var(--accent);display:block;}
+  #hdr .ttl{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;color:var(--tx-dim);font-weight:500;}
+  #hdr .sub{font-family:var(--font-mono);font-size:9px;color:var(--tx-faint);letter-spacing:.05em;}
+  #hdr .btns{margin-left:auto;display:flex;gap:6px;pointer-events:auto;flex-wrap:wrap;justify-content:flex-end;}
+  #hdr button{padding:5px 11px;border-radius:2px;font-family:var(--font-mono);font-size:9px;cursor:pointer;
+       letter-spacing:.06em;background:rgba(255,255,255,.03);border:1px solid var(--panel-bd);color:var(--tx-faint);}
+  #hdr button.on{background:rgba(201,77,51,.12);border-color:rgba(201,77,51,.4);color:var(--accent);}
+  #hdr button:hover{color:var(--tx);}
+
+  /* info readout, left */
+  #info{top:64px;left:20px;max-width:320px;pointer-events:none;padding:0;background:none;border:none;box-shadow:none;backdrop-filter:none;}
+  #info .sym{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2,#e07a5f);margin-bottom:6px;}
+  #info h1{font-family:var(--font-display);font-size:26px;font-weight:600;color:var(--tx);line-height:1;letter-spacing:-.01em;margin:0 0 14px;}
+  #info .stats{display:flex;gap:18px;margin-bottom:14px;}
+  #info .stats b{display:block;font-family:var(--font-mono);font-size:19px;color:var(--tx);line-height:1;font-weight:400;}
+  #info .stats span{display:block;font-family:var(--font-mono);font-size:8px;letter-spacing:.16em;color:var(--tx-faint);text-transform:uppercase;margin-top:3px;}
+  #info .legend{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+  #info .legend-row{display:flex;align-items:center;gap:8px;}
+  #info .legend-row i{width:10px;height:10px;border-radius:2px;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);}
+  #info .legend-row span.l{font-family:var(--font-mono);font-size:10px;color:var(--tx-dim);}
+  #info .legend-row span.c{font-family:var(--font-mono);font-size:10px;color:var(--tx-faint);margin-left:auto;}
+  #info .fills{display:inline-flex;align-items:center;gap:9px;padding:8px 12px;background:rgba(12,15,18,.7);
+       border:1px solid var(--panel-bd);border-radius:4px;pointer-events:auto;}
+  #info .fills .dot{width:7px;height:7px;border-radius:50%;background:#6f9e6a;box-shadow:0 0 7px #6f9e6a;flex:0 0 auto;}
+  #info .fills .cap{margin-bottom:1px;}
+  #info .fills .lat{font-family:var(--font-display);font-size:12px;color:var(--tx);}
+
+  /* control panel, right */
+  #ctrl{top:64px;right:20px;width:238px;padding:15px 15px 16px;}
+  #ctrl .cap{margin-bottom:11px;display:block;}
+  .cell-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:3px;cursor:pointer;margin-bottom:7px;
+       border:1px solid var(--panel-bd);background:rgba(255,255,255,.02);}
+  .cell-row.active{border-color:rgba(201,77,51,.5);background:rgba(201,77,51,.09);}
+  .cell-row i{width:14px;height:14px;border-radius:3px;flex:0 0 auto;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);}
+  .cell-row .nm{font-family:var(--font-display);font-size:12.5px;color:var(--tx);line-height:1.15;}
+  .cell-row .lt{font-family:var(--font-mono);font-size:8.5px;color:var(--tx-faint);margin-top:1px;}
+  .hr{height:1px;background:rgba(255,255,255,.06);margin:14px 0;}
+  .rowlbl{display:flex;justify-content:space-between;margin-bottom:6px;font-size:10.5px;color:var(--tx-dim);}
+  .rowlbl b{font-family:var(--font-mono);font-weight:400;font-size:10px;color:var(--accent2,#e07a5f);}
+  #ctrl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:2px;background:rgba(255,255,255,.14);
+       border-radius:1px;outline:none;cursor:pointer;}
+  #ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+       background:var(--accent);cursor:pointer;box-shadow:0 0 0 3px rgba(255,255,255,.1);}
+  #ctrl input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--accent);border:none;}
+  #ctrl .hint{font-family:var(--font-mono);font-size:8px;color:var(--tx-faint);line-height:1.6;margin-top:10px;letter-spacing:.02em;}
+
+  /* upload node-structure panel, bottom-right */
+  #upload{right:20px;bottom:20px;width:238px;padding:14px 15px 15px;}
+  #upload .cap{display:block;margin-bottom:9px;}
+  #upload .drop{border:1px dashed var(--panel-bd);border-radius:4px;padding:14px 10px;text-align:center;cursor:pointer;
+       transition:border-color .15s,background .15s;}
+  #upload .drop:hover,#upload .drop.drag{border-color:var(--accent);background:rgba(201,77,51,.06);}
+  #upload .drop .ic{font-size:16px;color:var(--tx-faint);margin-bottom:4px;}
+  #upload .drop .tx{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;color:var(--tx-dim);}
+  #upload .drop .tx2{font-family:var(--font-mono);font-size:8px;color:var(--tx-faint);margin-top:3px;}
+  #upload input[type=file]{display:none;}
+  #upload .presets{display:flex;gap:6px;margin-top:9px;}
+  #upload .presets button{flex:1;padding:6px 5px;font-family:var(--font-mono);font-size:8.5px;letter-spacing:.03em;
+       background:rgba(255,255,255,.03);border:1px solid var(--panel-bd);color:var(--tx-faint);border-radius:2px;cursor:pointer;}
+  #upload .presets button:hover{color:var(--tx);border-color:var(--accent);}
+  #upload .status{margin-top:10px;font-family:var(--font-mono);font-size:9px;color:var(--tx-dim);line-height:1.5;display:none;}
+  #upload .status.show{display:block;}
+  #upload .status b{color:var(--tx);}
+  #upload .toggle{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;
+       border-top:1px solid rgba(255,255,255,.06);}
+  #upload .toggle span{font-size:10.5px;color:var(--tx-dim);}
+  #upload .swbtn{width:32px;height:18px;border-radius:9px;background:rgba(255,255,255,.1);position:relative;cursor:pointer;
+       border:1px solid var(--panel-bd);flex:0 0 auto;}
+  #upload .swbtn i{position:absolute;top:1px;left:1px;width:14px;height:14px;border-radius:50%;background:var(--tx-faint);
+       transition:transform .15s,background .15s;}
+  #upload .swbtn.on{background:rgba(201,77,51,.25);border-color:rgba(201,77,51,.5);}
+  #upload .swbtn.on i{transform:translateX(14px);background:var(--accent);}
+  #upload .swbtn.dis{opacity:.35;pointer-events:none;}
+
+  @media(max-width:960px){
+    #info{max-width:220px;}
+    #ctrl,#upload{width:200px;}
+  }
+  @media(max-width:820px){
+    #hdr .sub{display:none;}
+    #info{display:none;}
+    #ctrl{top:60px;right:12px;width:190px;}
+    #upload{right:12px;bottom:12px;width:190px;}
+  }
+  @media(max-width:600px){
+    #ctrl{max-height:38vh;overflow-y:auto;}
+    #upload{display:none;}
+  }
+</style>
+</head>
+<body>
+<nav id="gfnav">
+  <a class="brand" href="index.html">Gregg Fleishman</a>
+  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+  <a class="navlink" href="lost-triangle.html">Animation</a>
+  <a class="navlink active" href="explore.html">The Cube</a>
+  <a class="navlink" href="dorman-luke.html">Research</a>
+</nav>
+<div id="wrap">
+  <canvas id="scene"></canvas>
+
+  <div id="hdr">
+    <div class="brand-mark">
+      <div class="diamond"><i></i></div>
+      <span class="ttl">SPACE-FILLING SOLIDS</span>
+      <span class="sub">cube family &middot; parallelohedra</span>
+    </div>
+    <div class="btns">
+      <button id="btnPack" class="on">&#9638; Tessellate</button>
+      <button id="btnEdges" class="on">&#8862; Edges</button>
+      <button id="btnSpin" class="on">&#8635; Spin</button>
+      <button id="btnReset">Reset View</button>
+    </div>
+  </div>
+
+  <div id="info" class="panel">
+    <div class="sym" id="infoSym">V(3&middot;4)&sup2;</div>
+    <h1 id="infoName">Rhombic dodecahedron</h1>
+    <div class="stats">
+      <div><b id="infoV">0</b><span>Vertices</span></div>
+      <div><b id="infoE">0</b><span>Edges</span></div>
+      <div><b id="infoF">0</b><span>Faces</span></div>
+    </div>
+    <div class="legend" id="infoLegend"></div>
+    <div class="fills">
+      <div class="dot"></div>
+      <div>
+        <div class="cap">Fills space &middot; no gaps, no overlaps</div>
+        <div class="lat" id="infoLattice">Face-centred cubic lattice</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="ctrl" class="panel">
+    <span class="cap">Choose a cell</span>
+    <div id="cellList"></div>
+    <div class="hr"></div>
+    <div class="rowlbl"><span>Pull cells apart</span><b id="explodeDisp">0.14</b></div>
+    <input type="range" id="explode" min="0" max="1.4" step="0.01" value="0.14">
+    <div class="hint">Drag to orbit &middot; scroll to zoom. Slide to 0 and the copies interlock with no gaps &mdash; that's what "fills space" means.</div>
+  </div>
+
+  <div id="upload" class="panel">
+    <span class="cap">Load a node structure</span>
+    <div class="drop" id="dropZone">
+      <div class="ic">&#8613;</div>
+      <div class="tx">Drop a .glb, or click to browse</div>
+      <div class="tx2">Gregg's real modules, tiled into this lattice &middot; building from flat 2D profiles instead? see the <a href="part-catalog-assembler.html" style="color:inherit;text-decoration:underline;">Part Catalog Assembler</a></div>
+      <input type="file" id="fileInput" accept=".glb,.gltf">
+    </div>
+    <div class="presets">
+      <button data-glb="assets/models/rhomi-pod.glb">Rhombi Pod</button>
+      <button data-glb="assets/models/vector-house.glb">Vector House</button>
+    </div>
+    <div class="status" id="uploadStatus"></div>
+    <div class="toggle">
+      <span>Tile node structure</span>
+      <div class="swbtn dis" id="nodeToggle"><i></i></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+(function(){
+  const canvas = document.getElementById('scene');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.NoToneMapping;
+  const BGc = new THREE.Color(0x0a0d0f);
+  renderer.setClearColor(BGc,1);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0d0f, 0.014);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 2000);
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.5));
+  const key = new THREE.DirectionalLight(0xfff4ea,0.92); key.position.set(9,15,11); scene.add(key);
+  const fillL = new THREE.DirectionalLight(0x2a4a60,0.5); fillL.position.set(-9,-4,-7); scene.add(fillL);
+  const rim = new THREE.DirectionalLight(0xc94d33,0.32); rim.position.set(-6,7,-11); scene.add(rim);
+
+  const group = new THREE.Group(); scene.add(group);
+
+  // ── the three space-filling cells ──────────────────────────────────────
+  function cubeVerts(){ const v=[]; for(const x of[-1,1])for(const y of[-1,1])for(const z of[-1,1])v.push([x,y,z]); return v; }
+  function rdVerts(){ const v=cubeVerts().slice(); v.push([2,0,0],[-2,0,0],[0,2,0],[0,-2,0],[0,0,2],[0,0,-2]); return v; }
+  function toVerts(){
+    const base=[0,1,2], out=[], seen=new Set();
+    const perms=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+    for(const pm of perms){
+      const p=[base[pm[0]],base[pm[1]],base[pm[2]]];
+      for(const sx of[1,-1])for(const sy of[1,-1])for(const sz of[1,-1]){
+        const q=[p[0]*sx,p[1]*sy,p[2]*sz]; const k=q.join(',');
+        if(!seen.has(k)){ seen.add(k); out.push(q); }
+      }
+    }
+    return out;
+  }
+  const SOLIDS = {
+    cube: { name:'Cube', symbol:'{4,3}', lattice:'Simple cubic lattice', latticeShort:'cubic (P)',
+      verts:cubeVerts(), basis:[[2,0,0],[0,2,0],[0,0,2]], cutoff:3.7, tint:'#c94d33' },
+    rd: { name:'Rhombic dodecahedron', symbol:'V(3·4)²', lattice:'Face-centred cubic lattice', latticeShort:'FCC',
+      verts:rdVerts(), basis:[[2,2,0],[2,0,2],[0,2,2]], cutoff:4.4, tint:'#e0a04a' },
+    to: { name:'Truncated octahedron', symbol:'t{3,4}', lattice:'Body-centred cubic lattice', latticeShort:'BCC',
+      verts:toVerts(), basis:[[4,0,0],[0,4,0],[2,2,2]], cutoff:4.4, tint:'#6f9e6a' },
+  };
+
+  // convex hull faces (small N — brute-force plane test, fine for these sizes)
+  function hullFaces(P){
+    const n=P.length, eps=0.02, faces=[];
+    const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+    const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+    const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++){
+      let nm=cross(sub(P[j],P[i]),sub(P[k],P[i])); const len=Math.hypot(nm[0],nm[1],nm[2]); if(len<1e-6)continue;
+      nm=[nm[0]/len,nm[1]/len,nm[2]/len]; let d=dot(nm,P[i]); if(d<0){nm=[-nm[0],-nm[1],-nm[2]];d=-d;}
+      let dup=false; for(const fa of faces){ if(dot(fa.normal,nm)>0.9995&&Math.abs(fa.d-d)<2e-2){dup=true;break;} } if(dup)continue;
+      let ok=true; for(let m=0;m<n;m++){ if(dot(nm,P[m])>d+eps){ok=false;break;} } if(!ok)continue;
+      const idx=[]; for(let m=0;m<n;m++){ if(Math.abs(dot(nm,P[m])-d)<eps)idx.push(m); } if(idx.length<3)continue;
+      const c=[0,0,0]; idx.forEach(m=>{c[0]+=P[m][0];c[1]+=P[m][1];c[2]+=P[m][2];}); c[0]/=idx.length;c[1]/=idx.length;c[2]/=idx.length;
+      const u=(()=>{const v=sub(P[idx[0]],c); const l=Math.hypot(v[0],v[1],v[2])||1; return[v[0]/l,v[1]/l,v[2]/l];})();
+      const vv=cross(nm,u);
+      idx.sort((a,b)=>{ const da=sub(P[a],c),db=sub(P[b],c); return Math.atan2(dot(da,vv),dot(da,u))-Math.atan2(dot(db,vv),dot(db,u)); });
+      faces.push({normal:nm, center:c, d, idx});
+    }
+    return faces;
+  }
+
+  function latticeOffsets(sd){
+    const B=sd.basis, out=[];
+    for(let m=-2;m<=2;m++)for(let n=-2;n<=2;n++)for(let p=-2;p<=2;p++){
+      const o=[m*B[0][0]+n*B[1][0]+p*B[2][0], m*B[0][1]+n*B[1][1]+p*B[2][1], m*B[0][2]+n*B[1][2]+p*B[2][2]];
+      const r=Math.hypot(o[0],o[1],o[2]);
+      if(r<=sd.cutoff+1e-6) out.push({o, cell:m+n+p});
+    }
+    out.sort((a,b)=>(a.o[0]*a.o[0]+a.o[1]*a.o[1]+a.o[2]*a.o[2])-(b.o[0]*b.o[0]+b.o[1]*b.o[1]+b.o[2]*b.o[2]));
+    return out;
+  }
+  function faceLabel(sides, key){ if(key==='rd'&&sides===4) return 'Rhombus'; return ({3:'Triangle',4:'Square',6:'Hexagon'})[sides]||(sides+'-gon'); }
+  function faceColor(sides, key){ if(key==='rd') return '#e0a04a'; return ({4:'#c94d33',6:'#6f9e6a',3:'#4a86a8'})[sides]||'#c94d33'; }
+
+  const state = { key:'rd', pack:true, explode:0.14, showEdges:true, autoRotate:true,
+                   useNode:false, nodeGeo:null, nodeMat:null, nodeMesh:null };
+
+  let mesh=null, lines=null;
+
+  function rebuild(updateInfo){
+    const sd = SOLIDS[state.key];
+    const faces = hullFaces(sd.verts);
+    const edgeKeys=new Set(); const counts={};
+    faces.forEach(f=>{ counts[f.idx.length]=(counts[f.idx.length]||0)+1;
+      for(let i=0;i<f.idx.length;i++){ const a=f.idx[i],b=f.idx[(i+1)%f.idx.length]; edgeKeys.add(Math.min(a,b)+'_'+Math.max(a,b)); } });
+    const V=sd.verts.length, E=edgeKeys.size, F=faces.length;
+
+    const offsets = state.pack ? latticeOffsets(sd) : [{o:[0,0,0],cell:0}];
+    const explode = state.pack ? state.explode : 0;
+    const cellTints = ['#c94d33','#3d6f86'];
+
+    let maxAbs=0;
+    offsets.forEach(off=>{ const eo=off.o.map(x=>x*(1+explode)); sd.verts.forEach(v=>{ for(let a=0;a<3;a++) maxAbs=Math.max(maxAbs, Math.abs(v[a]+eo[a])); }); });
+    const scale = (maxAbs>1e-6? 9.4/maxAbs : 1);
+
+    const pos=[], col=[], edgePos=[];
+    const cellCenters = [];
+    offsets.forEach((off)=>{
+      const eo=off.o.map(x=>x*(1+explode));
+      cellCenters.push([eo[0]*scale, eo[1]*scale, eo[2]*scale]);
+      let cc;
+      if(state.pack){ cc = new THREE.Color(cellTints[((off.cell%2)+2)%2]); }
+      faces.forEach(f=>{
+        const sides=f.idx.length;
+        const color = state.pack ? cc : new THREE.Color(faceColor(sides,state.key));
+        const ctr=[ (f.center[0]+eo[0])*scale, (f.center[1]+eo[1])*scale, (f.center[2]+eo[2])*scale ];
+        for(let i=0;i<sides;i++){
+          const va=sd.verts[f.idx[i]], vb=sd.verts[f.idx[(i+1)%sides]];
+          const A=[(va[0]+eo[0])*scale,(va[1]+eo[1])*scale,(va[2]+eo[2])*scale];
+          const Bv=[(vb[0]+eo[0])*scale,(vb[1]+eo[1])*scale,(vb[2]+eo[2])*scale];
+          pos.push(ctr[0],ctr[1],ctr[2], A[0],A[1],A[2], Bv[0],Bv[1],Bv[2]);
+          for(let t=0;t<3;t++) col.push(color.r,color.g,color.b);
+        }
+        const seen=new Set();
+        for(let i=0;i<sides;i++){ const ia=f.idx[i],ib=f.idx[(i+1)%sides]; const ek=Math.min(ia,ib)+'_'+Math.max(ia,ib);
+          if(seen.has(ek))continue; seen.add(ek);
+          const va=sd.verts[ia],vb=sd.verts[ib];
+          edgePos.push((va[0]+eo[0])*scale,(va[1]+eo[1])*scale,(va[2]+eo[2])*scale,(vb[0]+eo[0])*scale,(vb[1]+eo[1])*scale,(vb[2]+eo[2])*scale);
+        }
+      });
+    });
+
+    if(mesh){ group.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(col,3));
+    geo.computeVertexNormals();
+    const mat=new THREE.MeshPhongMaterial({ vertexColors:true, flatShading:true, shininess:22, specular:new THREE.Color(0x222222), side:THREE.DoubleSide, transparent:true, opacity:state.useNode?0.12:0.96 });
+    mesh=new THREE.Mesh(geo,mat); group.add(mesh);
+
+    if(lines){ group.remove(lines); lines.geometry.dispose(); lines.material.dispose(); }
+    if(state.showEdges){
+      const eg=new THREE.BufferGeometry(); eg.setAttribute('position', new THREE.Float32BufferAttribute(edgePos,3));
+      lines=new THREE.LineSegments(eg, new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity: state.pack?0.16:0.24}));
+      group.add(lines);
+    } else lines=null;
+
+    layoutNode(cellCenters, scale);
+
+    if(updateInfo){
+      const legend = Object.keys(counts).map(x=>+x).sort((a,b)=>a-b).map(sides=>({
+        label:faceLabel(sides,state.key), count:counts[sides], color:faceColor(sides,state.key)
+      }));
+      document.getElementById('infoSym').textContent = sd.symbol;
+      document.getElementById('infoName').textContent = sd.name;
+      document.getElementById('infoV').textContent = V;
+      document.getElementById('infoE').textContent = E;
+      document.getElementById('infoF').textContent = F;
+      document.getElementById('infoLattice').textContent = sd.lattice;
+      const lg = document.getElementById('infoLegend');
+      lg.innerHTML='';
+      legend.forEach(l=>{
+        const row=document.createElement('div'); row.className='legend-row';
+        row.innerHTML = `<i style="background:${l.color}"></i><span class="l">${l.label}</span><span class="c">×${l.count}</span>`;
+        lg.appendChild(row);
+      });
+    }
+  }
+
+  // ── Gregg's node structure: an uploaded (or preset) GLB tiled into the ────
+  // same lattice the procedural solid occupies. Rather than one mesh per
+  // lattice cell (a real module can be tens of thousands of triangles), the
+  // GLB is baked into a single merged, centred, unit-scaled geometry once,
+  // then drawn with one InstancedMesh — one draw call for the whole tiling.
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  let nodeInst = null;
+
+  function bakeMerged(root){
+    root.updateMatrixWorld(true);
+    const rootInv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+    const rel = new THREE.Matrix4();
+    const geos=[];
+    root.traverse(o=>{
+      if(!o.isMesh||!o.geometry||!o.geometry.getAttribute('position')) return;
+      let g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+      const ng = new THREE.BufferGeometry();
+      ng.setAttribute('position', g.getAttribute('position'));
+      ng.applyMatrix4(rel.multiplyMatrices(rootInv, o.matrixWorld));
+      geos.push(ng);
+    });
+    if(!geos.length) return null;
+    if(geos.length===1) return geos[0];
+    try{ return mergeGeometries(geos,false); }catch(e){ console.warn('[space-filling] merge skipped:',e); return geos[0]; }
+  }
+
+  function setNodeStatus(text){
+    const el=document.getElementById('uploadStatus');
+    el.innerHTML=text; el.classList.add('show');
+  }
+  function setToggleEnabled(enabled){
+    document.getElementById('nodeToggle').classList.toggle('dis',!enabled);
+  }
+
+  function loadNodeGLB(url, label){
+    setNodeStatus('loading <b>'+label+'</b>&hellip;');
+    loader.load(url, gltf=>{
+      const merged = bakeMerged(gltf.scene);
+      if(!merged){ setNodeStatus('could not read any mesh from <b>'+label+'</b>.'); return; }
+      merged.computeBoundingSphere();
+      const c = merged.boundingSphere.center, r = merged.boundingSphere.radius || 1;
+      merged.translate(-c.x,-c.y,-c.z);
+      merged.scale(1/r,1/r,1/r);
+      merged.computeVertexNormals();
+      state.nodeGeo = merged;
+      setNodeStatus('<b>'+label+'</b> ready &mdash; toggle "Tile node structure" to pack it into the lattice.');
+      setToggleEnabled(true);
+    }, xhr=>{
+      if(xhr.total) setNodeStatus('loading <b>'+label+'</b>&hellip; '+Math.round(xhr.loaded/xhr.total*100)+'%');
+    }, err=>{
+      setNodeStatus('failed to load <b>'+label+'</b>.');
+      console.error('[space-filling] GLB load failed:', err);
+    });
+  }
+
+  function layoutNode(cellCenters, scale){
+    if(nodeInst){ group.remove(nodeInst); nodeInst.geometry.dispose(); nodeInst.material.dispose(); nodeInst=null; }
+    if(!state.useNode || !state.nodeGeo) return;
+    const sd = SOLIDS[state.key];
+    // size each instance to roughly fill one lattice cell — the shortest
+    // basis-vector length of the current lattice, scaled the same way the
+    // procedural cells are, times a margin so neighbours don't intersect.
+    const bLens = sd.basis.map(b=>Math.hypot(b[0],b[1],b[2]));
+    const cellSize = Math.min(...bLens) * scale * 0.42;
+    const mat = new THREE.MeshStandardMaterial({ color:0xd8c9a8, metalness:.05, roughness:.65, side:THREE.DoubleSide });
+    nodeInst = new THREE.InstancedMesh(state.nodeGeo, mat, cellCenters.length);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(cellSize,cellSize,cellSize);
+    cellCenters.forEach((c,i)=>{
+      m.compose(new THREE.Vector3(c[0],c[1],c[2]), q, s);
+      nodeInst.setMatrixAt(i,m);
+    });
+    nodeInst.instanceMatrix.needsUpdate = true;
+    group.add(nodeInst);
+  }
+
+  // ── file upload UI ──────────────────────────────────────────────────────
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  dropZone.addEventListener('click', ()=>fileInput.click());
+  fileInput.addEventListener('change', ()=>{
+    const f = fileInput.files && fileInput.files[0]; if(!f) return;
+    loadNodeGLB(URL.createObjectURL(f), f.name);
+  });
+  ['dragenter','dragover'].forEach(ev=>dropZone.addEventListener(ev, e=>{ e.preventDefault(); dropZone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach(ev=>dropZone.addEventListener(ev, e=>{ e.preventDefault(); dropZone.classList.remove('drag'); }));
+  dropZone.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(!f) return;
+    loadNodeGLB(URL.createObjectURL(f), f.name);
+  });
+  document.querySelectorAll('#upload .presets button').forEach(b=>{
+    b.addEventListener('click', ()=>loadNodeGLB(b.dataset.glb, b.textContent.trim()));
+  });
+  document.getElementById('nodeToggle').addEventListener('click', function(){
+    if(this.classList.contains('dis')) return;
+    state.useNode = !state.useNode;
+    this.classList.toggle('on', state.useNode);
+    rebuild(false);
+  });
+
+  // ── cell picker + explode + header buttons ─────────────────────────────
+  function renderCellList(){
+    const list = document.getElementById('cellList'); list.innerHTML='';
+    Object.keys(SOLIDS).forEach(k=>{
+      const d = SOLIDS[k];
+      const row = document.createElement('div');
+      row.className = 'cell-row' + (state.key===k?' active':'');
+      row.innerHTML = `<i style="background:${d.tint}"></i><div><div class="nm">${d.name}</div><div class="lt">${d.latticeShort}</div></div>`;
+      row.addEventListener('click', ()=>{ if(state.key===k) return; state.key=k; renderCellList(); rebuild(true); });
+      list.appendChild(row);
+    });
+  }
+  renderCellList();
+
+  const explodeInput = document.getElementById('explode');
+  explodeInput.addEventListener('input', ()=>{
+    state.explode = parseFloat(explodeInput.value);
+    document.getElementById('explodeDisp').textContent = state.explode.toFixed(2);
+    rebuild(false);
+  });
+  document.getElementById('btnPack').addEventListener('click', function(){
+    state.pack = !state.pack; this.classList.toggle('on', state.pack); rebuild(true);
+  });
+  document.getElementById('btnEdges').addEventListener('click', function(){
+    state.showEdges = !state.showEdges; this.classList.toggle('on', state.showEdges); rebuild(false);
+  });
+  document.getElementById('btnSpin').addEventListener('click', function(){
+    state.autoRotate = !state.autoRotate; this.classList.toggle('on', state.autoRotate);
+  });
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    sph.theta=0.72; sph.phi=0.98; sph.radius=23; syncCam();
+  });
+
+  // ── orbit camera ────────────────────────────────────────────────────────
+  const sph = { theta:0.72, phi:0.98, radius:23 };
+  function syncCam(){
+    const {theta,phi,radius}=sph;
+    camera.position.set(radius*Math.sin(phi)*Math.sin(theta), radius*Math.cos(phi), radius*Math.sin(phi)*Math.cos(theta));
+    camera.lookAt(0,0,0);
+  }
+  let dragging=false, lastX=0, lastY=0;
+  canvas.addEventListener('mousedown', e=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    const dx=e.clientX-lastX, dy=e.clientY-lastY;
+    sph.theta-=dx*0.007; sph.phi=Math.max(0.12,Math.min(Math.PI-0.12,sph.phi+dy*0.007));
+    lastX=e.clientX; lastY=e.clientY; syncCam();
+  });
+  window.addEventListener('mouseup', ()=>{ dragging=false; });
+  canvas.addEventListener('wheel', e=>{
+    sph.radius=Math.max(9,Math.min(60,sph.radius+e.deltaY*0.02)); syncCam(); e.preventDefault();
+  }, {passive:false});
+  canvas.addEventListener('touchstart', e=>{ const t=e.touches[0]; dragging=true; lastX=t.clientX; lastY=t.clientY; }, {passive:true});
+  canvas.addEventListener('touchmove', e=>{
+    if(!dragging) return; const t=e.touches[0];
+    sph.theta-=(t.clientX-lastX)*0.008; sph.phi=Math.max(0.12,Math.min(Math.PI-0.12,sph.phi+(t.clientY-lastY)*0.006));
+    lastX=t.clientX; lastY=t.clientY; syncCam(); e.preventDefault();
+  }, {passive:false});
+  canvas.addEventListener('touchend', ()=>{ dragging=false; });
+
+  function resize(){
+    const w=canvas.clientWidth, h=canvas.clientHeight;
+    if(!w||!h) return;
+    renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+
+  syncCam();
+  rebuild(true);
+
+  function animate(){
+    requestAnimationFrame(animate);
+    if(state.autoRotate) group.rotation.y += 0.004;
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>
