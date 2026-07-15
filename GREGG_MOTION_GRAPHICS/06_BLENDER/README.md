@@ -1,5 +1,29 @@
 # 06_BLENDER — Blender-native builds
 
+**Three deliverables live here** (all headless Cycles via the `bpy` pip module,
+all using Gregg's real `NODE PARTS/45` plate from `rhombi-pod.glb`):
+
+1. **INS_01 fold revision** (`ins01_node_fold.py`) — two node instances snap
+   together at 90° in the plane and fold about their real shared edge to the
+   built 120° condition.
+2. **Handoff A — hero angle-annotation** (`nodeA_hero.py` + `node_tripod_common.py`)
+   — the canonical three-strut node (P1/P2/P3 along ⟨110⟩, true angles
+   120°/90°/120°, non-coplanar): dashed guide circle → arc sweep with tip dot →
+   bisector label, per pair, with an orthographic camera touring home → face-on
+   views and the 45°-cut causal beat. 269 f @ 24 fps. Encode: `encode_tripod.sh`.
+3. **Handoff B — quad split-view** (`nodeB_quad.py`) — same model + annotation
+   rules, assembly timeline (struts travel in along their axes with dashed
+   travel paths, spacer/hub seats last), rendered through four synced cameras
+   (TOP/FRONT/LEFT ortho + orbiting perspective; numeric labels perspective-only)
+   and composited into a 2×2 drawing sheet. 170 f @ 24 fps.
+   `python3 nodeB_quad.py` renders panes → `--composite` tiles them →
+   `encode_tripod.sh` encodes.
+
+The handoffs' reference files (`node_animated.blend`, `node_quad.blend`) were
+not reachable from this environment (Dropbox blocked); the builds follow the
+handoffs' explicit canonical vectors/cameras/timelines, with the real plate
+geometry from the repo's own GLB.
+
 First scene modeled **and rendered natively in Blender** (headless Cycles via the
 `bpy` pip module — no browser/WebGL in the pipeline). This directory follows the
 layout planned in `00_ADMIN/BLENDER_RENDER_ROADMAP.md`, but the first production

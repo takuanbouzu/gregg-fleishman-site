@@ -1,4 +1,9 @@
 renders/
+renders_A/
+renders_B/
+frames_B/
 stills/
-render.log
+stills_A/
+__pycache__/
+*.log
 *.blend
