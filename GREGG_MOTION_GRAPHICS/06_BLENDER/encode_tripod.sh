@@ -21,7 +21,7 @@ fi
 if [ -d frames_B ]; then
   gate "frames_B/f_*.png" 170 "Version B"
   ffmpeg -y -framerate 24 -i frames_B/f_%04d.png \
-    -vf "format=yuv420p" \
+    -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" \
     -c:v libx264 -crf 19 -preset slow -movflags +faststart \
     node_annotation_B_quad.mp4
   echo "B encoded: $(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 node_annotation_B_quad.mp4) frames"

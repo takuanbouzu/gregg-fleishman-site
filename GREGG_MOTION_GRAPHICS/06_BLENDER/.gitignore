@@ -4,6 +4,7 @@ renders_B/
 frames_B/
 stills/
 stills_A/
+qc_final/
 __pycache__/
 *.log
 *.blend

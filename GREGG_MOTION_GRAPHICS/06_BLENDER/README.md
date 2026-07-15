@@ -24,6 +24,13 @@ not reachable from this environment (Dropbox blocked); the builds follow the
 handoffs' explicit canonical vectors/cameras/timelines, with the real plate
 geometry from the repo's own GLB.
 
+**Rendered masters (committed):**
+- `node_annotation_A_hero.mp4` — 269 frames, exact, 1536×960 @ 24 fps
+- `node_annotation_B_quad.mp4` — 170 frames, exact, 1282×842 @ 24 fps
+
+Both gated by `encode_tripod.sh` against their target frame counts before
+being written.
+
 First scene modeled **and rendered natively in Blender** (headless Cycles via the
 `bpy` pip module — no browser/WebGL in the pipeline). This directory follows the
 layout planned in `00_ADMIN/BLENDER_RENDER_ROADMAP.md`, but the first production
