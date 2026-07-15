@@ -25,11 +25,13 @@ handoffs' explicit canonical vectors/cameras/timelines, with the real plate
 geometry from the repo's own GLB.
 
 **Rendered masters (committed):**
+- `INS_01_node_fold_master.mp4` — 720 frames, exact, 1920×1080 @ 30000/1001
 - `node_annotation_A_hero.mp4` — 269 frames, exact, 1536×960 @ 24 fps
 - `node_annotation_B_quad.mp4` — 170 frames, exact, 1282×842 @ 24 fps
 
-Both gated by `encode_tripod.sh` against their target frame counts before
-being written.
+All gated against their target frame counts before being written
+(`encode_master.sh` for the fold piece, `encode_tripod.sh` for the two
+annotation pieces).
 
 First scene modeled **and rendered natively in Blender** (headless Cycles via the
 `bpy` pip module — no browser/WebGL in the pipeline). This directory follows the
