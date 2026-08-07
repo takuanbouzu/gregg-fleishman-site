@@ -38,16 +38,35 @@
   body{background:#08080c;color:var(--tx);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;}
 
   /* Full-bleed motion-graphic stage, seated under the fixed nav bar */
-  #lt-stage{
-    position:fixed; inset:0; top:56px;
-    background:#08080c; overflow:hidden;
-  }
-  /* The React <Stage> mounts here and fills the box (position:absolute inset:0). */
-  #lt-root{ position:absolute; inset:0; }
+  #lt-page{ margin-top:56px; min-height:calc(100vh - 56px); display:grid; grid-template-columns:minmax(210px,272px) minmax(0,1fr); background:#08080c; }
+  #lt-contents{ position:sticky; top:56px; align-self:start; height:calc(100vh - 56px); padding:34px 24px; border-right:1px solid rgba(240,237,232,.12); background:rgba(11,11,11,.84); }
+  .lt-kicker{ font-family:var(--font-mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); opacity:.78; }
+  #lt-contents h1{ margin:9px 0 26px; color:var(--tx); font-size:21px; font-weight:500; line-height:1.15; }
+  #lt-contents ol{ list-style:none; padding:0; margin:0; display:grid; gap:5px; counter-reset:ltcontents; }
+  #lt-contents a{ display:flex; gap:10px; align-items:baseline; padding:9px 8px; color:var(--tx-dim); text-decoration:none; border-left:1px solid transparent; font-size:13px; transition:color .18s,border-color .18s,background .18s; }
+  #lt-contents a::before{ counter-increment:ltcontents; content:"0" counter(ltcontents); font-family:var(--font-mono); font-size:10px; color:var(--accent); }
+  #lt-contents a:hover{ color:var(--tx); border-color:var(--accent); background:rgba(200,169,110,.06); }
+  .lt-note{ margin:30px 8px 0; color:var(--tx-dim); font-family:var(--font-mono); font-size:10px; line-height:1.6; }
+  #lt-main{ min-width:0; padding:34px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-content:start; }
+  .lt-header{ grid-column:1/-1; display:flex; align-items:end; justify-content:space-between; gap:24px; padding:0 2px 10px; }
+  .lt-header h2{ margin:7px 0 0; color:var(--tx); font-size:clamp(28px,3.3vw,48px); font-weight:400; letter-spacing:-.04em; }
+  .lt-header p{ max-width:42ch; margin:0; color:var(--tx-dim); font-size:14px; line-height:1.5; }
+  .lt-feature,.lt-card{ position:relative; min-width:0; overflow:hidden; border:1px solid rgba(240,237,232,.14); background:#0B0B0B; }
+  .lt-feature{ grid-column:1/-1; height:clamp(320px,35vw,500px); }
+  .lt-card{ height:clamp(230px,25vw,340px); text-decoration:none; color:var(--tx); isolation:isolate; }
+  .lt-label{ position:absolute; top:0; left:0; right:0; z-index:3; padding:12px 14px; pointer-events:none; background:linear-gradient(180deg,rgba(7,7,7,.86),transparent); }
+  .lt-label h3{ margin:4px 0 0; font-size:15px; font-weight:500; letter-spacing:-.01em; }
+  #lt-stage,#lt-root{ position:absolute; inset:0; background:#08080c; overflow:hidden; }
+  .lt-card img{ width:100%; height:100%; object-fit:cover; opacity:.7; transition:transform .35s ease,opacity .35s ease; }
+  .lt-card::after{ content:"Open study ↗"; position:absolute; left:14px; bottom:13px; z-index:2; font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx); }
+  .lt-card:hover img{ transform:scale(1.035); opacity:.9; }
 
   /* Embed mode — no nav, stage owns the whole frame. */
   html.lt-embed #gfnav{ display:none; }
-  html.lt-embed #lt-stage{ top:0; }
+  html.lt-embed #lt-page{ margin-top:0; grid-template-columns:1fr; }
+  html.lt-embed #lt-contents,html.lt-embed .lt-header,html.lt-embed .lt-card{ display:none; }
+  html.lt-embed #lt-main{ display:block; padding:0; }
+  html.lt-embed .lt-feature{ height:100vh; }
 
   /* Scrub control thumb (from the design) */
   .lt-scrub{ -webkit-appearance:none; appearance:none; height:4px; border-radius:3px; background:rgba(240,237,232,.14); outline:none; }
@@ -64,6 +83,21 @@
   #lt-fallback .lt-tri{ opacity:.8; }
   #lt-fallback a{ color:var(--accent); }
   noscript{ color:var(--tx-dim); }
+  @media (max-width:900px){
+    #lt-page{ display:block; }
+    #lt-contents{ position:sticky; top:56px; z-index:20; width:100%; height:auto; padding:12px 18px; border-right:0; border-bottom:1px solid rgba(240,237,232,.12); }
+    #lt-contents h1,#lt-contents .lt-note{ display:none; }
+    #lt-contents ol{ display:flex; gap:2px; overflow:auto; counter-reset:none; }
+    #lt-contents a{ white-space:nowrap; padding:7px 8px; font-size:12px; }
+    #lt-contents a::before{ display:none; }
+    #lt-main{ padding:24px 18px; }
+  }
+  @media (max-width:620px){
+    #lt-main{ grid-template-columns:1fr; gap:14px; padding:18px 12px; }
+    .lt-header{ display:block; padding:2px 6px 8px; }
+    .lt-header p{ margin-top:12px; }
+    .lt-feature,.lt-card{ grid-column:auto; height:330px; }
+  }
 </style>
 </head>
 <body>
@@ -76,7 +110,26 @@
   <a class="navlink" href="dorman-luke.html">Research</a>
 </nav>
 
-<div id="lt-stage">
+<main id="lt-page">
+  <aside id="lt-contents" aria-label="Table of contents">
+    <div class="lt-kicker">Animation index</div>
+    <h1>The Lost Triangle</h1>
+    <ol>
+      <li><a href="#film">Main film</a></li>
+      <li><a href="#mathematics">Mathematics</a></li>
+      <li><a href="#drawings">Drawings</a></li>
+      <li><a href="#cube">Cube assembly</a></li>
+    </ol>
+    <p class="lt-note">A compact reading path through the 1 : √2 : √3 system.</p>
+  </aside>
+  <section id="lt-main">
+    <header class="lt-header">
+      <div><div class="lt-kicker">1 : √2 : √3</div><h2>The Lost Triangle</h2></div>
+      <p>The principal motion study, surrounded by smaller paths into its mathematics, drawings, and cube assembly.</p>
+    </header>
+    <section class="lt-feature" id="film" aria-labelledby="film-title">
+      <div class="lt-label"><div class="lt-kicker">01 · Main film</div><h3 id="film-title">The Lost Triangle</h3></div>
+      <div id="lt-stage">
   <div id="lt-root">
     <div id="lt-fallback">
       <svg class="lt-tri" width="120" height="96" viewBox="0 0 120 96" fill="none" aria-hidden="true">
@@ -90,6 +143,21 @@
     <div id="lt-fallback">This animated construction of the Lost Triangle (1 : √2 : √3) needs JavaScript. Read <a href="mathematics.html">The Lost Triangle</a> instead.</div>
   </noscript>
 </div>
+    </section>
+    <a class="lt-card" id="mathematics" href="mathematics.html">
+      <div class="lt-label"><div class="lt-kicker">02 · Read</div><h3>Mathematics</h3></div>
+      <img src="assets/drawings/lost-triangle-color.png" alt="The Lost Triangle construction drawing">
+    </a>
+    <a class="lt-card" id="drawings" href="fleishman-sequence-drawings.html">
+      <div class="lt-label"><div class="lt-kicker">03 · Watch</div><h3>Sequence with Drawings</h3></div>
+      <img src="assets/drawings/fleishman-sequence-poster.png" alt="Fleishman sequence drawing preview">
+    </a>
+    <a class="lt-card" id="cube" href="explore.html">
+      <div class="lt-label"><div class="lt-kicker">04 · Build</div><h3>Cube Assembly</h3></div>
+      <img src="assets/drawings/artwork-gold.png" alt="Fleishman cube study">
+    </a>
+  </section>
+</main>
 
 <!-- React runtime (vendored from npm; UMD globals window.React / window.ReactDOM) -->
 <script src="assets/vendor/react-18.3.1/react.production.min.js"></script>
