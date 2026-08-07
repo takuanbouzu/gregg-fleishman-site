@@ -54,7 +54,7 @@
   html,body{ overscroll-behavior:none; }
   body{ -webkit-tap-highlight-color:transparent; }
   button, input[type="range"]{ touch-action:manipulation; }
-  #pv-bar, #pv-hint, #pv-restore{ -webkit-user-select:none; user-select:none; }
+  #pv-bar, #pv-hint, #pv-restore, #pv-record-status{ -webkit-user-select:none; user-select:none; }
 
   /* The stage sits BELOW the selector bar — its top is inset by the bar's
      measured height (--pv-bar-h, kept current in JS), so no slide can ever
@@ -109,7 +109,7 @@
   /* Comfortable thumb targets on touch devices (Apple HIG ~44px) */
   @media (pointer:coarse){
     .pv-chip{ min-height:42px; padding:10px 15px; }
-    #pv-toggle{ min-height:38px; }
+    #pv-download, #pv-toggle{ min-height:38px; }
     #pv-restore{ width:38px; height:38px; }
   }
   .pv-chip.active{
@@ -129,15 +129,33 @@
      hints, so suppress the preview's bottom hint to avoid two stacked. */
   #pv-hint.pv-off{ display:none; }
 
-  /* Chrome-hide toggle (rides in the bar, far right) */
-  #pv-toggle{
+  /* Download + chrome controls (ride in the bar, far right). */
+  #pv-actions{ display:flex; align-items:center; gap:7px; flex:0 0 auto; }
+  #pv-download, #pv-toggle{
     flex:0 0 auto; align-self:center;
     appearance:none; border:1px solid rgba(240,237,232,.14); background:rgba(11,11,11,.55);
     color:rgba(240,237,232,.6); font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em;
     text-transform:uppercase; padding:6px 10px; border-radius:9px; cursor:pointer; backdrop-filter:blur(6px);
     white-space:nowrap;
   }
-  #pv-toggle:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.3); }
+  #pv-download{ color:#C8A96E; border-color:rgba(200,169,110,.35); }
+  #pv-download:hover, #pv-toggle:hover{ color:#F0EDE8; border-color:rgba(240,237,232,.3); }
+  #pv-download:disabled{ opacity:.48; cursor:wait; }
+  #pv-download.recording{ color:#F0EDE8; border-color:#db684d; background:rgba(219,104,77,.22); }
+
+  /* The candidates are live SVG / Canvas / WebGL scenes, not pre-rendered
+     MP4 files. The browser records the current tab, then downloads the result. */
+  #pv-record-status{
+    position:fixed; left:50%; top:50%; z-index:60; display:none;
+    width:min(440px, calc(100vw - 32px)); transform:translate(-50%,-50%);
+    padding:18px 20px; border:1px solid rgba(200,169,110,.4); border-radius:12px;
+    background:rgba(11,11,11,.94); box-shadow:0 18px 60px rgba(0,0,0,.55);
+    color:#F0EDE8; font-family:'Space Mono',monospace; font-size:11px;
+    line-height:1.65; letter-spacing:.06em; text-align:center; pointer-events:none;
+  }
+  #pv-record-status.show{ display:block; }
+  #pv-record-status strong{ display:block; margin-bottom:5px; color:#C8A96E; font-size:13px; }
+  body.pv-recording #pv-restore{ display:none !important; }
 
   #pv-loading{
     position:fixed; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
@@ -149,7 +167,8 @@
     /* Compact two-row bar: [brand … hide-chrome] over a single scrollable chip strip. */
     #pv-bar{ gap:6px 10px; padding:calc(8px + env(safe-area-inset-top, 0px)) 10px 10px; }
     .pv-brand{ order:1; font-size:9px; }
-    #pv-toggle{ order:2; margin-left:auto; }
+    #pv-actions{ order:2; gap:5px; margin-left:auto; }
+    #pv-download, #pv-toggle{ padding:6px 7px; font-size:9px; }
     #pv-chips{
       order:3; flex:1 1 100%;
       flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden;
@@ -172,7 +191,7 @@
       -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:0;
     }
     #pv-chips::-webkit-scrollbar{ display:none; }
-    #pv-toggle{ order:0; margin-left:0; }
+    #pv-actions{ order:0; margin-left:0; }
     #pv-hint{ display:none; }
   }
 
@@ -185,10 +204,14 @@
 <div id="pv-bar">
   <span class="pv-brand">Gregg Fleishman<b>Animation Preview</b></span>
   <div id="pv-chips"></div>
-  <button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
+  <div id="pv-actions">
+    <button id="pv-download" title="record and download the selected animation (press D)">download video</button>
+    <button id="pv-toggle" title="hide / show chrome (press H)">hide chrome</button>
+  </div>
 </div>
-<div id="pv-hint">← → switch&nbsp;·&nbsp;H hide chrome</div>
+<div id="pv-hint">← → switch&nbsp;·&nbsp;D download&nbsp;·&nbsp;H hide chrome</div>
 <button id="pv-restore" title="show chrome (H)" aria-label="show chrome">⋯</button>
+<div id="pv-record-status" role="status" aria-live="polite"></div>
 
 <script>
 (function(){
@@ -232,12 +255,20 @@
   var chipsEl = document.getElementById('pv-chips');
   var bar     = document.getElementById('pv-bar');
   var hint    = document.getElementById('pv-hint');
+  var download = document.getElementById('pv-download');
   var toggle  = document.getElementById('pv-toggle');
   var restore = document.getElementById('pv-restore');
+  var recordStatus = document.getElementById('pv-record-status');
 
   var curRoot = null;     // active ReactDOM root
   var curDispose = null;  // active Three.js dispose()
   var curId = null;
+  var recorder = null;
+  var recordStream = null;
+  var recordChunks = [];
+  var recordItem = null;
+  var recordStarting = false;
+  var recordPrevChromeHidden = false;
 
   function clearStage(){
     if (curDispose){ try{ curDispose(); }catch(_){} curDispose = null; }
@@ -325,13 +356,179 @@
   toggle.addEventListener('click', function(){ setChrome(!chromeHidden); });
   restore.addEventListener('click', function(){ setChrome(false); });
 
-  // Keyboard: arrows switch, H toggles chrome, digits jump
+  // Download the selected live animation as a real video file. None of the
+  // preview entries is a native <video>: they are SVG, Canvas, WebGL, or full
+  // interactive pages. Capturing the current browser tab is therefore the one
+  // export route that works consistently across every entry in REG.
+  function recordingSupported(){
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia && window.MediaRecorder);
+  }
+
+  function currentItem(){
+    return REG.find(function(item){ return item.id === curId; }) || REG[0];
+  }
+
+  function safeFileName(label){
+    return label.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'animation';
+  }
+
+  function preferredRecordingType(){
+    var types = [
+      'video/mp4;codecs=avc1',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    if (!MediaRecorder.isTypeSupported) return '';
+    for (var i=0;i<types.length;i++){
+      if (MediaRecorder.isTypeSupported(types[i])) return types[i];
+    }
+    return '';
+  }
+
+  function showRecordStatus(title, detail){
+    recordStatus.innerHTML = '<strong>' + title + '</strong>' + detail;
+    recordStatus.classList.add('show');
+  }
+
+  function hideRecordStatus(){
+    recordStatus.classList.remove('show');
+  }
+
+  function resetRecordUi(){
+    recordStarting = false;
+    recorder = null;
+    recordStream = null;
+    recordItem = null;
+    recordChunks = [];
+    document.body.classList.remove('pv-recording');
+    download.disabled = false;
+    download.classList.remove('recording');
+    download.textContent = 'download video';
+    hideRecordStatus();
+    setChrome(recordPrevChromeHidden);
+  }
+
+  function stopTracks(){
+    if (!recordStream) return;
+    recordStream.getTracks().forEach(function(track){ try{ track.stop(); }catch(_){} });
+  }
+
+  function saveRecording(){
+    var item = recordItem || currentItem();
+    var mime = (recorder && recorder.mimeType) || (recordChunks[0] && recordChunks[0].type) || 'video/webm';
+    var extension = mime.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
+    var blob = new Blob(recordChunks, { type:mime });
+
+    stopTracks();
+    if (!blob.size){
+      resetRecordUi();
+      alert('No video data was captured. Please try again and keep the tab selected until the recording starts.');
+      return;
+    }
+
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'gregg-fleishman-' + safeFileName(item.label) + '.' + extension;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
+    resetRecordUi();
+  }
+
+  function stopRecording(){
+    if (recorder && recorder.state !== 'inactive'){
+      download.textContent = 'saving…';
+      download.disabled = true;
+      try{ recorder.stop(); }catch(_){ saveRecording(); }
+    } else if (recordStarting){
+      stopTracks();
+      resetRecordUi();
+    }
+  }
+
+  function wait(ms){ return new Promise(function(resolve){ setTimeout(resolve, ms); }); }
+
+  async function startRecording(){
+    if (recordStarting || (recorder && recorder.state !== 'inactive')){
+      stopRecording();
+      return;
+    }
+    if (!recordingSupported()){
+      alert('Video download needs a desktop browser with tab recording, such as Chrome, Edge, Firefox, or Safari.');
+      return;
+    }
+
+    recordStarting = true;
+    recordPrevChromeHidden = chromeHidden;
+    recordItem = currentItem();
+    download.disabled = true;
+    download.textContent = 'choose this tab…';
+    showRecordStatus('Choose this browser tab', 'In the share window, select this tab. The site will hide its controls, count down, and record until you press D.');
+
+    try{
+      recordStream = await navigator.mediaDevices.getDisplayMedia({
+        video:{ frameRate:{ ideal:30, max:60 }, displaySurface:'browser' },
+        audio:false,
+        preferCurrentTab:true,
+        selfBrowserSurface:'include',
+        surfaceSwitching:'exclude',
+        systemAudio:'exclude'
+      });
+
+      var mime = preferredRecordingType();
+      var options = { videoBitsPerSecond:12000000 };
+      if (mime) options.mimeType = mime;
+      recorder = new MediaRecorder(recordStream, options);
+      recordChunks = [];
+      recorder.addEventListener('dataavailable', function(ev){
+        if (ev.data && ev.data.size) recordChunks.push(ev.data);
+      });
+      recorder.addEventListener('stop', saveRecording, { once:true });
+      recorder.addEventListener('error', function(){
+        stopTracks();
+        resetRecordUi();
+        alert('The browser could not finish this video recording. Please try again.');
+      }, { once:true });
+      recordStream.getVideoTracks()[0].addEventListener('ended', stopRecording, { once:true });
+
+      setChrome(true);
+      document.body.classList.add('pv-recording');
+      for (var n=3;n>0;n--){
+        showRecordStatus('Recording starts in ' + n, 'Press D when the animation is finished. Your video will then download automatically.');
+        await wait(800);
+        if (!recordStream || !recordStream.active) throw new Error('capture-ended');
+      }
+      hideRecordStatus();
+      recorder.start(1000);
+      recordStarting = false;
+      download.disabled = false;
+      download.classList.add('recording');
+      download.textContent = 'stop & save';
+    } catch (err){
+      stopTracks();
+      resetRecordUi();
+      if (err && err.name !== 'NotAllowedError' && err.message !== 'capture-ended'){
+        console.error('[preview] video download:', err);
+        alert('The browser could not start the video download. Please try again and choose this tab in the share window.');
+      }
+    }
+  }
+
+  download.addEventListener('click', startRecording);
+
+  // Keyboard: arrows switch, H toggles chrome, D records/downloads, digits jump
   window.addEventListener('keydown', function(ev){
     if (ev.target && /^(INPUT|TEXTAREA)$/.test(ev.target.tagName)) return;
     var idx = REG.findIndex(function(r){ return r.id === curId; });
-    if (ev.key === 'ArrowRight'){ show(REG[(idx+1) % REG.length].id); }
+    if (ev.key === 'd' || ev.key === 'D'){ ev.preventDefault(); startRecording(); }
+    else if (ev.key === 'ArrowRight'){ show(REG[(idx+1) % REG.length].id); }
     else if (ev.key === 'ArrowLeft'){ show(REG[(idx-1+REG.length) % REG.length].id); }
-    else if (ev.key === 'h' || ev.key === 'H'){ setChrome(!chromeHidden); }
+    else if ((ev.key === 'h' || ev.key === 'H') && !(recorder && recorder.state !== 'inactive')){ setChrome(!chromeHidden); }
     else if (/^[1-9]$/.test(ev.key)){ var n = parseInt(ev.key,10)-1; if (REG[n]) show(REG[n].id); }
   });
 
