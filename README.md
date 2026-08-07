@@ -13,7 +13,7 @@ theme was removed — the instrument is dark by design).
 | Page | What it is |
 |---|---|
 | `index.html` | **The landing hub** — cover page with the Lost Triangle motion-graphic hero |
-| `explore.html` | **The Cube** — the main interactive 3D instrument (tabbed: Cube · Cluster Structures · Vector System · Vector Pod) |
+| `explore.html` | **The Cube** — six identical parts assemble into one cube, then mirror outward to tile space; includes a guided tour and manual build controls |
 | `lost-triangle.html` | **The Lost Triangle** — the canonical animated motion graphic (`1 : √2 : √3`) |
 | `mathematics.html` | **The Lost Triangle (narrative)** — the readable long-form companion, with an expandable symmetry theory note |
 | `fleishman-sequence.html` | A ~44s cinematic build: the plan Lost Triangle stands up into the cube, the rhombic cell, and space-filling |

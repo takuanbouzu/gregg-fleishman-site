@@ -1,33 +1,180 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<meta name="theme-color" content="#0B0B0B"/>
-<title>Explore the Cube — Gregg Fleishman</title>
-<meta name="description" content="The Fleishman cube — six identical parts, each the proof triangle stood up in space — assembling into one cube and tiling the whole of space. An interactive 1 : √2 : √3 model.">
-<!-- Social link previews. -->
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="The Fleishman cube &mdash; six identical parts, each the proof triangle stood up in space &mdash; assembling into one cube and tiling the whole of space. An interactive 1 : &radic;2 : &radic;3 model.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Gregg Fleishman — Geometry & Structure">
-<meta property="og:title" content="Explore the Cube — Gregg Fleishman">
-<meta property="og:description" content="The Fleishman cube — six identical parts, each the proof triangle stood up in space — assembling into one cube and tiling the whole of space. An interactive 1 : √2 : √3 model.">
+<meta property="og:site_name" content="Gregg Fleishman &mdash; Geometry &amp; Structure">
+<meta property="og:title" content="The Fleishman Cube &mdash; six parts, the whole of space">
+<meta property="og:description" content="Six identical parts assemble into one Fleishman cube and mirror outward to tile space.">
 <meta property="og:url" content="https://takuanbouzu.github.io/gregg-fleishman-site/explore.html">
 <meta property="og:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
-<meta property="og:image:alt" content="Gregg Fleishman — gold rhombic dodecahedron study">
+<meta property="og:image:alt" content="Gregg Fleishman geometric cube study">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Explore the Cube — Gregg Fleishman">
-<meta name="twitter:description" content="The Fleishman cube — six identical parts, each the proof triangle stood up in space — assembling into one cube and tiling the whole of space. An interactive 1 : √2 : √3 model.">
+<meta name="twitter:title" content="The Fleishman Cube &mdash; six parts, the whole of space">
+<meta name="twitter:description" content="Six identical parts assemble into one Fleishman cube and mirror outward to tile space.">
 <meta name="twitter:image" content="https://takuanbouzu.github.io/gregg-fleishman-site/assets/drawings/artwork-gold.png">
 <link rel="icon" href="data:,">
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/gf-tokens.css">
-<script src="assets/gf-theme.js"></script>
-<script src="assets/gf-nav.js" defer></script>
-<script src="assets/gf-scene.js"></script>
-<script src="assets/vendor/gsap-3.12.5/gsap.min.js"></script>
-<script>if(/[?&]cover=1(?:&|$)/.test(location.search))document.documentElement.classList.add('gf-cover');</script>
+<title>The Fleishman Cube — six parts, the whole of space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#0B0B0B; --text:#F0EDE8; --dim:#8A8480; --gold:#C8A96E; --blue:#4A90D9; --mag:#E0349E; --green:#3CCB8E; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;font-family:"Space Grotesk",sans-serif}
+  #stage{position:fixed;inset:0;cursor:grab}
+  #stage:active{cursor:grabbing}
+  #stage canvas{display:block}
+
+  #brand{position:fixed;left:34px;top:30px;z-index:5;pointer-events:none;transition:opacity .6s ease}
+  #brand .name{font-family:"Syne",sans-serif;font-weight:800;letter-spacing:.16em;font-size:15px;color:var(--text);text-transform:uppercase}
+  #brand .sub{font-family:"Space Grotesk",sans-serif;font-size:11px;letter-spacing:.34em;color:var(--dim);text-transform:uppercase;margin-top:5px}
+  #brand .note{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.02em;color:var(--dim);margin-top:11px;opacity:.85}
+  #brand .note b{color:var(--text);font-weight:700}
+
+  #nav{position:fixed;right:30px;top:30px;z-index:8;display:flex;gap:9px}
+  #nav a{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+    text-decoration:none;border:1px solid rgba(240,237,232,.18);border-radius:2px;padding:7px 11px;transition:border-color .2s,color .2s}
+  #nav a:hover{border-color:var(--gold);color:var(--gold)}
+
+  #legend{position:fixed;left:34px;bottom:104px;z-index:6;font-family:"Space Mono",monospace;font-size:12px;
+    letter-spacing:.04em;color:var(--dim);transition:opacity .6s ease;pointer-events:none}
+  #legend .row{display:flex;align-items:center;gap:10px;margin-top:9px}
+  #legend .sw{width:22px;height:2px;border-radius:2px;flex:none}
+  #legend b{color:var(--text);font-weight:700}
+
+  #capwrap{position:fixed;left:0;right:0;bottom:96px;z-index:6;display:flex;justify-content:center;pointer-events:none;height:30px}
+  .capstack{position:relative;width:min(86vw,760px);height:30px;text-align:center}
+  .cap{position:absolute;left:0;right:0;top:0;opacity:0;font-family:"Space Mono",monospace;font-size:14px;
+    letter-spacing:.05em;color:var(--dim);text-wrap:balance;line-height:1.4;transition:opacity .45s ease}
+  .cap b{color:var(--gold);font-weight:700}
+
+  #controls{position:fixed;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:16px;
+    padding:18px 30px 22px;background:linear-gradient(to top,rgba(11,11,11,.85),rgba(11,11,11,0));transition:opacity .5s ease}
+  #controls button, #controls select{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.07em;
+    background:transparent;color:var(--text);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:8px 12px;
+    cursor:pointer;text-transform:uppercase;transition:border-color .2s,color .2s}
+  #controls button:hover, #controls select:hover{border-color:var(--gold);color:var(--gold)}
+  #scrub{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:rgba(240,237,232,.18);border-radius:2px;cursor:pointer}
+  #scrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;border:none}
+  #scrub::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
+  .tlabel{font-family:"Space Mono",monospace;font-size:11px;color:var(--dim);min-width:42px;text-align:center}
+
+  #panel{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:7;width:230px;
+    display:flex;flex-direction:column;gap:15px;padding:18px 16px;
+    background:rgba(17,17,17,.55);border:1px solid rgba(240,237,232,.12);border-radius:4px;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:opacity .5s ease}
+  #panel .ttl{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+  #panel .ctl{display:flex;flex-direction:column;gap:7px}
+  #panel .ctl .lab{display:flex;justify-content:space-between;font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.05em;color:var(--text)}
+  #panel .ctl .lab span{color:var(--gold)}
+  #panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;width:100%}
+  #panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
+  #panel input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
+  #panel .tgs{display:flex;gap:7px;flex-wrap:wrap;margin-top:2px}
+  #panel .tgbtn{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.05em;background:transparent;color:var(--text);
+    border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 9px;cursor:pointer;text-transform:uppercase;transition:border-color .2s,color .2s,opacity .2s}
+  #panel .tgbtn:hover{border-color:var(--gold);color:var(--gold)}
+  #panel .tgbtn.off{opacity:.4}
+  #panel .axrows{display:flex;flex-direction:column;gap:5px}
+  #panel .axrow{display:grid;grid-template-columns:22px 1fr 16px;align-items:center;gap:5px}
+  #panel .axlbl{font-family:"Space Mono",monospace;font-size:10px;color:var(--gold);letter-spacing:.05em;font-weight:700}
+  #panel .axval{font-family:"Space Mono",monospace;font-size:10px;color:var(--text);text-align:right}
+
+  body.clean #controls, body.clean #brand, body.clean #nav, body.clean #legend, body.clean #panel{opacity:0;pointer-events:none}
+  body.clean #capwrap{bottom:7vh}
+  @media (max-width:700px){
+    #brand{left:18px;right:18px;top:18px}
+    #brand .sub{font-size:9px;letter-spacing:.18em}
+    #brand .note{display:none}
+    #nav{left:18px;right:18px;top:78px;gap:6px;flex-wrap:wrap}
+    #nav a{font-size:9px;padding:6px 8px}
+    #legend{left:18px;bottom:146px;font-size:10px}
+    #capwrap{bottom:132px}
+    .cap{font-size:11px;letter-spacing:.025em}
+    #controls{padding:11px 14px 15px;gap:8px;flex-wrap:wrap}
+    #controls button,#controls select{font-size:10px;padding:7px 9px}
+    #scrub{order:3;flex:1 1 calc(100% - 54px)}
+    #tlabel{order:4}
+    #panel{right:12px;top:136px;transform:none;width:205px;max-height:calc(100dvh - 286px);overflow:auto;padding:13px 12px;gap:11px}
+  }
+  @media (max-width:480px){
+    #brand .name{font-size:13px}
+    #nav{top:65px}
+    #legend{display:none}
+    #panel{left:12px;right:12px;top:auto;bottom:112px;width:auto;max-height:258px}
+    #panel .axrows{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}
+    #panel .tgs{flex-wrap:nowrap}
+    #capwrap{bottom:101px}
+  }
+</style>
+
+
+</head>
+<body>
+  <div id="stage"></div>
+
+  <div id="brand">
+    <div class="name">Gregg&nbsp;Fleishman</div>
+    <div class="sub">Six Parts · One Cube · The Whole of Space</div>
+    <div class="note">The proof triangle is the cube's <b>part</b></div>
+  </div>
+
+  <div id="nav" aria-label="Related geometry">
+    <a href="index.html">&larr; Home</a>
+    <a href="fleishman-proof-3d.html">↳ Proof Triangle</a>
+    <a href="fleishman-sequence.html">↳ √2 Sequence</a>
+  </div>
+
+  <div id="legend">
+    <div class="row"><span class="sw" style="background:#F0EDE8"></span> edge <b>= 1</b></div>
+    <div class="row"><span class="sw" style="background:#4A90D9"></span> face diagonal <b>√2</b></div>
+    <div class="row"><span class="sw" style="background:#E0349E"></span> space diagonal <b>√3</b></div>
+  </div>
+
+  <div id="capwrap"><div class="capstack" id="capstack"></div></div>
+
+  <div id="controls">
+    <button id="replay" title="Replay">↺ Replay</button>
+    <button id="play" title="Play / Pause">❙❙ Pause</button>
+    <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Tour progress">
+    <span class="tlabel" id="tlabel">0%</span>
+    <select id="speed" title="Speed" aria-label="Playback speed">
+      <option value="0.5">0.5×</option>
+      <option value="1" selected="">1×</option>
+      <option value="1.5">1.5×</option>
+      <option value="2">2×</option>
+    </select>
+  </div>
+
+  <div id="panel">
+    <div class="ttl">Build it yourself</div>
+    <div class="ctl"><div class="lab">Parts <span id="v-parts">0 / 6</span></div>
+      <input id="s-parts" aria-label="Parts assembled" type="range" min="0" max="6" step="0.02" value="0"></div>
+    <div class="ctl"><div class="lab">Explode <span id="v-explode">0%</span></div>
+      <input id="s-explode" aria-label="Explode amount" type="range" min="0" max="1" step="0.01" value="0"></div>
+    <div class="ctl"><div class="lab">Fill space <span id="v-space">1³</span></div>
+      <input id="s-space" aria-label="Space fill amount" type="range" min="0" max="2" step="0.01" value="0"></div>
+    <div class="tgs">
+      <button class="tgbtn" id="tg-faces" aria-pressed="true">Faces</button>
+      <button class="tgbtn off" id="tg-angles" aria-pressed="false">Angles</button>
+      <button class="tgbtn" id="tg-spin" aria-pressed="true">Spin</button>
+    </div>
+    <div style="height:1px;background:rgba(240,237,232,.10);margin:6px 0 2px"></div>
+    <div class="ttl">Array · per axis</div>
+    <div class="ctl"><div class="lab">Fade <span id="v-afade">0%</span></div>
+      <input id="s-afade" aria-label="Array fade" type="range" min="0" max="1" step="0.01" value="0"></div>
+    <div class="axrows">
+      <div class="axrow"><span class="axlbl">+X</span><input id="s-xpos" aria-label="X positive array count" type="range" min="0" max="5" step="1" value="0"><span id="v-xpos" class="axval">0</span></div>
+      <div class="axrow"><span class="axlbl">−X</span><input id="s-xneg" aria-label="X negative array count" type="range" min="0" max="5" step="1" value="0"><span id="v-xneg" class="axval">0</span></div>
+      <div class="axrow"><span class="axlbl">+Y</span><input id="s-ypos" aria-label="Y positive array count" type="range" min="0" max="5" step="1" value="0"><span id="v-ypos" class="axval">0</span></div>
+      <div class="axrow"><span class="axlbl">−Y</span><input id="s-yneg" aria-label="Y negative array count" type="range" min="0" max="5" step="1" value="0"><span id="v-yneg" class="axval">0</span></div>
+      <div class="axrow"><span class="axlbl">+Z</span><input id="s-zpos" aria-label="Z positive array count" type="range" min="0" max="5" step="1" value="0"><span id="v-zpos" class="axval">0</span></div>
+      <div class="axrow"><span class="axlbl">−Z</span><input id="s-zneg" aria-label="Z negative array count" type="range" min="0" max="5" step="1" value="0"><span id="v-zneg" class="axval">0</span></div>
+    </div>
+    <button class="tgbtn" id="btn-cleararray" style="width:100%;margin-top:3px">Clear array</button>
+  </div>
 
 <script type="importmap">
 {
@@ -38,950 +185,6 @@
 }
 </script>
 
-<script>
-  // ?embed=1 — framed inside another page (e.g. the animation preview):
-  // hide the site nav and reclaim its height. The scene tab bar stays.
-  if (new URLSearchParams(location.search).get('embed') === '1') {
-    document.documentElement.classList.add('gf-embed');
-  }
-</script>
-
-<style>
-  html.gf-embed{ --nav-h:0px; }
-  html.gf-embed #gfnav{ display:none; }
-
-  /* ---- tab bar ---- */
-  #explore-tabs{
-    position:fixed;top:var(--nav-h,52px);left:0;right:0;z-index:15;
-    height:40px;display:flex;align-items:stretch;
-    background:var(--nav-bg,rgba(7,10,11,.88));
-    border-bottom:1px solid var(--border,rgba(198,205,198,0.16));
-    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-  }
-  .explore-tab-btn{
-    font-family:var(--font-mono,'Space Mono',monospace);font-size:10px;
-    letter-spacing:.18em;text-transform:uppercase;
-    background:transparent;color:var(--tx-dim,#7e8581);
-    border:none;border-bottom:2px solid transparent;
-    padding:0 22px;cursor:pointer;
-    transition:color .16s,border-color .16s;
-    white-space:nowrap;
-  }
-  .explore-tab-btn:hover{color:var(--tx,#e5e0d4);}
-  .explore-tab-btn.active{
-    color:var(--tx,#e5e0d4);
-    border-bottom-color:var(--accent,#c9a24b);
-  }
-
-  /* ---- scene wrappers ---- */
-  .con-scene{position:fixed;inset:0;top:calc(var(--nav-h,52px) + 40px);z-index:1;}
-
-  /* ================================================================
-     THE CUBE scene styles
-     ================================================================ */
-  #scene-cube{
-    --text:var(--tx); --dim:var(--tx-dim); --faint:var(--tx-faint);
-    --gold:var(--accent); --blue:var(--geo-face); --mag:var(--geo-space); --green:var(--geo-tri);
-    --line:var(--border); --bg2:var(--bg-surface);
-    --panel:linear-gradient(180deg,rgba(20,20,26,.72),rgba(12,12,16,.72));
-    --panel-bd:rgba(240,237,232,.12); --vig:rgba(3,3,5,.72);
-  }
-
-  #stage{position:absolute;inset:0;cursor:grab;z-index:1;touch-action:none;}
-  #stage:active{cursor:grabbing}
-  #stage canvas{display:block}
-
-  #vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(118% 100% at 50% 44%, rgba(0,0,0,0) 52%, var(--vig,rgba(3,3,5,.72)) 100%);}
-  #grain{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
-
-  .chrome{position:absolute;z-index:6;transition:opacity .6s ease}
-
-  #masthead{left:40px;top:18px;pointer-events:none;max-width:300px;transition:opacity .6s ease}
-  #masthead .sub{font-family:"Space Grotesk",sans-serif;font-size:10.5px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  #masthead .note{margin:11px 0 0;font-family:"Space Mono",monospace;font-size:11px;line-height:1.5;color:var(--tx-dim)}
-  #masthead .note b{color:var(--tx);font-weight:700}
-  #masthead .deepdive a:hover{border-color:var(--accent);color:var(--accent)}
-
-  #loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);transition:opacity .6s ease}
-  #loader.hide{opacity:0;pointer-events:none}
-  #loader .lt{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-
-  #legend{left:40px;bottom:118px;font-family:"Space Mono",monospace;font-size:11.5px;letter-spacing:.03em;color:var(--tx-dim);pointer-events:none}
-  #legend .row{display:flex;align-items:center;gap:11px;margin-top:10px}
-  #legend .sw{width:24px;height:2px;border-radius:2px;flex:none;box-shadow:0 0 9px currentColor}
-  #legend b{color:var(--tx);font-weight:700}
-
-  #chapters{left:50%;transform:translateX(-50%);bottom:96px;display:flex;gap:0;align-items:stretch}
-  .chap{position:relative;cursor:pointer;padding:0 22px;display:flex;flex-direction:column;gap:5px;
-    border-left:1px solid var(--line,var(--border));transition:opacity .3s}
-  .chap:first-child{border-left:none}
-  .chap .ix{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;color:var(--faint,var(--tx-faint));transition:color .3s}
-  .chap .ti{font-family:"Syne",sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));white-space:nowrap;transition:color .3s}
-  .chap .bar{position:absolute;left:0;right:0;bottom:-12px;height:2px;background:var(--gold,var(--accent));transform:scaleX(0);transform-origin:left;opacity:0;transition:opacity .3s}
-  .chap:hover .ti{color:var(--text,var(--tx))}
-  .chap:hover .ix{color:var(--gold,var(--accent))}
-  .chap.active .ti{color:var(--text,var(--tx))}
-  .chap.active .ix{color:var(--gold,var(--accent))}
-  .chap.active .bar{opacity:1}
-
-  #caption{left:0;right:0;bottom:60px;display:flex;justify-content:center;pointer-events:none;height:26px}
-  .capstack{position:relative;width:min(86vw,820px);height:26px;text-align:center}
-  .cap{position:absolute;left:0;right:0;top:0;opacity:0;font-family:"Space Mono",monospace;font-size:13.5px;
-    letter-spacing:.04em;color:var(--dim,var(--tx-dim));text-wrap:balance;line-height:1.4;transition:opacity .45s ease}
-  .cap b{color:var(--gold,var(--accent));font-weight:700}
-
-  #transport{
-    left:50%; transform:translateX(-50%); bottom:14px;
-    display:flex; align-items:center; gap:8px;
-    background:rgba(16,16,20,.7); border:1px solid var(--line,var(--border)); border-radius:2px;
-    padding:4px 10px; -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
-  }
-  #transport button{
-    font-family:"Space Mono",monospace; font-size:9px; letter-spacing:.06em;
-    background:transparent; color:var(--text,var(--tx)); border:1px solid var(--line,var(--border));
-    border-radius:2px; padding:3px 7px; cursor:pointer; text-transform:uppercase;
-    transition:border-color .2s,color .2s; touch-action:manipulation;
-  }
-  #transport button:hover{ border-color:var(--gold,var(--accent)); color:var(--gold,var(--accent)); }
-  #scrub{ width:140px; -webkit-appearance:none; appearance:none; height:2px;
-    background:rgba(242,239,233,.18); border-radius:2px; cursor:pointer; touch-action:none; }
-  #scrub::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none;
-    width:10px; height:10px; border-radius:50%; background:var(--gold,var(--accent));
-    cursor:pointer; border:none; box-shadow:0 0 6px rgba(200,169,110,.7); }
-  #scrub::-moz-range-thumb{ width:10px; height:10px; border-radius:50%;
-    background:var(--gold,var(--accent)); border:none; cursor:pointer; }
-  .tlabel{ font-family:"Space Mono",monospace; font-size:9px; color:var(--dim,var(--tx-dim)); min-width:28px; text-align:center; }
-  #transport select{ font-family:"Space Mono",monospace; font-size:9px; background:transparent;
-    color:var(--text,var(--tx)); border:1px solid var(--line,var(--border)); border-radius:2px; padding:3px 5px; cursor:pointer; }
-
-  #panel{
-    right:16px; top:18px; transform:none; width:216px;
-    display:flex; flex-direction:column; gap:0; padding:0;
-    max-height:44px; overflow:hidden;
-    background:var(--panel); border:1px solid var(--panel-bd); border-radius:4px;
-    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
-    box-shadow:0 16px 48px -20px rgba(0,0,0,.8);
-    transition:max-height .32s cubic-bezier(.4,0,.2,1);
-  }
-  #panel.panel-open{ max-height:480px; overflow-y:auto; }
-  #panel .panel-close{
-    margin-left:auto; background:transparent; border:none; cursor:pointer; padding:2px 4px;
-    font-family:"Space Mono",monospace; font-size:13px; line-height:1; color:var(--faint,var(--tx-faint));
-    transition:color .15s; flex-shrink:0;
-  }
-  #panel .panel-close:hover{ color:var(--text,var(--tx)); }
-  #panel .hd{
-    display:flex; align-items:center; gap:8px;
-    padding:12px 14px; cursor:pointer; user-select:none; flex-shrink:0;
-  }
-  #panel .hd .dot{ width:5px; height:5px; border-radius:50%; background:var(--gold,var(--accent)); box-shadow:0 0 6px var(--gold,var(--accent)); flex-shrink:0; }
-  #panel .hd .t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--text,var(--tx)); }
-  #panel .panel-chevron{ margin-left:auto; color:var(--faint,var(--tx-faint)); transition:transform .28s ease; flex-shrink:0; }
-  #panel.panel-open .panel-chevron{ transform:rotate(180deg); }
-  #panel .panel-body{ display:flex; flex-direction:column; padding:0 14px 14px; gap:12px; }
-  #panel .tab-bar{
-    display:flex; border-bottom:1px solid var(--line,var(--border)); margin-bottom:4px;
-  }
-  #panel .tab-btn{
-    font-family:"Space Mono",monospace; font-size:8.5px; letter-spacing:.1em; text-transform:uppercase;
-    background:transparent; color:var(--faint,var(--tx-faint)); border:none; border-bottom:2px solid transparent;
-    padding:7px 0; margin-bottom:-1px; cursor:pointer; flex:1;
-    transition:color .15s, border-color .15s;
-  }
-  #panel .tab-btn.active{ color:var(--gold,var(--accent)); border-bottom-color:var(--gold,var(--accent)); }
-  #panel .tab-pane{ display:none; flex-direction:column; gap:12px; }
-  #panel .tab-pane.active{ display:flex; }
-  #panel .grp-t{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--faint,var(--tx-faint)); }
-  #panel .ctl{ display:flex; flex-direction:column; gap:6px; }
-  #panel .lab{ display:flex; justify-content:space-between; font-family:"Space Mono",monospace; font-size:10.5px; letter-spacing:.03em; color:var(--text,var(--tx)); }
-  #panel .lab span{ color:var(--gold,var(--accent)); font-weight:700; }
-  #panel input[type=range]{ -webkit-appearance:none; appearance:none; height:2px; background:rgba(242,239,233,.2); border-radius:2px; cursor:pointer; width:100%; touch-action:none; }
-  #panel input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:var(--gold,var(--accent)); border:none; cursor:pointer; box-shadow:0 0 8px rgba(200,169,110,.6); }
-  #panel input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--gold,var(--accent)); border:none; cursor:pointer; }
-  #panel .ctl { min-height:0; }
-  #panel .tgs{ display:flex; gap:6px; flex-wrap:wrap; }
-  #panel .tgbtn{ font-family:"Space Mono",monospace; font-size:9.5px; letter-spacing:.04em; background:transparent; color:var(--text,var(--tx)); border:1px solid var(--line,var(--border)); border-radius:2px; padding:6px 8px; cursor:pointer; text-transform:uppercase; transition:border-color .2s,color .2s,opacity .2s; touch-action:manipulation; }
-  #panel .tgbtn:hover{ border-color:var(--gold,var(--accent)); color:var(--gold,var(--accent)); }
-  #panel .tgbtn.off{ opacity:.38; }
-  #panel .rule{ height:1px; background:var(--line,var(--border)); }
-  #panel .axrows{ display:flex; flex-direction:column; gap:5px; }
-  #panel .axrow{ display:grid; grid-template-columns:22px 1fr 14px; align-items:center; gap:6px; }
-  #panel .axlbl{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--gold,var(--accent)); letter-spacing:.04em; font-weight:700; }
-  #panel .axval{ font-family:"Space Mono",monospace; font-size:9.5px; color:var(--text,var(--tx)); text-align:right; }
-
-  #hint{right:16px;bottom:24px;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.08em;color:var(--faint,var(--tx-faint));text-transform:uppercase;pointer-events:none}
-
-  #sortbox{display:none;flex-direction:column;gap:9px}
-  #sortread{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;line-height:1.5;
-    background:rgba(0,0,0,.28);border:1px solid var(--line,var(--border));border-radius:3px;padding:9px 10px}
-  #sortread .ineq{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  #sortread .tok{font-weight:700}
-  #sortread .op{color:var(--faint,var(--tx-faint))}
-  #sortread .res{margin-top:7px;color:var(--gold,var(--accent));font-weight:700;letter-spacing:.05em}
-  #sortread .res span{color:var(--dim,var(--tx-dim));font-weight:400}
-
-  #volume{left:40px;top:180px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.02em;color:var(--dim,var(--tx-dim));
-    pointer-events:none}
-  #volume.hide{display:none}
-  #volume .big{color:var(--text,var(--tx));font-weight:700}
-  #volume .eq{color:var(--gold,var(--accent));font-weight:700}
-
-  #spiral{left:40px;bottom:96px;width:312px;display:none}
-  #spiral .card{background:linear-gradient(180deg,rgba(18,18,24,.9),rgba(10,10,14,.9));border:1px solid var(--line,var(--border));
-    border-radius:5px;padding:14px 15px 12px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-    box-shadow:0 24px 60px -28px rgba(0,0,0,.8)}
-  #spiral .hd{font-family:"Syne",sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx);margin-bottom:2px}
-  #spiral .sub{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.02em;color:var(--tx-dim);margin-bottom:8px;line-height:1.45}
-  #spiral .sub b{color:var(--accent)}
-  #spiral svg{display:block;width:100%;height:auto}
-  body.spiral-on #legend{display:none}
-
-  body.clean .chrome{opacity:0;pointer-events:none}
-  body.clean #caption{opacity:1}
-  body.clean #caption{bottom:8vh}
-
-  html.gf-cover #masthead, html.gf-cover #legend, html.gf-cover #chapters,
-  html.gf-cover #caption, html.gf-cover #transport, html.gf-cover #panel, html.gf-cover #volume,
-  html.gf-cover #spiral, html.gf-cover #hint{display:none!important;}
-
-  @media(max-width:860px){
-    #chapters{display:none}
-    #masthead{left:18px;top:18px;max-width:210px}
-    #masthead .note{display:none}
-    /* !important: the .deepdive element carries an inline display:flex that
-       otherwise wins over this rule and lets the buttons overlap the legend
-       (and they'd navigate the slide away from the preview if tapped). */
-    #masthead .deepdive{display:none!important}
-    #volume{left:18px;top:58px}
-    #transport{ bottom:0; transform:none; border-radius:0; width:100%; max-width:none; left:0; right:0; justify-content:center; padding:6px 14px; box-sizing:border-box; }
-    #hint{ display:none; }
-    #panel{ right:0; left:0; top:auto; bottom:44px; width:100%; border-radius:4px 4px 0 0; }
-    #panel.panel-open{ max-height:42vh; }
-    #caption{ bottom:140px; }
-    #legend{ left:18px; bottom:170px; }
-  }
-  /* Tab bar: scrollable on narrow phones */
-  @media(max-width:540px){
-    #explore-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-    #explore-tabs::-webkit-scrollbar{ display:none; }
-    .explore-tab-btn{ padding:0 12px; letter-spacing:.08em; flex-shrink:0; }
-  }
-  /* Touch targets: enlarge small interactive elements on mobile */
-  @media(max-width:860px){
-    #panel .tgbtn{ padding:10px 10px; min-height:36px; }
-    #panel .hd{ min-height:44px; }
-    #transport button{ min-height:36px; padding:8px 14px; }
-  }
-  /* Very small phones: tighten the tab bar. The masthead/legend stay visible
-     (they stack cleanly now) down to the smallest common widths; only hide
-     them on genuinely tiny screens below. */
-  @media(max-width:400px){
-    .explore-tab-btn{ font-size:9px; padding:0 9px; }
-  }
-
-  /* ================================================================
-     PHONE LAYOUT (≤600px) — The Cube scene
-     Goal: no horizontal page scroll at 360px; overlays shrink &
-     reposition so the canvas stays visible; panel docks as a compact
-     scrollable bottom sheet; tap targets stay ≥40px.
-     Only adds/overrides inside this media block — desktop untouched.
-     ================================================================ */
-  @media(max-width:600px){
-    /* No horizontal page scroll */
-    html, body{ max-width:100%; overflow-x:hidden; }
-
-    /* Top scene-tab bar: already scrollable at ≤540, ensure here too */
-    #explore-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-    #explore-tabs::-webkit-scrollbar{ display:none; }
-    .explore-tab-btn{ padding:0 12px; letter-spacing:.06em; flex-shrink:0; }
-
-    /* Top-left readouts stack as a single non-overlapping column:
-       masthead subtitle → assembled-volume → legend. The deep-dive buttons
-       are hidden on mobile (≤860 rule above), so nothing collides here. */
-    #masthead{ left:14px; top:12px; max-width:64vw; }
-    #masthead .sub{ font-size:9px; letter-spacing:.22em; }
-
-    #volume{ left:14px; right:auto; top:52px; bottom:auto; font-size:11.5px; }
-
-    #legend{ left:14px; right:auto; top:82px; bottom:auto; font-size:11.5px; }
-    #legend .row{ gap:8px; margin-top:7px; }
-    #legend .sw{ width:18px; }
-
-    /* Spiral card only shows in the √2-system mode, where the legend is
-       hidden — so it can reuse the legend's top slot without collision. */
-    #spiral{ left:14px; right:14px; top:82px; bottom:auto; width:auto; max-width:calc(100% - 28px); }
-
-    /* Caption: shrink font, clear the docked panel/transport stack */
-    #caption{ bottom:96px; }
-    .cap{ font-size:12px; }
-    .capstack{ width:92vw; }
-
-    /* Transport bar: full-width compact strip at the very bottom */
-    #transport{ bottom:0; left:0; right:0; transform:none; width:100%;
-      border-radius:0; justify-content:center; gap:6px; padding:5px 8px;
-      box-sizing:border-box; flex-wrap:nowrap; overflow-x:auto;
-      -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-    #transport::-webkit-scrollbar{ display:none; }
-    #scrub{ width:auto; flex:1 1 60px; min-width:60px; }
-    #transport button, #transport select{ flex-shrink:0; }
-
-    /* ---- Control panel: compact scrollable bottom sheet ---- */
-    #panel{ left:0; right:0; top:auto; bottom:38px; width:100%; transform:none;
-      border-radius:6px 6px 0 0; box-sizing:border-box; max-height:42px; }
-    #panel.panel-open{ max-height:46vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-    #panel .panel-body{ padding:0 14px 14px; gap:10px; }
-    #panel .hd{ min-height:44px; padding:10px 14px; }
-    #panel .lab{ font-size:12px; }
-
-    /* Inner Build/Math/Array tab-bar: allow horizontal scroll, no wrap-break */
-    #panel .tab-bar{ overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
-    #panel .tab-bar::-webkit-scrollbar{ display:none; }
-    #panel .tab-btn{ flex:1 0 auto; white-space:nowrap; padding:9px 10px; font-size:9.5px; }
-
-    /* Tap targets ≥40px: pad sliders' hit area (track stays thin & visible),
-       enlarge toggles & transport controls */
-    #panel input[type=range]{ padding:16px 0; background-clip:content-box; }
-    #panel input[type=range]::-webkit-slider-thumb{ width:18px; height:18px; }
-    #panel input[type=range]::-moz-range-thumb{ width:18px; height:18px; }
-    #panel .ctl{ gap:4px; }
-    #panel .tgbtn{ min-height:40px; padding:10px 12px; font-size:11px; }
-    #transport button, #transport select{ min-height:40px; }
-    #scrub{ padding:16px 0; background-clip:content-box; }
-    #scrub::-webkit-slider-thumb{ width:14px; height:14px; }
-    #scrub::-moz-range-thumb{ width:14px; height:14px; }
-  }
-
-  /* ================================================================
-     VECTOR SYSTEM scene styles  (all IDs prefixed vs-)
-     ================================================================ */
-  #scene-vs{
-    --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40);
-  }
-  #vs-stage{position:absolute;inset:0;z-index:0;cursor:grab}
-  #vs-stage:active{cursor:grabbing}
-  #vs-stage canvas{display:block;width:100%;height:100%}
-
-  #vs-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);transition:opacity .6s ease}
-  #vs-loader.hide{opacity:0;pointer-events:none}
-  #vs-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-
-  #vs-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
-  #vs-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  #vs-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
-    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
-  #vs-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
-  #vs-masthead .note b{color:var(--tx);font-weight:700}
-
-  #vs-panel{position:absolute;left:50%;transform:translateX(-50%);top:8px;z-index:5;width:clamp(188px,18vw,224px);
-    display:flex;flex-direction:column;gap:0;padding:0;
-    max-height:44px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
-    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
-    transition:max-height .32s cubic-bezier(.4,0,.2,1),background .5s var(--ease),border-color .5s var(--ease)}
-  #vs-panel.panel-open{max-height:420px;overflow-y:auto;}
-  #vs-panel .ph{display:flex;align-items:center;justify-content:space-between;
-    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
-    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #vs-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
-  #vs-panel.panel-open .ph svg{transform:rotate(180deg)}
-  #vs-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
-  #vs-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #vs-panel .ctl{display:flex;flex-direction:column;gap:7px}
-  #vs-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
-    letter-spacing:.05em;color:var(--tx)}
-  #vs-panel .lab span{color:var(--accent)}
-  #vs-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
-    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
-  #vs-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
-    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #vs-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #vs-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
-  #vs-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
-    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
-    touch-action:manipulation;
-    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
-  #vs-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
-  #vs-panel .tgbtn.on{border-color:var(--accent);color:var(--accent)}
-  #vs-panel .tgbtn.off{opacity:.34}
-  #vs-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
-
-  #vs-legend{position:absolute;right:34px;top:18px;z-index:4;font-family:var(--font-mono);font-size:12px;
-    letter-spacing:.04em;color:var(--tx-dim);pointer-events:none;text-align:right}
-  #vs-legend .row{display:flex;align-items:center;flex-direction:row-reverse;gap:10px;margin-top:9px}
-  #vs-legend .sl{width:24px;height:3px;border-radius:2px;flex:none}
-  #vs-legend b{color:var(--tx);font-weight:700}
-
-  #vs-capwrap{position:absolute;left:0;right:0;bottom:30px;z-index:4;display:flex;justify-content:center;
-    pointer-events:none;height:24px}
-  .vs-cap{font-family:var(--font-mono);font-size:14px;letter-spacing:.05em;color:var(--tx-dim);text-align:center;
-    transition:opacity .45s var(--ease)}
-  .vs-cap b{color:var(--accent);font-weight:700}
-
-  body.clean #vs-masthead, body.clean #vs-panel, body.clean #vs-legend, body.clean #vs-capwrap{opacity:0;pointer-events:none}
-
-  /* medium: masthead + centred panel can collide — park panel on the right until there's room;
-     legend goes below the panel so they don't stack on the same corner */
-  @media(min-width:861px) and (max-width:1059px){
-    #vs-panel{left:auto;right:16px;transform:none;}
-    #vs-legend{top:70px;}
-  }
-  @media(max-width:860px){
-    #vs-panel{right:0;left:0;transform:none;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
-    #vs-panel.panel-open{max-height:65vh;overflow-y:auto;}
-    #vs-masthead{left:18px;top:16px;max-width:230px}
-    #vs-masthead .note{display:none}
-    #vs-legend{right:18px;top:60px;left:auto;bottom:auto;font-size:10.5px}
-    #vs-capwrap{bottom:56px}
-    #vs-stage{touch-action:none}
-  }
-
-  /* ── CLUSTER STRUCTURES scene ── */
-  #scene-cs{ --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); }
-  #cs-stage{ position:absolute; inset:0; z-index:0; cursor:grab; touch-action:none; }
-  #cs-stage:active{ cursor:grabbing; }
-  #cs-stage canvas{ display:block; width:100%; height:100%; }
-  #cs-loader{ position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center;
-    background:var(--bg); transition:opacity .6s ease; }
-  #cs-loader.hide{ opacity:0; pointer-events:none; }
-  #cs-loader .lt{ font-family:var(--font-mono); font-size:12px; letter-spacing:.34em; color:var(--tx-dim); text-transform:uppercase; }
-  #cs-titlecard{ position:absolute; inset:0; z-index:8; display:flex; flex-direction:column;
-    align-items:center; justify-content:flex-end; gap:12px; padding:0 24px 9vh; pointer-events:none; opacity:0;
-    background:linear-gradient(to top,var(--bg) 9%,color-mix(in srgb,var(--bg) 66%,transparent) 26%,transparent 48%); }
-  #cs-titlecard .kicker{ font-family:var(--font-mono); font-size:12px; letter-spacing:.42em;
-    text-transform:uppercase; color:var(--accent); }
-  #cs-titlecard h2{ font-family:var(--font-display); font-weight:800; letter-spacing:-.01em;
-    font-size:clamp(32px,6.4vw,72px); line-height:.98; text-align:center; color:var(--tx); text-transform:uppercase; }
-  #cs-titlecard .sub{ font-family:var(--font-mono); font-size:13px; letter-spacing:.30em;
-    text-transform:uppercase; color:var(--tx-dim); }
-  #cs-capwrap{ position:absolute; left:0; right:0; bottom:60px; z-index:6; display:flex; justify-content:center;
-    pointer-events:none; height:30px; }
-  #cs-capwrap .capstack{ position:relative; width:min(86vw,760px); height:30px; text-align:center; }
-  #cs-capwrap .cap{ position:absolute; left:0; right:0; top:0; opacity:0;
-    font-family:var(--font-mono); font-size:14px; letter-spacing:.06em; color:var(--tx-dim); text-wrap:balance; line-height:1.4; }
-  #cs-capwrap .cap b{ color:var(--accent); font-weight:700; }
-  #cs-controls{ position:absolute; left:0; right:0; bottom:0; z-index:7; display:flex; align-items:center; gap:18px;
-    padding:14px 24px 18px; background:linear-gradient(to top,var(--bg),transparent); }
-  #cs-controls button, #cs-controls select{
-    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
-    background:transparent; color:var(--tx-dim); border:1px solid var(--border);
-    border-radius:2px; padding:7px 11px; cursor:pointer; text-transform:uppercase;
-    transition:border-color .2s,color .2s; }
-  #cs-controls button:hover, #cs-controls select:hover{ border-color:var(--accent); color:var(--accent); }
-  #cs-scrub{ flex:1; -webkit-appearance:none; appearance:none; height:2px; background:var(--border);
-    border-radius:2px; cursor:pointer; }
-  #cs-scrub::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:12px; height:12px;
-    border-radius:50%; background:var(--accent); cursor:pointer; border:none; }
-  #cs-scrub::-moz-range-thumb{ width:12px; height:12px; border-radius:50%; background:var(--accent); border:none; cursor:pointer; }
-  .cs-tlabel{ font-family:var(--font-mono); font-size:11px; color:var(--tx-dim); min-width:36px; text-align:center; }
-
-  /* ── VECTOR POD scene (iframe) ── */
-  #scene-vp{ overflow:hidden; }
-  #vp-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
-
-  /* ── RHOMBIC SYSTEM scene (iframe) ── */
-  #scene-rs{ overflow:hidden; }
-  #rs-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
-
-  /* ── RHOMBI POD scene (GLB assembly viewer) ── */
-  #scene-rp{ --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
-  #rp-stage{position:absolute;inset:0;z-index:0;cursor:grab;touch-action:none;}
-  #rp-stage:active{cursor:grabbing}
-  #rp-stage canvas{display:block;width:100%;height:100%}
-
-  #rp-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);transition:opacity .6s ease}
-  #rp-loader.hide{opacity:0;pointer-events:none}
-  #rp-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-
-  #rp-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
-  #rp-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  #rp-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
-    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
-  #rp-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
-  #rp-masthead .note b{color:var(--tx);font-weight:700}
-
-  #rp-panel{position:absolute;right:16px;top:8px;z-index:5;width:clamp(196px,19vw,236px);
-    display:flex;flex-direction:column;gap:0;padding:0;
-    max-height:44px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
-    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
-    transition:max-height .32s cubic-bezier(.4,0,.2,1)}
-  #rp-panel.panel-open{max-height:440px;overflow-y:auto;}
-  #rp-panel .ph{display:flex;align-items:center;justify-content:space-between;
-    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
-    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #rp-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
-  #rp-panel.panel-open .ph svg{transform:rotate(180deg)}
-  #rp-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
-  #rp-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #rp-panel .ctl{display:flex;flex-direction:column;gap:7px}
-  #rp-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
-    letter-spacing:.05em;color:var(--tx)}
-  #rp-panel .lab span{color:var(--accent)}
-  #rp-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
-    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
-  #rp-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
-    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #rp-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #rp-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
-  #rp-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
-    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
-    touch-action:manipulation;
-    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
-  #rp-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
-  #rp-panel .tgbtn.off{opacity:.34}
-  #rp-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
-
-  #rp-hint{position:absolute;right:16px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:10px;
-    letter-spacing:.08em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
-  #rp-src{position:absolute;left:34px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:9.5px;
-    letter-spacing:.1em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
-
-  @media(max-width:860px){
-    #rp-panel{right:0;left:0;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
-    #rp-panel.panel-open{max-height:65vh;overflow-y:auto;}
-    #rp-panel .tgbtn{min-height:40px;padding:10px 12px;}
-    #rp-panel .ph{min-height:44px;}
-    #rp-panel input[type=range]{padding:16px 0;background-clip:content-box;}
-    #rp-masthead{left:18px;top:16px;max-width:230px}
-    #rp-masthead .note{display:none}
-    #rp-hint{display:none}
-    #rp-src{left:18px;bottom:52px}
-    #rp-stage{touch-action:none}
-  }
-
-  /* ── VECTOR HOUSE scene (GLB assembly viewer) ── */
-  #scene-vh{ --panel:rgba(17,17,17,.55); --panel-bd:rgba(240,237,232,.12); --panel-sh:0 12px 34px rgba(0,0,0,.40); }
-  #vh-stage{position:absolute;inset:0;z-index:0;cursor:grab;touch-action:none;}
-  #vh-stage:active{cursor:grabbing}
-  #vh-stage canvas{display:block;width:100%;height:100%}
-
-  #vh-loader{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);transition:opacity .6s ease}
-  #vh-loader.hide{opacity:0;pointer-events:none}
-  #vh-loader .lt{font-family:var(--font-mono);font-size:12px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-
-  #vh-masthead{position:absolute;left:34px;top:18px;z-index:4;pointer-events:none;max-width:320px}
-  #vh-masthead .sub{font-family:var(--font-ui);font-size:11px;letter-spacing:.34em;color:var(--tx-dim);text-transform:uppercase}
-  #vh-masthead h1{margin:9px 0 0;font-family:var(--font-display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
-    line-height:1.05;letter-spacing:.01em;color:var(--tx);text-transform:none}
-  #vh-masthead .note{margin:13px 0 0;font-family:var(--font-mono);font-size:11px;line-height:1.5;color:var(--tx-dim);opacity:.9}
-  #vh-masthead .note b{color:var(--tx);font-weight:700}
-
-  #vh-panel{position:absolute;right:16px;top:8px;z-index:5;width:clamp(196px,19vw,236px);
-    display:flex;flex-direction:column;gap:0;padding:0;
-    max-height:44px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--panel-bd);box-shadow:var(--panel-sh);border-radius:3px;
-    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
-    transition:max-height .32s cubic-bezier(.4,0,.2,1)}
-  #vh-panel.panel-open{max-height:520px;overflow-y:auto;}
-  #vh-panel .ph{display:flex;align-items:center;justify-content:space-between;
-    padding:12px 14px;cursor:pointer;user-select:none;flex-shrink:0;
-    font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #vh-panel .ph svg{color:var(--tx-faint);transition:transform .28s ease;flex-shrink:0}
-  #vh-panel.panel-open .ph svg{transform:rotate(180deg)}
-  #vh-panel .panel-body{display:flex;flex-direction:column;gap:14px;padding:4px 14px 16px}
-  #vh-panel .ttl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tx-dim)}
-  #vh-panel .ctl{display:flex;flex-direction:column;gap:7px}
-  #vh-panel .lab{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10.5px;
-    letter-spacing:.05em;color:var(--tx)}
-  #vh-panel .lab span{color:var(--accent)}
-  #vh-panel input[type=range]{-webkit-appearance:none;appearance:none;height:2px;width:100%;
-    background:rgba(240,237,232,.2);border-radius:2px;cursor:pointer;touch-action:none}
-  #vh-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;
-    border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #vh-panel input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
-  #vh-panel .tgs{display:flex;gap:6px;flex-wrap:wrap}
-  #vh-panel .tgbtn{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;text-transform:uppercase;
-    background:transparent;color:var(--tx);border:1px solid rgba(240,237,232,.22);border-radius:2px;padding:6px 8px;cursor:pointer;
-    touch-action:manipulation;
-    transition:border-color .2s var(--ease),color .2s var(--ease),opacity .2s var(--ease)}
-  #vh-panel .tgbtn:hover{border-color:var(--accent);color:var(--accent)}
-  #vh-panel .tgbtn.off{opacity:.34}
-  #vh-panel .div{height:1px;background:rgba(240,237,232,.10);margin:2px 0}
-
-  #vh-hint{position:absolute;right:16px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:10px;
-    letter-spacing:.08em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
-  #vh-src{position:absolute;left:34px;bottom:24px;z-index:4;font-family:var(--font-mono);font-size:9.5px;
-    letter-spacing:.1em;color:var(--tx-faint);text-transform:uppercase;pointer-events:none}
-
-  @media(max-width:860px){
-    #vh-panel{right:0;left:0;top:auto;bottom:0;width:100%;max-height:44px;border-radius:3px 3px 0 0;}
-    #vh-panel.panel-open{max-height:65vh;overflow-y:auto;}
-    #vh-panel .tgbtn{min-height:40px;padding:10px 12px;}
-    #vh-panel .ph{min-height:44px;}
-    #vh-panel input[type=range]{padding:16px 0;background-clip:content-box;}
-    #vh-masthead{left:18px;top:16px;max-width:230px}
-    #vh-masthead .note{display:none}
-    #vh-hint{display:none}
-    #vh-src{left:18px;bottom:52px}
-    #vh-stage{touch-action:none}
-  }
-</style>
-
-<template id="__bundler_thumbnail" data-bg-color="#08080A">
-<svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
-  <g stroke="#F2EFE9" stroke-width="1.1" fill="none" opacity="0.6">
-    <polyline points="38,50 60,38 82,50 60,62 38,50"/>
-    <line x1="60" y1="38" x2="60" y2="16"/><line x1="38" y1="50" x2="38" y2="28"/><line x1="82" y1="50" x2="82" y2="28"/>
-    <line x1="60" y1="16" x2="38" y2="28"/><line x1="60" y1="16" x2="82" y2="28"/>
-    <line x1="38" y1="28" x2="60" y2="40"/><line x1="82" y1="28" x2="60" y2="40"/><line x1="60" y1="40" x2="60" y2="62"/>
-  </g>
-  <line x1="38" y1="62" x2="82" y2="16" stroke="#F03BA6" stroke-width="2" opacity="0.95"/>
-  <line x1="38" y1="50" x2="82" y2="28" stroke="#5AA0E6" stroke-width="1.5" opacity="0.9"/>
-  <polygon points="38,62 82,28 82,50" fill="#3CCB8E" fill-opacity="0.22" stroke="#3CCB8E" stroke-width="1"/>
-</svg>
-</template>
-</head>
-<body>
-
-<nav id="gfnav">
-  <a class="brand" href="index.html">Gregg Fleishman</a>
-  <a class="navlink" href="mathematics.html">The Lost Triangle</a>
-  <a class="navlink" href="lost-triangle.html">Animation</a>
-  <a class="navlink active" href="explore.html">The Cube</a>
-  <a class="navlink" href="dorman-luke.html">Research</a>
-</nav>
-
-<!-- Tab bar -->
-<div id="explore-tabs">
-  <button class="explore-tab-btn active" data-tab="cube">The Cube</button>
-  <!-- Cluster Structures tab hidden for now (content kept below, just unreachable from the tab bar) -->
-  <!-- <button class="explore-tab-btn" data-tab="cs">Cluster Structures</button> -->
-  <button class="explore-tab-btn" data-tab="vs">Vector System</button>
-  <button class="explore-tab-btn" data-tab="rs">Rhombic System</button>
-  <button class="explore-tab-btn" data-tab="vp">Vector Pod</button>
-  <button class="explore-tab-btn" data-tab="rp">Rhombi Pod</button>
-  <button class="explore-tab-btn" data-tab="vh">Vector House</button>
-</div>
-
-<!-- ================================================================
-     SCENE: THE CUBE
-     ================================================================ -->
-<div id="scene-cube" class="con-scene" style="display:block;">
-
-  <div id="stage"></div>
-  <div id="vignette"></div>
-  <div id="grain"></div>
-
-  <div id="masthead" class="chrome">
-    <div class="sub">Six Parts · One Cube · The Whole of Space</div>
-    <div class="note">Each part is the <b>proof triangle</b>, stood up in space.</div>
-    <div class="deepdive" style="margin-top:12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:auto;">
-      <a href="fleishman-proof-3d.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ Proof Triangle · 3D</a>
-      <a href="fleishman-ground-angle.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ 35.25° Ground Angle</a>
-      <a href="truncated-octahedron.html" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-dim);text-decoration:none;border:1px solid var(--border-strong);border-radius:2px;padding:6px 9px;transition:border-color .2s,color .2s;">↳ Truncated Octahedron</a>
-    </div>
-  </div>
-
-  <div id="loader"><div class="lt">Building the cube…</div></div>
-
-  <div id="legend" class="chrome">
-    <div class="row"><span class="sw"></span> edge <b>= 1</b></div>
-    <div class="row"><span class="sw"></span> face diagonal <b>√2</b></div>
-    <div class="row"><span class="sw"></span> space diagonal <b>√3</b></div>
-    <div class="row" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(240,237,232,.07);color:var(--geo-angle);letter-spacing:.04em;font-size:10.5px;" title="35.2644° / 54.7356° exact">35.25° / 54.75° / 90°</div>
-  </div>
-
-  <div id="chapters" class="chrome">
-    <div class="chap" data-ch="0"><div class="ix">01</div><div class="ti">Proof Triangle</div><div class="bar"></div></div>
-    <div class="chap" data-ch="1"><div class="ix">02</div><div class="ti">The Part</div><div class="bar"></div></div>
-    <div class="chap" data-ch="2"><div class="ix">03</div><div class="ti">One Cube</div><div class="bar"></div></div>
-    <div class="chap" data-ch="3"><div class="ix">04</div><div class="ti">The Whole of Space</div><div class="bar"></div></div>
-  </div>
-
-  <div id="caption" class="chrome"><div class="capstack" id="capstack"></div></div>
-
-  <div id="transport" class="chrome">
-    <button id="prev" title="Previous chapter">◀</button>
-    <button id="play" title="Play / Pause">❙❙</button>
-    <input id="scrub" type="range" min="0" max="1000" value="0" />
-    <span class="tlabel" id="tlabel">0%</span>
-    <button id="next" title="Next chapter">▶</button>
-    <select id="speed" title="Speed">
-      <option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option>
-    </select>
-  </div>
-
-  <div id="panel" class="chrome">
-    <div class="hd" id="panel-hd">
-      <span class="dot"></span>
-      <span class="t">Controls</span>
-      <button class="panel-close" id="panel-close" aria-label="Close panel">✕</button>
-    </div>
-    <div class="panel-body">
-      <div class="tab-bar">
-        <button class="tab-btn active" data-tab="build">Build</button>
-        <button class="tab-btn" data-tab="math">Math</button>
-        <button class="tab-btn" data-tab="array">Array</button>
-      </div>
-
-      <div class="tab-pane active" id="tab-build">
-        <div class="ctl"><div class="lab">Parts <span id="v-parts">0 / 6</span></div>
-          <input id="s-parts" type="range" min="0" max="6" step="0.02" value="0" /></div>
-        <div class="ctl"><div class="lab">Explode <span id="v-explode">0%</span></div>
-          <input id="s-explode" type="range" min="0" max="1" step="0.01" value="0" /></div>
-        <div class="ctl"><div class="lab">Fill space <span id="v-space">1³</span></div>
-          <input id="s-space" type="range" min="0" max="2" step="0.01" value="0" /></div>
-        <div class="tgs">
-          <button class="tgbtn" id="tg-faces">Faces</button>
-          <button class="tgbtn off" id="tg-angles">Angles</button>
-          <button class="tgbtn" id="tg-spin">Spin</button>
-        </div>
-      </div>
-
-      <div class="tab-pane" id="tab-math">
-        <div class="tgs">
-          <button class="tgbtn off" id="tg-sort">Sort point</button>
-          <button class="tgbtn off" id="tg-spiral">√ spiral</button>
-          <button class="tgbtn" id="tg-vol">Volume</button>
-        </div>
-        <div id="sortbox">
-          <div class="axrows">
-            <div class="axrow"><span class="axlbl" style="color:var(--geo-face)">x</span><input id="s-px" type="range" min="0.02" max="0.98" step="0.01" value="0.72"/><span id="v-px" class="axval">.72</span></div>
-            <div class="axrow"><span class="axlbl" style="color:var(--geo-tri)">y</span><input id="s-py" type="range" min="0.02" max="0.98" step="0.01" value="0.44"/><span id="v-py" class="axval">.44</span></div>
-            <div class="axrow"><span class="axlbl" style="color:var(--geo-space)">z</span><input id="s-pz" type="range" min="0.02" max="0.98" step="0.01" value="0.19"/><span id="v-pz" class="axval">.19</span></div>
-          </div>
-          <div id="sortread"></div>
-        </div>
-      </div>
-
-      <div class="tab-pane" id="tab-array">
-        <div class="ctl"><div class="lab">Fade <span id="v-afade">0%</span></div>
-          <input id="s-afade" type="range" min="0" max="1" step="0.01" value="0" /></div>
-        <div class="axrows">
-          <div class="axrow"><span class="axlbl">+X</span><input id="s-xpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-xpos" class="axval">0</span></div>
-          <div class="axrow"><span class="axlbl">−X</span><input id="s-xneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-xneg" class="axval">0</span></div>
-          <div class="axrow"><span class="axlbl">+Y</span><input id="s-ypos" type="range" min="0" max="5" step="1" value="0"/><span id="v-ypos" class="axval">0</span></div>
-          <div class="axrow"><span class="axlbl">−Y</span><input id="s-yneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-yneg" class="axval">0</span></div>
-          <div class="axrow"><span class="axlbl">+Z</span><input id="s-zpos" type="range" min="0" max="5" step="1" value="0"/><span id="v-zpos" class="axval">0</span></div>
-          <div class="axrow"><span class="axlbl">−Z</span><input id="s-zneg" type="range" min="0" max="5" step="1" value="0"/><span id="v-zneg" class="axval">0</span></div>
-        </div>
-        <button class="tgbtn" id="btn-cleararray" style="width:100%">Clear array</button>
-      </div>
-    </div><!-- /.panel-body -->
-  </div>
-
-  <div id="volume" class="chrome">
-    assembled volume&nbsp;&nbsp;<span id="vol-n" class="big">6 × 1/6</span>&nbsp;<span class="eq">= 1</span>
-  </div>
-
-  <div id="spiral" class="chrome">
-    <div class="card">
-      <div class="hd">The √2 system</div>
-      <div class="sub">Each √(n+1) is the hypotenuse of a right triangle with legs √n and 1. The step <b>√2 → √3</b> is the proof triangle itself.</div>
-      <div id="spiral-svg"></div>
-    </div>
-  </div>
-
-  <div id="hint" class="chrome">drag to orbit · scroll to zoom</div>
-
-</div><!-- /#scene-cube -->
-
-<!-- ================================================================
-     SCENE: VECTOR SYSTEM
-     ================================================================ -->
-<div id="scene-vs" class="con-scene" style="display:none;">
-
-  <div id="vs-stage"></div>
-  <div id="vs-loader"><div class="lt">Reconstructing the vector system…</div></div>
-
-  <div id="vs-masthead">
-    <div class="sub">The Vector System</div>
-    <h1>Single cube frame<br>→ assembly pattern</h1>
-    <p class="note">The <b>single cube frame</b> — edges, √2 face diagonals, √3 space diagonals — tiled into the <b>assembly pattern</b> that fills space.</p>
-  </div>
-
-  <div id="vs-legend">
-    <div class="row"><span class="sl" id="vs-lg-edge"></span> cube edge · <b>1</b></div>
-    <div class="row"><span class="sl" id="vs-lg-face"></span> face diagonal · <b>√2</b></div>
-    <div class="row"><span class="sl" id="vs-lg-space"></span> space diagonal · <b>√3</b></div>
-  </div>
-
-  <div id="vs-capwrap"><div class="vs-cap" id="vs-cap">One module · <b>1 : √2 : √3</b></div></div>
-
-  <div id="vs-panel">
-    <div class="ph" id="vs-panel-ph">
-      Controls
-      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="panel-body">
-      <div class="ttl">Assembly</div>
-      <div class="ctl"><div class="lab">Pattern <span id="vs-v-grid">2 × 2 × 2</span></div>
-        <input id="vs-s-grid" type="range" min="1" max="4" step="1" value="2" aria-label="Assembly pattern size" /></div>
-      <div class="ctl"><div class="lab">Separation <span id="vs-v-gap">0%</span></div>
-        <input id="vs-s-gap" type="range" min="0" max="0.8" step="0.01" value="0" aria-label="Cell separation" /></div>
-      <div class="div"></div>
-      <div class="ttl">Vectors</div>
-      <div class="tgs">
-        <button class="tgbtn" id="vs-tg-edge">Edges</button>
-        <button class="tgbtn" id="vs-tg-face">√2 face</button>
-        <button class="tgbtn" id="vs-tg-space">√3 space</button>
-      </div>
-      <div class="ttl" style="margin-top:2px">Highlight</div>
-      <div class="tgs">
-        <button class="tgbtn" id="vs-tg-proof">Proof △ · 35.25°</button>
-        <button class="tgbtn off" id="vs-tg-frame">Single frame</button>
-      </div>
-      <div class="div"></div>
-      <div class="tgs">
-        <button class="tgbtn" id="vs-tg-spin">Auto-rotate</button>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /#scene-vs -->
-
-<!-- ================================================================
-     SCENE: CLUSTER STRUCTURES
-     ================================================================ -->
-<div id="scene-cs" class="con-scene" style="display:none;">
-  <div id="cs-stage"></div>
-  <div id="cs-titlecard">
-    <div class="kicker">Gregg Fleishman · 2005</div>
-    <h2>Cluster-<wbr>Structures</h2>
-    <div class="sub">Infinite architecture</div>
-  </div>
-  <div id="cs-capwrap"><div class="capstack" id="cs-capstack"></div></div>
-  <div id="cs-controls">
-    <button id="cs-replay" title="Replay">↺ Replay</button>
-    <button id="cs-play" title="Play / Pause">▶ Play</button>
-    <input id="cs-scrub" type="range" min="0" max="1000" value="0" />
-    <span class="cs-tlabel" id="cs-tlabel">0.0s</span>
-    <select id="cs-speed" title="Speed">
-      <option value="0.5">0.5×</option>
-      <option value="1" selected>1×</option>
-      <option value="1.5">1.5×</option>
-      <option value="2">2×</option>
-    </select>
-  </div>
-</div><!-- /#scene-cs -->
-
-<!-- ================================================================
-     SCENE: RHOMBIC SYSTEM  (same-origin iframe — no CORS)
-     ================================================================ -->
-<div id="scene-rs" class="con-scene" style="display:none;">
-  <!-- Not loading="lazy": Chromium can permanently defer a lazy iframe whose
-       ancestor is display:none at parse time, even after it's later shown
-       (unlike vp-frame below, whose lighter Vue app isn't affected the same
-       way) — load it eagerly instead. -->
-  <iframe id="rs-frame" src="rhombic-system.html?embed=1"
-    title="Rhombic System"
-    aria-label="Rhombic System interactive model"></iframe>
-</div><!-- /#scene-rs -->
-
-<!-- ================================================================
-     SCENE: VECTOR POD  (same-origin iframe — no CORS)
-     ================================================================ -->
-<div id="scene-vp" class="con-scene" style="display:none;">
-  <iframe id="vp-frame" src="vector-pod/index.html"
-    title="Vector Pod — Interactive Part Study"
-    loading="lazy"
-    aria-label="Vector Pod interactive model"></iframe>
-</div><!-- /#scene-vp -->
-
-<!-- ================================================================
-     SCENE: RHOMBI POD  (CAD assembly · GLB viewer)
-     ================================================================ -->
-<div id="scene-rp" class="con-scene" style="display:none;">
-
-  <div id="rp-stage"></div>
-  <div id="rp-loader"><div class="lt">Loading the pod…</div></div>
-
-  <div id="rp-masthead">
-    <div class="sub">Current Exploration</div>
-    <h1>Rhombi Pod</h1>
-    <p class="note">A single <b>rhombic-dodecahedron pod</b> — 65 CAD parts, straight from the Rhino solids: hex panels seated on a node-and-strut frame. Toggle each layer of the assembly.</p>
-  </div>
-
-  <div id="rp-panel">
-    <div class="ph" id="rp-panel-ph">
-      Layers
-      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="panel-body">
-      <div class="ttl">Assembly layers</div>
-      <div class="tgs">
-        <button class="tgbtn" id="rp-tg-panels" title="9 hex panels">Hex panels</button>
-        <button class="tgbtn" id="rp-tg-n90" title="15 node parts · 90 layer">Nodes · 90</button>
-        <button class="tgbtn" id="rp-tg-n45" title="41 node parts · 45 layer">Nodes · 45</button>
-        <button class="tgbtn off" id="rp-tg-curves" title="9 reference curves">Ref curves</button>
-      </div>
-      <div class="div"></div>
-      <div class="ttl">Explode</div>
-      <div class="ctl"><div class="lab">Separation <span id="rp-v-sep">0%</span></div>
-        <input id="rp-s-sep" type="range" min="0" max="1" step="0.01" value="0" aria-label="Part separation" /></div>
-      <div class="div"></div>
-      <div class="tgs">
-        <button class="tgbtn" id="rp-tg-spin">Auto-rotate</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="rp-src">source · Single Rhomi Pod · Rhino 8</div>
-  <div id="rp-hint">drag to orbit · scroll to zoom</div>
-
-</div><!-- /#scene-rp -->
-
-<!-- ================================================================
-     SCENE: VECTOR HOUSE  (CAD assembly · GLB viewer)
-     ================================================================ -->
-<div id="scene-vh" class="con-scene" style="display:none;">
-
-  <div id="vh-stage"></div>
-  <div id="vh-loader"><div class="lt">Loading the house…</div></div>
-
-  <div id="vh-masthead">
-    <div class="sub">Current Exploration</div>
-    <h1>Vector House</h1>
-    <p class="note">Gregg's <b>45° fold system</b> tiled to house scale — the same node-and-panel module as the Rhombi Pod, repeated across a full structure. 98,892 source triangles from the Rhino solids. Toggle each layer of the assembly.</p>
-  </div>
-
-  <div id="vh-panel">
-    <div class="ph" id="vh-panel-ph">
-      Layers
-      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-        <polyline points="2,9 7,4 12,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    <div class="panel-body">
-      <div class="ttl">Assembly layers</div>
-      <div class="tgs">
-        <button class="tgbtn" id="vh-tg-panels" title="hex panels">Panels</button>
-        <button class="tgbtn" id="vh-tg-n90" title="flat connector nodes · 90 layer">Nodes · 90</button>
-        <button class="tgbtn" id="vh-tg-n45" title="45° sloped panels · 45 layer">Nodes · 45</button>
-        <button class="tgbtn" id="vh-tg-deck" title="deck structure">Deck</button>
-        <button class="tgbtn" id="vh-tg-frame" title="unlabeled structural layer">Frame</button>
-        <button class="tgbtn off" id="vh-tg-curves" title="reference curves">Ref curves</button>
-      </div>
-      <div class="div"></div>
-      <div class="ttl">Explode</div>
-      <div class="ctl"><div class="lab">Separation <span id="vh-v-sep">0%</span></div>
-        <input id="vh-s-sep" type="range" min="0" max="1" step="0.01" value="0" aria-label="Part separation" /></div>
-      <div class="div"></div>
-      <div class="tgs">
-        <button class="tgbtn" id="vh-tg-spin">Auto-rotate</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="vh-src">source · Vector House · Rhino 8 · 45°/90° system</div>
-  <div id="vh-hint">drag to orbit · scroll to zoom</div>
-
-</div><!-- /#scene-vh -->
-
-
-<!-- ================================================================
-     SCRIPT: THE CUBE (original module, with inactive-tab guard)
-     ================================================================ -->
 <script type="module">
 import * as THREE from 'three';
 import { Line2 } from 'three/addons/lines/Line2.js';
@@ -989,43 +192,29 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const SC = GF_SCENE.dark;
-const isLight = false;
-const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
-const COL = { bg:BGc.getHex(), bone:new THREE.Color(SC.unit).getHex(), dim:new THREE.Color(SC.muted).getHex(),
-              gold:new THREE.Color(SC.angle).getHex(), blue:new THREE.Color(SC.face).getHex(),
-              mag:new THREE.Color(SC.space).getHex(), green:new THREE.Color(SC.tri).getHex() };
-const HEX = { bone:SC.unit, blue:SC.face, mag:SC.space, gold:SC.angle, green:SC.tri };
-(()=>{ const sw=document.querySelectorAll('#legend .sw'); const c=[HEX.bone,HEX.blue,HEX.mag];
-  sw.forEach((s,i)=>{ s.style.background=c[i]; s.style.color=c[i]; }); })();
-const clean = new URLSearchParams(location.search).has('clean') || document.documentElement.classList.contains('gf-cover');
+const COL = { bg:0x0B0B0B, bone:0xF0EDE8, dim:0x8A8480, gold:0xC8A96E, blue:0x4A90D9, mag:0xE0349E, green:0x3CCB8E };
+const clean = new URLSearchParams(location.search).has('clean');
 if (clean) document.body.classList.add('clean');
 
 const stage = document.getElementById('stage');
-const renderer = new THREE.WebGLRenderer({ antialias:true });
+const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:false, powerPreference:'high-performance' });
 renderer.setClearColor(COL.bg, 1);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.NoToneMapping;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
 stage.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(COL.bg, 4.2, 11.5);
-const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 200);
+const camera = new THREE.PerspectiveCamera(36, 1, 0.01, 200);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.listenToKeyEvents(window);
-controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.82;
-controls.autoRotate = true; controls.autoRotateSpeed = 0.55;
-const C = new THREE.Vector3(0.5, 0.5, 0.5);
+controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.8;
+controls.autoRotate = true; controls.autoRotateSpeed = 0.7;
+const C = new THREE.Vector3(0.5, 0.5, 0.5);   // cube centre
 controls.target.copy(C);
 
 let W=1, H=1;
 const lineMats = [];
-
 function resize(){
-  W = stage.clientWidth || window.innerWidth;
-  H = stage.clientHeight || window.innerHeight;
+  W = stage.clientWidth || stage.offsetWidth || window.innerWidth;
+  H = stage.clientHeight || stage.offsetHeight || window.innerHeight;
   renderer.setSize(W,H);
   camera.aspect = W/H; camera.updateProjectionMatrix();
   lineMats.forEach(m => m.resolution.set(W,H));
@@ -1035,12 +224,12 @@ if (window.ResizeObserver){ new ResizeObserver(()=>{ const w=stage.clientWidth,h
 
 const V = (x,y,z)=> new THREE.Vector3(x,y,z);
 function colorFor(len){
-  if (Math.abs(len-Math.SQRT2) < 0.03) return {c:COL.blue, w:3.4};
-  if (Math.abs(len-Math.sqrt(3)) < 0.03) return {c:COL.mag, w:4.0};
-  if (Math.abs(len-1) < 0.03) return {c:COL.bone, w:3.0};
-  return {c:COL.dim, w:2.0};
+  if (Math.abs(len-Math.SQRT2) < 0.03) return {c:COL.blue, w:3.6};
+  if (Math.abs(len-Math.sqrt(3)) < 0.03) return {c:COL.mag, w:3.8};
+  if (Math.abs(len-1) < 0.03) return {c:COL.bone, w:3.2};
+  return {c:COL.dim, w:2.2};
 }
-function fatLine(a, b, parent, bloom){
+function fatLine(a, b, parent){
   const g = new LineGeometry(); g.setPositions([a.x,a.y,a.z, b.x,b.y,b.z]);
   const cc = colorFor(a.distanceTo(b));
   const m = new LineMaterial({ color:cc.c, linewidth:cc.w, transparent:true, opacity:1 });
@@ -1049,111 +238,45 @@ function fatLine(a, b, parent, bloom){
   (parent||scene).add(ln); lineMats.push(m);
   return { line:ln, mat:m };
 }
-function triFill(a,b,c, color, parent){  const g = new THREE.BufferGeometry();
+function triFill(a,b,c, color, parent){
+  const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute([a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z],3));
-  g.computeVertexNormals();
   const m = new THREE.MeshBasicMaterial({ color, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
   const mesh = new THREE.Mesh(g,m); mesh.renderOrder=-3; mesh.frustumCulled=false;
   (parent||scene).add(mesh);
   return m;
 }
-function tetraSolid(vs, color, parent){
-  const F=[[0,1,2],[0,1,3],[0,2,3],[1,2,3]]; const pos=[];
-  F.forEach(([a,b,c])=>{ pos.push(vs[a].x,vs[a].y,vs[a].z, vs[b].x,vs[b].y,vs[b].z, vs[c].x,vs[c].y,vs[c].z); });
-  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.computeVertexNormals();
-  const m=new THREE.MeshBasicMaterial({color,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
-  const mesh=new THREE.Mesh(g,m); mesh.renderOrder=-2; mesh.frustumCulled=false;
-  (parent||scene).add(mesh); return m;
-}
 
-function haloLine(a, b, parent){
-  const g = new LineGeometry(); g.setPositions([a.x,a.y,a.z, b.x,b.y,b.z]);
-  const m = new LineMaterial({ color:COL.mag, linewidth:9, transparent:true, opacity:0,
-    blending:THREE.AdditiveBlending, depthWrite:false, depthTest:true });
-  m.resolution.set(W,H);
-  const ln = new Line2(g, m); ln.computeLineDistances(); ln.frustumCulled=false; ln.renderOrder=6;
-  (parent||scene).add(ln); lineMats.push(m);
-  return m;
-}
-
+/* ---------- the six characteristic tetrahedra (orthoschemes) ----------
+   Cube [0,1]^3, shared space diagonal O(0,0,0) -> G(1,1,1).
+   Path O -> P1 (one axis) -> P2 (+ a second axis) -> G.
+   Each piece's proof-triangle face = O,P2,G  (sides 1 : √2 : √3).               */
 const O = V(0,0,0), G = V(1,1,1);
 const axes = [V(1,0,0), V(0,1,0), V(0,0,1)];
 const PIECES = [];
-const PAIRS = [];
 for (let i=0;i<3;i++) for (let j=0;j<3;j++){
   if (i===j) continue;
-  PIECES.push([O.clone(), axes[i].clone(), axes[i].clone().add(axes[j]), G.clone()]);
-  PAIRS.push([i,j]);
+  const P1 = axes[i].clone();
+  const P2 = axes[i].clone().add(axes[j]);
+  PIECES.push([O.clone(), P1, P2, G.clone()]);
 }
+// piece edges (6) and the proof-triangle face (O,P2,G)
 const EDGES = [[0,1],[1,2],[2,3],[0,2],[1,3],[0,3]];
 
 const pieceGroups = [];
 PIECES.forEach((vs, idx)=>{
   const grp = new THREE.Group(); scene.add(grp);
-  const edges = EDGES.map(([a,b],ei) => fatLine(vs[a], vs[b], grp, ei===5));
-  const halo = haloLine(vs[0], vs[3], grp);
+  const edges = EDGES.map(([a,b]) => fatLine(vs[a], vs[b], grp));
+  // proof-triangle face green; the opposite face (O,P1,G) faint bone
   const proofFace = triFill(vs[0], vs[2], vs[3], COL.green, grp);
   const backFace  = triFill(vs[0], vs[1], vs[3], COL.bone, grp);
-  const solid = tetraSolid(vs, COL.gold, grp);
   const centroid = vs.reduce((s,p)=>s.clone? s.clone().add(p):s.add(p)).multiplyScalar(0.25);
   const dir = centroid.clone().sub(C).normalize();
-  grp.userData = { edges, halo, proofFace, backFace, solid, dir, pair:PAIRS[idx] };
+  grp.userData = { edges, proofFace, backFace, dir, start: idx*0.045 };
   pieceGroups.push(grp);
 });
 
-function glowNode(pos, hex, r){
-  const m = new THREE.MeshBasicMaterial({ color:hex, transparent:true, opacity:0 });
-  const s = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 20), m);
-  s.position.copy(pos); s.frustumCulled=false;
-  scene.add(s); return m;
-}
-const nodeO = glowNode(O, COL.gold, 0.022);
-const nodeG = glowNode(G, COL.gold, 0.022);
-
-function angleArc(){
-  const p0 = PIECES[0];
-  const u = p0[2].clone().sub(p0[0]).normalize();
-  const v = p0[3].clone().sub(p0[0]).normalize();
-  const n = u.clone().cross(v).normalize();
-  const total = Math.acos(THREE.MathUtils.clamp(u.dot(v),-1,1));
-  const N = 40, R = 0.30, pts = [];
-  for (let k=0;k<=N;k++){
-    const a = total * k/N;
-    const dir = u.clone().applyAxisAngle(n, a).multiplyScalar(R);
-    pts.push(dir.x,dir.y,dir.z);
-  }
-  const g = new LineGeometry(); g.setPositions(pts);
-  const m = new LineMaterial({ color:COL.gold, linewidth:2.4, transparent:true, opacity:0 });
-  m.resolution.set(W,H);
-  const ln = new Line2(g,m); ln.computeLineDistances(); ln.frustumCulled=false;
-  pieceGroups[0].add(ln);
-  return m;
-}
-const arcMat = angleArc();
-
-function rightAngleMarker(){
-  const p0=PIECES[0]; const P2=p0[2], P1=p0[1], Ov=p0[0];
-  const a=P1.clone().sub(P2).normalize().multiplyScalar(0.12);
-  const b=Ov.clone().sub(P2).normalize().multiplyScalar(0.12);
-  const q1=P2.clone().add(a), q2=P2.clone().add(a).add(b), q3=P2.clone().add(b);
-  const pts=[q1.x,q1.y,q1.z, q2.x,q2.y,q2.z, q3.x,q3.y,q3.z];
-  const g=new LineGeometry(); g.setPositions(pts);
-  const m=new LineMaterial({color:COL.bone,linewidth:2,transparent:true,opacity:0}); m.resolution.set(W,H);
-  const ln=new Line2(g,m); ln.computeLineDistances(); ln.frustumCulled=false; pieceGroups[0].add(ln);
-  return m;
-}
-const rightMat = rightAngleMarker();
-
-const sortMat = new THREE.MeshBasicMaterial({ color:COL.gold, transparent:true, opacity:0 });
-const sortPoint = new THREE.Mesh(new THREE.SphereGeometry(0.03,24,24), sortMat);
-sortPoint.frustumCulled=false; scene.add(sortPoint);
-const sortHaloMat = new THREE.MeshBasicMaterial({ color:COL.gold, transparent:true, opacity:0, blending:THREE.AdditiveBlending, depthWrite:false });
-const sortHalo = new THREE.Mesh(new THREE.SphereGeometry(0.058,24,24), sortHaloMat);
-sortHalo.frustumCulled=false; scene.add(sortHalo);
-function guideLine(){ const m=new THREE.LineDashedMaterial({color:COL.gold,transparent:true,opacity:0,dashSize:0.04,gapSize:0.03});
-  const ls=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0,0,0),V(0,0,0)]),m); ls.frustumCulled=false; scene.add(ls); return ls; }
-const guides=[guideLine(),guideLine(),guideLine()];
-
+/* ---------- mirror / array cells (face-adjacent ±X ±Y ±Z) ---------- */
 function makeMirrorCell(ci,cj,ck){
   function ct(p){
     let x=p.x,y=p.y,z=p.z;
@@ -1167,7 +290,7 @@ function makeMirrorCell(ci,cj,ck){
   PIECES.forEach(vs=>{
     const rv=vs.map(p=>ct(p));
     const grp=new THREE.Group(); scene.add(grp);
-    const edges=EDGES.map(([a,b])=>fatLine(rv[a],rv[b],grp,false));
+    const edges=EDGES.map(([a,b])=>fatLine(rv[a],rv[b],grp));
     const proofFace=triFill(rv[0],rv[2],rv[3],COL.green,grp);
     const backFace =triFill(rv[0],rv[1],rv[3],COL.bone,grp);
     const cen=rv.reduce((s,p)=>s.clone().add(p)).multiplyScalar(0.25);
@@ -1178,6 +301,7 @@ function makeMirrorCell(ci,cj,ck){
   });
   return {ci,cj,ck,groups};
 }
+/* ---------- per-axis array pool (up to 5 cells per direction = 30 total) ---------- */
 const AXIS_DIRS = [
   {key:'xPos',ci:1,cj:0,ck:0},{key:'xNeg',ci:-1,cj:0,ck:0},
   {key:'yPos',ci:0,cj:1,ck:0},{key:'yNeg',ci:0,cj:-1,ck:0},
@@ -1192,138 +316,134 @@ AXIS_DIRS.forEach(d=>{
   }
 });
 
+/* ---------- the assembled cube outline (12 edges, bone) ---------- */
 const cubeGroup = new THREE.Group(); scene.add(cubeGroup);
-const cubeOutlineMats = (()=>{
-  const c=[]; for(let x=0;x<2;x++) for(let y=0;y<2;y++) for(let z=0;z<2;z++) c.push(V(x,y,z));
-  const E=[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
-  return E.map(([a,b])=> fatLine(c[a],c[b],cubeGroup,false).mat);
-})();
+function cubeEdges(origin, parent, fat){
+  const c = [];
+  for (let x=0;x<2;x++) for (let y=0;y<2;y++) for (let z=0;z<2;z++) c.push(V(origin.x+x, origin.y+y, origin.z+z));
+  const E = [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+  const out = [];
+  E.forEach(([a,b])=>{
+    if (fat){ out.push(fatLine(c[a], c[b], parent).mat); }
+  });
+  return out;
+}
+const cubeOutlineMats = cubeEdges(V(0,0,0), cubeGroup, true);
 
+/* ---------- neighbour cubes (space-filling), thin & faint ---------- */
 const fillGroup = new THREE.Group(); scene.add(fillGroup);
 const neighbours = [];
-{
-  const c=[]; for(let x=0;x<2;x++) for(let y=0;y<2;y++) for(let z=0;z<2;z++) c.push([x,y,z]);
+const cubeSeg = (() => { // 12-edge index list for LineSegments
+  const c=[]; for (let x=0;x<2;x++) for(let y=0;y<2;y++) for(let z=0;z<2;z++) c.push([x,y,z]);
   const E=[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
-  for(let i=-2;i<=2;i++) for(let j=-2;j<=2;j++) for(let k=-2;k<=2;k++){
-    if(i===0&&j===0&&k===0) continue;
-    const pos=[];
-    E.forEach(([a,b])=>{ const A=c[a],B=c[b]; pos.push(A[0]+i,A[1]+j,A[2]+k, B[0]+i,B[1]+j,B[2]+k); });
-    const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
-    const m=new THREE.LineBasicMaterial({ color:COL.bone, transparent:true, opacity:0, fog:true });
-    const ls=new THREE.LineSegments(g,m); ls.frustumCulled=false; fillGroup.add(ls);
-    neighbours.push({ mat:m, dist:Math.max(Math.abs(i),Math.abs(j),Math.abs(k)) });
-  }
+  return {c,E};
+})();
+for (let i=-2;i<=2;i++) for (let j=-2;j<=2;j++) for (let k=-2;k<=2;k++){
+  if (i===0 && j===0 && k===0) continue;
+  const pos=[];
+  cubeSeg.E.forEach(([a,b])=>{
+    const A=cubeSeg.c[a], B=cubeSeg.c[b];
+    pos.push(A[0]+i,A[1]+j,A[2]+k, B[0]+i,B[1]+j,B[2]+k);
+  });
+  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  const m=new THREE.LineBasicMaterial({ color:COL.bone, transparent:true, opacity:0 });
+  const ls=new THREE.LineSegments(g,m); ls.frustumCulled=false; fillGroup.add(ls);
+  neighbours.push({ mat:m, dist:Math.max(Math.abs(i),Math.abs(j),Math.abs(k)) });
 }
 
+/* ---------- angle / length labels (toggleable) ---------- */
 function labelSprite(text, hex){
   const font='700 92px "Space Mono", monospace';
   const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
-  const pad=20, w=Math.ceil(meas.measureText(text).width)+pad*2, h=128;
-  const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
-  const x=cv.getContext('2d'); x.font=font; x.textBaseline='middle'; x.textAlign='center';
-  x.fillStyle=SC.halo; const r=14;
+  const pad=18, w=Math.ceil(meas.measureText(text).width)+pad*2, h=128;
+  const c=document.createElement('canvas'); c.width=w; c.height=h;
+  const x=c.getContext('2d'); x.font=font; x.textBaseline='middle'; x.textAlign='center';
+  x.fillStyle='rgba(11,11,11,0.66)'; const r=12;
   x.beginPath(); x.moveTo(r,6); x.arcTo(w-2,6,w-2,h-6,r); x.arcTo(w-2,h-6,2,h-6,r); x.arcTo(2,h-6,2,6,r); x.arcTo(2,6,w-2,6,r); x.fill();
   x.fillStyle=hex; x.fillText(text, w/2, h/2+4);
-  const tex=new THREE.CanvasTexture(cv); tex.minFilter=THREE.LinearFilter;
+  const tex=new THREE.CanvasTexture(c); tex.minFilter=THREE.LinearFilter;
   const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthWrite:false,depthTest:false}));
   sp.scale.set(0.16*w/h, 0.16, 1); sp.renderOrder=30;
   return sp;
 }
+const HEX={bone:'#F0EDE8',blue:'#4A90D9',mag:'#E0349E',gold:'#C8A96E'};
 const labels=[];
 function addLabel(text,hex,pos){ const sp=labelSprite(text,hex); sp.position.copy(pos); cubeGroup.add(sp); labels.push(sp); }
-addLabel('1',      HEX.bone, V(0.5,-0.05,-0.06));
-addLabel('√2',     HEX.blue, V(0.5,0.5,-0.11));
-addLabel('√3',     HEX.mag,  V(0.68,0.54,0.5));
-addLabel('35.25°', HEX.gold, V(0.27,0.15,0.30));
+addLabel('1',     HEX.bone, V(0.5,-0.04,-0.06));
+addLabel('√2',    HEX.blue, V(0.5,0.5,-0.10));
+addLabel('√3',    HEX.mag,  V(0.66,0.52,0.5));
+addLabel('35.26°', HEX.gold, V(0.30,0.12,0.24));
 
+/* ---------- captions ---------- */
 const capStack = document.getElementById('capstack');
 function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capStack.appendChild(d); return d; }
 const CAPS = [
-  cap('One part · the <b>proof triangle</b>, stood up in space'),
-  cap('Six identical parts · each a <b>characteristic tetrahedron</b> of the cube'),
-  cap('Six parts close into <b>one cube</b>'),
-  cap('Pull it apart · every face a <b>√2 fold</b>, every part the same'),
-  cap('One module → <b>the whole of space</b>'),
-  cap('Mirror across every face · each neighbour <b>the same six parts, reflected</b>'),
+  { el: cap('One part · the <b>proof triangle</b>, stood up in space') },
+  { el: cap('Add the parts · each shares the <b>space diagonal · √3</b>') },
+  { el: cap('Six parts close into <b>one cube</b>') },
+  { el: cap('Pull it apart · six identical parts, every face a <b>√2 fold</b>') },
+  { el: cap('One module → <b>the whole of space</b>') },
+  { el: cap('Mirror across every face · each neighbor <b>the same six parts, reflected</b>') },
 ];
 
-function frameDist(radius){ return radius / Math.sin((camera.fov*Math.PI/180)/2); }
-let baseDist = frameDist(1.05);
+/* ---------- camera framing ---------- */
+function frame(radius){
+  const dist = radius / Math.sin((camera.fov*Math.PI/180)/2);
+  camera.near = dist/100; camera.far = dist*20; camera.updateProjectionMatrix();
+  return dist;
+}
+let baseDist = frame(1.05);
+// place camera once
+camera.position.copy(C).add(new THREE.Vector3(0.62,0.5,0.86).normalize().multiplyScalar(baseDist));
+controls.update();
 
+/* ---------- interactive state ---------- */
 const easeIO = x => x<0.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
 const clamp01 = x => Math.max(0, Math.min(1, x));
-const lerp = (a,b,t)=> a+(b-a)*t;
 const FLY = 1.9, EXPLODE_MAX = 1.5;
-const STATE = { parts:0, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0, xNeg:0, yPos:0, yNeg:0, zPos:0, zNeg:0,
-                sort:0, px:0.72, py:0.44, pz:0.19, spiral:0, volume:1 };
+const STATE = { parts:0, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0, xNeg:0, yPos:0, yNeg:0, zPos:0, zNeg:0 };
 const AXIS_IDS = [{key:'xPos',id:'xpos'},{key:'xNeg',id:'xneg'},{key:'yPos',id:'ypos'},{key:'yNeg',id:'yneg'},{key:'zPos',id:'zpos'},{key:'zNeg',id:'zneg'}];
 
 let userTookOver = false;
-controls.addEventListener('start', ()=>{ userTookOver = true; controls.autoRotate = false; cancelCamTween(); syncToggles(); });
+controls.addEventListener('start', ()=>{ userTookOver = true; controls.autoRotate = false; syncToggles(); });
 
-const $ = id => document.getElementById(id);
-const scrub=$('scrub'), tlabel=$('tlabel'), playBtn=$('play'), speedSel=$('speed');
-const sParts=$('s-parts'), sExplode=$('s-explode'), sSpace=$('s-space');
-const vParts=$('v-parts'), vExplode=$('v-explode'), vSpace=$('v-space');
-const tgFaces=$('tg-faces'), tgAngles=$('tg-angles'), tgSpin=$('tg-spin');
-const sAfade=$('s-afade'), vAfade=$('v-afade');
-const tgSort=$('tg-sort'), tgSpiral=$('tg-spiral'), tgVol=$('tg-vol');
-const sortBox=$('sortbox'), sortRead=$('sortread'), volBox=$('volume'), volN=$('vol-n'), spiralBox=$('spiral');
-const sPx=$('s-px'), sPy=$('s-py'), sPz=$('s-pz'), vPx=$('v-px'), vPy=$('v-py'), vPz=$('v-pz');
-
-function partForPoint(x,y,z){
-  const c=[{a:0,v:x},{a:1,v:y},{a:2,v:z}].sort((p,q)=>q.v-p.v);
-  const i=c[0].a, j=c[1].a;
-  return pieceGroups.findIndex(g=>g.userData.pair && g.userData.pair[0]===i && g.userData.pair[1]===j);
-}
-const AXNAME=['x','y','z'], AXHEX=[HEX.blue,HEX.green,HEX.mag];
-function updateSortReadout(){
-  const x=STATE.px,y=STATE.py,z=STATE.pz;
-  const c=[{a:0,v:x},{a:1,v:y},{a:2,v:z}].sort((p,q)=>q.v-p.v);
-  const partIdx=partForPoint(x,y,z);
-  const tok=c.map(o=>`<span class="tok" style="color:${AXHEX[o.a]}">${AXNAME[o.a]}</span> <span style="color:var(--tx-dim)">${o.v.toFixed(2)}</span>`);
-  sortRead.innerHTML = `<div class="ineq">${tok[0]}<span class="op">≥</span>${tok[1]}<span class="op">≥</span>${tok[2]}</div>`+
-    `<div class="res">→ Part ${partIdx+1} <span>of 6 · contains this point</span></div>`;
-  return partIdx;
-}
+const scrub = document.getElementById('scrub');
+const tlabel = document.getElementById('tlabel');
+const playBtn = document.getElementById('play');
+const speedSel = document.getElementById('speed');
+const sParts = document.getElementById('s-parts');
+const sExplode = document.getElementById('s-explode');
+const sSpace = document.getElementById('s-space');
+const vParts = document.getElementById('v-parts');
+const vExplode = document.getElementById('v-explode');
+const vSpace = document.getElementById('v-space');
+const tgFaces = document.getElementById('tg-faces');
+const tgAngles = document.getElementById('tg-angles');
+const tgSpin = document.getElementById('tg-spin');
+const sAfade = document.getElementById('s-afade');
+const vAfade = document.getElementById('v-afade');
 
 function render(){
-  const sortIdx = STATE.sort ? partForPoint(STATE.px,STATE.py,STATE.pz) : -1;
   pieceGroups.forEach((g,i)=>{
     const u = g.userData;
-    const local = clamp01(STATE.parts - i);
+    const local = clamp01(STATE.parts - i);                 // arrival of part i (0..1)
     const e = easeIO(local);
-    const off = (1-e)*FLY + STATE.explode*EXPLODE_MAX*e;
+    const off = (1-e)*FLY + STATE.explode*EXPLODE_MAX*e;     // fly-in remaining + manual explode
     g.position.copy(u.dir).multiplyScalar(off);
     g.visible = local > 0.001;
-    const dim = (STATE.sort && i!==sortIdx) ? 0.16 : 1;
-    u.edges.forEach(ed=> ed.mat.opacity = 0.96*local*dim);
-    u.halo.opacity = 0.14*local*dim;
+    u.edges.forEach(ed=> ed.mat.opacity = 0.96*local);
     const faceFade = 1 - clamp01(STATE.space/2)*0.45;
-    u.proofFace.opacity = (STATE.faces?0.22:0)*local*faceFade*(STATE.sort?dim:1);
-    u.backFace.opacity  = (STATE.faces?0.06:0)*local*dim;
-    u.solid.opacity = (STATE.sort && i===sortIdx) ? 0.34*local : 0;
+    u.proofFace.opacity = (STATE.faces?0.20:0)*local*faceFade;
+    u.backFace.opacity  = (STATE.faces?0.06:0)*local;
   });
   const cubeOp = clamp01((STATE.parts - 5.4)/0.6);
   cubeOutlineMats.forEach(m=> m.opacity = 0.5*cubeOp);
-  const showAng = STATE.angles ? 0.95 * clamp01(STATE.parts) : 0;
-  labels.forEach(l=> l.material.opacity = showAng);
-  arcMat.opacity = showAng; rightMat.opacity = showAng;
-  const nodeOp = 0.9 * clamp01(STATE.parts) * (STATE.sort?0.4:1);
-  nodeO.opacity = nodeOp; nodeG.opacity = nodeOp;
-  const sop = STATE.sort ? 1 : 0;
-  sortPoint.position.set(STATE.px,STATE.py,STATE.pz); sortHalo.position.copy(sortPoint.position);
-  sortMat.opacity = sop; sortHaloMat.opacity = 0.5*sop;
-  if(STATE.sort){
-    const P=sortPoint.position;
-    const ends=[V(P.x,0,0),V(0,P.y,0),V(0,0,P.z)];
-    guides.forEach((ls,k)=>{ ls.geometry.setFromPoints([P,ends[k]]); ls.computeLineDistances();
-      ls.material.opacity=0.5; });
-  } else guides.forEach(ls=> ls.material.opacity=0);
+  labels.forEach(l=> l.material.opacity = STATE.angles ? 0.95*cubeOp : 0);
   neighbours.forEach(n=>{
     const reveal = clamp01(STATE.space - (n.dist-1));
-    n.mat.opacity = 0.16*(n.dist===1?1:0.6)*easeIO(reveal)*cubeOp;
+    n.mat.opacity = 0.14*(n.dist===1?1:0.6)*easeIO(reveal)*cubeOp;
   });
+  // per-axis array cells
   const aFade = easeIO(clamp01(STATE.arrayFade)) * cubeOp;
   arrayPool.forEach(({key,dist,groups})=>{
     const count = STATE[key]||0;
@@ -1335,1219 +455,115 @@ function render(){
       g.visible=local>0.001&&mop>0.001;
       if(g.visible){
         g.position.copy(g.userData.dir).multiplyScalar(off);
-        g.userData.edges.forEach(ed=>ed.mat.opacity=0.6*mop*local);
+        g.userData.edges.forEach(ed=>ed.mat.opacity=0.60*mop*local);
         g.userData.proofFace.opacity=(STATE.faces?0.13:0)*mop*local;
         g.userData.backFace.opacity =(STATE.faces?0.04:0)*mop*local;
       }
     });
   });
-  volBox.classList.toggle('hide', !STATE.volume);
-  if(STATE.volume){
-    const count = Math.max(0,Math.min(6,Math.round(STATE.parts)));
-    volN.textContent = `${count} × 1/6`;
-    const eq = volBox.querySelector('.eq');
-    eq.textContent = '= '+(count===6?'1':(count===0?'0':count+'/6'));
-  }
   updateCaption();
 }
 function updateCaption(){
   let idx = 0;
-  const arr = STATE.xPos+STATE.xNeg+STATE.yPos+STATE.yNeg+STATE.zPos+STATE.zNeg;
   if (STATE.space > 0.04) idx = 4;
-  else if (STATE.arrayFade>0.05 && arr>0) idx = 5;
+  else if (STATE.arrayFade>0.05&&(STATE.xPos+STATE.xNeg+STATE.yPos+STATE.yNeg+STATE.zPos+STATE.zNeg)>0) idx = 5;
   else if (STATE.explode > 0.05) idx = 3;
   else if (STATE.parts >= 5.85) idx = 2;
   else if (STATE.parts >= 1.4) idx = 1;
-  CAPS.forEach((c,i)=> c.style.opacity = (i===idx)?1:0);
+  CAPS.forEach((c,i)=> c.el.style.opacity = (i===idx)?1:0);
 }
 function syncToggles(){
   tgFaces.classList.toggle('off', !STATE.faces);
   tgAngles.classList.toggle('off', !STATE.angles);
   tgSpin.classList.toggle('off', !controls.autoRotate);
-  tgSort.classList.toggle('off', !STATE.sort);
-  tgVol.classList.toggle('off', !STATE.volume);
-  tgSpiral.classList.toggle('off', !STATE.spiral);
+  tgFaces.setAttribute('aria-pressed', String(!!STATE.faces));
+  tgAngles.setAttribute('aria-pressed', String(!!STATE.angles));
+  tgSpin.setAttribute('aria-pressed', String(!!controls.autoRotate));
+
 }
 function syncSliders(){
-  sParts.value=STATE.parts; vParts.textContent=Math.round(STATE.parts)+' / 6';
-  sExplode.value=STATE.explode; vExplode.textContent=Math.round(STATE.explode*100)+'%';
-  sSpace.value=STATE.space; vSpace.textContent=STATE.space<0.04?'1³':(STATE.space<=1.02?'3³':'5³');
+  sParts.value = STATE.parts;   vParts.textContent = Math.round(STATE.parts)+' / 6';
+  sExplode.value = STATE.explode; vExplode.textContent = Math.round(STATE.explode*100)+'%';
+  sSpace.value = STATE.space;   vSpace.textContent = STATE.space<0.04 ? '1³' : (STATE.space<=1.02 ? '3³' : '5³');
   sAfade.value=STATE.arrayFade; vAfade.textContent=Math.round(STATE.arrayFade*100)+'%';
-  AXIS_IDS.forEach(({key,id})=>{ const s=$('s-'+id),v=$('v-'+id); if(s)s.value=STATE[key]; if(v)v.textContent=STATE[key]; });
+  AXIS_IDS.forEach(({key,id})=>{ const s=document.getElementById('s-'+id),v=document.getElementById('v-'+id); if(s)s.value=STATE[key]; if(v)v.textContent=STATE[key]; });
   syncToggles();
 }
 
-const CHAPTERS = [
-  { state:{ parts:1, explode:0, space:0, faces:1, angles:1, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
-    dir:new THREE.Vector3(0.34,0.30,1.0).normalize(), radius:0.74, tEnd:0.25 },
-  { state:{ parts:1, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
-    dir:new THREE.Vector3(0.85,0.55,0.95).normalize(), radius:0.92, tEnd:0.5 },
-  { state:{ parts:6, explode:0, space:0, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
-    dir:new THREE.Vector3(0.62,0.5,0.86).normalize(), radius:1.18, tEnd:0.75 },
-  { state:{ parts:6, explode:0, space:2, faces:1, angles:0, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 },
-    dir:new THREE.Vector3(0.58,0.46,0.9).normalize(), radius:2.7, tEnd:1.0 },
-];
-let activeChapter = -1;
-const chapEls = [...document.querySelectorAll('.chap')];
-function markChapter(i){ activeChapter=i; chapEls.forEach((el,k)=> el.classList.toggle('active', k===i)); }
-
-let tween = null;
-function cancelCamTween(){ if(tween) tween.killCam = true; }
-function camPose(ch){ return { pos:C.clone().add(ch.dir.clone().multiplyScalar(baseDist*ch.radius)), tgt:C.clone() }; }
-
-function goToChapter(i, opts={}){
-  const ch = CHAPTERS[i]; if(!ch) return;
-  markChapter(i);
-  setPlaying(false);
-  const from = { state:{...STATE}, pos:camera.position.clone(), tgt:controls.target.clone() };
-  const goal = camPose(ch);
-  const toState = ch.state;
-  userTookOver = false; controls.autoRotate = false;
-  tween = { t:0, dur: opts.instant?0.0001:1.5, from, toState, goalPos:goal.pos, goalTgt:goal.tgt, killCam:false, onDone:opts.onDone };
-  tt = ch.tEnd; scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
-}
-function stepTween(dt){
-  if(!tween) return;
-  tween.t = Math.min(1, tween.t + dt/tween.dur);
-  const e = easeIO(tween.t);
-  ['parts','explode','space','arrayFade','xPos','xNeg','yPos','yNeg','zPos','zNeg'].forEach(k=>{
-    STATE[k] = lerp(tween.from.state[k], tween.toState[k], e);
-  });
-  STATE.faces = tween.toState.faces; STATE.angles = tween.toState.angles;
-  if(!tween.killCam){
-    camera.position.lerpVectors(tween.from.pos, tween.goalPos, e);
-    controls.target.lerpVectors(tween.from.tgt, tween.goalTgt, e);
-  }
-  render(); syncSliders();
-  if(tween.t>=1){ const cb=tween.onDone; tween=null; if(!userTookOver) controls.autoRotate=true; if(cb) cb(); }
-}
-
-chapEls.forEach(el=> el.onclick = ()=>{ playing=false; setPlaying(false); goToChapter(+el.dataset.ch); });
-$('prev').onclick = ()=> goToChapter(Math.max(0, (activeChapter<0?0:activeChapter)-1));
-$('next').onclick = ()=> goToChapter(Math.min(3, (activeChapter<0?0:activeChapter)+1));
-
+/* ---------- guided tour (scrubbable) ---------- */
 function tourState(tt){
   const parts = Math.min(6, (tt/0.40)*6);
   let explode = 0;
-  if (tt>0.52 && tt<0.68) explode = Math.sin((tt-0.52)/0.16*Math.PI)*0.78;
-  const space = tt>0.80 ? clamp01((tt-0.80)/0.20)*2 : 0;
+  if (tt>0.52 && tt<0.68) explode = Math.sin((tt-0.52)/0.16*Math.PI)*0.80;
+  const inArr = tt>=0.68 && tt<0.88;
+  const arrayFade = inArr ? clamp01((tt-0.68)/0.10)*(tt>0.82?clamp01(1-(tt-0.82)/0.06):1) : 0;
+  const cnt = inArr ? 1 : 0;
+  const space = tt>0.88 ? clamp01((tt-0.88)/0.12)*2 : 0;
   const angles = (tt>0.42 && tt<0.66) ? 1 : 0;
-  return { parts, explode, space, faces:1, angles, arrayFade:0, xPos:0,xNeg:0,yPos:0,yNeg:0,zPos:0,zNeg:0 };
+  return { parts, explode, space, faces:1, angles, arrayFade, xPos:cnt,xNeg:cnt,yPos:cnt,yNeg:cnt,zPos:cnt,zNeg:cnt };
 }
-function chapterForT(tt){ for(let i=0;i<CHAPTERS.length;i++){ if(tt <= CHAPTERS[i].tEnd+0.001) return i; } return 3; }
 let tt = 0, playing = true, speed = 1, last = performance.now();
-const DURATION = 30;
-function setPlaying(p){ playing = p; playBtn.textContent = p ? '❙❙' : '►'; }
+const DURATION = 26; // seconds at 1x — the unhurried tour
+function setPlaying(p){ playing = p; playBtn.textContent = p ? '❙❙ Pause' : '► Play'; }
 function setTour(v){ tt = clamp01(v); Object.assign(STATE, tourState(tt));
-  scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s'; markChapter(chapterForT(tt)); render(); syncSliders(); }
+  scrub.value = Math.round(tt*1000); tlabel.textContent = Math.round(tt*100)+'%'; render(); syncSliders(); }
 
-playBtn.onclick = ()=>{ cancelCamTween(); tween=null; if(!userTookOver) controls.autoRotate=true; setPlaying(!playing); };
-speedSel.onchange = ()=> speed=parseFloat(speedSel.value);
-scrub.oninput = ()=>{ cancelCamTween(); tween=null; setPlaying(false); setTour(scrub.value/1000); };
-
-function manual(){ if(playing) setPlaying(false); cancelCamTween(); tween=null; }
-sParts.oninput   = ()=>{ manual(); STATE.parts=parseFloat(sParts.value); vParts.textContent=Math.round(STATE.parts)+' / 6'; render(); };
-sExplode.oninput = ()=>{ manual(); STATE.explode=parseFloat(sExplode.value); vExplode.textContent=Math.round(STATE.explode*100)+'%'; render(); };
-sSpace.oninput   = ()=>{ manual(); STATE.space=parseFloat(sSpace.value); vSpace.textContent=STATE.space<0.04?'1³':(STATE.space<=1.02?'3³':'5³'); render(); };
-sAfade.oninput   = ()=>{ manual(); STATE.arrayFade=parseFloat(sAfade.value); vAfade.textContent=Math.round(STATE.arrayFade*100)+'%'; render(); };
-AXIS_IDS.forEach(({key,id})=>{ const sl=$('s-'+id),vl=$('v-'+id);
-  sl.oninput=()=>{ manual(); STATE[key]=parseInt(sl.value); vl.textContent=sl.value; render(); }; });
-$('btn-cleararray').onclick=()=>{ manual(); AXIS_IDS.forEach(({key})=>STATE[key]=0); STATE.arrayFade=0; syncSliders(); render(); };
-tgFaces.onclick  = ()=>{ STATE.faces=STATE.faces?0:1; syncToggles(); render(); };
-tgAngles.onclick = ()=>{ STATE.angles=STATE.angles?0:1; syncToggles(); render(); };
-tgSpin.onclick   = ()=>{ controls.autoRotate=!controls.autoRotate; if(controls.autoRotate) userTookOver=false; syncToggles(); };
-
-tgVol.onclick = ()=>{ STATE.volume=STATE.volume?0:1; syncToggles(); render(); };
-tgSort.onclick = ()=>{
-  manual(); STATE.sort=STATE.sort?0:1;
-  sortBox.style.display = STATE.sort? 'flex':'none';
-  if(STATE.sort){ STATE.parts=6; STATE.explode=0; STATE.angles=0; STATE.space=0; STATE.arrayFade=0; updateSortReadout(); }
-  syncToggles(); syncSliders(); render();
+playBtn.onclick = ()=> setPlaying(!playing);
+speedSel.onchange = ()=> speed = parseFloat(speedSel.value);
+scrub.oninput = ()=>{ setPlaying(false); setTour(scrub.value/1000); };
+document.getElementById('replay').onclick = ()=>{
+  userTookOver = false; controls.autoRotate = true; controls.target.copy(C);
+  baseDist = frame(1.05);
+  camera.position.copy(C).add(new THREE.Vector3(0.62,0.5,0.86).normalize().multiplyScalar(baseDist));
+  STATE.arrayFade=0; STATE.xPos=0; STATE.xNeg=0; STATE.yPos=0; STATE.yNeg=0; STATE.zPos=0; STATE.zNeg=0;
+  setTour(0); setPlaying(true);
 };
-[ ['s-px','px','v-px'],['s-py','py','v-py'],['s-pz','pz','v-pz'] ].forEach(([sid,key,vid])=>{
-  $(sid).oninput=()=>{ manual(); STATE[key]=parseFloat($(sid).value); $(vid).textContent=STATE[key].toFixed(2).slice(1);
-    if(!STATE.sort){ STATE.sort=1; sortBox.style.display='flex'; STATE.parts=6; }
-    updateSortReadout(); syncToggles(); render(); };
+
+/* ---------- manual controls ---------- */
+function manual(){ if (playing) setPlaying(false); }
+sParts.oninput   = ()=>{ manual(); STATE.parts=parseFloat(sParts.value);   vParts.textContent=Math.round(STATE.parts)+' / 6'; render(); };
+sExplode.oninput = ()=>{ manual(); STATE.explode=parseFloat(sExplode.value); vExplode.textContent=Math.round(STATE.explode*100)+'%'; render(); };
+sSpace.oninput   = ()=>{ manual(); STATE.space=parseFloat(sSpace.value);   vSpace.textContent=STATE.space<0.04?'1³':(STATE.space<=1.02?'3³':'5³'); render(); };
+sAfade.oninput = ()=>{ manual(); STATE.arrayFade=parseFloat(sAfade.value); vAfade.textContent=Math.round(STATE.arrayFade*100)+'%'; render(); };
+AXIS_IDS.forEach(({key,id})=>{
+  const sl=document.getElementById('s-'+id), vl=document.getElementById('v-'+id);
+  sl.oninput=()=>{ manual(); STATE[key]=parseInt(sl.value); vl.textContent=sl.value; render(); };
 });
-tgSpiral.onclick = ()=>{ STATE.spiral=STATE.spiral?0:1;
-  spiralBox.style.display = STATE.spiral ? 'block' : 'none';
-  document.body.classList.toggle('spiral-on', !!STATE.spiral);
-  syncToggles(); };
+document.getElementById('btn-cleararray').onclick=()=>{ manual(); AXIS_IDS.forEach(({key})=>STATE[key]=0); STATE.arrayFade=0; syncSliders(); render(); };
+tgFaces.onclick  = ()=>{ manual(); STATE.faces = STATE.faces?0:1; syncToggles(); render(); };
+tgAngles.onclick = ()=>{ manual(); STATE.angles = STATE.angles?0:1; syncToggles(); render(); };
+tgSpin.onclick   = ()=>{ controls.autoRotate = !controls.autoRotate; if(controls.autoRotate) userTookOver=false; syncToggles(); };
 
-(function buildSpiral(){
-  const N=8, pts=[]; let ang=0;
-  for(let n=1;n<=N;n++){
-    const r=Math.sqrt(n);
-    pts.push({n, x:r*Math.cos(ang), y:r*Math.sin(ang), r});
-    ang += Math.atan(1/Math.sqrt(n));
-  }
-  const all=[{x:0,y:0},...pts];
-  let minX=Math.min(...all.map(p=>p.x)), maxX=Math.max(...all.map(p=>p.x));
-  let minY=Math.min(...all.map(p=>p.y)), maxY=Math.max(...all.map(p=>p.y));
-  const VW=288, VH=158, pad=24;
-  const sc=Math.min((VW-2*pad)/(maxX-minX),(VH-2*pad)/(maxY-minY));
-  const ox=pad-minX*sc + (VW-2*pad-(maxX-minX)*sc)/2;
-  const oy=VH-pad+minY*sc - (VH-2*pad-(maxY-minY)*sc)/2;
-  const TX=p=>(ox+p.x*sc).toFixed(1), TY=p=>(oy-p.y*sc).toFixed(1);
-  const O0={x:0,y:0};
-  let s=`<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
-  s+=`<polygon points="${TX(O0)},${TY(O0)} ${TX(pts[1])},${TY(pts[1])} ${TX(pts[2])},${TY(pts[2])}" fill="${HEX.green}" fill-opacity="0.13"/>`;
-  for(let i=0;i<pts.length-1;i++){
-    const hot=(i===1);
-    s+=`<line x1="${TX(pts[i])}" y1="${TY(pts[i])}" x2="${TX(pts[i+1])}" y2="${TY(pts[i+1])}" stroke="${hot?HEX.gold:'rgba(138,132,128,.42)'}" stroke-width="${hot?2:1.2}"/>`;
-  }
-  pts.forEach((p,i)=>{
-    let col='rgba(138,132,128,.5)', w=1;
-    if(p.n===2){col=HEX.blue;w=2.2;} if(p.n===3){col=HEX.mag;w=2.6;}
-    s+=`<line x1="${TX(O0)}" y1="${TY(O0)}" x2="${TX(p)}" y2="${TY(p)}" stroke="${col}" stroke-width="${w}"/>`;
-  });
-  s+=`<circle cx="${TX(O0)}" cy="${TY(O0)}" r="3" fill="${HEX.gold}"/>`;
-  pts.forEach(p=>{
-    const big=(p.n===2||p.n===3);
-    const lx=ox+p.x*sc*1.13, ly=oy-p.y*sc*1.13;
-    const col=p.n===2?HEX.blue:p.n===3?HEX.mag:'rgba(160,154,146,.85)';
-    s+=`<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" font-family="Space Mono,monospace" font-size="${big?11:9}" font-weight="${big?700:400}" fill="${col}" text-anchor="middle">√${p.n}</text>`;
-  });
-  s+=`</svg>`;
-  $('spiral-svg').innerHTML=s;
-})();
-
-camera.position.copy(C).add(CHAPTERS[0].dir.clone().multiplyScalar(baseDist*1.18));
-controls.update();
-resize();
 setTour(0);
+resize();
 render();
-function renderFrame(){
-  // Fat lines (Line2/LineMaterial) blow up to fill the viewport when their
-  // resolution is degenerate. Never paint before the stage has real size.
-  if (W <= 1 || H <= 1) { resize(); if (W <= 1 || H <= 1) return; }
-  camera.layers.enableAll();
-  renderer.setRenderTarget(null);
-  renderer.render(scene, camera);
-}
-renderFrame();
-document.getElementById('loader').classList.add('hide');
+renderer.render(scene, camera);   // guaranteed first paint
 
-const sceneCubeEl = document.getElementById('scene-cube');
 function animate(now){
-  if (sceneCubeEl.style.display === 'none') { requestAnimationFrame(animate); return; }
-  const w=stage.clientWidth, h=stage.clientHeight;
-  if(w&&h&&(w!==W||h!==H)) resize();
-  const dt=Math.min(0.05,(now-last)/1000); last=now;
-  if(tween){ stepTween(dt); }
-  else if(playing){
-    tt += dt*speed/DURATION;
-    if(tt>=1){ tt=1; setPlaying(false); }
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (w && h && (w!==W || h!==H)) resize();
+  const dt = Math.min(0.05, (now - last)/1000); last = now;
+  if (playing){
+    tt += dt * speed / DURATION;
+    if (tt >= 1){ tt = 1; setPlaying(false); }
     Object.assign(STATE, tourState(tt));
-    scrub.value=Math.round(tt*1000); tlabel.textContent=(tt*DURATION).toFixed(1)+'s';
-    markChapter(chapterForT(tt));
+    scrub.value = Math.round(tt*1000); tlabel.textContent = Math.round(tt*100)+'%';
     render(); syncSliders();
   }
-  if(!userTookOver && !tween){
-    const desired = baseDist*(1.18 + 1.7*easeIO(clamp01(STATE.space/2)));
-    const dir = camera.position.clone().sub(C); const cur=dir.length();
-    if(cur>1e-3){ const nd=cur+(desired-cur)*Math.min(1,dt*2.4); camera.position.copy(C).add(dir.multiplyScalar(nd/cur)); }
+  if (!userTookOver){   // gently dolly out as space / mirror fills
+    const maxArr = Math.max(STATE.xPos,STATE.xNeg,STATE.yPos,STATE.yNeg,STATE.zPos,STATE.zNeg);
+    const arrayPush = 0.52*easeIO(clamp01(maxArr/3))*easeIO(clamp01(STATE.arrayFade));
+    const desired = baseDist * (1 + 0.95*easeIO(clamp01(STATE.space/2)) + arrayPush);
+    const dir = camera.position.clone().sub(C); const cur = dir.length();
+    if (cur > 1e-3){ const nd = cur + (desired-cur)*Math.min(1, dt*3); camera.position.copy(C).add(dir.multiplyScalar(nd/cur)); }
   }
-  if(W>1&&H>1){ controls.update(); renderFrame(); }
+  if (W>1 && H>1){ controls.update(); renderer.render(scene, camera); }
   requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
 
-window.__viewCube = { scene, camera, controls, renderer, STATE, render, setTour, goToChapter, pause:()=>setPlaying(false), set:(o)=>{ setPlaying(false); cancelCamTween(); tween=null; Object.assign(STATE,o); render(); syncSliders(); } };
+window.__view = { scene, camera, controls, renderer, STATE, render, setTour, tourState, pause:()=>setPlaying(false), set:(o)=>{ setPlaying(false); Object.assign(STATE,o); render(); syncSliders(); } };
 </script>
 
-<!-- ================================================================
-     SCRIPT: VECTOR SYSTEM (with vs- prefixed IDs and inactive-tab guard)
-     ================================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
-import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const SC = GF_SCENE.dark;
-const cssVar = (n)=> getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const BG = new THREE.Color(cssVar('--bg') || '#0B0B0B');
-const COL = {
-  bone:  new THREE.Color(SC.unit),
-  dim:   new THREE.Color(SC.muted),
-  gold:  new THREE.Color(SC.angle),
-  blue:  new THREE.Color(SC.face),
-  mag:   new THREE.Color(SC.space),
-  green: new THREE.Color(SC.tri),
-};
-const HEX = { bone:SC.unit, blue:SC.face, mag:SC.space, gold:SC.angle };
-
-document.getElementById('vs-lg-edge').style.background  = HEX.bone;
-document.getElementById('vs-lg-face').style.background  = HEX.blue;
-document.getElementById('vs-lg-space').style.background = HEX.mag;
-
-const clean = new URLSearchParams(location.search).has('clean');
-if (clean) document.body.classList.add('clean');
-
-const stage = document.getElementById('vs-stage');
-const renderer = new THREE.WebGLRenderer({ antialias:true });
-renderer.setClearColor(BG, 1);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-stage.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(BG.getHex(), 0.05);
-const camera = new THREE.PerspectiveCamera(36, 1, 0.01, 400);
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.listenToKeyEvents(window);
-controls.enableDamping = true; controls.dampingFactor = 0.07; controls.rotateSpeed = 0.82;
-controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-const key = new THREE.DirectionalLight(0xfff4e2, 1.1); key.position.set(3,5,2.4); scene.add(key);
-
-let W=1,H=1;
-const lineMats = [];
-function resize(){
-  W = stage.clientWidth||innerWidth; H = stage.clientHeight||innerHeight;
-  renderer.setSize(W,H); camera.aspect=W/H; camera.updateProjectionMatrix();
-  lineMats.forEach(m=> m.resolution && m.resolution.set(W,H));
-}
-addEventListener('resize', resize);
-if (window.ResizeObserver){ new ResizeObserver(()=>{ const w=stage.clientWidth,h=stage.clientHeight; if(w&&h&&(w!==W||h!==H)) resize(); }).observe(stage); }
-
-const Cv = (x,y,z)=>[x,y,z];
-const EDGES_VS = [
-  [Cv(0,0,0),Cv(1,0,0)],[Cv(0,1,0),Cv(1,1,0)],[Cv(0,0,1),Cv(1,0,1)],[Cv(0,1,1),Cv(1,1,1)],
-  [Cv(0,0,0),Cv(0,1,0)],[Cv(1,0,0),Cv(1,1,0)],[Cv(0,0,1),Cv(0,1,1)],[Cv(1,0,1),Cv(1,1,1)],
-  [Cv(0,0,0),Cv(0,0,1)],[Cv(1,0,0),Cv(1,0,1)],[Cv(0,1,0),Cv(0,1,1)],[Cv(1,1,0),Cv(1,1,1)],
-];
-const FACES_VS = [
-  [Cv(0,0,0),Cv(1,1,0)],[Cv(1,0,0),Cv(0,1,0)],
-  [Cv(0,0,1),Cv(1,1,1)],[Cv(1,0,1),Cv(0,1,1)],
-  [Cv(0,0,0),Cv(1,0,1)],[Cv(1,0,0),Cv(0,0,1)],
-  [Cv(0,1,0),Cv(1,1,1)],[Cv(1,1,0),Cv(0,1,1)],
-  [Cv(0,0,0),Cv(0,1,1)],[Cv(0,1,0),Cv(0,0,1)],
-  [Cv(1,0,0),Cv(1,1,1)],[Cv(1,1,0),Cv(1,0,1)],
-];
-const SPACE_VS = [
-  [Cv(0,0,0),Cv(1,1,1)],[Cv(1,0,0),Cv(0,1,1)],[Cv(0,1,0),Cv(1,0,1)],[Cv(0,0,1),Cv(1,1,0)],
-];
-
-function fatSegments(color, width, op){
-  const g = new LineSegmentsGeometry();
-  const m = new LineMaterial({ color, linewidth:width, transparent:true, opacity:op, depthTest:true });
-  m.resolution.set(W,H); lineMats.push(m);
-  const ls = new LineSegments2(g, m); ls.frustumCulled=false;
-  return { ls, geo:g, mat:m };
-}
-const root = new THREE.Group(); scene.add(root);
-const edgeL = fatSegments(COL.bone, 1.7, 0.5);
-const faceL = fatSegments(COL.blue, 2.2, 0.92);
-const spaceL = fatSegments(COL.mag, 2.6, 0.96);
-edgeL.ls.renderOrder=1; faceL.ls.renderOrder=2; spaceL.ls.renderOrder=3;
-root.add(edgeL.ls); root.add(faceL.ls); root.add(spaceL.ls);
-
-const proofRoot = new THREE.Group(); scene.add(proofRoot);
-const O=new THREE.Vector3(0,0,0), Fp=new THREE.Vector3(1,1,0), Gp=new THREE.Vector3(1,1,1);
-function fatLine(a,b,color,w){
-  const g=new LineGeometry(); g.setPositions([a.x,a.y,a.z,b.x,b.y,b.z]);
-  const m=new LineMaterial({color,linewidth:w,transparent:true,opacity:0,depthTest:false});
-  m.resolution.set(W,H); const ln=new Line2(g,m); ln.renderOrder=20; ln.frustumCulled=false;
-  proofRoot.add(ln); lineMats.push(m); return m;
-}
-const pmFace = fatLine(O,Fp,COL.blue,4.0);
-const pmEdge = fatLine(Fp,Gp,COL.bone,3.4);
-const pmSpace= fatLine(O,Gp,COL.mag,4.4);
-const proofFillMat = new THREE.MeshBasicMaterial({ color:COL.green, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false });
-{ const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute([O.x,O.y,O.z,Fp.x,Fp.y,Fp.z,Gp.x,Gp.y,Gp.z],3));
-  const mesh=new THREE.Mesh(g,proofFillMat); mesh.renderOrder=-1; mesh.frustumCulled=false; proofRoot.add(mesh); }
-const arcMat = new THREE.LineBasicMaterial({ color:COL.gold, transparent:true, opacity:0 });
-{ const u=Fp.clone().normalize(), v=Gp.clone().normalize(); const pts=[]; const ang=u.angleTo(v); const n=24; const axis=new THREE.Vector3().crossVectors(u,v).normalize();
-  for(let i=0;i<=n;i++){ const q=new THREE.Quaternion().setFromAxisAngle(axis, ang*i/n); pts.push(u.clone().applyQuaternion(q).multiplyScalar(0.34)); }
-  const g=new THREE.BufferGeometry().setFromPoints(pts); const ln=new THREE.Line(g,arcMat); ln.renderOrder=20; ln.frustumCulled=false; proofRoot.add(ln); }
-function labelSprite(text,hex){
-  const font='700 92px "Space Mono", ui-monospace, monospace';
-  const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
-  const pad=20,w=Math.ceil(meas.measureText(text).width)+pad*2,h=128;
-  const c=document.createElement('canvas'); c.width=w;c.height=h; const x=c.getContext('2d');
-  x.font=font;x.textBaseline='middle';x.textAlign='center';
-  x.fillStyle=SC.halo;const r=14;
-  x.beginPath();x.moveTo(r,6);x.arcTo(w-2,6,w-2,h-6,r);x.arcTo(w-2,h-6,2,h-6,r);x.arcTo(2,h-6,2,6,r);x.arcTo(2,6,w-2,6,r);x.fill();
-  x.fillStyle=hex;x.fillText(text,w/2,h/2+4);
-  const tex=new THREE.CanvasTexture(c);tex.minFilter=THREE.LinearFilter;tex.anisotropy=4;
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthWrite:false,depthTest:false}));
-  sp.scale.set(0.18*w/h,0.18,1); sp.renderOrder=30; return sp;
-}
-const plabels=[];
-function addLabel(t,hex,p){ const s=labelSprite(t,hex); s.position.copy(p); proofRoot.add(s); plabels.push(s); }
-addLabel('√2',    HEX.blue, new THREE.Vector3(0.5,0.5,-0.06));
-addLabel('1',     HEX.bone, new THREE.Vector3(1.12,1.0,0.5));
-addLabel('√3',    HEX.mag,  new THREE.Vector3(0.42,0.62,0.56));
-addLabel('35.25°',HEX.gold, new THREE.Vector3(0.46,0.20,0.16));
-
-const STATE = { grid:2, gap:0, edge:1, face:1, space:1, proof:1, frame:0 };
-function extent(N,gap){ return (N-1)*(1+gap)+1; }
-
-let baseR=2, userTookOver=false;
-controls.addEventListener('start', ()=>{ userTookOver=true; controls.autoRotate=false; syncToggles(); });
-
-function rebuild(){
-  const N = STATE.frame ? 1 : STATE.grid;
-  const gap = STATE.gap;
-  const ext = extent(N,gap);
-  const c = ext/2;
-  const ePos=[], fPos=[], sPos=[];
-  for (let i=0;i<N;i++) for (let j=0;j<N;j++) for (let k=0;k<N;k++){
-    const ox=i*(1+gap)-c, oy=j*(1+gap)-c, oz=k*(1+gap)-c;
-    const push=(arr,set)=>set.forEach(([a,b])=>arr.push(a[0]+ox,a[1]+oy,a[2]+oz, b[0]+ox,b[1]+oy,b[2]+oz));
-    push(ePos,EDGES_VS); push(fPos,FACES_VS); push(sPos,SPACE_VS);
-  }
-  function rebuildGeo(holder, arr){
-    const g=new LineSegmentsGeometry(); g.setPositions(arr);
-    holder.ls.geometry.dispose(); holder.ls.geometry=g; holder.geo=g; holder.ls.computeLineDistances();
-  }
-  rebuildGeo(edgeL, ePos);
-  rebuildGeo(faceL, fPos);
-  rebuildGeo(spaceL, sPos);
-  proofRoot.position.set(-c,-c,-c);
-  const target = new THREE.Vector3(0,0,0);
-  controls.target.copy(target);
-  baseR = ext*1.38;
-  if (!userTookOver){ const d=baseR/Math.sin((camera.fov*Math.PI/180)/2);
-    camera.position.copy(target).add(new THREE.Vector3(0.85,0.55,1).normalize().multiplyScalar(d)); }
-  camera.near = ext/200; camera.far = ext*40; camera.updateProjectionMatrix();
-  applyVis();
-}
-
-function applyVis(){
-  edgeL.ls.visible = !!STATE.edge; edgeL.mat.opacity = STATE.frame?0.7:0.5;
-  faceL.ls.visible = !!STATE.face;
-  spaceL.ls.visible = !!STATE.space;
-  const pf = STATE.proof?1:0;
-  pmFace.opacity=0.96*pf; pmEdge.opacity=0.9*pf; pmSpace.opacity=0.98*pf;
-  proofFillMat.opacity=0.18*pf; arcMat.opacity=0.9*pf;
-  plabels.forEach(l=>l.material.opacity=0.96*pf);
-  const cap=document.getElementById('vs-cap');
-  if (STATE.frame) cap.innerHTML='The <b>single cube frame</b> · 1 : √2 : √3';
-  else if (STATE.gap>0.02) cap.innerHTML='Pull it apart · <b>identical cube frames</b>';
-  else if (STATE.grid>1) cap.innerHTML='Assembly pattern · <b>the whole of space</b>';
-  else cap.innerHTML='One module · <b>1 : √2 : √3</b>';
-}
-
-const els=id=>document.getElementById(id);
-const sGrid=els('vs-s-grid'), sGap=els('vs-s-gap'), vGrid=els('vs-v-grid'), vGap=els('vs-v-gap');
-const tgEdge=els('vs-tg-edge'),tgFace=els('vs-tg-face'),tgSpace=els('vs-tg-space'),tgProof=els('vs-tg-proof'),tgFrame=els('vs-tg-frame'),tgSpin=els('vs-tg-spin');
-function syncToggles(){
-  tgEdge.classList.toggle('off',!STATE.edge);  tgEdge.classList.toggle('on',!!STATE.edge);
-  tgFace.classList.toggle('off',!STATE.face);   tgFace.classList.toggle('on',!!STATE.face);
-  tgSpace.classList.toggle('off',!STATE.space); tgSpace.classList.toggle('on',!!STATE.space);
-  tgProof.classList.toggle('off',!STATE.proof); tgProof.classList.toggle('on',!!STATE.proof);
-  tgFrame.classList.toggle('off',!STATE.frame); tgFrame.classList.toggle('on',!!STATE.frame);
-  tgSpin.classList.toggle('off',!controls.autoRotate); tgSpin.classList.toggle('on',!!controls.autoRotate);
-}
-function gridLabel(){ const n=STATE.frame?1:STATE.grid; vGrid.textContent=`${n} × ${n} × ${n}`; }
-sGrid.oninput=()=>{ STATE.grid=parseInt(sGrid.value); if(STATE.frame){STATE.frame=0;} gridLabel(); rebuild(); syncToggles(); };
-sGap.oninput=()=>{ STATE.gap=parseFloat(sGap.value); vGap.textContent=Math.round(STATE.gap*100)+'%'; rebuild(); };
-tgEdge.onclick=()=>{ STATE.edge=STATE.edge?0:1; syncToggles(); applyVis(); };
-tgFace.onclick=()=>{ STATE.face=STATE.face?0:1; syncToggles(); applyVis(); };
-tgSpace.onclick=()=>{ STATE.space=STATE.space?0:1; syncToggles(); applyVis(); };
-tgProof.onclick=()=>{ STATE.proof=STATE.proof?0:1; syncToggles(); applyVis(); };
-tgFrame.onclick=()=>{ STATE.frame=STATE.frame?0:1; gridLabel(); rebuild(); syncToggles(); };
-tgSpin.onclick=()=>{ controls.autoRotate=!controls.autoRotate; if(controls.autoRotate) userTookOver=false; syncToggles(); };
-
-resize();
-sGrid.value=STATE.grid; gridLabel(); vGap.textContent='0%';
-rebuild(); syncToggles();
-renderer.render(scene,camera);
-document.getElementById('vs-loader').classList.add('hide');
-
-const sceneVsEl = document.getElementById('scene-vs');
-function animate(){
-  if (sceneVsEl.style.display === 'none') { requestAnimationFrame(animate); return; }
-  const w=stage.clientWidth,h=stage.clientHeight; if(w&&h&&(w!==W||h!==H)) resize();
-  if (W>1&&H>1){ controls.update(); renderer.render(scene,camera); }
-  requestAnimationFrame(animate);
-}
-requestAnimationFrame(animate);
-
-window.__viewVS={ scene,camera,controls,renderer,STATE,rebuild,applyVis,
-  set:(o)=>{ Object.assign(STATE,o); gridLabel(); rebuild(); syncToggles(); } };
-</script>
-
-<!-- Panel toggle for The Cube -->
-<script>
-(function(){
-  var panel = document.getElementById('panel');
-  var hd    = document.getElementById('panel-hd');
-  var closeBtn = document.getElementById('panel-close');
-  if(!panel || !hd) return;
-  hd.addEventListener('click', function(){
-    panel.classList.toggle('panel-open');
-  });
-  if(closeBtn) closeBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    panel.classList.remove('panel-open');
-  });
-  var tabBtns = panel.querySelectorAll('.tab-btn');
-  var tabPanes = panel.querySelectorAll('.tab-pane');
-  tabBtns.forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      var target = btn.dataset.tab;
-      tabBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.tab===target); });
-      tabPanes.forEach(function(p){ p.classList.toggle('active', p.id==='tab-'+target); });
-    });
-  });
-})();
-</script>
-
-<!-- Panel toggle for Vector System -->
-<script>
-(function(){
-  var ph = document.getElementById('vs-panel-ph');
-  var panel = document.getElementById('vs-panel');
-  if(!ph || !panel) return;
-  ph.addEventListener('click', function(){ panel.classList.toggle('panel-open'); });
-})();
-</script>
-
-<!-- ================================================================
-     SCRIPT: CLUSTER STRUCTURES (embedded, ID-prefixed cs-)
-     ================================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { Line2 } from 'three/addons/lines/Line2.js';
-import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
-import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-
-const SC = GF_SCENE.dark;
-const hex = (s) => {
-  if (s[0] === '#') return parseInt(s.replace('#',''), 16);
-  const m = s.match(/rgba?\(([^)]+)\)/);
-  const [r,g,b] = m[1].split(',').map(Number);
-  return (r<<16) | (g<<8) | b;
-};
-const COL = {
-  bg:hex(SC.bg[1]), bone:hex(SC.ink), dim:hex(SC.muted),
-  gold:hex(SC.angle), face:hex(SC.face), space:hex(SC.space), green:hex(SC.tri)
-};
-const HEX = { bone:SC.ink, dim:SC.muted, gold:SC.angle, face:SC.face, space:SC.space, green:SC.tri };
-
-const csEl = document.getElementById('scene-cs');
-const stage = document.getElementById('cs-stage');
-let renderer;
-try { renderer = new THREE.WebGLRenderer({ antialias:true }); }
-catch(e){ stage.textContent = 'WebGL unavailable'; throw e; }
-renderer.setClearColor(COL.bg, 1);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-stage.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-const pivot = new THREE.Group(); scene.add(pivot);
-const camera = new THREE.PerspectiveCamera(34, 1, 0.01, 100);
-camera.position.set(0, 0, 5.2); pivot.add(camera);
-
-let W = 1, H = 1;
-const strokes = [], morphEdges = [];
-function resize(){
-  W = csEl.clientWidth || stage.clientWidth;
-  H = csEl.clientHeight || stage.clientHeight;
-  if (!W || !H) return;
-  renderer.setSize(W, H);
-  camera.aspect = W / H; camera.updateProjectionMatrix();
-  strokes.forEach(s => s.mat.resolution.set(W, H));
-  morphEdges.forEach(e => e.mat.resolution.set(W, H));
-}
-window.addEventListener('resize', resize);
-
-function partial(pts, t){
-  if (t <= 0) return [pts[0].clone(), pts[0].clone()];
-  if (t >= 1) return pts.map(p => p.clone());
-  let total = 0; const seg = [];
-  for (let i=1;i<pts.length;i++){ const d=pts[i].distanceTo(pts[i-1]); seg.push(d); total+=d; }
-  const target=t*total; const out=[pts[0].clone()]; let acc=0;
-  for (let i=1;i<pts.length;i++){
-    if(acc+seg[i-1]<target){ out.push(pts[i].clone()); acc+=seg[i-1]; }
-    else{ const r=(target-acc)/Math.max(seg[i-1],1e-9); out.push(pts[i-1].clone().lerp(pts[i],r)); break; }
-  } return out;
-}
-class Stroke {
-  constructor(pts, color, width, opacity=1, ro=1, opts={}){
-    this.pts=pts; this.geom=new LineGeometry();
-    const cfg={color, linewidth:width, transparent:true, opacity};
-    if(opts.dashed){ cfg.dashed=true; cfg.dashSize=opts.dashSize; cfg.gapSize=opts.gapSize; }
-    this.mat=new LineMaterial(cfg); this.mat.resolution.set(W,H);
-    this.line=new Line2(this.geom,this.mat); this.line.renderOrder=ro; this.line.frustumCulled=false;
-    if(opts.dashed){
-      const arr=[]; this.pts.forEach(v=>arr.push(v.x,v.y,v.z));
-      this.geom.setPositions(arr); this.line.computeLineDistances(); this.line.visible=true; this._p=1;
-    } else { this.setProgress(0); }
-    strokes.push(this); scene.add(this.line);
-  }
-  setProgress(t){
-    this._p=t; this.line.visible=t>0.0008;
-    const p=partial(this.pts,t); const arr=[];
-    p.forEach(v=>{arr.push(v.x,v.y,v.z);}); this.geom.setPositions(arr);
-  }
-}
-function S(pts,color,width,opacity,ro,bucket,opts){
-  const s=new Stroke(pts,color,width,opacity,ro,opts); if(bucket) bucket.push(s.mat); return s;
-}
-class MorphEdge {
-  constructor(genA,genB,color,width,opacity,ro,bucket){
-    this.genA=genA; this.genB=genB; this.geom=new LineGeometry();
-    this.mat=new LineMaterial({color,linewidth:width,transparent:true,opacity});
-    this.mat.resolution.set(W,H); this.line=new Line2(this.geom,this.mat);
-    this.line.renderOrder=ro; this.line.frustumCulled=false;
-    morphEdges.push(this); scene.add(this.line); if(bucket) bucket.push(this.mat);
-    this.update(0);
-  }
-  update(t){ const a=this.genA(t),b=this.genB(t); this.geom.setPositions([a.x,a.y,a.z,b.x,b.y,b.z]); }
-}
-function F(pts,color,bucket,ro=-2){
-  const g=new THREE.BufferGeometry(); const v=[];
-  for(let i=1;i<pts.length-1;i++) v.push(pts[0].x,pts[0].y,pts[0].z,pts[i].x,pts[i].y,pts[i].z,pts[i+1].x,pts[i+1].y,pts[i+1].z);
-  g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));
-  const m=new THREE.MeshBasicMaterial({color,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
-  const mesh=new THREE.Mesh(g,m); mesh.renderOrder=ro; mesh.frustumCulled=false;
-  scene.add(mesh); if(bucket) bucket.push(m); return m;
-}
-function makeLabel(text,color,worldH=0.15){
-  const font='700 110px "Space Mono",monospace';
-  const meas=document.createElement('canvas').getContext('2d'); meas.font=font;
-  const pad=24; const w=Math.ceil(meas.measureText(text).width)+pad*2; const h=110+pad*2;
-  const c=document.createElement('canvas'); c.width=w; c.height=h;
-  const ctx=c.getContext('2d'); ctx.font=font; ctx.fillStyle=color;
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,w/2,h/2);
-  const tex=new THREE.CanvasTexture(c); tex.anisotropy=8; tex.minFilter=THREE.LinearFilter;
-  const mat=new THREE.SpriteMaterial({map:tex,transparent:true,opacity:0,depthTest:false,depthWrite:false});
-  const sp=new THREE.Sprite(mat); sp.scale.set(worldH*w/h,worldH,1); sp.renderOrder=30;
-  return {sprite:sp, mat};
-}
-function L(text,color,pos,bucket,h=0.15){
-  const {sprite,mat}=makeLabel(text,color,h); sprite.position.copy(pos); scene.add(sprite);
-  if(bucket) bucket.push(mat); return mat;
-}
-const M={cell:[],diamond:[],neigh:[],trunc:[],cap:[],jewel:[],jewelEdge:[],fillVec:[],axis:[],cellGhost:[]};
-const flows=[];
-const addFlow=(mat,rate,start,end)=>flows.push({mat,rate,start,end});
-
-await document.fonts.ready;
-
-const V=(x,y,z)=>new THREE.Vector3(x,y,z);
-const corners=[]; for(const x of[-0.5,0.5]) for(const y of[-0.5,0.5]) for(const z of[-0.5,0.5]) corners.push(V(x,y,z));
-const apexes=[V(1,0,0),V(-1,0,0),V(0,1,0),V(0,-1,0),V(0,0,1),V(0,0,-1)];
-const incident=(c,a)=>Math.abs(c.dot(a)-0.5)<1e-9;
-const cellPairs=[]; for(const c of corners) for(const a of apexes) if(incident(c,a)) cellPairs.push([c,a]);
-const apexCornersOf=(a)=>corners.filter(c=>incident(c,a));
-const rhombFaces=[]; for(let i=0;i<apexes.length;i++) for(let j=i+1;j<apexes.length;j++){
-  if(Math.abs(apexes[i].dot(apexes[j]))>1e-9) continue;
-  const shared=corners.filter(c=>incident(c,apexes[i])&&incident(c,apexes[j]));
-  if(shared.length===2) rhombFaces.push([apexes[i],shared[0],apexes[j],shared[1]]);
-}
-const cellEdges=cellPairs.map(([c,a])=>S([c,a],COL.bone,1.8,0.66,2,M.cell));
-const dA1=V(1,0,0),dA2=V(0,1,0),dC1=V(0.5,0.5,0.5),dC2=V(0.5,0.5,-0.5);
-const diamondFill=F([dA1,dC1,dA2,dC2],COL.green,M.diamond);
-const diamondOut=S([dA1,dC1,dA2,dC2,dA1],COL.bone,2.4,0.95,5,M.diamond);
-const diamLong=S([dA1,dA2],COL.space,3.0,1,6,M.diamond);
-const diamShort=S([dC1,dC2],COL.bone,2.6,1,6,M.diamond);
-const dl_v2=L('√2',HEX.space,dA1.clone().lerp(dA2,0.5).add(V(0.10,0.10,0)),M.diamond,0.13);
-const dl_1=L('1',HEX.bone,dC1.clone().lerp(dC2,0.5).add(V(0.16,0,0.04)),M.diamond,0.12);
-const fillOffsets=[V(1,1,0),V(1,0,1),V(0,1,1),V(-1,1,0)];
-const neighStrokes=[];
-fillOffsets.forEach(off=>{ cellPairs.forEach(([c,a])=>{
-  neighStrokes.push(S([c.clone().add(off),a.clone().add(off)],COL.bone,1.3,0.16,1,M.neigh)); }); });
-const cp=(base,toward,t)=>base.clone().lerp(toward,t);
-cellPairs.forEach(([c,a])=>{ new MorphEdge(t=>cp(c,a,t),t=>cp(a,c,t),COL.bone,1.8,0,2,M.trunc); });
-corners.forEach(c=>{
-  const inc=apexes.filter(a=>incident(c,a));
-  for(let i=0;i<inc.length;i++){ const a1=inc[i],a2=inc[(i+1)%inc.length];
-    new MorphEdge(t=>cp(c,a1,t),t=>cp(c,a2,t),COL.gold,1.8,0,4,M.cap); }
-});
-apexes.forEach(a=>{
-  const inc=apexCornersOf(a);
-  const up=Math.abs(a.y)>0.5?V(0,0,1):V(0,1,0);
-  const e1=new THREE.Vector3().crossVectors(a,up).normalize();
-  const e2=new THREE.Vector3().crossVectors(a,e1).normalize();
-  const ctr=a.clone().multiplyScalar(0.5);
-  const ordered=inc.slice().sort((p,q)=>{
-    const ap=Math.atan2(p.clone().sub(ctr).dot(e2),p.clone().sub(ctr).dot(e1));
-    const aq=Math.atan2(q.clone().sub(ctr).dot(e2),q.clone().sub(ctr).dot(e1));
-    return ap-aq;
-  });
-  for(let i=0;i<ordered.length;i++){ const c1=ordered[i],c2=ordered[(i+1)%ordered.length];
-    new MorphEdge(t=>cp(a,c1,t),t=>cp(a,c2,t),COL.gold,1.8,0,4,M.cap); }
-});
-const jewelFills=rhombFaces.map(f=>F([f[0],f[1],f[2],f[3]],COL.gold,M.jewel,-3));
-const jewelEdges=cellPairs.map(([c,a])=>S([c,a],COL.bone,2.0,0,3,M.jewelEdge));
-const fillVecs=fillOffsets.map(off=>S([V(0,0,0),off.clone().multiplyScalar(0.62)],COL.bone,1.3,0,4,M.fillVec,{dashed:true,dashSize:0.06,gapSize:0.05}));
-fillVecs.forEach(v=>addFlow(v.mat,0.9,6.6,9.5));
-const axisGuide=S([V(-1.15,-1.15,-1.15),V(1.15,1.15,1.15)],COL.gold,1.2,0,4,M.axis,{dashed:true,dashSize:0.05,gapSize:0.06});
-const cellGhost=cellPairs.map(([c,a])=>S([c,a],COL.bone,1.2,0,2,M.cellGhost,{dashed:true,dashSize:0.045,gapSize:0.035}));
-
-const capstack=document.getElementById('cs-capstack');
-function cap(html){ const d=document.createElement('div'); d.className='cap'; d.innerHTML=html; capstack.appendChild(d); return d; }
-const C={
-  bridge:  cap("The rhombic cell · every face a <b>√2</b> diamond"),
-  fill:    cap("<b>One module → the whole of space</b>"),
-  rhombicube: cap("Gregg calls it the <b>RHOMBICUBE</b>"),
-  square:  cap("Look down one axis · a <b>square</b>"),
-  hex:     cap("Turn it · a <b>hexagon</b>"),
-  cut:     cap("Cut the corners — all the same"),
-  trunc:   cap("The <b>Truncated Rhombicube</b> · 26 faces"),
-  build:   cap("One cut form · <b>infinite architecture</b>")
-};
-
-const tl=gsap.timeline({paused:true});
-const draws=[]; const easeFn={};
-const getEase=(n)=>easeFn[n]||(easeFn[n]=gsap.parseEase(n));
-function draw(stroke,start,dur=1.2,ease='power2.inOut'){ draws.push({stroke,start,dur,ease:getEase(ease)}); }
-function drawMany(arr,start,dur,stagger=0,ease='power2.inOut'){ arr.forEach((s,i)=>draw(s,start+i*stagger,dur,ease)); }
-function updateDraws(t){ for(const d of draws){ let p=(t-d.start)/d.dur; p=p<=0?0:p>=1?1:d.ease(p); d.stroke.setProgress(p); } }
-function fade(mats,to,start,dur=0.8,ease='power1.inOut'){ tl.to(mats,{opacity:to,duration:dur,ease},start); }
-function showCap(el,start,end){ tl.to(el,{opacity:1,duration:0.45,ease:'power1.out'},start); tl.to(el,{opacity:0,duration:0.45,ease:'power1.in'},end-0.45); }
-const morph={t:0};
-const VIEW={
-  cell:{x:-0.50,y:0.62,z:4.7,fov:34}, fill:{x:-0.42,y:0.70,z:7.8,fov:34},
-  square:{x:0.00,y:0.00,z:22,fov:8}, hex:{x:-0.7854,y:0.6155,z:22,fov:8},
-  close:{x:-0.46,y:0.62,z:6.9,fov:34}
-};
-tl.set(pivot.rotation,{x:VIEW.cell.x,y:VIEW.cell.y,z:0},0);
-tl.set(camera.position,{z:VIEW.cell.z},0); tl.set(camera,{fov:VIEW.cell.fov},0);
-tl.set(morph,{t:0},0); tl.set('#cs-titlecard',{opacity:0},0);
-
-drawMany(cellEdges,0.3,1.0,0.03); showCap(C.bridge,0.6,5.4);
-fade([diamondFill],0.20,2.6,0.8); draw(diamondOut,2.6,0.9); draw(diamLong,3.2,0.8); draw(diamShort,3.4,0.8);
-fade([dl_v2,dl_1],1,3.6,0.6);
-fade(M.diamond,0.0,6.0,1.0);
-tl.to(pivot.rotation,{x:VIEW.fill.x,y:VIEW.fill.y,duration:3.0,ease:'power2.inOut'},6.0);
-tl.to(camera.position,{z:VIEW.fill.z,duration:3.0,ease:'power2.inOut'},6.0);
-drawMany(neighStrokes,6.6,0.9,0.006);
-fade(M.fillVec,0.26,6.6,0.8); fade(M.fillVec,0,10.4,1.0);
-showCap(C.fill,6.4,11.2); showCap(C.rhombicube,11.4,15.8);
-fade(M.neigh,0.0,16.0,1.4);
-tl.to(pivot.rotation,{x:VIEW.square.x,y:VIEW.square.y,duration:3.4,ease:'power2.inOut'},16.2);
-tl.to(camera.position,{z:VIEW.square.z,duration:3.4,ease:'power2.inOut'},16.2);
-tl.to(camera,{fov:VIEW.square.fov,duration:3.4,ease:'power2.inOut'},16.2);
-showCap(C.square,17.2,22.4); fade(M.axis,0.22,21.8,0.6);
-tl.to(pivot.rotation,{x:VIEW.hex.x,y:VIEW.hex.y,duration:3.6,ease:'power2.inOut'},22.6);
-tl.to(camera.position,{z:VIEW.hex.z,duration:3.6,ease:'power2.inOut'},22.6);
-fade(M.axis,0,28.8,1.0); showCap(C.hex,23.6,29.6);
-fade(M.cell,0.0,30.0,1.0); fade(M.trunc,0.62,30.0,1.0); fade(M.cellGhost,0.20,31.0,1.0);
-fade(M.cellGhost,0,44.0,2.0);
-tl.to(pivot.rotation,{x:VIEW.cell.x,y:VIEW.cell.y,duration:3.0,ease:'power1.inOut'},30.2);
-tl.to(camera.position,{z:5.4,duration:3.0,ease:'power1.inOut'},30.2);
-tl.to(camera,{fov:VIEW.cell.fov,duration:3.0,ease:'power1.inOut'},30.2);
-showCap(C.cut,30.6,37.2); fade(M.cap,0.95,31.4,1.6);
-tl.to(morph,{t:0.5,duration:13.5,ease:'power2.inOut'},31.6);
-tl.to(pivot.rotation,{y:VIEW.cell.y+0.9,duration:14.0,ease:'sine.inOut'},31.6);
-showCap(C.trunc,37.4,45.8);
-tl.to(morph,{t:0.0,duration:3.6,ease:'power2.inOut'},46.0); fade(M.cap,0.0,46.0,2.2); fade(M.trunc,0.0,48.4,1.6);
-tl.to(pivot.rotation,{x:VIEW.close.x,y:VIEW.close.y,duration:5.0,ease:'sine.inOut'},46.0);
-tl.to(camera.position,{z:VIEW.close.z,duration:5.0,ease:'sine.inOut'},46.0);
-fade(M.jewel,0.92,48.6,2.2); fade(M.jewelEdge,0.9,48.6,2.0); drawMany(jewelEdges,48.6,1.4,0.01);
-tl.to(pivot.rotation,{y:VIEW.close.y+0.7,duration:11.0,ease:'sine.inOut'},49.0);
-showCap(C.build,49.0,53.2);
-tl.to('#cs-titlecard',{opacity:1,duration:1.1,ease:'power1.out'},53.6);
-tl.to({},{duration:1.2},60.8);
-
-window.__csTl = tl;
-
-const playBtn=document.getElementById('cs-play');
-const replayBtn=document.getElementById('cs-replay');
-const scrub=document.getElementById('cs-scrub');
-const speedSel=document.getElementById('cs-speed');
-const tlabel=document.getElementById('cs-tlabel');
-let scrubbing=false;
-function setPlayIcon(){ playBtn.textContent=tl.paused()?'▶ Play':'❙❙ Pause'; }
-playBtn.addEventListener('click',()=>{ tl.paused()?tl.play():tl.pause(); setPlayIcon(); });
-replayBtn.addEventListener('click',()=>{ tl.restart(); setPlayIcon(); });
-scrub.addEventListener('input',()=>{ scrubbing=true; tl.pause(); tl.progress(scrub.value/1000); setPlayIcon(); });
-scrub.addEventListener('change',()=>{ scrubbing=false; });
-speedSel.addEventListener('change',()=>{ tl.timeScale(parseFloat(speedSel.value)); });
-
-gsap.ticker.add((time,deltaTime)=>{
-  if(csEl.style.display==='none') return;
-  const tNow=tl.time();
-  updateDraws(tNow);
-  for(const e of morphEdges) e.update(morph.t);
-  if(!tl.paused()&&!scrubbing){
-    const dt=Math.min(0.05,(deltaTime||16)/1000);
-    for(const f of flows){ if(tNow>=f.start&&tNow<f.end) f.mat.dashOffset-=f.rate*dt; }
-  }
-  if(!scrubbing){ scrub.value=(tl.progress()*1000)|0; }
-  tlabel.textContent=tl.time().toFixed(1)+'s';
-  camera.updateProjectionMatrix();
-  renderer.render(scene,camera);
-});
-
-resize();
-</script>
-
-<!-- ================================================================
-     SCRIPT: RHOMBI POD (lazy — inits on first tab activation, since the
-     GLB is ~2.9 MB and most visitors never open this tab)
-     ================================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-
-const rpEl = document.getElementById('scene-rp');
-const rpStage = document.getElementById('rp-stage');
-let rpInited = false;
-
-function rpInit(){
-  if (rpInited) return;
-  rpInited = true;
-
-  const SC = GF_SCENE.dark;
-  const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
-
-  const renderer = new THREE.WebGLRenderer({ antialias:true });
-  renderer.setClearColor(BGc, 1);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.NoToneMapping;
-  rpStage.appendChild(renderer.domElement);
-
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(BGc, 7.5, 16);
-
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.05, 60);
-  camera.position.set(3.4, 2.2, 4.6);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.minDistance = 1.4;
-  controls.maxDistance = 12;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.6;
-
-  scene.add(new THREE.HemisphereLight(0xf2ead8, 0x14100c, 0.85));
-  const key = new THREE.DirectionalLight(0xffffff, 1.5);
-  key.position.set(3.5, 5, 2.5);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(new THREE.Color(SC.face), 0.35);
-  fill.position.set(-4, -1.5, -3);
-  scene.add(fill);
-
-  // ── layer groups (Rhino layer names preserved by the GLB export) ──
-  const groups = {};        // panels | n90 | n45 | curves
-  const exploders = [];     // { obj, dir } — radial explode directions
-
-  // The GLB is meshopt-compressed (re-encoded from the Draco original so the
-  // already-vendored meshopt decoder can read it — no DRACOLoader needed).
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load('assets/models/rhombi-pod.glb', (gltf) => {
-    const root = gltf.scene;
-
-    // Rhino exports glTF's default metallic=1 → renders black. Rebuild
-    // the wood tones as dielectric.
-    root.traverse(o => {
-      if (o.isMesh && o.material && o.material.isMeshStandardMaterial) {
-        o.material.metalness = 0;
-        o.material.roughness = 0.82;
-      }
-      if ((o.isLine || o.isLineSegments) && o.material) {
-        o.material = new THREE.LineBasicMaterial({
-          color: new THREE.Color(SC.unit), transparent: true, opacity: 0.45 });
-      }
-    });
-
-    groups.panels = root.getObjectByName('Panels');
-    groups.n90    = root.getObjectByName('90');
-    groups.n45    = root.getObjectByName('45');
-    groups.curves = root.getObjectByName('0');   // 'Source::0' — reference curves
-    if (groups.curves) groups.curves.visible = false;
-
-    // Recentre + normalise scale so the pod sits at the origin ~1.5 units tall.
-    const box = new THREE.Box3().setFromObject(root);
-    const center = box.getCenter(new THREE.Vector3());
-    const radius = box.getSize(new THREE.Vector3()).length() / 2;
-    const holder = new THREE.Group();
-    const s = 1.55 / radius;
-    holder.scale.setScalar(s);
-    root.position.copy(center).negate();
-    holder.add(root);
-    scene.add(holder);
-
-    // Explode: every part slides out along its own radial from the centre.
-    // All node transforms in this GLB are identity (geometry baked in world
-    // coords), so a local-position offset is a world-space offset.
-    const solids = [groups.panels, groups.n90, groups.n45].filter(Boolean);
-    const c = new THREE.Vector3(), b = new THREE.Box3();
-    for (const g of solids) {
-      g.traverse(o => {
-        if (!o.isMesh) return;
-        o.geometry.computeBoundingBox();
-        b.copy(o.geometry.boundingBox).getCenter(c).sub(center);
-        if (c.lengthSq() < 1e-8) return;
-        exploders.push({ obj: o, dir: c.clone().normalize() });
-      });
-    }
-
-    document.getElementById('rp-loader').classList.add('hide');
-    resize();
-  }, undefined, (err) => {
-    document.querySelector('#rp-loader .lt').textContent = 'Could not load the model';
-    console.error('Rhombi Pod GLB failed to load:', err);
-  });
-
-  // ── UI ──
-  const panel = document.getElementById('rp-panel');
-  document.getElementById('rp-panel-ph').addEventListener('click',
-    () => panel.classList.toggle('panel-open'));
-
-  function wireToggle(btnId, key){
-    const btn = document.getElementById(btnId);
-    btn.addEventListener('click', () => {
-      const g = groups[key];
-      if (!g) return;
-      g.visible = !g.visible;
-      btn.classList.toggle('off', !g.visible);
-    });
-  }
-  wireToggle('rp-tg-panels', 'panels');
-  wireToggle('rp-tg-n90', 'n90');
-  wireToggle('rp-tg-n45', 'n45');
-  wireToggle('rp-tg-curves', 'curves');
-
-  const sepSlider = document.getElementById('rp-s-sep');
-  const sepVal = document.getElementById('rp-v-sep');
-  sepSlider.addEventListener('input', () => {
-    const t = parseFloat(sepSlider.value);
-    sepVal.textContent = Math.round(t * 100) + '%';
-    for (const e of exploders) e.obj.position.copy(e.dir).multiplyScalar(t * 1.4);
-  });
-
-  const spinBtn = document.getElementById('rp-tg-spin');
-  spinBtn.addEventListener('click', () => {
-    controls.autoRotate = !controls.autoRotate;
-    spinBtn.classList.toggle('off', !controls.autoRotate);
-  });
-
-  function resize(){
-    const w = rpStage.clientWidth, h = rpStage.clientHeight;
-    if (!w || !h) return;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  renderer.setAnimationLoop(() => {
-    if (rpEl.style.display === 'none') return;
-    controls.update();
-    renderer.render(scene, camera);
-  });
-}
-
-// Lazy init: the tab switcher dispatches a window resize after showing a
-// scene, so catching that (plus the tab click itself) covers activation.
-document.querySelectorAll('.explore-tab-btn[data-tab="rp"]')
-  .forEach(b => b.addEventListener('click', rpInit));
-window.addEventListener('resize', () => {
-  if (rpEl.style.display !== 'none') rpInit();
-});
-</script>
-
-<!-- ================================================================
-     SCRIPT: VECTOR HOUSE (lazy — inits on first tab activation, since the
-     GLB is ~25 MB. Unlike Rhombi Pod (65 solids), this model has 98,892
-     source triangle primitives — rendering each as its own THREE.Mesh
-     measured well under 1fps (98,892 draw calls). Every category layer is
-     merged into a single BufferGeometry at load (vertex colors carry each
-     part's original Rhino material so the merge stays visually faithful),
-     bringing the whole model down to ~6 draw calls. Explode is therefore
-     category-level (each layer pulls away from centre as one block), not
-     per original CAD part.
-     ================================================================ -->
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-
-const vhEl = document.getElementById('scene-vh');
-const vhStage = document.getElementById('vh-stage');
-let vhInited = false;
-
-function vhInit(){
-  if (vhInited) return;
-  vhInited = true;
-
-  const SC = GF_SCENE.dark;
-  const BGc = new THREE.Color(SC.bg[1] || '#0B0B0B');
-
-  const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' });
-  renderer.setClearColor(BGc, 1);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.NoToneMapping;
-  vhStage.appendChild(renderer.domElement);
-
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(BGc, 9, 22);
-
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 100);
-  camera.position.set(4.6, 3.0, 6.2);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.minDistance = 1.8;
-  controls.maxDistance = 20;
-  controls.autoRotate = true;
-  controls.autoRotateSpeed = 0.5;
-
-  scene.add(new THREE.HemisphereLight(0xf2ead8, 0x14100c, 0.85));
-  const key = new THREE.DirectionalLight(0xffffff, 1.5);
-  key.position.set(5, 7, 4);
-  scene.add(key);
-  const fill = new THREE.DirectionalLight(new THREE.Color(SC.face), 0.3);
-  fill.position.set(-5, -2, -4);
-  scene.add(fill);
-
-  // ── layer groups (Rhino layer names preserved by the GLB export) ──
-  const LAYERS = [
-    { key: 'panels', name: 'Panels',  btn: 'vh-tg-panels', on: true  },
-    { key: 'n90',    name: '90',      btn: 'vh-tg-n90',    on: true  },
-    { key: 'n45',    name: '45',      btn: 'vh-tg-n45',    on: true  },
-    { key: 'deck',   name: 'DECK',    btn: 'vh-tg-deck',   on: true  },
-    { key: 'frame',  name: 'Layer1',  btn: 'vh-tg-frame',  on: true  },
-  ];
-  const meshes = {};   // key -> merged THREE.Mesh
-  const holder = new THREE.Group();
-  scene.add(holder);
-
-  function mergeBatches(geometries, batchSize = 700) {
-    if (geometries.length === 0) return null;
-    if (geometries.length === 1) return geometries[0];
-    const batches = [];
-    for (let i = 0; i < geometries.length; i += batchSize) {
-      const batch = geometries.slice(i, i + batchSize);
-      const merged = mergeGeometries(batch, false);
-      if (merged) batches.push(merged);
-      batch.forEach(g => { if (g !== merged) g.dispose(); });
-    }
-    if (batches.length === 1) return batches[0];
-    const final = mergeGeometries(batches, false);
-    batches.forEach(g => { if (g !== final) g.dispose(); });
-    return final;
-  }
-
-  // The GLB is meshopt-compressed (re-encoded from a Draco original so the
-  // already-vendored meshopt decoder can read it — no DRACOLoader/CDN needed).
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load('assets/models/vector-house-pod.glb', (gltf) => {
-    const root = gltf.scene;
-
-    let meshCount = 0, triCount = 0;
-    root.traverse(o => {
-      if (o.isMesh) {
-        meshCount++;
-        const pos = o.geometry.getAttribute('position');
-        if (pos) triCount += Math.floor((o.geometry.index ? o.geometry.index.count : pos.count) / 3);
-      }
-    });
-
-    const box = new THREE.Box3().setFromObject(root);
-    const center = box.getCenter(new THREE.Vector3());
-    const radius = box.getSize(new THREE.Vector3()).length() / 2;
-    const holderScale = 2.4 / radius;
-    holder.scale.setScalar(holderScale);
-
-    const color = new THREE.Color();
-    // This GLB stores position/normal as normalized Int16Array
-    // (KHR_mesh_quantization). BufferGeometry.applyMatrix4() round-trips
-    // through attribute getX/setX, which — for a *normalized* attribute —
-    // re-quantizes whatever it writes back into that same narrow int16
-    // range. Real world-space coordinates (tens of units) get clamped down
-    // to roughly ±1, collapsing the whole model. Converting to a plain
-    // (non-normalized) Float32 attribute first — reading via getX/getY/getZ,
-    // which correctly dequantizes — makes the later transform lossless.
-    function dequantize(geo) {
-      for (const name of ['position', 'normal']) {
-        const attr = geo.getAttribute(name);
-        if (!attr || !attr.normalized) continue;
-        const out = new Float32Array(attr.count * 3);
-        for (let i = 0; i < attr.count; i++) {
-          out[i*3] = attr.getX(i); out[i*3+1] = attr.getY(i); out[i*3+2] = attr.getZ(i);
-        }
-        geo.setAttribute(name, new THREE.BufferAttribute(out, 3, false));
-      }
-    }
-
-    function collectLayer(layerName) {
-      const node = root.getObjectByName(layerName);
-      if (!node) return null;
-      const geoms = [];
-      node.traverse(o => {
-        if (!o.isMesh) return;
-        const geo = o.geometry.clone();
-        dequantize(geo);
-        o.updateWorldMatrix(true, false);
-        geo.applyMatrix4(o.matrixWorld);
-        geo.translate(-center.x, -center.y, -center.z);
-        // Bake this part's original material colour as a per-vertex
-        // attribute so the merge keeps Gregg's wood/blue/lavender palette
-        // instead of collapsing to one flat colour per layer.
-        const baseColor = o.material && o.material.color ? o.material.color : color.set(0xd9d5c9);
-        const count = geo.getAttribute('position').count;
-        const colors = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-          colors[i*3] = baseColor.r; colors[i*3+1] = baseColor.g; colors[i*3+2] = baseColor.b;
-        }
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        Object.keys(geo.attributes).forEach(name => {
-          if (name !== 'position' && name !== 'normal' && name !== 'color') geo.deleteAttribute(name);
-        });
-        if (!geo.getAttribute('normal')) geo.computeVertexNormals();
-        const ni = geo.index ? geo.toNonIndexed() : geo;
-        if (ni !== geo) geo.dispose();
-        geoms.push(ni);
-      });
-      return geoms;
-    }
-
-    // 'Source::0' — reference curves; kept as native line geometry (only
-    // 47 line-strip primitives — cheap enough not to need merging).
-    const curvesNode = root.getObjectByName('0');
-    if (curvesNode) {
-      curvesNode.traverse(o => {
-        if (o.isLine || o.isLineSegments) {
-          o.material = new THREE.LineBasicMaterial({
-            color: new THREE.Color(SC.unit), transparent: true, opacity: 0.4 });
-        }
-      });
-      curvesNode.visible = false;
-      holder.add(curvesNode);
-    }
-
-    const worldPos = new THREE.Vector3();
-    for (const layer of LAYERS) {
-      const geoms = collectLayer(layer.name);
-      if (!geoms || !geoms.length) continue;
-      const merged = mergeBatches(geoms);
-      if (!merged) continue;
-      merged.computeBoundingSphere();
-      const mesh = new THREE.Mesh(merged, new THREE.MeshStandardMaterial({
-        vertexColors: true, roughness: 0.82, metalness: 0, side: THREE.DoubleSide,
-      }));
-      mesh.name = layer.name;
-      holder.add(mesh);
-      meshes[layer.key] = mesh;
-      // Explode direction: this layer's own merged bounding-sphere centre,
-      // relative to the whole model's centre (already recentred above).
-      worldPos.copy(merged.boundingSphere.center);
-      mesh.userData.explodeDir = worldPos.lengthSq() > 1e-8 ? worldPos.clone().normalize() : new THREE.Vector3(0, 1, 0);
-    }
-
-    document.getElementById('vh-loader').classList.add('hide');
-    document.getElementById('vh-src').textContent =
-      `source · Vector House · Rhino 8 · 45°/90° system · ${triCount.toLocaleString()} tris / ${meshCount.toLocaleString()} parts → ${Object.keys(meshes).length + (curvesNode ? 1 : 0)} render groups`;
-    resize();
-  }, undefined, (err) => {
-    document.querySelector('#vh-loader .lt').textContent = 'Could not load the model';
-    console.error('Vector House GLB failed to load:', err);
-  });
-
-  // ── UI ──
-  const panel = document.getElementById('vh-panel');
-  document.getElementById('vh-panel-ph').addEventListener('click',
-    () => panel.classList.toggle('panel-open'));
-
-  function wireToggle(btnId, key){
-    const btn = document.getElementById(btnId);
-    btn.addEventListener('click', () => {
-      const m = meshes[key];
-      if (!m) return;
-      m.visible = !m.visible;
-      btn.classList.toggle('off', !m.visible);
-    });
-  }
-  for (const layer of LAYERS) wireToggle(layer.btn, layer.key);
-
-  const curvesBtn = document.getElementById('vh-tg-curves');
-  curvesBtn.addEventListener('click', () => {
-    const node = holder.children.find(c => c.name === '0');
-    if (!node) return;
-    node.visible = !node.visible;
-    curvesBtn.classList.toggle('off', !node.visible);
-  });
-
-  const sepSlider = document.getElementById('vh-s-sep');
-  const sepVal = document.getElementById('vh-v-sep');
-  sepSlider.addEventListener('input', () => {
-    const t = parseFloat(sepSlider.value);
-    sepVal.textContent = Math.round(t * 100) + '%';
-    for (const key in meshes) {
-      const m = meshes[key];
-      const dir = m.userData.explodeDir;
-      if (dir) m.position.copy(dir).multiplyScalar(t * 1.1);
-    }
-  });
-
-  const spinBtn = document.getElementById('vh-tg-spin');
-  spinBtn.addEventListener('click', () => {
-    controls.autoRotate = !controls.autoRotate;
-    spinBtn.classList.toggle('off', !controls.autoRotate);
-  });
-
-  function resize(){
-    const w = vhStage.clientWidth, h = vhStage.clientHeight;
-    if (!w || !h) return;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  renderer.setAnimationLoop(() => {
-    if (vhEl.style.display === 'none') return;
-    controls.update();
-    renderer.render(scene, camera);
-  });
-}
-
-// Lazy init: the tab switcher dispatches a window resize after showing a
-// scene, so catching that (plus the tab click itself) covers activation.
-document.querySelectorAll('.explore-tab-btn[data-tab="vh"]')
-  .forEach(b => b.addEventListener('click', vhInit));
-window.addEventListener('resize', () => {
-  if (vhEl.style.display !== 'none') vhInit();
-});
-</script>
-
-<!-- Tab switcher -->
-<script>
-(function(){
-  const scenes = ['cube', 'cs', 'vs', 'rs', 'vp', 'rp', 'vh'];
-  const btns = document.querySelectorAll('.explore-tab-btn');
-  function activate(id) {
-    scenes.forEach(s => {
-      document.getElementById('scene-' + s).style.display = (s === id) ? 'block' : 'none';
-    });
-    btns.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
-    window.dispatchEvent(new Event('resize'));
-    if (id === 'cs') {
-      var csTl = window.__csTl;
-      if (csTl && csTl.paused() && csTl.time() === 0) { csTl.play(); }
-    }
-  }
-  btns.forEach(b => b.addEventListener('click', () => activate(b.dataset.tab)));
-  window.addEventListener('load', () => activate('cube'));
-})();
-</script>
-
-</body>
-</html>
+</body></html>
