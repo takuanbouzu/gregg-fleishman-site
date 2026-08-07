@@ -15,6 +15,20 @@
 (function () {
   'use strict';
 
+  // Shared embed mode: any page using the standard site navigation can be
+  // placed in an iframe with ?embed=1 and will present only its content.
+  if (new URLSearchParams(window.location.search).has('embed')) {
+    document.documentElement.classList.add('gf-embed');
+    var embedStyle = document.createElement('style');
+    embedStyle.textContent = 'html.gf-embed #gfnav{display:none!important}html.gf-embed .review{padding-top:32px}';
+    document.head.appendChild(embedStyle);
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('a[href]:not([download])').forEach(function (link) {
+        link.target = '_top';
+      });
+    });
+  }
+
   function init() {
     var root = document.documentElement;
     var nav = document.getElementById('gfnav');
