@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Lost Triangle">
 <link rel="apple-touch-icon" href="assets/drawings/lost-triangle-color.png">
 <title>Animation Preview — The Lost Triangle</title>
-<meta name="description" content="Flip through the candidate Lost Triangle animations one at a time, full-screen — the Fleishman Sequence, the interactive angle demo, the paper sequence, and the Vector House.">
+<meta name="description" content="Flip through the candidate Lost Triangle animations one at a time, full-screen — the Fleishman Sequence, the interactive angle demo, and the paper sequence.">
 <meta name="robots" content="noindex">
 <!-- Social link preview (shared with collaborators even though noindex). -->
 <meta property="og:type" content="website">
@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="assets/gf-tokens.css">
 <script src="assets/gf-theme.js"></script>
 <script src="assets/gf-scene.js"></script>
-<!-- Three.js r160 ESM, for the Vector House option -->
+<!-- Three.js r160 ESM, for the interactive scene options -->
 <script type="importmap">
 {
   "imports": {
@@ -217,9 +217,6 @@
 
     { id:'risez',      label:'Rise-Z',
       kind:'iframe', src:'preview-slide.html?s=risez' },
-
-    { id:'house',      label:'The Vector House',
-      kind:'three', module:'./assets/lost-triangle/vector-house-scene.js', mountFn:'mountVectorHouseScene' },
 
     { id:'cube',       label:'The Cube',
       kind:'iframe', src:'explore.html?embed=1', ownChrome:true },
