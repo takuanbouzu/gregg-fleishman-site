@@ -84,6 +84,7 @@
 
   body.clean #controls, body.clean #brand, body.clean #nav, body.clean #legend, body.clean #panel{opacity:0;pointer-events:none}
   body.clean #capwrap{bottom:7vh}
+  html.gf-embed #brand, html.gf-embed #nav{display:none}
   @media (max-width:700px){
     #brand{left:18px;right:18px;top:18px}
     #brand .sub{font-size:9px;letter-spacing:.18em}
@@ -193,8 +194,10 @@ import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const COL = { bg:0x0B0B0B, bone:0xF0EDE8, dim:0x8A8480, gold:0xC8A96E, blue:0x4A90D9, mag:0xE0349E, green:0x3CCB8E };
-const clean = new URLSearchParams(location.search).has('clean');
+const params = new URLSearchParams(location.search);
+const clean = params.has('clean');
 if (clean) document.body.classList.add('clean');
+if (params.get('embed') === '1') document.documentElement.classList.add('gf-embed');
 
 const stage = document.getElementById('stage');
 const renderer = new THREE.WebGLRenderer({ antialias:true, preserveDrawingBuffer:false, powerPreference:'high-performance' });
@@ -301,7 +304,7 @@ function makeMirrorCell(ci,cj,ck){
   });
   return {ci,cj,ck,groups};
 }
-/* ---------- per-axis array pool (up to 5 cells per direction = 30 total) ---------- */
+/* ---------- per-axis arrays, created only when a direction is requested ---------- */
 const AXIS_DIRS = [
   {key:'xPos',ci:1,cj:0,ck:0},{key:'xNeg',ci:-1,cj:0,ck:0},
   {key:'yPos',ci:0,cj:1,ck:0},{key:'yNeg',ci:0,cj:-1,ck:0},
@@ -309,12 +312,16 @@ const AXIS_DIRS = [
 ];
 const MAX_ARRAY = 5;
 const arrayPool = [];
-AXIS_DIRS.forEach(d=>{
-  for(let n=1;n<=MAX_ARRAY;n++){
-    const {groups} = makeMirrorCell(d.ci*n, d.cj*n, d.ck*n);
-    arrayPool.push({key:d.key, dist:n, groups});
-  }
-});
+const arrayCells = new Map();
+function ensureArrayCell(d, dist){
+  const id = `${d.key}:${dist}`;
+  if (arrayCells.has(id)) return arrayCells.get(id);
+  const {groups} = makeMirrorCell(d.ci*dist, d.cj*dist, d.ck*dist);
+  const cell = {key:d.key, dist, groups};
+  arrayCells.set(id, cell);
+  arrayPool.push(cell);
+  return cell;
+}
 
 /* ---------- the assembled cube outline (12 edges, bone) ---------- */
 const cubeGroup = new THREE.Group(); scene.add(cubeGroup);
@@ -445,6 +452,12 @@ function render(){
   });
   // per-axis array cells
   const aFade = easeIO(clamp01(STATE.arrayFade)) * cubeOp;
+  if (aFade > 0.001){
+    AXIS_DIRS.forEach(d=>{
+      const count = Math.min(MAX_ARRAY, Math.max(0, Math.floor(STATE[d.key]||0)));
+      for (let dist=1; dist<=count; dist++) ensureArrayCell(d, dist);
+    });
+  }
   arrayPool.forEach(({key,dist,groups})=>{
     const count = STATE[key]||0;
     const mop = dist<=count ? aFade : 0;
@@ -550,12 +563,35 @@ function animate(now){
     scrub.value = Math.round(tt*1000); tlabel.textContent = Math.round(tt*100)+'%';
     render(); syncSliders();
   }
-  if (!userTookOver){   // gently dolly out as space / mirror fills
-    const maxArr = Math.max(STATE.xPos,STATE.xNeg,STATE.yPos,STATE.yNeg,STATE.zPos,STATE.zNeg);
-    const arrayPush = 0.52*easeIO(clamp01(maxArr/3))*easeIO(clamp01(STATE.arrayFade));
-    const desired = baseDist * (1 + 0.95*easeIO(clamp01(STATE.space/2)) + arrayPush);
-    const dir = camera.position.clone().sub(C); const cur = dir.length();
-    if (cur > 1e-3){ const nd = cur + (desired-cur)*Math.min(1, dt*3); camera.position.copy(C).add(dir.multiplyScalar(nd/cur)); }
+  if (!userTookOver){   // keep asymmetric arrays and space-fill geometry inside the viewport
+    const af = easeIO(clamp01(STATE.arrayFade));
+    const sf = 2*easeIO(clamp01(STATE.space/2));
+    const min = V(
+      Math.min(-sf, -(STATE.xNeg||0)*af),
+      Math.min(-sf, -(STATE.yNeg||0)*af),
+      Math.min(-sf, -(STATE.zNeg||0)*af)
+    );
+    const max = V(
+      Math.max(1+sf, 1+(STATE.xPos||0)*af),
+      Math.max(1+sf, 1+(STATE.yPos||0)*af),
+      Math.max(1+sf, 1+(STATE.zPos||0)*af)
+    );
+    const target = min.clone().add(max).multiplyScalar(0.5);
+    const half = max.clone().sub(min).multiplyScalar(0.5);
+    const right = V(1,0,0).applyQuaternion(camera.quaternion);
+    const up = V(0,1,0).applyQuaternion(camera.quaternion);
+    const view = camera.position.clone().sub(controls.target).normalize();
+    const extent = axis => Math.abs(axis.x)*half.x + Math.abs(axis.y)*half.y + Math.abs(axis.z)*half.z;
+    const vTan = Math.tan(THREE.MathUtils.degToRad(camera.fov*0.5));
+    const hTan = vTan*Math.max(camera.aspect, 0.01);
+    const desired = 1.08*(Math.max(extent(up)/vTan, extent(right)/hTan) + extent(view));
+    const alpha = Math.min(1, dt*3);
+    const dir = camera.position.clone().sub(controls.target); const cur = dir.length();
+    controls.target.lerp(target, alpha);
+    if (cur > 1e-3){
+      const nd = cur + (desired-cur)*alpha;
+      camera.position.copy(controls.target).add(dir.multiplyScalar(nd/cur));
+    }
   }
   if (W>1 && H>1){ controls.update(); renderer.render(scene, camera); }
   requestAnimationFrame(animate);
