@@ -18,18 +18,21 @@
 <title>The Fleishman Cube — six parts, the whole of space</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gf-tokens.css">
+<script src="assets/gf-theme.js"></script>
+<script src="assets/gf-nav.js" defer></script>
 <style>
-  :root{ --bg:#0B0B0B; --text:#F0EDE8; --dim:#8A8480; --gold:#C8A96E; --blue:#4A90D9; --mag:#E0349E; --green:#3CCB8E; }
+  :root{ --text:var(--tx); --dim:var(--tx-dim); --gold:var(--accent); --blue:var(--geo-face); --mag:var(--geo-space); --green:var(--geo-tri); }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;font-family:"Space Grotesk",sans-serif}
   #stage{position:fixed;inset:0;cursor:grab}
   #stage:active{cursor:grabbing}
   #stage canvas{display:block}
 
-  #brand{position:fixed;left:34px;top:30px;z-index:5;pointer-events:none;transition:opacity .6s ease}
-  #brand .name{font-family:"Syne",sans-serif;font-weight:800;letter-spacing:.16em;font-size:15px;color:var(--text);text-transform:uppercase}
-  #brand .sub{font-family:"Space Grotesk",sans-serif;font-size:11px;letter-spacing:.34em;color:var(--dim);text-transform:uppercase;margin-top:5px}
+  #brand{position:fixed;left:34px;top:82px;z-index:5;pointer-events:none;transition:opacity .6s ease}
+  #brand .name{font-family:var(--font-display);font-weight:500;letter-spacing:.16em;font-size:13px;color:var(--text);text-transform:uppercase}
+  #brand .sub{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-top:6px}
   #brand .note{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.02em;color:var(--dim);margin-top:11px;opacity:.85}
   #brand .note b{color:var(--text);font-weight:700}
 
@@ -85,8 +88,11 @@
   body.clean #controls, body.clean #brand, body.clean #nav, body.clean #legend, body.clean #panel{opacity:0;pointer-events:none}
   body.clean #capwrap{bottom:7vh}
   html.gf-embed #brand, html.gf-embed #nav{display:none}
+  #nav{display:none}
+  body.clean #gfnav{opacity:0;pointer-events:none}
+  html.gf-embed #gfnav{display:none}
   @media (max-width:700px){
-    #brand{left:18px;right:18px;top:18px}
+    #brand{left:18px;right:18px;top:76px}
     #brand .sub{font-size:9px;letter-spacing:.18em}
     #brand .note{display:none}
     #nav{left:18px;right:18px;top:78px;gap:6px;flex-wrap:wrap}
@@ -114,10 +120,17 @@
 
 </head>
 <body>
+  <nav id="gfnav">
+    <a class="brand" href="index.html">Gregg Fleishman</a>
+    <a class="navlink" href="mathematics.html">The Lost Triangle</a>
+    <a class="navlink" href="lost-triangle.html">Animation</a>
+    <a class="navlink active" href="explore.html">The Cube</a>
+    <a class="navlink" href="review.html">Client Review</a>
+  </nav>
   <div id="stage"></div>
 
   <div id="brand">
-    <div class="name">Gregg&nbsp;Fleishman</div>
+    <div class="name">The Cube</div>
     <div class="sub">Six Parts · One Cube · The Whole of Space</div>
     <div class="note">The proof triangle is the cube's <b>part</b></div>
   </div>
